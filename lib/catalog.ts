@@ -69,8 +69,49 @@ export function getProducts(
   );
 }
 
-export function getProductBySlug(slug: string): Promise<Product> {
-  return catalogFetch<Product>(`/catalog/products/${slug}`);
+export interface VariantAttribute {
+  attributeId: string;
+  attributeName: string;
+  attributeSlug: string;
+  valueId: string;
+  valueLabel: string;
+  valueSlug: string;
+  valueMeta: Record<string, string>;
+}
+
+export interface ProductVariant {
+  _id: string;
+  product: string;
+  sku: string;
+  price: number;
+  originalPrice: number;
+  stock: number;
+  moq: number;
+  images: string[];
+  attributes: VariantAttribute[];
+  variantKey: string;
+  isActive: boolean;
+  flashSalePrice: number | null;
+  flashSaleEndsAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProductDetail {
+  product: Product & {
+    description: string;
+    details: string;
+    materials: string;
+    shipping: string;
+    isActive: boolean;
+    totalPurchases: number;
+    visibility: 'public' | 'company';
+  };
+  variants: ProductVariant[];
+}
+
+export function getProductBySlug(slug: string): Promise<ProductDetail> {
+  return catalogFetch<ProductDetail>(`/catalog/products/${slug}`);
 }
 
 export function getRelated(slug: string): Promise<Product[]> {

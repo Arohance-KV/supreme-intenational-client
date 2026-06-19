@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { getFeatured, getBestsellers } from '@/lib/catalog';
-import ProductCard from '@/components/ProductCard';
 import type { Product } from '@/lib/catalog';
+import ProductCard from '@/components/ProductCard';
 
 export const metadata: Metadata = {
   title: 'Supreme International',
