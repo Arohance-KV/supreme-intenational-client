@@ -1,12 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { useCart, useCartMutations } from '@/lib/cart';
+import { useEmployeeCart, useEmployeeCartMutations } from '@/lib/employee/cart';
 import CartView from '@/components/CartView';
 
-export default function CartPage() {
-  const { data: cart, isLoading, error } = useCart();
-  const mutations = useCartMutations();
+export default function EmployeeCartPage() {
+  const { data: cart, isLoading, error } = useEmployeeCart();
+  const mutations = useEmployeeCartMutations();
 
   if (isLoading) {
     return (
@@ -30,7 +30,7 @@ export default function CartPage() {
         <h1 className="text-2xl font-semibold text-gray-800">Your cart is empty</h1>
         <p className="text-gray-500">Browse our catalog to add items.</p>
         <Link
-          href="/products"
+          href="/employee/products"
           className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           Browse Products
@@ -39,5 +39,5 @@ export default function CartPage() {
     );
   }
 
-  return <CartView cart={cart} mutations={mutations} checkoutHref="/quotation" />;
+  return <CartView cart={cart} mutations={mutations} checkoutHref="/employee/checkout" />;
 }

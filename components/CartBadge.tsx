@@ -1,15 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { useCart } from '@/lib/cart';
 
-export default function CartBadge() {
-  const { data: cart } = useCart();
-  const count = cart?.itemCount ?? 0;
+interface CartBadgeProps {
+  count: number;
+  href: string;
+}
 
+export default function CartBadge({ count, href }: CartBadgeProps) {
   return (
     <Link
-      href="/cart"
+      href={href}
       className="relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
       aria-label={`Cart${count > 0 ? ` — ${count} items` : ''}`}
     >

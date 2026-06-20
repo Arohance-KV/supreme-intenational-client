@@ -4,10 +4,12 @@ import Link from 'next/link';
 import { useQueryClient } from '@tanstack/react-query';
 import CartBadge from './CartBadge';
 import { useAuth } from '@/lib/auth';
+import { useCart } from '@/lib/cart';
 
 export default function SiteHeader() {
   const { isLoggedIn, logout } = useAuth();
   const queryClient = useQueryClient();
+  const { data: cartData } = useCart();
   const handleLogout = () => {
     logout();
     queryClient.invalidateQueries({ queryKey: ['cart'] });
@@ -26,7 +28,7 @@ export default function SiteHeader() {
           >
             Products
           </Link>
-          <CartBadge />
+          <CartBadge count={cartData?.itemCount ?? 0} href="/cart" />
           {isLoggedIn ? (
             <button
               onClick={handleLogout}
