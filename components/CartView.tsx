@@ -15,9 +15,11 @@ interface CartViewProps {
   cart: Cart;
   mutations: ReturnType<typeof useCartMutations>;
   checkoutHref: string;
+  checkoutLabel?: string;
+  productHrefBase?: string;
 }
 
-export default function CartView({ cart, mutations, checkoutHref }: CartViewProps) {
+export default function CartView({ cart, mutations, checkoutHref, checkoutLabel = 'Request Quotation', productHrefBase = '/products' }: CartViewProps) {
   const { setQty, remove, clear, applyCoupon, removeCoupon } = mutations;
   const [couponCode, setCouponCode] = useState('');
   const [couponError, setCouponError] = useState<string | null>(null);
@@ -85,7 +87,7 @@ export default function CartView({ cart, mutations, checkoutHref }: CartViewProp
               {/* Details */}
               <div className="flex-1 min-w-0">
                 <Link
-                  href={`/products/${item.productSlug}`}
+                  href={`${productHrefBase}/${item.productSlug}`}
                   className="font-semibold text-gray-900 hover:text-blue-600 truncate block"
                 >
                   {item.productName}
@@ -232,7 +234,7 @@ export default function CartView({ cart, mutations, checkoutHref }: CartViewProp
             href={checkoutHref}
             className="block w-full text-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors"
           >
-            Request Quotation
+            {checkoutLabel}
           </Link>
         </div>
       </div>
