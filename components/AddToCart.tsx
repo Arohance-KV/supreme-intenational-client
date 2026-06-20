@@ -6,9 +6,15 @@ import type { ProductVariant } from '@/lib/catalog';
 
 interface AddToCartProps {
   variants: ProductVariant[];
+  tokenKey?: string;
+  cartQueryKey?: readonly unknown[];
 }
 
-export default function AddToCart({ variants }: AddToCartProps) {
+export default function AddToCart({
+  variants,
+  tokenKey = 'token',
+  cartQueryKey = ['cart'],
+}: AddToCartProps) {
   const activeVariants = variants.filter((v) => v.isActive);
   const firstActive = activeVariants[0] ?? variants[0];
 
@@ -30,8 +36,9 @@ export default function AddToCart({ variants }: AddToCartProps) {
       apiFetch('/cart/items', {
         method: 'POST',
         body: { variantId: selected._id, qty },
+        tokenKey,
       }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['cart'] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: cartQueryKey }),
   });
 
   if (!selected) {
