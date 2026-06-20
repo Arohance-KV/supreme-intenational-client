@@ -66,10 +66,10 @@ export function useEmployeeProduct(slug: string) {
 }
 
 export function useEmployeeRelated(slug: string) {
-  return useQuery<{ products: Product[] }>({
+  return useQuery<Product[]>({
     queryKey: ['employee', 'product', slug, 'related'],
     queryFn: () =>
-      apiFetch<{ products: Product[] }>(`/employee/catalog/products/${slug}/related`, {
+      apiFetch<Product[]>(`/employee/catalog/products/${slug}/related`, {
         tokenKey: 'employeeToken',
       }),
     enabled: !!slug,

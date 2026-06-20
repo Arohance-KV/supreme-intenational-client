@@ -50,7 +50,7 @@ export default function EmployeeProductPage({ params }: PageProps) {
 
   const { product, variants } = data;
   const mainImage = product.images[0] ?? null;
-  const related = relatedData?.products ?? [];
+  const related = relatedData ?? [];
 
   return (
     <div className="min-h-screen bg-zinc-50">
@@ -134,7 +134,7 @@ export default function EmployeeProductPage({ params }: PageProps) {
             </div>
 
             {/* Description */}
-            {'description' in product && product.description && (
+            {product.description && (
               <p className="text-sm text-zinc-600 leading-relaxed">{product.description}</p>
             )}
 
