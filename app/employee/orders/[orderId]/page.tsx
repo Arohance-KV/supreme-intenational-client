@@ -1,6 +1,7 @@
 'use client';
 
 import { use } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useOrder, useRetryPayment } from '@/lib/employee/orders';
 import { loadRazorpay, openRazorpay } from '@/lib/employee/razorpay';
 
@@ -98,16 +99,12 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function isRetriable(status: string, paymentStatus?: string) {
-  return (
-    status === 'cancelled' ||
-    status === 'refunded' ||
-    paymentStatus === 'failed' ||
-    paymentStatus === 'refunded'
-  );
+  return status === 'cancelled' || paymentStatus === 'failed';
 }
 
 export default function OrderDetailPage({ params }: { params: Promise<{ orderId: string }> }) {
   const { orderId } = use(params);
+  const queryClient = useQueryClient();
   const { data: order, isLoading, isError } = useOrder(orderId);
   const retry = useRetryPayment();
 
@@ -132,10 +129,10 @@ export default function OrderDetailPage({ params }: { params: Promise<{ orderId:
         currency: rzpCurrency,
         name: 'Supreme International',
         onSuccess: () => {
-          // Polling will auto-update when status changes
+          queryClient.invalidateQueries({ queryKey: ['employee', 'order', orderId] });
         },
         onDismiss: () => {
-          // Stay on page; polling continues
+          queryClient.invalidateQueries({ queryKey: ['employee', 'order', orderId] });
         },
       });
     } catch {
@@ -209,13 +206,13 @@ export default function OrderDetailPage({ params }: { params: Promise<{ orderId:
                 {item.sku && (
                   <p className="text-xs text-gray-400">SKU: {item.sku}</p>
                 )}
-                {item.attributeLabels?.length > 0 && (
+                {(item.attributeLabels?.length ?? 0) > 0 && (
                   <p className="text-xs text-gray-500">{item.attributeLabels.join(', ')}</p>
                 )}
                 <p className="text-xs text-gray-500 mt-1">Qty: {item.qty}</p>
               </div>
               <p className="text-sm font-medium text-gray-800 whitespace-nowrap">
-                {fmt(item.priceAtPurchase * item.qty)}
+                {fmt((item.priceAtPurchase ?? 0) * (item.qty ?? 0))}
               </p>
             </li>
           ))}

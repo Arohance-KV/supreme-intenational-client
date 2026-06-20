@@ -67,9 +67,8 @@ export default function OrdersPage() {
   const { data, isLoading, isError } = useOrders(page);
 
   const orders = data?.orders ?? [];
-  const hasMore = Array.isArray((data?.pagination as Record<string, unknown> | undefined)?.hasNextPage)
-    ? !!(data?.pagination as Record<string, unknown>)?.hasNextPage
-    : orders.length === 10; // fallback heuristic
+  const pag = data?.pagination as Record<string, unknown> | undefined;
+  const hasMore = typeof pag?.hasNextPage === 'boolean' ? (pag.hasNextPage as boolean) : orders.length === 10;
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
