@@ -7,7 +7,7 @@ import { useCart, useCartMutations } from '@/lib/cart';
 import { ApiError } from '@/lib/api';
 
 function formatPrice(value: number): string {
-  return `$${value.toFixed(2)}`;
+  return `₹${value.toFixed(2)}`;
 }
 
 export default function CartPage() {
@@ -32,7 +32,11 @@ export default function CartPage() {
 
   const handleRemoveCoupon = async () => {
     setCouponError(null);
-    await removeCoupon.mutateAsync();
+    try {
+      await removeCoupon.mutateAsync();
+    } catch (err) {
+      setCouponError(err instanceof ApiError ? err.message : 'Failed to remove coupon');
+    }
   };
 
   if (isLoading) {

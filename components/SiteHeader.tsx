@@ -1,11 +1,17 @@
 'use client';
 
 import Link from 'next/link';
+import { useQueryClient } from '@tanstack/react-query';
 import CartBadge from './CartBadge';
 import { useAuth } from '@/lib/auth';
 
 export default function SiteHeader() {
   const { isLoggedIn, logout } = useAuth();
+  const queryClient = useQueryClient();
+  const handleLogout = () => {
+    logout();
+    queryClient.invalidateQueries({ queryKey: ['cart'] });
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
@@ -23,7 +29,7 @@ export default function SiteHeader() {
           <CartBadge />
           {isLoggedIn ? (
             <button
-              onClick={logout}
+              onClick={handleLogout}
               className="text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
             >
               Logout

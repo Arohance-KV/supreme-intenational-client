@@ -1,6 +1,6 @@
 'use client';
 
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { apiFetch } from './api';
 import { useAuth } from './auth';
@@ -26,6 +26,7 @@ interface AuthResponse {
 export function useLogin() {
   const { login } = useAuth();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (body: LoginBody) =>
@@ -37,6 +38,7 @@ export function useLogin() {
       } catch {
         // ignore cart merge errors
       }
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
       router.push('/');
     },
   });
@@ -45,6 +47,7 @@ export function useLogin() {
 export function useSignup() {
   const { login } = useAuth();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (body: SignupBody) =>
@@ -57,6 +60,7 @@ export function useSignup() {
         } catch {
           // ignore cart merge errors
         }
+        queryClient.invalidateQueries({ queryKey: ['cart'] });
         router.push('/');
       } else {
         // email verification required before login

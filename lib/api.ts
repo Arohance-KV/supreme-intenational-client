@@ -32,7 +32,8 @@ export async function apiFetch<T>(
     }
   }
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${path}`, {
+  const base = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4010';
+  const res = await fetch(`${base}${path}`, {
     method: opts?.method ?? 'GET',
     headers,
     body: opts?.body ? JSON.stringify(opts.body) : undefined,

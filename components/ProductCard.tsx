@@ -43,7 +43,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           {product.name}
         </h3>
         <p className="text-sm font-semibold text-zinc-800">
-          {product.minPrice > 0 ? `$${product.minPrice.toFixed(2)}` : 'Price on request'}
+          {product.minPrice > 0 ? `₹${product.minPrice.toFixed(2)}` : 'Price on request'}
         </p>
         <p className="text-xs text-zinc-500">MOQ: varies by variant</p>
       </div>

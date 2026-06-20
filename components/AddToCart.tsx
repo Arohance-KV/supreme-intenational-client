@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiFetch, ApiError } from '@/lib/api';
 import type { ProductVariant } from '@/lib/catalog';
 
@@ -16,6 +16,7 @@ export default function AddToCart({ variants }: AddToCartProps) {
   const [qty, setQty] = useState<number>(firstActive?.moq ?? 1);
 
   const selected = variants.find((v) => v._id === selectedId) ?? firstActive;
+  const queryClient = useQueryClient();
 
   // Update qty when variant changes — default to moq
   useEffect(() => {
@@ -30,6 +31,7 @@ export default function AddToCart({ variants }: AddToCartProps) {
         method: 'POST',
         body: { variantId: selected._id, qty },
       }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['cart'] }),
   });
 
   if (!selected) {
@@ -89,13 +91,13 @@ export default function AddToCart({ variants }: AddToCartProps) {
 
       {/* Price */}
       <div className="flex items-baseline gap-2">
-        <span className="text-2xl font-bold text-zinc-900">${effectivePrice.toFixed(2)}</span>
+        <span className="text-2xl font-bold text-zinc-900">₹{effectivePrice.toFixed(2)}</span>
         {selected.flashSalePrice && (
-          <span className="text-sm text-zinc-400 line-through">${selected.price.toFixed(2)}</span>
+          <span className="text-sm text-zinc-400 line-through">₹{selected.price.toFixed(2)}</span>
         )}
         {selected.originalPrice > effectivePrice && !selected.flashSalePrice && (
           <span className="text-sm text-zinc-400 line-through">
-            ${selected.originalPrice.toFixed(2)}
+            ₹{selected.originalPrice.toFixed(2)}
           </span>
         )}
         <span className="text-xs text-zinc-500">/ unit</span>
