@@ -67,6 +67,7 @@ export default function EmployeeCheckoutPage() {
       });
 
       if (result.fullyPaidByWallet) {
+        setSubmitting(false);
         router.push('/employee/orders/' + result.orderId);
         return;
       }
@@ -79,6 +80,7 @@ export default function EmployeeCheckoutPage() {
         return;
       }
 
+      setSubmitting(false);
       openRazorpay({
         key: result.razorpayKeyId,
         orderId: result.razorpayOrderId,

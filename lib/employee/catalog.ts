@@ -30,12 +30,15 @@ export function useEmployeeProducts(params: EmployeeProductsParams = {}) {
   });
 }
 
-export function useEmployeeSearch(q: string) {
+export function useEmployeeSearch(q: string, page: number = 1) {
   return useQuery<{ products: Product[]; pagination: Pagination }>({
-    queryKey: ['employee', 'search', q],
+    queryKey: ['employee', 'search', q, page],
     enabled: q.trim().length > 0,
     queryFn: () => {
-      const qs = new URLSearchParams({ q });
+      const qs = new URLSearchParams();
+      qs.set('q', q);
+      qs.set('page', String(page));
+      qs.set('limit', '12');
       return apiFetch<{ products: Product[]; pagination: Pagination }>(
         `/employee/catalog/search?${qs.toString()}`,
         { tokenKey: 'employeeToken' },

@@ -20,11 +20,11 @@ export default function EmployeeProductsPage() {
   const isSearching = q.trim().length > 0;
 
   const listQuery = useEmployeeProducts({ sort, page, limit: LIMIT });
-  const searchQuery = useEmployeeSearch(q);
+  const searchQuery = useEmployeeSearch(q, page);
 
   const activeQuery = isSearching ? searchQuery : listQuery;
   const products = activeQuery.data?.products ?? [];
-  const pagination = isSearching ? null : listQuery.data?.pagination ?? null;
+  const pagination = activeQuery.data?.pagination ?? null;
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
