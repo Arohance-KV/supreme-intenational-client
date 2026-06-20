@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEmployeeAuth } from '@/lib/employee/auth';
 import { useEmployeeCart } from '@/lib/employee/cart';
+import { useWallet } from '@/lib/employee/wallet';
 import CartBadge from '@/components/CartBadge';
 
 export default function EmployeeHeader() {
@@ -12,6 +13,7 @@ export default function EmployeeHeader() {
   const queryClient = useQueryClient();
   const router = useRouter();
   const { data: cartData } = useEmployeeCart();
+  const { data: walletData } = useWallet();
 
   const handleLogout = () => {
     logout();
@@ -34,12 +36,14 @@ export default function EmployeeHeader() {
               >
                 Products
               </Link>
-              <Link
-                href="/employee/wallet"
-                className="text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                Wallet
-              </Link>
+              {walletData && (
+                <Link
+                  href="/employee/wallet"
+                  className="text-sm font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-full border border-blue-200 transition-colors"
+                >
+                  ₹{walletData.balance.toLocaleString('en-IN')}
+                </Link>
+              )}
               <CartBadge count={cartData?.itemCount ?? 0} href="/employee/cart" />
               <button
                 onClick={handleLogout}
