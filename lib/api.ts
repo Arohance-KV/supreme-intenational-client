@@ -13,7 +13,7 @@ export class ApiError extends Error {
 interface ApiFetchOptions {
   method?: string;
   body?: unknown;
-  auth?: boolean;
+  tokenKey?: string;
 }
 
 export async function apiFetch<T>(
@@ -26,10 +26,8 @@ export async function apiFetch<T>(
   };
 
   if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('token');
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
+    const token = localStorage.getItem(opts?.tokenKey ?? 'token');
+    if (token) headers['Authorization'] = `Bearer ${token}`;
   }
 
   const base = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4010';

@@ -59,4 +59,17 @@ describe('apiFetch', () => {
     expect(typeof sessionId).toBe('string');
     expect(sessionId.length).toBe(24);
   });
+
+  test('reads Bearer token from the tokenKey option when provided', async () => {
+    localStorage.setItem('employeeToken', 'emp-jwt');
+    localStorage.setItem('token', 'b2b-jwt');
+    const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+      ok: true, status: 200, json: async () => ({ data: null, success: true }),
+    } as Response);
+
+    await apiFetch('/employee/wallet', { tokenKey: 'employeeToken' });
+
+    const headers = fetchSpy.mock.calls[0][1]?.headers as Record<string, string>;
+    expect(headers['Authorization']).toBe('Bearer emp-jwt');
+  });
 });
