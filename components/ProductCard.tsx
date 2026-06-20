@@ -4,14 +4,15 @@ import type { Product } from '@/lib/catalog';
 
 interface ProductCardProps {
   product: Product;
+  hrefBase?: string;
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, hrefBase = '/products' }: ProductCardProps) {
   const imageSrc = product.images[0] ?? null;
 
   return (
     <Link
-      href={`/products/${product.slug}`}
+      href={`${hrefBase}/${product.slug}`}
       className="group flex flex-col rounded-lg border border-zinc-200 bg-white overflow-hidden hover:shadow-md transition-shadow"
     >
       <div className="relative h-48 w-full bg-zinc-100">
