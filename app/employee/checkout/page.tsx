@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useEmployeeCart } from '@/lib/employee/cart';
 import { useWallet } from '@/lib/employee/wallet';
@@ -31,10 +31,11 @@ export default function EmployeeCheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
 
   // Redirect if cart is empty (after data loads)
-  if (!cartLoading && (!cart || cart.items.length === 0)) {
-    router.replace('/employee/products');
-    return null;
-  }
+  useEffect(() => {
+    if (!cartLoading && (!cart || cart.items.length === 0)) {
+      router.replace('/employee/products');
+    }
+  }, [cartLoading, cart, router]);
 
   if (cartLoading) {
     return (
@@ -122,6 +123,7 @@ export default function EmployeeCheckoutPage() {
               onChange={handleAddressChange}
               required
               placeholder="+91 98765 43210"
+              type="tel"
             />
             <Field
               label="Address Line 1"
@@ -164,6 +166,7 @@ export default function EmployeeCheckoutPage() {
                 onChange={handleAddressChange}
                 required
                 placeholder="400001"
+                inputMode="numeric"
               />
               <Field
                 label="Country"
@@ -268,9 +271,11 @@ interface FieldProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   required?: boolean;
   placeholder?: string;
+  type?: string;
+  inputMode?: 'text' | 'search' | 'none' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal';
 }
 
-function Field({ label, name, value, onChange, required, placeholder }: FieldProps) {
+function Field({ label, name, value, onChange, required, placeholder, type = 'text', inputMode }: FieldProps) {
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -278,7 +283,8 @@ function Field({ label, name, value, onChange, required, placeholder }: FieldPro
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
       <input
-        type="text"
+        type={type}
+        inputMode={inputMode}
         name={name}
         value={value}
         onChange={onChange}
