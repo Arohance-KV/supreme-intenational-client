@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useSellerResetPassword } from '@/lib/seller/userAuth';
 import { ApiError } from '@/lib/api';
@@ -9,7 +9,6 @@ import { ApiError } from '@/lib/api';
 function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
-  const router = useRouter();
 
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -26,7 +25,6 @@ function ResetPasswordForm() {
   }
 
   if (isSuccess) {
-    setTimeout(() => router.replace('/seller/login'), 2000);
     return (
       <div className="p-3 rounded-lg bg-green-50 border border-green-200 text-green-700 text-sm text-center">
         Password reset!{' '}

@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useSellerForgotPassword } from '@/lib/seller/userAuth';
 
@@ -68,9 +68,7 @@ export default function SellerForgotPasswordPage() {
         <p className="text-sm text-gray-500 mb-6">
           Enter your email and we&apos;ll send you a reset link if your seller account is active.
         </p>
-        <Suspense>
-          <ForgotPasswordForm />
-        </Suspense>
+        <ForgotPasswordForm />
       </div>
     </div>
   );
