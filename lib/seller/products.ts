@@ -7,6 +7,13 @@ const T = { tokenKey: 'sellerToken' as const };
 
 export type SellerProduct = Product & { isActive: boolean; suspendedHidden?: boolean };
 
+export type SellerProductDetail = SellerProduct & {
+  description: string;
+  details: string;
+  materials: string;
+  shipping: string;
+};
+
 interface Paginated<U> {
   products: U[];
   pagination: { total: number; page: number; limit: number; pages: number };
@@ -26,7 +33,7 @@ export function useMyProduct(id: string) {
   return useQuery({
     queryKey: ['seller', 'product', id],
     queryFn: () =>
-      apiFetch<{ product: SellerProduct; variants: ProductVariant[] }>(
+      apiFetch<{ product: SellerProductDetail; variants: ProductVariant[] }>(
         `/seller/products/${id}`,
         T,
       ),

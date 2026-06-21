@@ -83,6 +83,21 @@ function VariantRow({
         )}
       </td>
       <td className="px-3 py-2 text-zinc-700">
+        {editing ? (
+          <input
+            id={`original-price-${variant._id}`}
+            aria-label="Original Price"
+            type="number"
+            min={0}
+            value={fields.originalPrice}
+            onChange={(e) => setFields({ ...fields, originalPrice: Number(e.target.value) })}
+            className="w-24 rounded border border-zinc-300 px-2 py-1 text-sm"
+          />
+        ) : (
+          `₹${variant.originalPrice.toLocaleString()}`
+        )}
+      </td>
+      <td className="px-3 py-2 text-zinc-700">
         <div className="flex items-center gap-1">
           <button
             onClick={() => handleAdjust(-1)}
@@ -176,7 +191,7 @@ function AddVariantForm({ productId }: { productId: string }) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    addVariant.mutate(form as unknown as Record<string, unknown>, {
+    addVariant.mutate(form as Record<string, unknown>, {
       onSuccess: () =>
         setForm({ sku: '', price: 0, originalPrice: 0, stock: 0, moq: 1 }),
     });
@@ -293,10 +308,10 @@ export default function ProductDetailPage({
     const p = data.product;
     setFields({
       name: p.name,
-      description: (p as unknown as Record<string, string>).description ?? '',
-      details: (p as unknown as Record<string, string>).details ?? '',
-      materials: (p as unknown as Record<string, string>).materials ?? '',
-      shipping: (p as unknown as Record<string, string>).shipping ?? '',
+      description: p.description,
+      details: p.details,
+      materials: p.materials,
+      shipping: p.shipping,
       category: p.category ?? '',
     });
   }
@@ -324,7 +339,7 @@ export default function ProductDetailPage({
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!fields) return;
-    updateProduct.mutate(fields as unknown as Record<string, unknown>);
+    updateProduct.mutate(fields as Record<string, unknown>);
   };
 
   return (
@@ -446,6 +461,7 @@ export default function ProductDetailPage({
                 <tr className="border-b border-zinc-200 text-xs uppercase text-zinc-500">
                   <th className="px-3 py-2 font-medium">SKU</th>
                   <th className="px-3 py-2 font-medium">Price</th>
+                  <th className="px-3 py-2 font-medium">Original Price</th>
                   <th className="px-3 py-2 font-medium">Stock</th>
                   <th className="px-3 py-2 font-medium">MOQ</th>
                   <th className="px-3 py-2 font-medium">Actions</th>
