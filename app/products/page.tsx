@@ -10,29 +10,12 @@ interface PageProps {
 export default async function ProductsPage({ searchParams }: PageProps) {
   const sp = await searchParams;
 
-  // Build pre-encoded query string from supported params
+  // Forward every search param to the API, preserving multi-value (repeated) keys
+  // for multi-select categories and attribute filters.
   const params = new URLSearchParams();
-
-  const category = typeof sp.category === 'string' ? sp.category : undefined;
-  const sort = typeof sp.sort === 'string' ? sp.sort : undefined;
-  const page = typeof sp.page === 'string' ? sp.page : undefined;
-  const limit = typeof sp.limit === 'string' ? sp.limit : undefined;
-  const minPrice = typeof sp.minPrice === 'string' ? sp.minPrice : undefined;
-  const maxPrice = typeof sp.maxPrice === 'string' ? sp.maxPrice : undefined;
-
-  if (category) params.set('category', category);
-  if (sort) params.set('sort', sort);
-  if (page) params.set('page', page);
-  if (limit) params.set('limit', limit);
-  if (minPrice) params.set('minPrice', minPrice);
-  if (maxPrice) params.set('maxPrice', maxPrice);
-
-  // Pass through any attribute filters (keys not in the known set)
-  const knownKeys = new Set(['category', 'sort', 'page', 'limit', 'minPrice', 'maxPrice']);
   for (const [key, value] of Object.entries(sp)) {
-    if (!knownKeys.has(key) && typeof value === 'string') {
-      params.set(key, value);
-    }
+    if (Array.isArray(value)) value.forEach((v) => params.append(key, v));
+    else if (typeof value === 'string') params.append(key, value);
   }
 
   const qs = params.toString();
@@ -62,7 +45,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
           {/* Sidebar Filters */}
           <aside className="w-full lg:w-64 shrink-0">
             <Suspense fallback={<div className="animate-pulse rounded-lg bg-zinc-200 h-64" />}>
-              <Filters currentParams={sp} />
+              <Filters />
             </Suspense>
           </aside>
 
