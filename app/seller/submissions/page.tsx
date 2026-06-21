@@ -1,14 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useMySubmissions } from '@/lib/seller/submissions';
-import type { Submission } from '@/lib/seller/submissions';
-
-const STATUS_CHIP: Record<Submission['status'], string> = {
-  draft: 'bg-zinc-100 text-zinc-600',
-  submitted: 'bg-amber-100 text-amber-700',
-  approved: 'bg-green-100 text-green-700',
-  rejected: 'bg-red-100 text-red-700',
-};
+import { SubmissionStatusChip } from '@/components/seller/SubmissionStatusChip';
 
 export default function SubmissionsPage() {
   const { data, isLoading } = useMySubmissions();
@@ -53,11 +46,7 @@ export default function SubmissionsPage() {
                   {new Date(item.createdAt).toLocaleDateString()}
                 </p>
               </div>
-              <span
-                className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${STATUS_CHIP[item.status]}`}
-              >
-                {item.status}
-              </span>
+              <SubmissionStatusChip status={item.status} />
             </Link>
           ))}
         </div>
