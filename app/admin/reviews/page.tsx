@@ -11,21 +11,7 @@ import {
   type ReviewUser,
   type CreateReviewBody,
 } from '@/lib/admin/reviews';
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function fmtDate(iso: string | null | undefined): string {
-  if (!iso) return '—';
-  try {
-    return new Date(iso).toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
-  } catch {
-    return '—';
-  }
-}
+import { fmtDate } from '@/lib/admin/format';
 
 /** Safely extract product name from populated or raw productId */
 function getProductName(productId: AdminReview['productId']): string {

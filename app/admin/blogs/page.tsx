@@ -9,21 +9,7 @@ import {
   type AdminBlog,
 } from '@/lib/admin/blogs';
 import { StatusChip } from '@/components/admin/StatusChip';
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function fmtDate(iso: string | null | undefined): string {
-  if (!iso) return '—';
-  try {
-    return new Date(iso).toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
-  } catch {
-    return '—';
-  }
-}
+import { fmtDate } from '@/lib/admin/format';
 
 // ── Blog row ──────────────────────────────────────────────────────────────────
 

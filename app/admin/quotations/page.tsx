@@ -9,27 +9,7 @@ import {
   type QuotationStatus,
 } from '@/lib/admin/enquiries';
 import { StatusChip } from '@/components/admin/StatusChip';
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function inr(n: unknown): string {
-  return typeof n === 'number' ? `₹${n.toLocaleString('en-IN')}` : '—';
-}
-
-function formatDate(s: unknown): string {
-  if (!s || typeof s !== 'string') return '—';
-  try {
-    return new Date(s).toLocaleString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  } catch {
-    return '—';
-  }
-}
+import { inr, fmtDateTime } from '@/lib/admin/format';
 
 const QUOTATION_STATUSES: QuotationStatus[] = [
   'generated',
@@ -208,7 +188,7 @@ function QuotationsTable() {
                 {typeof q.downloadCount === 'number' ? q.downloadCount : '—'}
               </span>
               <span className="text-xs text-zinc-400">
-                {formatDate(q.createdAt)}
+                {fmtDateTime(q.createdAt)}
               </span>
             </Link>
           ))}

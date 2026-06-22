@@ -1,4 +1,3 @@
-'use client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminFetch } from './api';
 
@@ -111,7 +110,7 @@ export function useQuotations(filters: QuotationFilters = {}) {
   const qsStr = qs.toString();
 
   return useQuery<QuotationsResponse>({
-    queryKey: ['admin', 'quotations', filters.status ?? 'all', filters.search ?? '', filters.page ?? 1],
+    queryKey: ['admin', 'quotations', 'list', filters.status ?? 'all', filters.search ?? '', filters.page ?? 1],
     queryFn: () =>
       adminFetch<QuotationsResponse>(`/admin/quotations${qsStr ? `?${qsStr}` : ''}`),
   });
@@ -119,7 +118,7 @@ export function useQuotations(filters: QuotationFilters = {}) {
 
 export function useQuotation(id: string) {
   return useQuery<Quotation>({
-    queryKey: ['admin', 'quotations', id],
+    queryKey: ['admin', 'quotations', 'detail', id],
     queryFn: () => adminFetch<Quotation>(`/admin/quotations/${id}`),
     enabled: !!id,
   });
@@ -134,7 +133,7 @@ export function useUpdateQuotationStatus(id: string) {
         body: { status },
       }),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['admin', 'quotations', id] });
+      qc.invalidateQueries({ queryKey: ['admin', 'quotations', 'detail', id] });
       qc.invalidateQueries({ queryKey: ['admin', 'quotations'] });
     },
   });

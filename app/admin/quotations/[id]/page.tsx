@@ -9,27 +9,9 @@ import {
   type QuotationStatus,
 } from '@/lib/admin/enquiries';
 import { StatusChip } from '@/components/admin/StatusChip';
+import { inr, fmtDateTime } from '@/lib/admin/format';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-
-function inr(n: unknown): string {
-  return typeof n === 'number' ? `₹${n.toLocaleString('en-IN')}` : '—';
-}
-
-function formatDate(s: unknown): string {
-  if (!s || (typeof s !== 'string' && !(s instanceof Date))) return '—';
-  try {
-    return new Date(s as string).toLocaleString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  } catch {
-    return '—';
-  }
-}
 
 function getErrorMessage(err: unknown): string {
   if (err instanceof ApiError) return err.message;
@@ -118,7 +100,7 @@ export default function AdminQuotationDetailPage({
             {quotation.quotationNumber}
           </h1>
           <p className="mt-0.5 text-sm text-zinc-500">
-            Created {formatDate(quotation.createdAt)}
+            Created {fmtDateTime(quotation.createdAt)}
           </p>
         </div>
         <StatusChip status={quotation.status} />
@@ -205,7 +187,7 @@ export default function AdminQuotationDetailPage({
             {quotation.lastDownloadedAt && (
               <div className="flex justify-between">
                 <dt className="text-zinc-500">Last Downloaded</dt>
-                <dd className="text-zinc-800">{formatDate(quotation.lastDownloadedAt)}</dd>
+                <dd className="text-zinc-800">{fmtDateTime(quotation.lastDownloadedAt)}</dd>
               </div>
             )}
             <div className="flex justify-between">

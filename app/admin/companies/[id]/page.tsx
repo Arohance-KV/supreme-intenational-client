@@ -24,40 +24,7 @@ import {
   type UpdateCompanyBody,
   type InviteEmployeeBody,
 } from '@/lib/admin/companies';
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function inr(n: unknown): string {
-  return typeof n === 'number' ? `₹${n.toLocaleString('en-IN')}` : '—';
-}
-
-function fmtDate(iso: unknown): string {
-  if (!iso || typeof iso !== 'string') return '—';
-  try {
-    return new Date(iso).toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
-  } catch {
-    return '—';
-  }
-}
-
-function fmtDateTime(iso: unknown): string {
-  if (!iso || typeof iso !== 'string') return '—';
-  try {
-    return new Date(iso).toLocaleString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  } catch {
-    return '—';
-  }
-}
+import { inr, fmtDate, fmtDateTime } from '@/lib/admin/format';
 
 const inputCls =
   'w-full rounded border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400';

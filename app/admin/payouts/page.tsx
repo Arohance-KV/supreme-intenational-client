@@ -10,41 +10,7 @@ import {
   type SellerPayoutStatus,
 } from '@/lib/admin/payouts';
 import { StatusChip } from '@/components/admin/StatusChip';
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-/** Format a rupee amount defensively. All money fields are already in rupees. */
-function inr(n: unknown): string {
-  return typeof n === 'number' ? `₹${n.toLocaleString('en-IN')}` : '—';
-}
-
-function fmtDate(raw: unknown): string {
-  if (!raw) return '—';
-  try {
-    return new Date(raw as string).toLocaleString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
-  } catch {
-    return '—';
-  }
-}
-
-function fmtDatetime(raw: unknown): string {
-  if (!raw) return '—';
-  try {
-    return new Date(raw as string).toLocaleString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  } catch {
-    return '—';
-  }
-}
+import { inr, fmtDate, fmtDateTime } from '@/lib/admin/format';
 
 const PAYOUT_STATUSES: SellerPayoutStatus[] = ['pending', 'settled', 'voided'];
 
@@ -154,7 +120,7 @@ function DetailDrawer({ id, onClose }: DetailDrawerProps) {
                   <dt className="text-zinc-500">Currency</dt>
                   <dd className="text-zinc-900">{payout.currency || '—'}</dd>
                   <dt className="text-zinc-500">Created</dt>
-                  <dd className="text-zinc-900">{fmtDatetime(payout.createdAt)}</dd>
+                  <dd className="text-zinc-900">{fmtDateTime(payout.createdAt)}</dd>
                 </dl>
               </section>
 
@@ -181,7 +147,7 @@ function DetailDrawer({ id, onClose }: DetailDrawerProps) {
                   </h3>
                   <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
                     <dt className="text-zinc-500">Settled At</dt>
-                    <dd className="text-zinc-900">{fmtDatetime(payout.settledAt)}</dd>
+                    <dd className="text-zinc-900">{fmtDateTime(payout.settledAt)}</dd>
                     <dt className="text-zinc-500">Settled By</dt>
                     <dd className="font-mono text-xs text-zinc-700">{payout.settledBy || '—'}</dd>
                   </dl>
@@ -196,7 +162,7 @@ function DetailDrawer({ id, onClose }: DetailDrawerProps) {
                   </h3>
                   <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
                     <dt className="text-zinc-500">Voided At</dt>
-                    <dd className="text-zinc-900">{fmtDatetime(payout.voidedAt)}</dd>
+                    <dd className="text-zinc-900">{fmtDateTime(payout.voidedAt)}</dd>
                   </dl>
                 </section>
               )}

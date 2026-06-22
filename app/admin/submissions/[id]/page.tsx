@@ -11,40 +11,7 @@ import {
   type AdminSubmission,
   type DraftVariant,
 } from '@/lib/admin/submissions';
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function inr(n: unknown): string {
-  return typeof n === 'number' ? `₹${n.toLocaleString('en-IN')}` : '—';
-}
-
-function fmtDate(iso: unknown): string {
-  if (!iso || typeof iso !== 'string') return '—';
-  try {
-    return new Date(iso).toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
-  } catch {
-    return '—';
-  }
-}
-
-function fmtDateTime(iso: unknown): string {
-  if (!iso || typeof iso !== 'string') return '—';
-  try {
-    return new Date(iso).toLocaleString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  } catch {
-    return '—';
-  }
-}
+import { inr, fmtDate, fmtDateTime } from '@/lib/admin/format';
 
 const sectionCls = 'rounded-xl border border-zinc-200 bg-white p-5';
 const labelCls = 'mb-1 block text-sm font-medium text-zinc-700';

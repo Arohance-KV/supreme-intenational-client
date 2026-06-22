@@ -5,21 +5,7 @@ import Link from 'next/link';
 import { ApiError } from '@/lib/api';
 import { useSubmissions, type AdminSubmission, type SubmissionStatus } from '@/lib/admin/submissions';
 import { StatusChip } from '@/components/admin/StatusChip';
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function fmtDate(iso: string | null | undefined): string {
-  if (!iso) return '—';
-  try {
-    return new Date(iso).toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
-  } catch {
-    return '—';
-  }
-}
+import { fmtDate } from '@/lib/admin/format';
 
 // ── Submission row ────────────────────────────────────────────────────────────
 

@@ -12,26 +12,7 @@ import {
   type UpdateCouponBody,
 } from '@/lib/admin/coupons';
 import { StatusChip } from '@/components/admin/StatusChip';
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function inr(n: unknown): string {
-  return typeof n === 'number' ? `₹${n.toLocaleString('en-IN')}` : '—';
-}
-
-/** Format an ISO date string as a short local date, or return '—' */
-function fmtDate(iso: string | null | undefined): string {
-  if (!iso) return '—';
-  try {
-    return new Date(iso).toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
-  } catch {
-    return '—';
-  }
-}
+import { inr, fmtDate } from '@/lib/admin/format';
 
 /** Convert an ISO string (or Date) to the value expected by <input type="datetime-local"> */
 function toDatetimeLocal(iso: string | null | undefined): string {
