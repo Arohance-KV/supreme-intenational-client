@@ -89,7 +89,7 @@ export default function AdminOrderDetailPage({
 
   const nextStatuses = NEXT_STATUSES[order.status] ?? [];
   const canRefund =
-    order.payment?.status === 'paid' && order.status !== 'refunded';
+    order.payment?.status === 'paid' && order.status === 'delivered';
 
   async function handleStatusChange() {
     if (!pendingStatus) return;
@@ -318,7 +318,7 @@ export default function AdminOrderDetailPage({
         ) : (
           <div className="divide-y divide-zinc-100">
             {order.items.map((item, idx) => (
-              <div key={idx} className="flex items-start gap-3 px-5 py-3">
+              <div key={item.variantId ?? item.sku ?? idx} className="flex items-start gap-3 px-5 py-3">
                 {item.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -451,7 +451,7 @@ export default function AdminOrderDetailPage({
           </h2>
           <ol className="relative border-l border-zinc-200 space-y-4 ml-2">
             {order.timeline.map((entry, idx) => (
-              <li key={idx} className="ml-4">
+              <li key={`${entry.status}-${entry.timestamp}`} className="ml-4">
                 <span className="absolute -left-1.5 mt-1.5 h-3 w-3 rounded-full border border-white bg-zinc-400" />
                 <div className="flex flex-wrap items-center gap-2">
                   <StatusChip status={entry.status} />

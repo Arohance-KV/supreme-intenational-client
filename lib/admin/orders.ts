@@ -16,10 +16,10 @@ export type OrderStatus =
 export interface OrderItem {
   variantId: string;
   productId: string;
-  sku: string;
-  productName: string;
-  attributeLabels: string[];
-  image: string;
+  sku?: string;
+  productName?: string;
+  attributeLabels?: string[];
+  image?: string;
   qty: number;
   priceAtPurchase: number;
   originalPriceAtPurchase: number;
