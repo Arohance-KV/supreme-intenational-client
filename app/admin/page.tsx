@@ -241,17 +241,17 @@ export default function AdminDashboardPage() {
                 return (
                   <Link
                     key={variant._id}
-                    href={`/admin/products?variantId=${variant._id}`}
+                    href={`/admin/catalog/products?variantId=${variant._id}`}
                     className="flex items-center gap-4 px-5 py-3 hover:bg-zinc-50 transition-colors"
                   >
-                    <span className="flex-1 min-w-0">
-                      <span className="block text-sm text-zinc-800 truncate">
+                    <div className="flex-1 min-w-0 flex items-baseline gap-2">
+                      <span className="text-sm text-zinc-800 truncate">
                         {variant.sku ?? '—'}
-                        {attrLabel ? (
-                          <span className="ml-2 text-xs text-zinc-400">({attrLabel})</span>
-                        ) : null}
                       </span>
-                    </span>
+                      {attrLabel ? (
+                        <span className="shrink-0 text-xs text-zinc-400">({attrLabel})</span>
+                      ) : null}
+                    </div>
                     <span
                       className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${
                         (typeof variant.stock === 'number' ? variant.stock : 1) === 0
