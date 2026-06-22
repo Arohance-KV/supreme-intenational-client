@@ -8,7 +8,7 @@ export default function NewSubmissionPage() {
   const create = useCreateSubmission();
 
   const handleSubmit = (input: SubmissionInput) => {
-    create.mutateAsync(input).then((s) => router.push('/seller/submissions/' + s._id));
+    create.mutate(input, { onSuccess: (s) => router.push('/seller/submissions/' + s._id) });
   };
 
   return (
