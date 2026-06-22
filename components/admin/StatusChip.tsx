@@ -21,7 +21,11 @@ const STATUS_CLASS_MAP: Record<string, string> = {
   approved:    'bg-green-100 text-green-700',
   rejected:    'bg-red-100 text-red-700',
 
-  // ── Payout statuses ───────────────────────────────────────────────────────
+  // ── Payout statuses (seller payout: pending → settled | voided) ──────────
+  // 'pending' already covered by the shared amber entry above
+  settled:     'bg-green-100 text-green-700',
+  voided:      'bg-zinc-100 text-zinc-500',
+  // Legacy / alternative payout status names kept for compatibility
   requested:   'bg-amber-100 text-amber-700',
   paid:        'bg-green-100 text-green-700',
   failed:      'bg-red-100 text-red-700',
