@@ -30,11 +30,16 @@ function CreateProductModal({ onClose }: { onClose: () => void }) {
     images: [],
     description: '',
     visibility: 'public',
+    ownerCompanyId: undefined,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createProduct.mutate(form, {
+    const payload: CreateProductBody = {
+      ...form,
+      ownerCompanyId: form.visibility === 'company' ? form.ownerCompanyId : undefined,
+    };
+    createProduct.mutate(payload, {
       onSuccess: (product) => {
         // Navigate to the new product detail page (use slug)
         router.push(`/admin/catalog/products/${product.slug}`);
@@ -113,6 +118,22 @@ function CreateProductModal({ onClose }: { onClose: () => void }) {
               <option value="company">Company</option>
             </select>
           </div>
+
+          {form.visibility === 'company' && (
+            <div>
+              <label htmlFor="cp-ownerCompanyId" className="mb-1 block text-sm font-medium text-zinc-700">
+                Owner company ObjectId <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="cp-ownerCompanyId"
+                required={form.visibility === 'company'}
+                placeholder="Owner company ObjectId"
+                value={form.ownerCompanyId ?? ''}
+                onChange={(e) => setForm({ ...form, ownerCompanyId: e.target.value })}
+                className="w-full rounded border border-zinc-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-zinc-400"
+              />
+            </div>
+          )}
 
           {createProduct.error && (
             <p className="text-sm text-red-600">

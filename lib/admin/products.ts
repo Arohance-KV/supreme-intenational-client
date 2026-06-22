@@ -1,6 +1,7 @@
 'use client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { adminFetch, _nav } from './api';
+import { useState, useEffect } from 'react';
+import { adminFetch } from './api';
 import { ApiError } from '@/lib/api';
 import { getSessionId } from '@/lib/session';
 import type { ProductBadge, ProductVariant } from '@/lib/catalog';
@@ -273,8 +274,8 @@ export async function uploadAdminImage(
 
 // Hook wrapper for useUploadImage (integrates with React state but keeps upload async)
 export function useUploadImage() {
-  const [isPending, setIsPending] = React.useState(false);
-  const [error, setError] = React.useState<Error | null>(null);
+  const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   const upload = async (
     file: File,
@@ -295,6 +296,3 @@ export function useUploadImage() {
 
   return { upload, isPending, error };
 }
-
-// Import React for the hook
-import React from 'react';
