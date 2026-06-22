@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState, Suspense } from 'react';
+import { use, useState, Suspense, useEffect } from 'react';
 import Link from 'next/link';
 import { ApiError } from '@/lib/api';
 import { StatusChip } from '@/components/admin/StatusChip';
@@ -77,6 +77,15 @@ function SellerStatusPanel({ seller }: { seller: AdminSeller }) {
     transitions[0] ?? '',
   );
   const [reason, setReason] = useState('');
+
+  useEffect(() => {
+    if (updateStatus.isSuccess) {
+      const timer = setTimeout(() => {
+        updateStatus.reset();
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [updateStatus.isSuccess, updateStatus]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -204,6 +213,15 @@ function SellerEditForm({ seller }: { seller: AdminSeller }) {
 
   const [marginError, setMarginError] = useState('');
 
+  useEffect(() => {
+    if (update.isSuccess) {
+      const timer = setTimeout(() => {
+        update.reset();
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [update.isSuccess, update]);
+
   function setContact(key: keyof NonNullable<UpdateSellerBody['contact']>, val: string) {
     setFields((prev) => ({
       ...prev,
@@ -227,16 +245,18 @@ function SellerEditForm({ seller }: { seller: AdminSeller }) {
       setMarginError('Margin must be between 0 and 100');
       return;
     }
+    const contact = {
+      name: fields.contact?.name?.trim() || undefined,
+      email: fields.contact?.email?.trim() || undefined,
+      isdCode: fields.contact?.isdCode?.trim() || undefined,
+      phoneNumber: fields.contact?.phoneNumber?.trim() || undefined,
+    };
+    const hasContact = contact.name || contact.email || contact.isdCode || contact.phoneNumber;
     const payload: UpdateSellerBody = {
       businessName: fields.businessName?.trim() || undefined,
       description: fields.description?.trim() || undefined,
       marginPercent: margin,
-      contact: {
-        name: fields.contact?.name?.trim() || undefined,
-        email: fields.contact?.email?.trim() || undefined,
-        isdCode: fields.contact?.isdCode?.trim() || undefined,
-        phoneNumber: fields.contact?.phoneNumber?.trim() || undefined,
-      },
+      ...(hasContact && { contact }),
     };
     update.mutate(payload);
   }

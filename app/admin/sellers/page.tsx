@@ -25,7 +25,7 @@ function fmtDate(iso: string | null | undefined): string {
 
 function SellerRow({ seller }: { seller: AdminSeller }) {
   return (
-    <div className="grid grid-cols-[1fr_160px_120px_100px_80px] items-center gap-3 border-b border-zinc-100 px-5 py-3 hover:bg-zinc-50 transition-colors">
+    <div className="grid grid-cols-[1fr_160px_120px_100px_80px_80px] items-center gap-3 border-b border-zinc-100 px-5 py-3 hover:bg-zinc-50 transition-colors">
       <div className="min-w-0">
         <Link
           href={`/admin/sellers/${seller._id}`}
@@ -38,6 +38,7 @@ function SellerRow({ seller }: { seller: AdminSeller }) {
       <span className="text-xs text-zinc-500 truncate">{seller.contact?.email ?? '—'}</span>
       <span className="text-xs text-zinc-500">{fmtDate(seller.createdAt)}</span>
       <StatusChip status={seller.status} label={seller.status} />
+      <span className="text-xs text-zinc-500">{typeof seller.marginPercent === 'number' ? `${seller.marginPercent}%` : '—'}</span>
       <Link
         href={`/admin/sellers/${seller._id}`}
         className="rounded border border-zinc-200 px-3 py-1 text-xs text-zinc-700 hover:bg-zinc-50 text-center"
@@ -125,11 +126,12 @@ function SellersTable() {
       {/* Table */}
       {!isLoading && !isError && items.length > 0 && (
         <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
-          <div className="grid grid-cols-[1fr_160px_120px_100px_80px] gap-3 bg-zinc-50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+          <div className="grid grid-cols-[1fr_160px_120px_100px_80px_80px] gap-3 bg-zinc-50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
             <span>Seller</span>
             <span>Contact Email</span>
             <span>Created</span>
             <span>Status</span>
+            <span>Margin %</span>
             <span></span>
           </div>
           {items.map((s) => (
