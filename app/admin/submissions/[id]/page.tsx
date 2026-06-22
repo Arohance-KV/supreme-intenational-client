@@ -152,14 +152,14 @@ function ModeratePanel({ submission }: { submission: AdminSubmission }) {
       const t = setTimeout(() => approve.reset(), 4000);
       return () => clearTimeout(t);
     }
-  }, [approve.isSuccess, approve]);
+  }, [approve.isSuccess]);
 
   useEffect(() => {
     if (reject.isSuccess) {
       const t = setTimeout(() => reject.reset(), 4000);
       return () => clearTimeout(t);
     }
-  }, [reject.isSuccess, reject]);
+  }, [reject.isSuccess]);
 
   if (submission.status !== 'submitted') {
     return (

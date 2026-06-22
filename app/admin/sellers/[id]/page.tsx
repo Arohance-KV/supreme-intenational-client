@@ -85,7 +85,7 @@ function SellerStatusPanel({ seller }: { seller: AdminSeller }) {
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [updateStatus.isSuccess, updateStatus]);
+  }, [updateStatus.isSuccess]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -220,7 +220,7 @@ function SellerEditForm({ seller }: { seller: AdminSeller }) {
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [update.isSuccess, update]);
+  }, [update.isSuccess]);
 
   function setContact(key: keyof NonNullable<UpdateSellerBody['contact']>, val: string) {
     setFields((prev) => ({

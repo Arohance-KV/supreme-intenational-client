@@ -24,9 +24,10 @@ function fmtDate(iso: string | null | undefined): string {
 // ── Submission row ────────────────────────────────────────────────────────────
 
 function SubmissionRow({ submission }: { submission: AdminSubmission }) {
-  const minPrice = submission.variants.length > 0
+  const variantsArray = Array.isArray(submission.variants) ? submission.variants : [];
+  const minPrice = variantsArray.length > 0
     ? Math.min(
-        ...submission.variants
+        ...variantsArray
           .map((v) => (typeof v.price === 'number' ? v.price : Infinity))
           .filter((p) => isFinite(p)),
       )
@@ -49,7 +50,7 @@ function SubmissionRow({ submission }: { submission: AdminSubmission }) {
         {typeof submission.sellerId === 'string' ? submission.sellerId : '—'}
       </span>
       <span className="text-xs text-zinc-500">
-        {submission.variants.length}
+        {variantsArray.length}
       </span>
       <span className="text-xs text-zinc-500">
         {minPrice !== null ? `₹${minPrice.toLocaleString('en-IN')}` : '—'}
