@@ -142,7 +142,7 @@ export function useUpdateQuotationStatus(id: string) {
 
 export function useQuotationAnalytics() {
   return useQuery<QuotationAnalytics>({
-    queryKey: ['admin', 'quotations', 'analytics'],
+    queryKey: ['admin', 'quotations', 'analytics', 'summary'],
     queryFn: () => adminFetch<QuotationAnalytics>('/admin/quotations/analytics'),
   });
 }

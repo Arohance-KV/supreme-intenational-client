@@ -50,11 +50,14 @@ function LeadStatusCell({
 }) {
   const updateLead = useUpdateLeadStatus();
   const [error, setError] = useState<string | null>(null);
+  const guardedStatus = FOLLOW_UP_STATUSES.includes(currentStatus as LeadFollowUpStatus)
+    ? (currentStatus as LeadFollowUpStatus)
+    : 'new';
 
   async function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const next = e.target.value as LeadFollowUpStatus;
     const confirmed = window.confirm(
-      `Change follow-up status from "${currentStatus}" to "${next}"?`,
+      `Change follow-up status from "${guardedStatus}" to "${next}"?`,
     );
     if (!confirmed) return;
     setError(null);
@@ -68,7 +71,7 @@ function LeadStatusCell({
   return (
     <div className="flex flex-col gap-1">
       <select
-        value={currentStatus}
+        value={guardedStatus}
         onChange={handleChange}
         disabled={updateLead.isPending}
         onClick={(e) => e.stopPropagation()}
