@@ -1,7 +1,25 @@
 'use client';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api';
 import { adminFetch } from './api';
+
+export interface AdminProfile {
+  _id: string;
+  firstName: string;
+  lastName?: string;
+  email: string;
+  isActive: boolean;
+  lastLoginAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export function useAdminProfile() {
+  return useQuery<AdminProfile>({
+    queryKey: ['admin', 'profile'],
+    queryFn: () => adminFetch<AdminProfile>('/admin/auth/profile'),
+  });
+}
 
 export function useAdminLogin() {
   return useMutation({
