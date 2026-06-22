@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState, useRef } from 'react';
+import { use, useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ApiError } from '@/lib/api';
@@ -278,18 +278,20 @@ function EditBlogForm({ blogId }: { blogId: string }) {
   const [tagsRaw, setTagsRaw] = useState('');
 
   // Populate form when blog data arrives
-  if (blog && !initialised) {
-    setForm({
-      title: blog.title,
-      excerpt: blog.excerpt,
-      content: blog.content,
-      coverImage: blog.coverImage,
-      tags: blog.tags,
-      isPublished: blog.isPublished,
-    });
-    setTagsRaw(joinTags(blog.tags ?? []));
-    setInitialised(true);
-  }
+  useEffect(() => {
+    if (blog && !initialised) {
+      setForm({
+        title: blog.title,
+        excerpt: blog.excerpt,
+        content: blog.content,
+        coverImage: blog.coverImage,
+        tags: blog.tags,
+        isPublished: blog.isPublished,
+      });
+      setTagsRaw(joinTags(blog.tags ?? []));
+      setInitialised(true);
+    }
+  }, [blog, initialised]);
 
   const inputCls =
     'w-full rounded border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400';
