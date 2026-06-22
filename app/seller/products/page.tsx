@@ -15,7 +15,7 @@ function ProductRow({ product }: { product: import('@/lib/seller/products').Sell
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-zinc-900 truncate">{product.name}</p>
         <p className="text-xs text-zinc-500 mt-0.5">
-          ₹{product.minPrice.toLocaleString()}
+          {typeof product.minPrice === 'number' ? `₹${product.minPrice.toLocaleString()}` : '—'}
         </p>
       </div>
 
