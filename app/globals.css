@@ -22,6 +22,8 @@
   --color-slate: #5b5d7a;
   --color-muted: #9295b6;
   --color-line: #e6e7f2;
+  --glass-bg: rgba(255, 255, 255, .62);
+  --glass-brd: rgba(255, 255, 255, .8);
   --font-display: var(--font-jakarta);
   --font-jbmono: var(--font-mono-jb);
   --animate-floaty: dc-floaty 7s ease-in-out infinite;

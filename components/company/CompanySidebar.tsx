@@ -6,10 +6,10 @@ import { useCompanyAuth } from '@/lib/company/auth';
 
 const NAV = [
   { href: '/company', label: 'Overview', exact: true },
-  { href: '/company/orders', label: 'Orders' },
-  { href: '/company/employees', label: 'Employees' },
-  { href: '/company/products', label: 'Products' },
-  { href: '/company/quotations', label: 'Quotations' },
+  { href: '/company/orders', label: 'Orders & Purchases' },
+  { href: '/company/employees', label: 'Employees & Points' },
+  { href: '/company/products', label: 'Store Products' },
+  { href: '/company/quotations', label: 'Quotations & Enquiries' },
 ];
 
 export default function CompanySidebar() {
@@ -28,26 +28,36 @@ export default function CompanySidebar() {
   };
 
   return (
-    <aside className="flex w-[236px] flex-none flex-col gap-3 border-r border-line bg-white p-4 md:sticky md:top-0 md:h-screen">
-      <div className="flex items-center gap-2.5 px-2 pb-4 pt-1.5">
-        <span className="text-[17px] font-extrabold tracking-[-.02em] text-ink">Supreme</span>
-        <span className="rounded-[5px] border border-line px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-[.1em] text-muted">
+    <aside
+      className="sticky top-0 flex h-screen w-[242px] flex-none flex-col gap-4 max-[900px]:h-auto max-[900px]:w-full max-[900px]:flex-row max-[900px]:items-center max-[900px]:gap-3 max-[900px]:overflow-x-auto"
+      style={{
+        background: 'linear-gradient(180deg,#1c1d44,#23254f)',
+        padding: '20px 16px',
+      }}
+    >
+      <div className="flex items-center gap-2.5 max-[900px]:flex-none">
+        <span className="text-[17px] font-extrabold tracking-[-.02em] text-white">Supreme</span>
+        <span
+          className="rounded-[5px] border px-1.5 py-0.5 font-jbmono text-[9px] tracking-[.1em] uppercase"
+          style={{ color: '#9fb0e7', borderColor: 'rgba(159,176,231,.4)' }}
+        >
           Company
         </span>
       </div>
 
-      <nav className="flex flex-1 flex-col gap-1">
+      <nav className="flex flex-1 flex-col gap-1 max-[900px]:flex-none max-[900px]:flex-row max-[900px]:gap-1.5">
         {NAV.map((n) => {
           const active = isActive(n.href, n.exact);
           return (
             <Link
               key={n.href}
               href={n.href}
-              className={`rounded-[11px] px-3 py-[11px] text-[13.5px] no-underline transition-colors ${
+              className="flex items-center gap-[11px] rounded-[11px] px-3 py-[11px] text-[13.5px] whitespace-nowrap no-underline transition-colors"
+              style={
                 active
-                  ? 'bg-indigo font-semibold text-white'
-                  : 'font-medium text-slate hover:bg-[#eef0f8] hover:text-ink'
-              }`}
+                  ? { fontWeight: 600, color: '#fff', background: 'rgba(255,255,255,.14)' }
+                  : { fontWeight: 500, color: 'rgba(255,255,255,.65)', background: 'transparent' }
+              }
             >
               {n.label}
             </Link>
@@ -55,12 +65,29 @@ export default function CompanySidebar() {
         })}
       </nav>
 
-      <button
-        onClick={onLogout}
-        className="rounded-lg px-3 py-2 text-left text-[13px] font-semibold text-slate transition-colors hover:bg-[#eef0f8] hover:text-ink"
+      <div
+        className="mt-auto flex items-center gap-2.5 rounded-xl max-[900px]:mt-0 max-[900px]:flex-none"
+        style={{ padding: 10, background: 'rgba(255,255,255,.08)' }}
       >
-        Logout
-      </button>
+        <div
+          className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-[10px] text-[12px] font-extrabold text-white"
+          style={{ background: 'linear-gradient(135deg,#3a3c98,#149b8e)' }}
+        >
+          CO
+        </div>
+        <div className="min-w-0 flex-1 max-[900px]:hidden">
+          <div className="truncate text-[12.5px] font-bold text-white">Company</div>
+          <div className="text-[10px]" style={{ color: 'rgba(255,255,255,.5)' }}>
+            Company Admin
+          </div>
+        </div>
+        <button
+          onClick={onLogout}
+          className="flex-none rounded-lg px-2 py-1 text-left text-[11px] font-semibold text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+        >
+          Logout
+        </button>
+      </div>
     </aside>
   );
 }

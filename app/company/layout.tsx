@@ -39,7 +39,16 @@ export default function CompanyLayout({ children }: { children: React.ReactNode 
       {isPublic ? (
         children
       ) : (
-        <div className="flex min-h-screen w-full bg-[#eef0f8]">
+        <div
+          className="relative flex min-h-screen w-full flex-row text-[#16173a] max-[900px]:flex-col"
+          style={{
+            background:
+              'radial-gradient(42% 40% at 100% 0%, rgba(58,60,152,.13), transparent 60%),' +
+              'radial-gradient(42% 40% at 0% 100%, rgba(20,155,142,.1), transparent 60%),' +
+              'linear-gradient(180deg,#eef0f8,#f1f1f7)',
+            fontFamily: 'var(--font-display)',
+          }}
+        >
           <CompanySidebar />
           <main className="min-w-0 flex-1">{children}</main>
         </div>
