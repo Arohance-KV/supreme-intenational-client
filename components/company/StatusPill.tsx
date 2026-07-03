@@ -23,6 +23,7 @@ const STATUS_VARIANT: Record<string, Variant> = {
   inactive: 'grey',
   expired: 'grey',
   cancelled: 'grey',
+  deactivated: 'grey',
 
   pending: 'amber',
   processing: 'amber',
@@ -31,6 +32,7 @@ const STATUS_VARIANT: Record<string, Variant> = {
   new: 'amber',
   submitted: 'amber',
   quoted: 'amber',
+  invited: 'amber',
 };
 
 export function StatusPill({ status }: { status: string }) {
