@@ -72,7 +72,7 @@ export default function CompanyOrdersPage() {
           <>
             <input
               type="search"
-              placeholder="Search by order # or employee…"
+              placeholder="Search by order #…"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="w-64 rounded-full border border-line bg-white px-4 py-2 text-[13px] text-ink placeholder:text-muted focus:outline-none"

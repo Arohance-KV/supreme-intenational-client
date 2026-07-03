@@ -17,6 +17,7 @@ const STATUS_VARIANT: Record<string, Variant> = {
   settled: 'green',
   converted: 'green',
   resolved: 'green',
+  confirmed: 'green',
 
   shipped: 'grey',
   hidden: 'grey',
@@ -40,6 +41,7 @@ const STATUS_VARIANT: Record<string, Variant> = {
   generated: 'amber',
   sent: 'amber',
   in_progress: 'amber',
+  refunded: 'amber',
 };
 
 export function StatusPill({ status }: { status: string }) {
