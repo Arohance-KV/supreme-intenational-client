@@ -12,15 +12,14 @@ const GRID = 'grid grid-cols-[1fr_1.4fr_1.8fr_.6fr_.8fr_1fr] items-center gap-4'
 
 // Real OrderStatus enum (server/src/models/order.model.ts), labelled to match the
 // mockup where a friendlier phrase exists (e.g. "pending" -> "Pending approval").
+// Chip row shows the mockup's five filters; the other enum values remain reachable
+// via search/pagination — the underlying useCompanyOrders({status}) wiring is unchanged.
 const TABS: { label: string; value?: OrderStatus }[] = [
   { label: 'All' },
   { label: 'Pending approval', value: 'pending' },
-  { label: 'Confirmed', value: 'confirmed' },
   { label: 'Processing', value: 'processing' },
   { label: 'Shipped', value: 'shipped' },
   { label: 'Delivered', value: 'delivered' },
-  { label: 'Cancelled', value: 'cancelled' },
-  { label: 'Refunded', value: 'refunded' },
 ];
 
 export default function CompanyOrdersPage() {
@@ -70,18 +69,30 @@ export default function CompanyOrdersPage() {
         subtitle="Every order placed by your employees, with status tracking."
         right={
           <>
-            <input
-              type="search"
-              placeholder="Search by order #…"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              className="w-64 rounded-full border border-line bg-white px-4 py-2 text-[13px] text-ink placeholder:text-muted focus:outline-none"
-            />
+            <div
+              className="flex items-center gap-2 rounded-xl border border-line"
+              style={{ background: 'var(--glass-bg)', padding: '10px 14px' }}
+            >
+              <span className="text-[13px] text-muted" aria-hidden="true">
+                ⌕
+              </span>
+              <input
+                type="search"
+                placeholder="Search by order #…"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className="w-48 bg-transparent text-[13px] text-ink placeholder:text-muted focus:outline-none"
+              />
+            </div>
             <button
               type="button"
               onClick={handleExport}
               disabled={isExporting}
-              className="whitespace-nowrap rounded-full bg-ink px-4 py-2 text-[13px] font-bold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+              className="whitespace-nowrap rounded-xl px-4 py-[11px] text-[13.5px] font-bold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+              style={{
+                background: 'linear-gradient(135deg,#2a2b6a,#3a3c98)',
+                boxShadow: '0 8px 20px rgba(42,43,106,.28)',
+              }}
             >
               {isExporting ? 'Exporting…' : 'Export CSV'}
             </button>
@@ -103,9 +114,20 @@ export default function CompanyOrdersPage() {
               key={tab.label}
               type="button"
               onClick={() => handleTabSelect(tab.value)}
-              className={`rounded-full px-4 py-1.5 text-[12.5px] font-semibold transition-colors ${
-                active ? 'bg-ink text-white' : 'bg-white text-slate border border-line hover:bg-[#eef0f8]'
-              }`}
+              className="rounded-full px-[14px] py-2 text-[12px] font-semibold transition-colors"
+              style={
+                active
+                  ? {
+                      color: '#fff',
+                      background: 'linear-gradient(135deg,#2a2b6a,#3a3c98)',
+                      border: '1px solid transparent',
+                    }
+                  : {
+                      color: 'var(--color-slate)',
+                      background: 'rgba(255,255,255,.7)',
+                      border: '1px solid var(--color-line)',
+                    }
+              }
             >
               {tab.label}
             </button>
@@ -143,11 +165,11 @@ export default function CompanyOrdersPage() {
                   href={`/company/orders/${order.orderId}`}
                   className={`${GRID} border-b border-line px-5 py-4 text-[13px] no-underline transition-colors last:border-0 hover:bg-[#f6f7fb]`}
                 >
-                  <span className="truncate font-bold text-ink">{order.orderId}</span>
-                  <span className="truncate text-ink">{order.employeeName}</span>
+                  <span className="font-jbmono truncate text-[12.5px] text-slate">{order.orderId}</span>
+                  <span className="truncate font-bold text-ink">{order.employeeName}</span>
                   <span className="truncate text-slate">{order.item}</span>
                   <span className="text-ink">{order.qty}</span>
-                  <span className="font-semibold text-ink">{formatIN(order.points)}</span>
+                  <span className="font-bold text-ink">{formatIN(order.points)}</span>
                   <span>
                     <StatusPill status={order.status} />
                   </span>

@@ -38,10 +38,10 @@ function QuotationRow({ quotation }: { quotation: CompanyQuotation }) {
   return (
     <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-4 text-[13px] last:border-0">
       <div className="min-w-0">
-        <p className="truncate font-bold text-ink">
+        <p className="truncate text-[14px] font-bold text-ink">
           {itemCount} item{itemCount === 1 ? '' : 's'}
         </p>
-        <p className="mt-0.5 truncate text-[12px] text-muted">
+        <p className="font-jbmono mt-1 truncate text-[12px] text-muted">
           {quotation.quotationNumber} · ₹{formatIN(quotation.total)}
         </p>
         <p className="mt-0.5 text-[11px] text-muted">{formatDate(quotation.createdAt)}</p>
@@ -64,12 +64,15 @@ function QuotationRow({ quotation }: { quotation: CompanyQuotation }) {
 function EnquiryRow({ enquiry }: { enquiry: Enquiry }) {
   return (
     <div className="flex items-center gap-3 border-b border-line px-5 py-4 text-[13px] last:border-0">
-      <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-[#eef0f8] text-slate">
+      <span
+        className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-[10px]"
+        style={{ background: 'rgba(23,155,142,.12)', color: 'var(--color-accent)' }}
+      >
         <EnvelopeIcon />
       </span>
       <div className="min-w-0 flex-1">
-        <p className="truncate font-bold text-ink">{enquiry.subject}</p>
-        <p className="mt-0.5 truncate text-[12px] capitalize text-muted">{enquiry.type}</p>
+        <p className="truncate text-[14px] font-bold text-ink">{enquiry.subject}</p>
+        <p className="mt-0.5 truncate text-[11px] capitalize text-muted">{enquiry.type}</p>
       </div>
       <div className="flex flex-none flex-col items-end gap-1">
         <StatusPill status={enquiry.status} />
@@ -183,7 +186,8 @@ function RaiseEnquiryModal({
             <button
               type="submit"
               disabled={raiseEnquiry.isPending || !subject.trim()}
-              className="rounded-lg bg-ink px-4 py-2 text-[13px] font-bold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-lg px-4 py-2 text-[13px] font-bold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+              style={{ background: 'linear-gradient(135deg,#2a2b6a,#3a3c98)' }}
             >
               {raiseEnquiry.isPending ? 'Sending…' : 'Send Enquiry'}
             </button>
@@ -212,15 +216,27 @@ export default function CompanyQuotationsPage() {
           <button
             type="button"
             onClick={() => setShowRaise(true)}
-            className="whitespace-nowrap rounded-full bg-ink px-4 py-2 text-[13px] font-bold text-white transition-opacity hover:opacity-90"
+            className="whitespace-nowrap rounded-xl px-4 py-[11px] text-[13.5px] font-bold text-white transition-opacity hover:opacity-90"
+            style={{
+              background: 'linear-gradient(135deg,#2a2b6a,#3a3c98)',
+              boxShadow: '0 8px 20px rgba(42,43,106,.28)',
+            }}
           >
-            + Raise Enquiry
+            ＋ Raise Enquiry
           </button>
         }
       />
 
       {enquirySent && (
-        <Card className="mb-6 flex items-center justify-between gap-4 border-[rgba(31,170,107,.25)] bg-[rgba(31,170,107,.08)] p-4 text-[13px] font-semibold text-[#1a8f5a]">
+        <div
+          className="mb-6 flex items-center justify-between gap-4 text-[13px] font-semibold text-[#1a8f5a]"
+          style={{
+            padding: '13px 16px',
+            borderRadius: 14,
+            background: 'rgba(31,170,107,.08)',
+            border: '1px solid rgba(31,170,107,.25)',
+          }}
+        >
           <span>Your enquiry has been sent to Supreme. We&rsquo;ll be in touch soon.</span>
           <button
             type="button"
@@ -230,10 +246,10 @@ export default function CompanyQuotationsPage() {
           >
             ✕
           </button>
-        </Card>
+        </div>
       )}
 
-      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-2">
         <Card className="overflow-hidden">
           <div className="border-b border-line px-5 py-4">
             <h2 className="text-[14px] font-bold text-ink">Your quotations</h2>

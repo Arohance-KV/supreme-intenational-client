@@ -10,7 +10,7 @@ import {
   useRequestProducts,
   type CompanyProduct,
 } from '@/lib/company/products';
-import { formatIN, initials, parsePointsInput } from '@/lib/company/format';
+import { formatIN, parsePointsInput } from '@/lib/company/format';
 import { ApiError } from '@/lib/api';
 
 const GRID = 'grid grid-cols-[minmax(220px,2.2fr)_1fr_.8fr_.7fr_.9fr_.9fr] items-center gap-4';
@@ -33,139 +33,148 @@ function PencilIcon() {
   );
 }
 
-function ProductThumbnail({ name }: { name: string }) {
+function ProductThumbnail() {
   return (
-    <span className="flex h-10 w-10 flex-none items-center justify-center rounded-lg bg-[#eef0f8] text-[11px] font-bold text-slate">
-      {initials(name)}
-    </span>
-  );
-}
-
-function PointsCell({ product }: { product: CompanyProduct }) {
-  const editPoints = usePatchProduct();
-  const [isEditing, setIsEditing] = useState(false);
-  const [value, setValue] = useState(String(product.points));
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (isEditing) inputRef.current?.focus();
-  }, [isEditing]);
-
-  const startEdit = () => {
-    setValue(String(product.points));
-    setIsEditing(true);
-  };
-  const cancelEdit = () => setIsEditing(false);
-
-  const saveEdit = () => {
-    const n = parsePointsInput(value);
-    if (n === null) return;
-    editPoints.mutate(
-      { id: product.productId, body: { pointsOverride: n } },
-      { onSuccess: () => setIsEditing(false) },
-    );
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      saveEdit();
-    } else if (e.key === 'Escape') {
-      e.preventDefault();
-      cancelEdit();
-    }
-  };
-
-  if (isEditing) {
-    return (
-      <span className="flex items-center gap-1.5">
-        <input
-          ref={inputRef}
-          type="number"
-          min={0}
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          disabled={editPoints.isPending}
-          className="w-20 rounded-md border border-line px-2 py-1 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-indigo"
-        />
-        <button
-          type="button"
-          onClick={saveEdit}
-          disabled={editPoints.isPending || value.trim() === ''}
-          aria-label="Save points price"
-          className="rounded-md px-1.5 py-1 text-[12px] font-bold text-[#1a8f5a] hover:bg-[rgba(31,170,107,.12)] disabled:opacity-40"
-        >
-          ✓
-        </button>
-        <button
-          type="button"
-          onClick={cancelEdit}
-          disabled={editPoints.isPending}
-          aria-label="Cancel editing points price"
-          className="rounded-md px-1.5 py-1 text-[12px] font-bold text-muted hover:bg-[#eef0f8] disabled:opacity-40"
-        >
-          ✕
-        </button>
-      </span>
-    );
-  }
-
-  return (
-    <span className="flex flex-col gap-0.5">
-      <button
-        type="button"
-        onClick={startEdit}
-        className="group flex items-center gap-1.5 text-[13px] font-bold text-ink"
-        aria-label={`Edit points price for ${product.name}`}
-      >
-        {formatIN(product.points)}
-        <span className="text-muted opacity-0 transition-opacity group-hover:opacity-100">
-          <PencilIcon />
-        </span>
-      </button>
-      {editPoints.isError && (
-        <span className="text-[11px] text-[#d8524d]">
-          {editPoints.error instanceof ApiError ? editPoints.error.message : 'Could not update.'}
-        </span>
-      )}
-    </span>
+    <span
+      className="h-[38px] w-[38px] flex-none rounded-[10px]"
+      style={{
+        background:
+          'repeating-linear-gradient(135deg,rgba(42,43,106,.06) 0 8px,rgba(42,43,106,.02) 8px 16px),linear-gradient(135deg,#e6eaf6,#dde2f1)',
+      }}
+      aria-hidden="true"
+    />
   );
 }
 
 function ProductRow({ product }: { product: CompanyProduct }) {
+  // Two independent usePatchProduct() instances — one for the points edit, one for the
+  // hide/show toggle — so their isPending/isError state never cross-contaminate. Both
+  // the hook, its args, and the parsePointsInput guard are unchanged from before; only
+  // the points-edit state has moved up from a standalone PointsCell so the mockup's
+  // Actions-column pencil can trigger the same edit affordance.
+  const editPoints = usePatchProduct();
   const toggleHidden = usePatchProduct();
+
+  const [isEditingPoints, setIsEditingPoints] = useState(false);
+  const [pointsValue, setPointsValue] = useState(String(product.points));
+  const pointsInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isEditingPoints) pointsInputRef.current?.focus();
+  }, [isEditingPoints]);
+
+  const startEditPoints = () => {
+    setPointsValue(String(product.points));
+    setIsEditingPoints(true);
+  };
+  const cancelEditPoints = () => setIsEditingPoints(false);
+
+  const saveEditPoints = () => {
+    const n = parsePointsInput(pointsValue);
+    if (n === null) return;
+    editPoints.mutate(
+      { id: product.productId, body: { pointsOverride: n } },
+      { onSuccess: () => setIsEditingPoints(false) },
+    );
+  };
+
+  const handlePointsKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      saveEditPoints();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      cancelEditPoints();
+    }
+  };
 
   const handleToggle = () => {
     toggleHidden.mutate({ id: product.productId, body: { hidden: !product.hidden } });
   };
 
+  const lowStock = product.stock < 100;
+
   return (
     <div className={`${GRID} border-b border-line px-5 py-4 text-[13px] last:border-0`}>
       <span className="flex min-w-0 items-center gap-3">
-        <ProductThumbnail name={product.name} />
+        <ProductThumbnail />
         <span className="truncate font-bold text-ink">{product.name}</span>
       </span>
 
       <span className="truncate text-slate">{product.category ?? '—'}</span>
 
-      <PointsCell product={product} />
+      <span className="flex flex-col gap-0.5">
+        {isEditingPoints ? (
+          <span className="flex items-center gap-1.5">
+            <input
+              ref={pointsInputRef}
+              type="number"
+              min={0}
+              value={pointsValue}
+              onChange={(e) => setPointsValue(e.target.value)}
+              onKeyDown={handlePointsKeyDown}
+              disabled={editPoints.isPending}
+              className="w-20 rounded-md border border-line px-2 py-1 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-indigo"
+            />
+            <button
+              type="button"
+              onClick={saveEditPoints}
+              disabled={editPoints.isPending || pointsValue.trim() === ''}
+              aria-label="Save points price"
+              className="rounded-md px-1.5 py-1 text-[12px] font-bold text-[#1a8f5a] hover:bg-[rgba(31,170,107,.12)] disabled:opacity-40"
+            >
+              ✓
+            </button>
+            <button
+              type="button"
+              onClick={cancelEditPoints}
+              disabled={editPoints.isPending}
+              aria-label="Cancel editing points price"
+              className="rounded-md px-1.5 py-1 text-[12px] font-bold text-muted hover:bg-[#eef0f8] disabled:opacity-40"
+            >
+              ✕
+            </button>
+          </span>
+        ) : (
+          <span className="text-[13px] font-bold text-ink">{formatIN(product.points)}</span>
+        )}
+        {editPoints.isError && (
+          <span className="text-[11px] text-[#d8524d]">
+            {editPoints.error instanceof ApiError ? editPoints.error.message : 'Could not update.'}
+          </span>
+        )}
+      </span>
 
-      <span className="font-semibold text-ink">{formatIN(product.stock)}</span>
+      <span className="font-semibold" style={{ color: lowStock ? '#c0413c' : 'var(--color-ink)' }}>
+        {formatIN(product.stock)}
+      </span>
 
       <span>
         <StatusPill status={product.status} />
       </span>
 
-      <span className="flex flex-col gap-0.5">
-        <button
-          type="button"
-          onClick={handleToggle}
-          disabled={toggleHidden.isPending}
-          className="w-fit rounded-full border border-line px-3 py-1.5 text-[12px] font-semibold text-slate transition-colors hover:bg-[#eef0f8] disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          {toggleHidden.isPending ? '…' : product.hidden ? 'Show' : 'Hide'}
-        </button>
+      <span className="flex flex-col gap-1">
+        <span className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={handleToggle}
+            disabled={toggleHidden.isPending}
+            className="w-fit rounded-lg text-[11px] font-semibold text-slate transition-colors hover:bg-[rgba(91,93,122,.14)] disabled:cursor-not-allowed disabled:opacity-40"
+            style={{ background: 'rgba(91,93,122,.08)', padding: '6px 10px' }}
+          >
+            {toggleHidden.isPending ? '…' : product.hidden ? 'Show' : 'Hide'}
+          </button>
+          <button
+            type="button"
+            onClick={startEditPoints}
+            disabled={isEditingPoints}
+            aria-label={`Edit points price for ${product.name}`}
+            className="flex h-[26px] w-[26px] flex-none items-center justify-center rounded-lg text-slate transition-colors hover:bg-[rgba(42,43,106,.1)] disabled:cursor-not-allowed disabled:opacity-40"
+            style={{ background: 'rgba(42,43,106,.07)' }}
+          >
+            <PencilIcon />
+          </button>
+        </span>
         {toggleHidden.isError && (
           <span className="text-[11px] text-[#d8524d]">
             {toggleHidden.error instanceof ApiError ? toggleHidden.error.message : 'Could not update.'}
@@ -278,7 +287,8 @@ function RequestProductsModal({
             <button
               type="submit"
               disabled={requestProducts.isPending}
-              className="rounded-lg bg-ink px-4 py-2 text-[13px] font-bold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-lg px-4 py-2 text-[13px] font-bold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+              style={{ background: 'linear-gradient(135deg,#2a2b6a,#3a3c98)' }}
             >
               {requestProducts.isPending ? 'Sending…' : 'Send request'}
             </button>
@@ -311,34 +321,62 @@ export default function CompanyProductsPage() {
         subtitle="Curate the products available in your branded store."
         right={
           <>
-            <input
-              type="search"
-              placeholder="Search by name or category…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-56 rounded-full border border-line bg-white px-4 py-2 text-[13px] text-ink placeholder:text-muted focus:outline-none"
-            />
+            <div
+              className="flex items-center gap-2 rounded-xl border border-line"
+              style={{ background: 'var(--glass-bg)', padding: '10px 14px' }}
+            >
+              <span className="text-[13px] text-muted" aria-hidden="true">
+                ⌕
+              </span>
+              <input
+                type="search"
+                placeholder="Search by name or category…"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-48 bg-transparent text-[13px] text-ink placeholder:text-muted focus:outline-none"
+              />
+            </div>
             <button
               type="button"
               onClick={() => setShowRequest(true)}
-              className="whitespace-nowrap rounded-full bg-ink px-4 py-2 text-[13px] font-bold text-white transition-opacity hover:opacity-90"
+              className="whitespace-nowrap rounded-xl px-4 py-[11px] text-[13.5px] font-bold text-white transition-opacity hover:opacity-90"
+              style={{
+                background: 'linear-gradient(135deg,#2a2b6a,#3a3c98)',
+                boxShadow: '0 8px 20px rgba(42,43,106,.28)',
+              }}
             >
-              + Request more products
+              ＋ Request more products
             </button>
           </>
         }
       />
 
-      <Card className="mb-6 flex items-start justify-between gap-4 border-[rgba(42,43,106,.14)] bg-[rgba(42,43,106,.05)] p-4 text-[13px] text-slate">
+      <div
+        className="mb-6 flex items-start justify-between gap-4 text-[12.5px] text-slate"
+        style={{
+          padding: '13px 16px',
+          borderRadius: 14,
+          background: 'rgba(42,43,106,.06)',
+          border: '1px solid rgba(42,43,106,.12)',
+        }}
+      >
         <p>
           These are the products visible in your employees&rsquo; branded store. Hide items or
           adjust the points price. To stock new items, raise a request &mdash; Supreme curates and
           adds them from the catalogue.
         </p>
-      </Card>
+      </div>
 
       {requestSent && (
-        <Card className="mb-6 flex items-center justify-between gap-4 border-[rgba(31,170,107,.25)] bg-[rgba(31,170,107,.08)] p-4 text-[13px] font-semibold text-[#1a8f5a]">
+        <div
+          className="mb-6 flex items-center justify-between gap-4 text-[13px] font-semibold text-[#1a8f5a]"
+          style={{
+            padding: '13px 16px',
+            borderRadius: 14,
+            background: 'rgba(31,170,107,.08)',
+            border: '1px solid rgba(31,170,107,.25)',
+          }}
+        >
           <span>Your request has been sent to Supreme. We&rsquo;ll be in touch soon.</span>
           <button
             type="button"
@@ -348,7 +386,7 @@ export default function CompanyProductsPage() {
           >
             ✕
           </button>
-        </Card>
+        </div>
       )}
 
       {isError && <Card className="p-6 text-[13px] text-muted">Could not load store products.</Card>}
