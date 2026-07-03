@@ -18,11 +18,13 @@ import {
   useCompanyCatalog,
   useUpdateCompanyCatalog,
   useCompanyProducts,
+  useCreateCompanyLogin,
   type AdminCompany,
   type AdminEmployee,
   type LedgerEntry,
   type UpdateCompanyBody,
   type InviteEmployeeBody,
+  type CreateCompanyLoginBody,
 } from '@/lib/admin/companies';
 import { inr, fmtDate, fmtDateTime } from '@/lib/admin/format';
 
@@ -167,6 +169,113 @@ function CompanyEditForm({ company }: { company: AdminCompany }) {
         {update.isPending ? 'Saving…' : 'Save changes'}
       </button>
     </form>
+  );
+}
+
+// ── CompanyLoginSection ───────────────────────────────────────────────────────
+
+function CompanyLoginSection({ companyId }: { companyId: string }) {
+  const createLogin = useCreateCompanyLogin(companyId);
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState<CreateCompanyLoginBody>({ email: '', password: '' });
+  const [createdEmail, setCreatedEmail] = useState<string | null>(null);
+
+  function handleCreate(e: React.FormEvent) {
+    e.preventDefault();
+    const email = form.email.trim();
+    const password = form.password;
+    if (!email) { alert('Email is required'); return; }
+    if (password.length < 8) { alert('Password must be at least 8 characters'); return; }
+    createLogin.mutate(
+      { email, password },
+      {
+        onSuccess: (res) => {
+          setCreatedEmail(res.email);
+          setForm({ email: '', password: '' });
+          setShowForm(false);
+        },
+      },
+    );
+  }
+
+  return (
+    <section className={sectionCls}>
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-base font-semibold text-zinc-800">Company login</h2>
+        <button
+          onClick={() => { setShowForm(!showForm); setCreatedEmail(null); }}
+          className="rounded bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-zinc-700"
+        >
+          {showForm ? 'Cancel' : '+ Create login'}
+        </button>
+      </div>
+
+      <p className="mb-3 text-xs text-zinc-500">
+        Mint a self-service login this company can use to sign in directly.
+      </p>
+
+      {showForm && (
+        <form onSubmit={handleCreate} className="rounded border border-dashed border-zinc-300 p-4 space-y-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div>
+              <label className={labelCls}>
+                Email <span className="text-red-500">*</span>
+              </label>
+              <input
+                required
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                className={inputCls}
+              />
+            </div>
+            <div>
+              <label className={labelCls}>
+                Password <span className="text-red-500">*</span>
+              </label>
+              <input
+                required
+                type="password"
+                minLength={8}
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                className={inputCls}
+                placeholder="Min 8 characters"
+              />
+            </div>
+          </div>
+
+          {createLogin.error && (
+            <p className="text-sm text-red-600">
+              {createLogin.error instanceof ApiError
+                ? createLogin.error.message
+                : 'Failed to create login.'}
+            </p>
+          )}
+
+          <div className="flex gap-2">
+            <button
+              type="submit"
+              disabled={createLogin.isPending}
+              className="rounded bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-60"
+            >
+              {createLogin.isPending ? 'Creating…' : 'Create login'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowForm(false)}
+              className="rounded border border-zinc-200 px-3 py-1.5 text-xs text-zinc-700 hover:bg-zinc-50"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      )}
+
+      {!showForm && createdEmail && (
+        <p className="text-sm text-green-600">Login created for {createdEmail}.</p>
+      )}
+    </section>
   );
 }
 
@@ -732,7 +841,7 @@ function CompanyCatalogSection({ companyId }: { companyId: string }) {
     );
   }
 
-  const productIds = catalog?.productIds ?? [];
+  const products = catalog?.products ?? [];
   const categoryIds = catalog?.categoryIds ?? [];
 
   return (
@@ -753,18 +862,21 @@ function CompanyCatalogSection({ companyId }: { companyId: string }) {
         {/* Products */}
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-2">
-            Whitelisted Products ({productIds.length})
+            Whitelisted Products ({products.length})
           </p>
-          {productIds.length > 0 ? (
+          {products.length > 0 ? (
             <ul className="space-y-1 mb-3 max-h-48 overflow-y-auto">
-              {productIds.map((pid) => (
-                <li key={pid} className="flex items-center justify-between gap-2 rounded bg-zinc-50 px-3 py-1.5 text-xs">
-                  <span className="font-mono text-zinc-700 truncate">{pid}</span>
+              {products.map((p) => (
+                <li key={p.productId} className="flex items-center justify-between gap-2 rounded bg-zinc-50 px-3 py-1.5 text-xs">
+                  <span className="font-mono text-zinc-700 truncate">
+                    {p.productId}
+                    {p.hidden && <span className="ml-2 rounded bg-zinc-200 px-1.5 py-0.5 text-[10px] font-sans text-zinc-500">hidden</span>}
+                  </span>
                   <button
-                    onClick={() => handleRemoveProductById(pid)}
+                    onClick={() => handleRemoveProductById(p.productId)}
                     disabled={updateCatalog.isPending}
                     className="text-red-500 hover:text-red-700 disabled:opacity-40 shrink-0"
-                    aria-label={`Remove product ${pid}`}
+                    aria-label={`Remove product ${p.productId}`}
                   >
                     ✕
                   </button>
@@ -1003,6 +1115,9 @@ function CompanyDetailInner({ id }: { id: string }) {
         <h2 className="mb-4 text-base font-semibold text-zinc-800">Company details</h2>
         <CompanyEditForm company={company} />
       </section>
+
+      {/* Company login */}
+      <CompanyLoginSection companyId={id} />
 
       {/* Employees section */}
       <EmployeesSection companyId={id} companyStatus={company.status} />

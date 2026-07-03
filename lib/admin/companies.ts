@@ -99,10 +99,16 @@ export interface LedgerResponse {
   pagination: { total: number; page: number; limit: number; pages: number };
 }
 
-// Catalog: productIds + categoryIds (arrays of string ObjectIds)
+// Catalog: products (with per-product hidden/pointsOverride state) + categoryIds
+export interface CompanyCatalogProduct {
+  productId: string;
+  hidden: boolean;
+  pointsOverride: number | null;
+}
+
 export interface CompanyCatalog {
   companyId: string;
-  productIds: string[];
+  products: CompanyCatalogProduct[];
   categoryIds: string[];
 }
 
@@ -127,6 +133,16 @@ export interface CompanyProduct {
 export interface CompanyProductsResponse {
   products: CompanyProduct[];
   pagination?: { total: number; page: number; limit: number; pages: number };
+}
+
+// Company self-service login: POST /admin/companies/:id/login
+export interface CreateCompanyLoginBody {
+  email: string;
+  password: string; // min 8 chars
+}
+
+export interface CreateCompanyLoginResponse {
+  email: string;
 }
 
 // ── Query key helpers ─────────────────────────────────────────────────────────
@@ -310,6 +326,19 @@ export function useUpdateCompanyCatalog(companyId: string) {
       }),
     onSuccess: () =>
       qc.invalidateQueries({ queryKey: COMPANY_CATALOG_KEY(companyId) }),
+  });
+}
+
+export function useCreateCompanyLogin(companyId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: CreateCompanyLoginBody) =>
+      adminFetch<CreateCompanyLoginResponse>(`/admin/companies/${companyId}/login`, {
+        method: 'POST',
+        body,
+      }),
+    onSuccess: () =>
+      qc.invalidateQueries({ queryKey: COMPANY_KEY(companyId) }),
   });
 }
 
