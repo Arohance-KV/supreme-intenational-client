@@ -18,6 +18,14 @@ export function formatIN(n: unknown): string {
   return typeof n === 'number' && !Number.isNaN(n) ? n.toLocaleString('en-IN') : '—';
 }
 
+/** Format an ISO date string as "12 Jul 2026", or return '—' if invalid/missing. */
+export function formatDate(iso: unknown): string {
+  if (typeof iso !== 'string' || !iso) return '—';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '—';
+  return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
 /** Initials for an avatar, e.g. "Priya Sharma" -> "PS", "Ravi" -> "R". */
 export function initials(name: unknown): string {
   if (typeof name !== 'string' || !name.trim()) return '?';
