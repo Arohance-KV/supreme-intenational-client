@@ -17,18 +17,32 @@ const CHART_SUBTITLE: Record<Range, string> = {
 
 function RangeFilter({ range, onChange }: { range: Range; onChange: (r: Range) => void }) {
   return (
-    <div className="flex items-center gap-1 rounded-full border border-line bg-[#f6f7fb] p-1">
-      {(Object.keys(RANGE_LABEL) as Range[]).map((r) => (
-        <button
-          key={r}
-          onClick={() => onChange(r)}
-          className={`rounded-full px-3 py-1 text-[12px] font-semibold capitalize transition-colors ${
-            range === r ? 'bg-white text-ink shadow-sm' : 'text-muted hover:text-slate'
-          }`}
-        >
-          {RANGE_LABEL[r]}
-        </button>
-      ))}
+    <div className="flex items-center gap-2">
+      {(Object.keys(RANGE_LABEL) as Range[]).map((r) => {
+        const active = range === r;
+        return (
+          <button
+            key={r}
+            onClick={() => onChange(r)}
+            className="rounded-full px-[14px] py-2 text-[12px] font-semibold capitalize transition-colors"
+            style={
+              active
+                ? {
+                    color: '#fff',
+                    background: 'linear-gradient(135deg,#2a2b6a,#3a3c98)',
+                    border: '1px solid transparent',
+                  }
+                : {
+                    color: 'var(--color-slate)',
+                    background: 'rgba(255,255,255,.7)',
+                    border: '1px solid var(--color-line)',
+                  }
+            }
+          >
+            {RANGE_LABEL[r]}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -36,22 +50,31 @@ function RangeFilter({ range, onChange }: { range: Range; onChange: (r: Range) =
 function RedeemedChart({ series }: { series: DashboardSeriesPoint[] }) {
   if (series.length === 0) {
     return (
-      <div className="flex h-48 items-center justify-center text-[13px] text-muted">
+      <div className="flex h-[150px] items-center justify-center text-[13px] text-muted">
         No redemption activity yet.
       </div>
     );
   }
   const maxPoints = Math.max(...series.map((s) => s.points), 1);
   return (
-    <div className="flex h-48 items-end gap-2">
+    <div className="flex h-[150px] items-end gap-2">
       {series.map((s) => (
         <div key={s.bucket} className="flex h-full flex-1 flex-col items-center justify-end gap-2">
           <div
-            className="w-full max-w-[32px] rounded-t-md bg-indigo"
-            style={{ height: `${Math.max((s.points / maxPoints) * 100, 2)}%` }}
+            className="w-full max-w-[32px]"
+            style={{
+              height: `${Math.max((s.points / maxPoints) * 100, 2)}%`,
+              background: 'linear-gradient(180deg,#3a3c98,#2a2b6a)',
+              borderRadius: '7px 7px 0 0',
+            }}
             title={`${s.bucket}: ${formatIN(s.points)} pts`}
           />
-          <span className="truncate text-[10px] text-muted">{s.bucket}</span>
+          <span
+            className="truncate text-[10px] text-muted"
+            style={{ fontFamily: 'var(--font-jbmono)' }}
+          >
+            {s.bucket}
+          </span>
         </div>
       ))}
     </div>
@@ -116,10 +139,16 @@ export default function CompanyOverviewPage() {
                 {formatIN(pool?.used)} / {formatIN(pool?.total)}
               </span>
             </div>
-            <div className="h-3 w-full overflow-hidden rounded-full bg-[#eef0f8]">
+            <div
+              className="w-full overflow-hidden rounded-full"
+              style={{ height: 14, background: 'rgba(42,43,106,.08)' }}
+            >
               <div
-                className="h-full rounded-full bg-gradient-to-r from-indigo to-accent"
-                style={{ width: `${pool?.redeemedPct ?? 0}%` }}
+                className="h-full rounded-full"
+                style={{
+                  width: `${pool?.redeemedPct ?? 0}%`,
+                  background: 'linear-gradient(90deg,#2a2b6a,#149b8e)',
+                }}
               />
             </div>
             <div className="mt-2 flex items-center justify-between text-[12px] text-muted">
@@ -128,7 +157,7 @@ export default function CompanyOverviewPage() {
             </div>
           </Card>
 
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[2fr_1fr]">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.6fr_1fr]">
             <Card className="p-6">
               <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                 <div>
@@ -145,15 +174,26 @@ export default function CompanyOverviewPage() {
               {recentOrders.length === 0 ? (
                 <p className="text-[13px] text-muted">No orders yet.</p>
               ) : (
-                <ul className="flex flex-col gap-4">
-                  {recentOrders.map((o) => (
-                    <li key={o.id} className="flex items-center gap-3">
-                      <span className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-indigo text-[12px] font-bold text-white">
+                <ul className="flex flex-col">
+                  {recentOrders.map((o, i) => (
+                    <li
+                      key={o.id}
+                      className="flex items-center gap-3 py-3"
+                      style={
+                        i < recentOrders.length - 1
+                          ? { borderBottom: '1px solid var(--color-line)' }
+                          : undefined
+                      }
+                    >
+                      <span
+                        className="flex h-9 w-9 flex-none items-center justify-center rounded-full text-[12px] font-bold text-white"
+                        style={{ background: 'linear-gradient(135deg,#3a3c98,#149b8e)' }}
+                      >
                         {initials(o.employeeName)}
                       </span>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-[13px] font-semibold text-ink">{o.item}</p>
-                        <p className="truncate text-[12px] text-muted">
+                        <p className="truncate text-[13.5px] font-bold text-ink">{o.item}</p>
+                        <p className="truncate text-[11px] text-muted">
                           {o.employeeName} · {formatIN(o.points)} pts
                         </p>
                       </div>

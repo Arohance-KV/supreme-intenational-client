@@ -30,7 +30,10 @@ function TopUpStepper({ employee }: { employee: Employee }) {
 
   return (
     <div className="flex flex-col gap-1">
-      <div className="flex items-center gap-2">
+      <div
+        className="inline-flex w-fit items-center gap-1 rounded-[9px] border border-line"
+        style={{ background: 'rgba(255,255,255,.7)', padding: 3 }}
+      >
         <button
           type="button"
           onClick={() => adjust.mutate({ id: employee._id, delta: -STEP })}
@@ -41,11 +44,11 @@ function TopUpStepper({ employee }: { employee: Employee }) {
               ? "Can't remove more points than the employee currently holds"
               : undefined
           }
-          className="flex h-7 w-7 flex-none items-center justify-center rounded-full border border-line text-[15px] font-bold leading-none text-slate transition-colors hover:bg-[#eef0f8] disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex h-6 w-6 flex-none items-center justify-center rounded-[7px] text-[15px] font-bold leading-none text-slate transition-colors hover:bg-[#eef0f8] disabled:cursor-not-allowed disabled:opacity-40"
         >
           −
         </button>
-        <span className="min-w-[68px] text-center text-[13px] font-bold text-ink">
+        <span className="min-w-[60px] text-center text-[13px] font-bold text-ink">
           {formatIN(employee.wallet.allocated)}
         </span>
         <button
@@ -53,7 +56,7 @@ function TopUpStepper({ employee }: { employee: Employee }) {
           onClick={() => adjust.mutate({ id: employee._id, delta: STEP })}
           disabled={adjust.isPending}
           aria-label={`Add ${STEP} points`}
-          className="flex h-7 w-7 flex-none items-center justify-center rounded-full border border-line text-[15px] font-bold leading-none text-slate transition-colors hover:bg-[#eef0f8] disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex h-6 w-6 flex-none items-center justify-center rounded-[7px] text-[15px] font-bold leading-none text-slate transition-colors hover:bg-[#eef0f8] disabled:cursor-not-allowed disabled:opacity-40"
         >
           +
         </button>
@@ -86,8 +89,8 @@ function EmployeeRow({ employee }: { employee: Employee }) {
         </span>
       </span>
 
-      <span className="font-semibold text-ink">{formatIN(employee.wallet.allocated)}</span>
-      <span className="font-semibold text-ink">{formatIN(employee.wallet.used)}</span>
+      <span className="font-bold text-ink">{formatIN(employee.wallet.allocated)}</span>
+      <span className="font-normal text-slate">{formatIN(employee.wallet.used)}</span>
 
       <span className="flex items-center gap-2">
         <StatusPill status={employee.employeeStatus} />
@@ -222,7 +225,8 @@ function AddEmployeeModal({ onClose }: { onClose: () => void }) {
             <button
               type="submit"
               disabled={addEmployee.isPending}
-              className="rounded-lg bg-ink px-4 py-2 text-[13px] font-bold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-lg px-4 py-2 text-[13px] font-bold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+              style={{ background: 'linear-gradient(135deg,#2a2b6a,#3a3c98)' }}
             >
               {addEmployee.isPending ? 'Adding…' : 'Add Employee'}
             </button>
@@ -254,19 +258,31 @@ export default function CompanyEmployeesPage() {
         subtitle="Manage who can shop and how many points they hold."
         right={
           <>
-            <input
-              type="search"
-              placeholder="Search by name or email…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-56 rounded-full border border-line bg-white px-4 py-2 text-[13px] text-ink placeholder:text-muted focus:outline-none"
-            />
+            <div
+              className="flex items-center gap-2 rounded-xl border border-line"
+              style={{ background: 'var(--glass-bg)', padding: '10px 14px' }}
+            >
+              <span className="text-[13px] text-muted" aria-hidden="true">
+                ⌕
+              </span>
+              <input
+                type="search"
+                placeholder="Search by name or email…"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-48 bg-transparent text-[13px] text-ink placeholder:text-muted focus:outline-none"
+              />
+            </div>
             <button
               type="button"
               onClick={() => setShowAdd(true)}
-              className="whitespace-nowrap rounded-full bg-ink px-4 py-2 text-[13px] font-bold text-white transition-opacity hover:opacity-90"
+              className="whitespace-nowrap rounded-xl px-4 py-[11px] text-[13.5px] font-bold text-white transition-opacity hover:opacity-90"
+              style={{
+                background: 'linear-gradient(135deg,#2a2b6a,#3a3c98)',
+                boxShadow: '0 8px 20px rgba(42,43,106,.28)',
+              }}
             >
-              + Add Employee
+              ＋ Add Employee
             </button>
           </>
         }
