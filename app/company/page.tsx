@@ -73,13 +73,6 @@ export default function CompanyOverviewPage() {
       <PageHeader
         title="Overview"
         subtitle="Your team's merchandise activity at a glance."
-        right={
-          <input
-            type="search"
-            placeholder="Search…"
-            className="w-48 rounded-full border border-line bg-white px-4 py-2 text-[13px] text-ink placeholder:text-muted focus:outline-none"
-          />
-        }
       />
 
       {isError && (
@@ -131,7 +124,7 @@ export default function CompanyOverviewPage() {
             </div>
             <div className="mt-2 flex items-center justify-between text-[12px] text-muted">
               <span>{pool?.redeemedPct ?? 0}% redeemed</span>
-              <span>{availablePct}% available · tops up monthly</span>
+              <span>{availablePct}% available</span>
             </div>
           </Card>
 

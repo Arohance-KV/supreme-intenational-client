@@ -68,13 +68,19 @@ export function useSetEmployeeStatus() {
 export function buildWalletAdjustment(
   id: string,
   delta: number,
-): { path: string; body: { amount: number } } {
+): { path: string; body: { amount: number; reason: string } } {
   if (!Number.isFinite(delta) || delta === 0) {
     throw new Error('delta must be a non-zero finite number');
   }
   return delta > 0
-    ? { path: `/company/employees/${id}/wallet/credit`, body: { amount: delta } }
-    : { path: `/company/employees/${id}/wallet/debit`, body: { amount: -delta } };
+    ? {
+        path: `/company/employees/${id}/wallet/credit`,
+        body: { amount: delta, reason: 'Company top-up' },
+      }
+    : {
+        path: `/company/employees/${id}/wallet/debit`,
+        body: { amount: -delta, reason: 'Company deduction' },
+      };
 }
 
 export function useAdjustPoints() {

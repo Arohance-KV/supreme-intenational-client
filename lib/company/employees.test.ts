@@ -1,18 +1,20 @@
 import { buildWalletAdjustment } from './employees';
 
 describe('buildWalletAdjustment', () => {
-  test('routes positive deltas to the credit endpoint', () => {
-    expect(buildWalletAdjustment('e1', 100)).toEqual({
-      path: '/company/employees/e1/wallet/credit',
-      body: { amount: 100 },
-    });
+  test('routes positive deltas to the credit endpoint with a non-empty reason', () => {
+    const { path, body } = buildWalletAdjustment('e1', 100);
+    expect(path).toBe('/company/employees/e1/wallet/credit');
+    expect(body.amount).toBe(100);
+    expect(typeof body.reason).toBe('string');
+    expect(body.reason.trim().length).toBeGreaterThan(0);
   });
 
-  test('routes negative deltas to the debit endpoint with a positive amount', () => {
-    expect(buildWalletAdjustment('e1', -100)).toEqual({
-      path: '/company/employees/e1/wallet/debit',
-      body: { amount: 100 },
-    });
+  test('routes negative deltas to the debit endpoint with a positive amount and a non-empty reason', () => {
+    const { path, body } = buildWalletAdjustment('e1', -100);
+    expect(path).toBe('/company/employees/e1/wallet/debit');
+    expect(body.amount).toBe(100);
+    expect(typeof body.reason).toBe('string');
+    expect(body.reason.trim().length).toBeGreaterThan(0);
   });
 
   test('rejects a zero delta', () => {
