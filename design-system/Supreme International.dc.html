@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  ::selection { background: rgba(23,155,142,.22); }
+  @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+  @keyframes floaty2 { 0%,100% { transform: translateY(0); } 50% { transform: translateY(10px); } }
+  @keyframes blobshift { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(4%,-3%) scale(1.08); } }
+
+  /* responsive */
+  @media (max-width: 1040px){
+    [style*="repeat(6, 1fr)"],[style*="repeat(6,1fr)"]{ grid-template-columns:repeat(3,1fr) !important; }
+    [style*="repeat(4, 1fr)"],[style*="repeat(4,1fr)"]{ grid-template-columns:repeat(2,1fr) !important; }
+    [style*="1.05fr 0.95fr"],[style*="1.05fr .95fr"]{ grid-template-columns:1fr !important; }
+    [style*="1.1fr 1fr"]{ grid-template-columns:1fr !important; }
+    [style*="1.4fr 1fr 1fr 1fr"]{ grid-template-columns:repeat(2,1fr) !important; }
+  }
+  @media (max-width: 760px){
+    [style*="repeat(3, 1fr)"],[style*="repeat(3,1fr)"]{ grid-template-columns:1fr !important; }
+    [style*="repeat(6, 1fr)"],[style*="repeat(6,1fr)"]{ grid-template-columns:repeat(2,1fr) !important; }
+    [style*="grid-template-columns: 1fr 1fr"]{ grid-template-columns:1fr !important; }
+    [style*="gap: 4px; margin-left: 8px"]{ display:none !important; }
+    [style*="min-width: 180px"],[style*="min-width: 200px"]{ display:none !important; }
+    [style*="z-index: 20"]{ gap:10px !important; margin:10px !important; padding:10px 12px !important; flex-wrap:wrap !important; }
+    [style*="padding: 64px 40px 28px"],[style*="padding: 56px 40px 24px"],[style*="padding: 40px 40px 24px"],[style*="padding: 24px 40px 90px"]{ padding-left:18px !important; padding-right:18px !important; }
+    [style*="height: 440px"]{ height:auto !important; min-height:420px !important; }
+  }
+  @media (max-width: 620px){
+    [style*="font-size: 64px"],[style*="font-size: 60px"]{ font-size:36px !important; line-height:1.07 !important; }
+    [style*="font-size: 54px"],[style*="font-size: 52px"]{ font-size:32px !important; line-height:1.08 !important; }
+    [style*="font-size: 48px"],[style*="font-size: 46px"]{ font-size:29px !important; line-height:1.12 !important; }
+    [style*="font-size: 42px"],[style*="font-size: 40px"],[style*="font-size: 38px"]{ font-size:26px !important; line-height:1.12 !important; }
+    [style*="font-size: 34px"],[style*="font-size: 32px"]{ font-size:24px !important; }
+    [style*="font-size: 30px"]{ font-size:23px !important; }
+    [style*="padding: 40px 40px 56px"]{ padding:22px 18px 30px !important; }
+    [style*="padding: 48px 40px 8px"]{ padding:26px 18px 8px !important; }
+    [style*="padding: 56px 40px 8px"]{ padding:30px 18px 8px !important; }
+    [style*="padding: 56px 40px 48px"]{ padding:30px 18px 30px !important; }
+    [style*="padding: 44px 40px 30px"]{ padding:28px 18px 22px !important; }
+    [style*="margin: 0px 40px 8px"]{ margin-left:18px !important; margin-right:18px !important; }
+    [style*="padding: 38px"]{ padding:22px !important; }
+    [style*="padding: 48px;"]{ padding:26px !important; }
+    [style*="padding: 40px;"]{ padding:24px !important; }
+    [style*="padding: 32px;"]{ padding:22px !important; }
+  }
+</style>
+</helmet>
+
+<div ref="{{ setWrap }}" style="position:relative; min-height:100vh; width:100%; overflow-x:hidden; background:#eef0f8; color:#16173a; --c-ink:#16173a; --c-indigo:#2a2b6a; --c-indigo2:#3a3c98; --c-accent:#149b8e; --c-accent2:#13b89f; --c-slate:#5b5d7a; --c-muted:#9295b6; --c-line:#e6e7f2; --glass-bg:rgba(255,255,255,.52); --glass-brd:rgba(255,255,255,.78); --glass-blur:18px;">
+
+  <!-- ambient mesh background -->
+  <div style="position:fixed; inset:0; z-index:0; pointer-events:none; background:
+      radial-gradient(60% 50% at 12% 8%, rgba(74,76,201,.32), transparent 60%),
+      radial-gradient(52% 46% at 92% 12%, rgba(19,184,159,.30), transparent 60%),
+      radial-gradient(50% 48% at 78% 90%, rgba(124,77,210,.22), transparent 62%),
+      radial-gradient(46% 42% at 6% 88%, rgba(20,155,142,.22), transparent 62%),
+      radial-gradient(42% 40% at 50% 48%, rgba(224,163,59,.12), transparent 60%),
+      linear-gradient(180deg,#eceefb 0%,#f4f1f8 50%,#e9f1f3 100%);"></div>
+  <div style="position:fixed; top:-160px; left:-120px; width:520px; height:520px; z-index:0; pointer-events:none; border-radius:50%; background:radial-gradient(circle,rgba(86,68,210,.40),transparent 70%); filter:blur(20px); animation:blobshift 16s ease-in-out infinite;"></div>
+  <div style="position:fixed; top:40px; right:-160px; width:560px; height:560px; z-index:0; pointer-events:none; border-radius:50%; background:radial-gradient(circle,rgba(19,184,159,.36),transparent 70%); filter:blur(20px); animation:blobshift 19s ease-in-out infinite reverse;"></div>
+  <div style="position:fixed; bottom:-200px; left:38%; width:480px; height:480px; z-index:0; pointer-events:none; border-radius:50%; background:radial-gradient(circle,rgba(124,77,210,.26),transparent 70%); filter:blur(24px); animation:blobshift 22s ease-in-out infinite;"></div>
+
+  <div style="position:relative; z-index:1;">
+
+  <!-- ================= COVER / STRATEGY ================= -->
+  <section style="max-width:1180px; margin:0 auto; padding:64px 40px 28px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap; margin-bottom:48px;">
+      <div style="display:flex; align-items:center; gap:14px;"><img src="assets/supreme-logo.png" alt="Supreme International" style="height:40px; width:auto;"><span style="width:1px; height:30px; background:var(--c-line);"></span><img src="assets/elate-logo.png" alt="Elate Travel Essentials" style="height:44px; width:auto;"></div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--c-slate); text-align:right; line-height:1.7;">B2B Platform · Visual Design v1<br>Design System &amp; Home</div>
+    </div>
+
+    <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:var(--c-accent); margin-bottom:20px;">01 — Design Strategy</div>
+    <h1 style="font-size:64px; line-height:1.02; letter-spacing:-.03em; font-weight:800; margin:0 0 24px; max-width:14ch; color:var(--c-ink);">Corporate gifting,<br><span style="background:linear-gradient(115deg,#3a3c98 0%,#149b8e 60%,#13b89f 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">engineered like software.</span></h1>
+    <p style="font-size:19px; line-height:1.6; color:var(--c-slate); max-width:60ch; margin:0 0 40px; text-wrap:pretty;">Supreme International turns a manual sales process — discovery, quotation, follow-up — into a self-serve platform. The visual language pairs the trust of an enterprise SaaS dashboard with the warmth of a luxury gifting brand: deep indigo, living teal, frosted glass over soft light.</p>
+
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;">
+      <div style="background:var(--glass-bg); backdrop-filter:blur(var(--glass-blur)) saturate(1.5); -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(1.5); border:1px solid var(--glass-brd); border-radius:22px; padding:26px; box-shadow:0 10px 40px rgba(34,36,90,.08), inset 0 1px 0 rgba(255,255,255,.6);">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--c-accent); margin-bottom:14px;">01</div>
+        <div style="font-size:17px; font-weight:700; margin-bottom:8px; color:var(--c-ink);">Self-serve quotations</div>
+        <div style="font-size:14px; line-height:1.55; color:var(--c-slate);">Browse, filter, shortlist to cart, generate a priced quotation PDF — delivered by WhatsApp, email or download.</div>
+      </div>
+      <div style="background:var(--glass-bg); backdrop-filter:blur(var(--glass-blur)) saturate(1.5); -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(1.5); border:1px solid var(--glass-brd); border-radius:22px; padding:26px; box-shadow:0 10px 40px rgba(34,36,90,.08), inset 0 1px 0 rgba(255,255,255,.6);">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--c-accent); margin-bottom:14px;">02</div>
+        <div style="font-size:17px; font-weight:700; margin-bottom:8px; color:var(--c-ink);">Instant catalogues</div>
+        <div style="font-size:14px; line-height:1.55; color:var(--c-slate);">Apply filters, compile every matching product into one branded PDF — pricing intentionally excluded, ready to circulate.</div>
+      </div>
+      <div style="background:var(--glass-bg); backdrop-filter:blur(var(--glass-blur)) saturate(1.5); -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(1.5); border:1px solid var(--glass-brd); border-radius:22px; padding:26px; box-shadow:0 10px 40px rgba(34,36,90,.08), inset 0 1px 0 rgba(255,255,255,.6);">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--c-accent); margin-bottom:14px;">03</div>
+        <div style="font-size:17px; font-weight:700; margin-bottom:8px; color:var(--c-ink);">Merchandise portals</div>
+        <div style="font-size:14px; line-height:1.55; color:var(--c-slate);">Per-company branded stores where employees spend allocated points or coupons and cover any overage themselves.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DESIGN SYSTEM ================= -->
+  <section style="max-width:1180px; margin:0 auto; padding:56px 40px 24px;">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:var(--c-accent); margin-bottom:14px;">02 — Design System</div>
+    <h2 style="font-size:40px; line-height:1.05; letter-spacing:-.02em; font-weight:800; margin:0 0 36px; color:var(--c-ink);">Foundations</h2>
+
+    <!-- COLOR -->
+    <div style="background:var(--glass-bg); backdrop-filter:blur(var(--glass-blur)) saturate(1.5); -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(1.5); border:1px solid var(--glass-brd); border-radius:26px; padding:32px; box-shadow:0 12px 44px rgba(34,36,90,.08), inset 0 1px 0 rgba(255,255,255,.6); margin-bottom:24px;">
+      <div style="font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--c-muted); margin-bottom:22px;">Color — drawn from the logo</div>
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px;">
+        <div>
+          <div style="height:96px; border-radius:16px; background:#2a2b6a; box-shadow:0 6px 20px rgba(42,43,106,.3); margin-bottom:10px;"></div>
+          <div style="font-weight:700; font-size:14px;">Brand Indigo</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--c-muted);">#2A2B6A · primary</div>
+        </div>
+        <div>
+          <div style="height:96px; border-radius:16px; background:#179b8e; box-shadow:0 6px 20px rgba(23,155,142,.32); margin-bottom:10px;"></div>
+          <div style="font-weight:700; font-size:14px;">Brand Teal</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--c-muted);">#179B8E · accent</div>
+        </div>
+        <div>
+          <div style="height:96px; border-radius:16px; background:linear-gradient(135deg,#2a2b6a,#3a3c98); box-shadow:0 6px 20px rgba(42,43,106,.28); margin-bottom:10px;"></div>
+          <div style="font-weight:700; font-size:14px;">Indigo Gradient</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--c-muted);">primary CTA fill</div>
+        </div>
+        <div>
+          <div style="height:96px; border-radius:16px; background:rgba(255,255,255,.5); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,.8); box-shadow:0 6px 20px rgba(34,36,90,.1); margin-bottom:10px;"></div>
+          <div style="font-weight:700; font-size:14px;">Frosted Glass</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--c-muted);">surface · 52% white</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <div style="display:flex; align-items:center; gap:8px; padding:7px 12px; border-radius:10px; background:rgba(255,255,255,.5); border:1px solid var(--c-line);"><span style="width:16px;height:16px;border-radius:5px;background:#16173a;"></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-slate);">Ink #16173A</span></div>
+        <div style="display:flex; align-items:center; gap:8px; padding:7px 12px; border-radius:10px; background:rgba(255,255,255,.5); border:1px solid var(--c-line);"><span style="width:16px;height:16px;border-radius:5px;background:#5b5d7a;"></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-slate);">Slate #5B5D7A</span></div>
+        <div style="display:flex; align-items:center; gap:8px; padding:7px 12px; border-radius:10px; background:rgba(255,255,255,.5); border:1px solid var(--c-line);"><span style="width:16px;height:16px;border-radius:5px;background:#e6e7f2;"></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-slate);">Line #E6E7F2</span></div>
+        <div style="display:flex; align-items:center; gap:8px; padding:7px 12px; border-radius:10px; background:rgba(255,255,255,.5); border:1px solid var(--c-line);"><span style="width:16px;height:16px;border-radius:5px;background:#1faa6b;"></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-slate);">Success #1FAA6B</span></div>
+        <div style="display:flex; align-items:center; gap:8px; padding:7px 12px; border-radius:10px; background:rgba(255,255,255,.5); border:1px solid var(--c-line);"><span style="width:16px;height:16px;border-radius:5px;background:#e0a33b;"></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-slate);">Warning #E0A33B</span></div>
+        <div style="display:flex; align-items:center; gap:8px; padding:7px 12px; border-radius:10px; background:rgba(255,255,255,.5); border:1px solid var(--c-line);"><span style="width:16px;height:16px;border-radius:5px;background:#e0524d;"></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--c-slate);">Error #E0524D</span></div>
+      </div>
+    </div>
+
+    <!-- TYPE + COMPONENTS row -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:24px;">
+      <!-- TYPE -->
+      <div style="background:var(--glass-bg); backdrop-filter:blur(var(--glass-blur)) saturate(1.5); -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(1.5); border:1px solid var(--glass-brd); border-radius:26px; padding:32px; box-shadow:0 12px 44px rgba(34,36,90,.08), inset 0 1px 0 rgba(255,255,255,.6);">
+        <div style="font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--c-muted); margin-bottom:20px;">Typography</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--c-accent); margin-bottom:6px;">PLUS JAKARTA SANS · DISPLAY</div>
+        <div style="font-size:46px; font-weight:800; letter-spacing:-.03em; line-height:1; margin-bottom:18px;">Aa Gg 24</div>
+        <div style="border-top:1px solid var(--c-line); padding-top:16px;">
+          <div style="font-size:28px; font-weight:700; letter-spacing:-.02em; margin-bottom:6px;">Heading · Semibold</div>
+          <div style="font-size:16px; font-weight:400; color:var(--c-slate); line-height:1.55; margin-bottom:14px;">Body copy in regular weight keeps long-form B2B content readable at 16px with relaxed leading.</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--c-accent);">JetBrains Mono · labels &amp; specs</div>
+        </div>
+      </div>
+      <!-- COMPONENTS: buttons + inputs + badges -->
+      <div style="background:var(--glass-bg); backdrop-filter:blur(var(--glass-blur)) saturate(1.5); -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(1.5); border:1px solid var(--glass-brd); border-radius:26px; padding:32px; box-shadow:0 12px 44px rgba(34,36,90,.08), inset 0 1px 0 rgba(255,255,255,.6);">
+        <div style="font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--c-muted); margin-bottom:20px;">Components</div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:18px;">
+          <button style="border:none; cursor:pointer; font-family:inherit; font-weight:600; font-size:14px; color:#fff; padding:12px 20px; border-radius:13px; background:linear-gradient(135deg,#2a2b6a,#3a3c98); box-shadow:0 8px 22px rgba(42,43,106,.3);">Primary</button>
+          <button style="cursor:pointer; font-family:inherit; font-weight:600; font-size:14px; color:var(--c-indigo); padding:12px 20px; border-radius:13px; background:rgba(255,255,255,.6); border:1px solid var(--glass-brd); backdrop-filter:blur(8px);">Secondary</button>
+          <button style="cursor:pointer; font-family:inherit; font-weight:600; font-size:14px; color:var(--c-indigo); padding:12px 20px; border-radius:13px; background:transparent; border:1.5px solid var(--c-indigo);">Outline</button>
+          <button style="cursor:pointer; font-family:inherit; font-weight:600; font-size:14px; color:var(--c-slate); padding:12px 14px; border-radius:13px; background:transparent; border:none;">Ghost</button>
+          <button style="cursor:pointer; width:44px; height:44px; border-radius:13px; background:var(--c-accent); border:none; color:#fff; font-size:18px; box-shadow:0 8px 22px rgba(23,155,142,.3);">+</button>
+        </div>
+        <div style="display:flex; gap:10px; margin-bottom:18px;">
+          <div style="flex:1; display:flex; align-items:center; gap:8px; padding:12px 14px; border-radius:13px; background:rgba(255,255,255,.65); border:1px solid var(--c-line);">
+            <span style="width:14px;height:14px;border:2px solid var(--c-muted);border-radius:50%;display:inline-block;"></span>
+            <span style="font-size:14px; color:var(--c-muted);">Search products…</span>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 14px; border-radius:13px; background:rgba(255,255,255,.65); border:1px solid var(--c-line); min-width:120px;">
+            <span style="font-size:14px; color:var(--c-ink);">Category</span><span style="color:var(--c-muted); font-size:11px;">▾</span>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:500; padding:5px 11px; border-radius:999px; background:rgba(23,155,142,.12); color:var(--c-accent); border:1px solid rgba(23,155,142,.25);">MOQ 50</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:500; padding:5px 11px; border-radius:999px; background:rgba(42,43,106,.1); color:var(--c-indigo); border:1px solid rgba(42,43,106,.2);">Recommended</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:500; padding:5px 11px; border-radius:999px; background:rgba(31,170,107,.12); color:#1a8f5a; border:1px solid rgba(31,170,107,.25);">In stock</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:500; padding:5px 11px; border-radius:999px; background:rgba(224,163,59,.14); color:#b5801e; border:1px solid rgba(224,163,59,.3);">Draft</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= HOME — DESKTOP ================= -->
+  <section style="max-width:1180px; margin:0 auto; padding:40px 40px 24px;">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:var(--c-accent); margin-bottom:14px;">03 — Home Page · Desktop</div>
+    <h2 style="font-size:40px; line-height:1.05; letter-spacing:-.02em; font-weight:800; margin:0 0 28px; color:var(--c-ink);">The landing experience</h2>
+  </section>
+
+  <div style="max-width:1280px; margin:0 auto 56px; padding:0 24px;">
+   <div style="position:relative; border-radius:30px; overflow:hidden; border:1px solid rgba(255,255,255,.6); box-shadow:0 40px 100px rgba(34,36,90,.22); background:#eef0f8;">
+    <!-- localized mesh -->
+    <div style="position:absolute; inset:0; pointer-events:none; background:
+        radial-gradient(50% 45% at 82% -5%, rgba(19,184,159,.32), transparent 60%),
+        radial-gradient(55% 50% at 3% 8%, rgba(86,68,210,.30), transparent 60%),
+        radial-gradient(60% 55% at 98% 85%, rgba(124,77,210,.20), transparent 62%),
+        radial-gradient(45% 42% at 28% 102%, rgba(224,163,59,.14), transparent 62%),
+        linear-gradient(180deg,#eceefb,#f3f2f8 60%,#e9f1f3);"></div>
+
+    <div style="position:relative;">
+      <!-- NAV -->
+      <div style="position:sticky; top:0; z-index:20; margin:16px; padding:12px 18px; display:flex; align-items:center; gap:20px; background:rgba(255,255,255,.6); backdrop-filter:blur(20px) saturate(1.6); -webkit-backdrop-filter:blur(20px) saturate(1.6); border:1px solid rgba(255,255,255,.8); border-radius:18px; box-shadow:0 8px 30px rgba(34,36,90,.1);">
+        <a href="Supreme International.dc.html" style="display:flex; align-items:center; gap:10px; text-decoration:none;"><img src="assets/supreme-logo.png" alt="Supreme International" style="height:26px;"><span style="width:1px; height:22px; background:var(--c-line);"></span><img src="assets/elate-logo.png" alt="Elate" style="height:30px;"></a>
+        <div style="display:flex; gap:4px; margin-left:8px;">
+          <a href="Catalogue.dc.html" style="text-decoration:none; font-size:14px; font-weight:600; color:var(--c-ink); padding:8px 12px; border-radius:10px; background:rgba(42,43,106,.07);">Products</a>
+          <a href="Clients.dc.html" style="text-decoration:none; font-size:14px; font-weight:500; color:var(--c-slate); padding:8px 12px; border-radius:10px;">Clients</a>
+          <a href="About.dc.html" style="text-decoration:none; font-size:14px; font-weight:500; color:var(--c-slate); padding:8px 12px; border-radius:10px;">About</a>
+          <a href="Careers.dc.html" style="text-decoration:none; font-size:14px; font-weight:500; color:var(--c-slate); padding:8px 12px; border-radius:10px;">Careers</a>
+          <a href="Contact.dc.html" style="text-decoration:none; font-size:14px; font-weight:500; color:var(--c-slate); padding:8px 12px; border-radius:10px;">Contact</a>
+        </div>
+        <div style="margin-left:auto; display:flex; align-items:center; gap:10px;">
+          <div style="display:flex; align-items:center; gap:8px; padding:9px 14px; border-radius:12px; background:rgba(255,255,255,.6); border:1px solid var(--c-line); min-width:180px;">
+            <span style="width:13px;height:13px;border:2px solid var(--c-muted);border-radius:50%;"></span>
+            <span style="font-size:13px; color:var(--c-muted);">Search 12,000+ products…</span>
+          </div>
+          <div style="position:relative; width:42px; height:42px; border-radius:12px; background:rgba(255,255,255,.6); border:1px solid var(--c-line); display:flex; align-items:center; justify-content:center; font-size:16px;">🛍
+            <span style="position:absolute; top:-6px; right:-6px; min-width:18px; height:18px; padding:0 4px; border-radius:9px; background:var(--c-accent); color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,.2);">{{ cartCount }}</span>
+          </div>
+          <button style="cursor:pointer; font-family:inherit; font-weight:600; font-size:13px; color:var(--c-indigo); padding:11px 16px; border-radius:12px; background:transparent; border:1px solid var(--c-line);">Login</button>
+          <a href="Quotation Builder.dc.html" style="text-decoration:none; cursor:pointer; font-family:inherit; font-weight:600; font-size:13px; color:#fff; padding:11px 18px; border-radius:12px; background:linear-gradient(135deg,#2a2b6a,#3a3c98); border:none; box-shadow:0 8px 22px rgba(42,43,106,.3);">Request Quotation</a>
+        </div>
+      </div>
+
+      <!-- HERO -->
+      <div style="display:grid; grid-template-columns:1.05fr .95fr; gap:32px; align-items:center; padding:40px 40px 56px;">
+        <div>
+          <div style="display:inline-flex; align-items:center; gap:8px; margin-bottom:18px; padding:7px 14px 7px 8px; border-radius:999px; background:linear-gradient(120deg,rgba(86,68,210,.14),rgba(19,184,159,.16)); border:1px solid rgba(255,255,255,.7); backdrop-filter:blur(8px);"><span style="display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:50%; background:linear-gradient(135deg,#5644d2,#13b89f); color:#fff; font-size:11px;">✦</span><span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; font-weight:600; background:linear-gradient(110deg,#4a3cc0,#0f8d80); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">Self-serve B2B gifting platform</span></div>
+          <h1 style="font-size:60px; line-height:1.02; letter-spacing:-.03em; font-weight:800; margin:0 0 20px; color:var(--c-ink); background:linear-gradient(120deg,#2a2b6a 0%,#4143b0 38%,#149b8e 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">Corporate gifting,<br>simplified.</h1>
+          <p style="font-size:18px; line-height:1.6; color:var(--c-slate); max-width:46ch; margin:0 0 30px;">Browse a curated catalogue, shortlist in a click, and generate branded quotations &amp; catalogues yourself — no back-and-forth, no waiting on sales.</p>
+          <div style="display:flex; gap:12px; margin-bottom:34px;">
+            <a href="Catalogue.dc.html" style="text-decoration:none; cursor:pointer; font-family:inherit; font-weight:600; font-size:15px; color:#fff; padding:15px 26px; border-radius:14px; background:linear-gradient(120deg,#2a2b6a 0%,#5644d2 50%,#13b89f 100%); border:none; box-shadow:0 12px 30px rgba(86,68,210,.34);">Browse Products</a>
+            <a href="Quotation Builder.dc.html" style="text-decoration:none; cursor:pointer; font-family:inherit; font-weight:600; font-size:15px; color:var(--c-indigo); padding:15px 26px; border-radius:14px; background:rgba(255,255,255,.6); border:1px solid var(--glass-brd); backdrop-filter:blur(8px);">Request Quotation</a>
+          </div>
+          <div style="display:flex; gap:30px;">
+            <div><div style="font-size:26px; font-weight:800; letter-spacing:-.02em; background:linear-gradient(125deg,#3a3c98,#5644d2); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">500+</div><div style="font-size:12px; color:var(--c-muted); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.08em;">Enterprise clients</div></div>
+            <div><div style="font-size:26px; font-weight:800; letter-spacing:-.02em; background:linear-gradient(125deg,#4a3cc0,#13b89f); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">12,000+</div><div style="font-size:12px; color:var(--c-muted); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.08em;">Products</div></div>
+            <div><div style="font-size:26px; font-weight:800; letter-spacing:-.02em; background:linear-gradient(125deg,#149b8e,#13b89f); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;">24/7</div><div style="font-size:12px; color:var(--c-muted); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.08em;">Self-serve</div></div>
+          </div>
+        </div>
+
+        <!-- floating cycling cluster -->
+        <div style="position:relative; height:440px;">
+          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:340px; height:340px; border-radius:50%; pointer-events:none; background:radial-gradient(circle,rgba(86,68,210,.22),rgba(19,184,159,.16) 55%,transparent 72%); filter:blur(20px);"></div>
+          <!-- floating product card -->
+          <div style="position:absolute; top:14px; right:0; width:300px; background:rgba(255,255,255,.58); backdrop-filter:blur(20px) saturate(1.6); -webkit-backdrop-filter:blur(20px) saturate(1.6); border:1px solid rgba(255,255,255,.85); border-radius:24px; padding:18px; box-shadow:0 24px 60px rgba(34,36,90,.2); animation:floaty 7s ease-in-out infinite;">
+            <div ref="{{ reg }}" data-reg="fProdWrap" style="transition:opacity .45s ease;">
+              <div ref="{{ reg }}" data-reg="fProdImg" style="aspect-ratio:4/3; border-radius:16px; background-image:url('assets/img/bottle.png'); background-size:cover; background-position:center; background-color:#e6eaf6; margin-bottom:14px;"></div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><div ref="{{ reg }}" data-reg="fProdName" style="font-weight:700; font-size:15px;">Insulated Steel Bottle</div><span ref="{{ reg }}" data-reg="fProdMoq" style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--c-accent); background:rgba(23,155,142,.12); padding:3px 8px; border-radius:999px;">MOQ 50</span></div>
+              <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:14px;">
+                <div style="line-height:1.1;"><span ref="{{ reg }}" data-reg="fProdPrice" style="font-size:18px; font-weight:800; color:var(--c-ink);">₹ 540</span><div style="font-size:10px; color:var(--c-muted); font-family:'JetBrains Mono',monospace; margin-top:2px;">tentative price</div></div>
+              </div>
+              <button data-label="Add to cart" onClick="{{ addToCart }}" style="cursor:pointer; width:100%; font-family:inherit; font-weight:600; font-size:13px; color:#fff; padding:11px; border-radius:12px; background:linear-gradient(135deg,#2a2b6a,#3a3c98); border:none;">Add to cart</button>
+            </div>
+          </div>
+          <!-- floating category card -->
+          <div style="position:absolute; bottom:34px; left:0; width:212px; background:rgba(255,255,255,.58); backdrop-filter:blur(20px) saturate(1.6); -webkit-backdrop-filter:blur(20px) saturate(1.6); border:1px solid rgba(255,255,255,.85); border-radius:20px; padding:16px; box-shadow:0 20px 50px rgba(34,36,90,.18); animation:floaty2 8s ease-in-out infinite;">
+            <div ref="{{ reg }}" data-reg="fCatWrap" style="transition:opacity .45s ease;">
+              <div style="display:flex; align-items:center; gap:11px; margin-bottom:12px;">
+                <div ref="{{ reg }}" data-reg="fCatImg" style="width:46px; height:46px; flex:none; border-radius:13px; background-image:url('assets/img/cat-drinkware.png'); background-size:cover; background-position:center; background-color:#e3efed;"></div>
+                <div>
+                  <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.12em; text-transform:uppercase; color:var(--c-muted); margin-bottom:3px;">Category</div>
+                  <div ref="{{ reg }}" data-reg="fCatName" style="font-weight:700; font-size:15px; letter-spacing:-.01em; color:var(--c-ink); line-height:1.1;">Drinkware</div>
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <span ref="{{ reg }}" data-reg="fCatCount" style="font-size:12px; color:var(--c-slate);">1,240 products</span>
+                <span style="font-size:13px; font-weight:600; color:var(--c-accent);">Explore →</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- client strip -->
+      <div style="margin:0 40px 8px; padding:18px 24px; display:flex; align-items:center; gap:28px; background:rgba(255,255,255,.42); border:1px solid rgba(255,255,255,.7); border-radius:18px; backdrop-filter:blur(10px);">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--c-muted); white-space:nowrap;">Trusted by</span>
+        <div style="display:flex; gap:34px; flex:1; justify-content:space-between; align-items:center; opacity:.55;">
+          <span style="font-weight:800; font-size:18px; letter-spacing:-.02em; color:var(--c-indigo);">L&amp;T</span>
+          <span style="font-weight:700; font-size:16px; color:var(--c-indigo);">Reliance</span>
+          <span style="font-weight:800; font-size:17px; font-style:italic; color:var(--c-indigo);">Tata</span>
+          <span style="font-weight:600; font-size:16px; letter-spacing:.12em; color:var(--c-indigo);">INFOSYS</span>
+          <span style="font-weight:700; font-size:16px; color:var(--c-indigo);">HDFC</span>
+          <span style="font-weight:800; font-size:16px; letter-spacing:-.03em; color:var(--c-indigo);">Wipro</span>
+        </div>
+      </div>
+
+      <!-- SHOP BY CATEGORY -->
+      <div style="padding:48px 40px 8px;">
+        <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:22px;">
+          <div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--c-accent); margin-bottom:8px;">Explore</div>
+            <h3 style="font-size:30px; font-weight:800; letter-spacing:-.02em; margin:0; color:var(--c-ink);">Shop by category</h3>
+          </div>
+          <span style="font-size:14px; font-weight:600; color:var(--c-indigo);">View all →</span>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:14px;">
+          <div style="background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.8); border-radius:18px; padding:14px; backdrop-filter:blur(12px); box-shadow:0 8px 26px rgba(34,36,90,.08);">
+            <div style="aspect-ratio:1/1; border-radius:13px; background-image:url('assets/img/cat-drinkware.png'); background-size:cover; background-position:center; background-color:#e3efed; margin-bottom:12px;"></div>
+            <div style="font-weight:700; font-size:13px; line-height:1.25;">Drinkware</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--c-muted);">1,240</div>
+          </div>
+          <div style="background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.8); border-radius:18px; padding:14px; backdrop-filter:blur(12px); box-shadow:0 8px 26px rgba(34,36,90,.08);">
+            <div style="aspect-ratio:1/1; border-radius:13px; background-image:url('assets/img/cat-bags.png'); background-size:cover; background-position:center; background-color:#e6eaf6; margin-bottom:12px;"></div>
+            <div style="font-weight:700; font-size:13px; line-height:1.25;">Bags &amp; Backpacks</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--c-muted);">980</div>
+          </div>
+          <div style="background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.8); border-radius:18px; padding:14px; backdrop-filter:blur(12px); box-shadow:0 8px 26px rgba(34,36,90,.08);">
+            <div style="aspect-ratio:1/1; border-radius:13px; background-image:url('assets/img/cat-writing.png'); background-size:cover; background-position:center; background-color:#e3efed; margin-bottom:12px;"></div>
+            <div style="font-weight:700; font-size:13px; line-height:1.25;">Writing &amp; Office</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--c-muted);">2,110</div>
+          </div>
+          <div style="background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.8); border-radius:18px; padding:14px; backdrop-filter:blur(12px); box-shadow:0 8px 26px rgba(34,36,90,.08);">
+            <div style="aspect-ratio:1/1; border-radius:13px; background-image:url('assets/img/cat-tech.png'); background-size:cover; background-position:center; background-color:#e6eaf6; margin-bottom:12px;"></div>
+            <div style="font-weight:700; font-size:13px; line-height:1.25;">Tech &amp; Gadgets</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--c-muted);">760</div>
+          </div>
+          <div style="background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.8); border-radius:18px; padding:14px; backdrop-filter:blur(12px); box-shadow:0 8px 26px rgba(34,36,90,.08);">
+            <div style="aspect-ratio:1/1; border-radius:13px; background-image:url('assets/img/cat-apparel.png'); background-size:cover; background-position:center; background-color:#e3efed; margin-bottom:12px;"></div>
+            <div style="font-weight:700; font-size:13px; line-height:1.25;">Apparel</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--c-muted);">1,520</div>
+          </div>
+          <div style="background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.8); border-radius:18px; padding:14px; backdrop-filter:blur(12px); box-shadow:0 8px 26px rgba(34,36,90,.08);">
+            <div style="aspect-ratio:1/1; border-radius:13px; background-image:url('assets/img/cat-home.png'); background-size:cover; background-position:center; background-color:#e6eaf6; margin-bottom:12px;"></div>
+            <div style="font-weight:700; font-size:13px; line-height:1.25;">Home &amp; Living</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--c-muted);">1,340</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FEATURED PRODUCTS -->
+      <div style="padding:48px 40px 8px;">
+        <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:22px;">
+          <div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--c-accent); margin-bottom:8px;">Curated</div>
+            <h3 style="font-size:30px; font-weight:800; letter-spacing:-.02em; margin:0; color:var(--c-ink);">Featured &amp; recommended</h3>
+          </div>
+          <span style="font-size:14px; font-weight:600; color:var(--c-indigo);">Full catalogue →</span>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:18px;">
+          <!-- card -->
+          <div style="background:rgba(255,255,255,.6); border:1px solid rgba(255,255,255,.85); border-radius:20px; padding:14px; backdrop-filter:blur(14px); box-shadow:0 12px 34px rgba(34,36,90,.1);">
+            <div style="position:relative; aspect-ratio:1/1; border-radius:14px; background-image:url('assets/img/backpack.png'); background-size:cover; background-position:center; background-color:#e6eaf6; margin-bottom:14px;">
+              <span style="position:absolute; top:10px; left:10px; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--c-indigo); background:rgba(255,255,255,.8); padding:3px 8px; border-radius:999px;">Recommended</span>
+              <span style="position:absolute; top:10px; right:10px; width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,.8); display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--c-slate);">♡</span>
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--c-accent); text-transform:uppercase; letter-spacing:.08em; margin-bottom:5px;">Bags</div>
+            <div style="font-weight:700; font-size:15px; margin-bottom:8px; line-height:1.25;">Canvas Laptop Backpack</div>
+            <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:14px;"><div style="line-height:1.1;"><span style="font-size:16px; font-weight:800; color:var(--c-ink);">₹ 1,250</span><div style="font-size:10px; color:var(--c-muted); font-family:'JetBrains Mono',monospace; margin-top:2px;">tentative price</div></div><span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--c-accent); background:rgba(23,155,142,.12); padding:3px 8px; border-radius:999px;">MOQ 100</span></div>
+            <button data-label="Add to cart" onClick="{{ addToCart }}" style="cursor:pointer; width:100%; font-family:inherit; font-weight:600; font-size:13px; color:var(--c-indigo); padding:11px; border-radius:12px; background:rgba(42,43,106,.07); border:1px solid rgba(42,43,106,.12);">Add to cart</button>
+          </div>
+          <div style="background:rgba(255,255,255,.6); border:1px solid rgba(255,255,255,.85); border-radius:20px; padding:14px; backdrop-filter:blur(14px); box-shadow:0 12px 34px rgba(34,36,90,.1);">
+            <div style="position:relative; aspect-ratio:1/1; border-radius:14px; background-image:url('assets/img/bottle.png'); background-size:cover; background-position:center; background-color:#e3efed; margin-bottom:14px;">
+              <span style="position:absolute; top:10px; right:10px; width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,.8); display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--c-slate);">♡</span>
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--c-accent); text-transform:uppercase; letter-spacing:.08em; margin-bottom:5px;">Drinkware</div>
+            <div style="font-weight:700; font-size:15px; margin-bottom:8px; line-height:1.25;">Insulated Steel Bottle</div>
+            <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:14px;"><div style="line-height:1.1;"><span style="font-size:16px; font-weight:800; color:var(--c-ink);">₹ 540</span><div style="font-size:10px; color:var(--c-muted); font-family:'JetBrains Mono',monospace; margin-top:2px;">tentative price</div></div><span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--c-accent); background:rgba(23,155,142,.12); padding:3px 8px; border-radius:999px;">MOQ 50</span></div>
+            <button data-label="Add to cart" onClick="{{ addToCart }}" style="cursor:pointer; width:100%; font-family:inherit; font-weight:600; font-size:13px; color:var(--c-indigo); padding:11px; border-radius:12px; background:rgba(42,43,106,.07); border:1px solid rgba(42,43,106,.12);">Add to cart</button>
+          </div>
+          <div style="background:rgba(255,255,255,.6); border:1px solid rgba(255,255,255,.85); border-radius:20px; padding:14px; backdrop-filter:blur(14px); box-shadow:0 12px 34px rgba(34,36,90,.1);">
+            <div style="position:relative; aspect-ratio:1/1; border-radius:14px; background-image:url('assets/img/pen-set.png'); background-size:cover; background-position:center; background-color:#e6eaf6; margin-bottom:14px;">
+              <span style="position:absolute; top:10px; right:10px; width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,.8); display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--c-slate);">♡</span>
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--c-accent); text-transform:uppercase; letter-spacing:.08em; margin-bottom:5px;">Writing</div>
+            <div style="font-weight:700; font-size:15px; margin-bottom:8px; line-height:1.25;">Premium Roller Pen Set</div>
+            <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:14px;"><div style="line-height:1.1;"><span style="font-size:16px; font-weight:800; color:var(--c-ink);">₹ 320</span><div style="font-size:10px; color:var(--c-muted); font-family:'JetBrains Mono',monospace; margin-top:2px;">tentative price</div></div><span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--c-accent); background:rgba(23,155,142,.12); padding:3px 8px; border-radius:999px;">MOQ 200</span></div>
+            <button data-label="Add to cart" onClick="{{ addToCart }}" style="cursor:pointer; width:100%; font-family:inherit; font-weight:600; font-size:13px; color:var(--c-indigo); padding:11px; border-radius:12px; background:rgba(42,43,106,.07); border:1px solid rgba(42,43,106,.12);">Add to cart</button>
+          </div>
+          <div style="background:rgba(255,255,255,.6); border:1px solid rgba(255,255,255,.85); border-radius:20px; padding:14px; backdrop-filter:blur(14px); box-shadow:0 12px 34px rgba(34,36,90,.1);">
+            <div style="position:relative; aspect-ratio:1/1; border-radius:14px; background-image:url('assets/img/charger.png'); background-size:cover; background-position:center; background-color:#e3efed; margin-bottom:14px;">
+              <span style="position:absolute; top:10px; right:10px; width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,.8); display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--c-slate);">♡</span>
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--c-accent); text-transform:uppercase; letter-spacing:.08em; margin-bottom:5px;">Tech</div>
+            <div style="font-weight:700; font-size:15px; margin-bottom:8px; line-height:1.25;">Wireless Charging Pad</div>
+            <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:14px;"><div style="line-height:1.1;"><span style="font-size:16px; font-weight:800; color:var(--c-ink);">₹ 890</span><div style="font-size:10px; color:var(--c-muted); font-family:'JetBrains Mono',monospace; margin-top:2px;">tentative price</div></div><span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--c-accent); background:rgba(23,155,142,.12); padding:3px 8px; border-radius:999px;">MOQ 100</span></div>
+            <button data-label="Add to cart" onClick="{{ addToCart }}" style="cursor:pointer; width:100%; font-family:inherit; font-weight:600; font-size:13px; color:var(--c-indigo); padding:11px; border-radius:12px; background:rgba(42,43,106,.07); border:1px solid rgba(42,43,106,.12);">Add to cart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ENTERPRISE SOLUTIONS -->
+      <div style="padding:56px 40px 8px;">
+        <div style="text-align:center; margin-bottom:28px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--c-accent); margin-bottom:8px;">Built for procurement</div>
+          <h3 style="font-size:32px; font-weight:800; letter-spacing:-.02em; margin:0; color:var(--c-ink);">Enterprise gifting solutions</h3>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:18px;">
+          <div style="background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.82); border-radius:22px; padding:26px; backdrop-filter:blur(16px); box-shadow:0 14px 40px rgba(34,36,90,.1);">
+            <div style="width:46px; height:46px; border-radius:14px; background:linear-gradient(135deg,#2a2b6a,#3a3c98); display:flex; align-items:center; justify-content:center; color:#fff; font-size:20px; margin-bottom:18px; box-shadow:0 8px 20px rgba(42,43,106,.28);">⌁</div>
+            <div style="font-size:18px; font-weight:700; margin-bottom:8px;">Quotation engine</div>
+            <div style="font-size:14px; line-height:1.55; color:var(--c-slate); margin-bottom:16px;">Turn any cart into a priced, branded quotation PDF in one click — delivered by WhatsApp, email or download.</div>
+            <span style="font-size:13px; font-weight:600; color:var(--c-indigo);">Learn more →</span>
+          </div>
+          <div style="background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.82); border-radius:22px; padding:26px; backdrop-filter:blur(16px); box-shadow:0 14px 40px rgba(34,36,90,.1);">
+            <div style="width:46px; height:46px; border-radius:14px; background:linear-gradient(135deg,#179b8e,#13b89f); display:flex; align-items:center; justify-content:center; color:#fff; font-size:20px; margin-bottom:18px; box-shadow:0 8px 20px rgba(23,155,142,.28);">▦</div>
+            <div style="font-size:18px; font-weight:700; margin-bottom:8px;">Catalogue generator</div>
+            <div style="font-size:14px; line-height:1.55; color:var(--c-slate); margin-bottom:16px;">Apply filters and compile every matching product into a branded, no-pricing catalogue to circulate internally.</div>
+            <span style="font-size:13px; font-weight:600; color:var(--c-indigo);">Learn more →</span>
+          </div>
+          <div style="background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.82); border-radius:22px; padding:26px; backdrop-filter:blur(16px); box-shadow:0 14px 40px rgba(34,36,90,.1);">
+            <div style="width:46px; height:46px; border-radius:14px; background:linear-gradient(135deg,#2a2b6a,#3a3c98); display:flex; align-items:center; justify-content:center; color:#fff; font-size:20px; margin-bottom:18px; box-shadow:0 8px 20px rgba(42,43,106,.28);">◎</div>
+            <div style="font-size:18px; font-weight:700; margin-bottom:8px;">Merchandise portals</div>
+            <div style="font-size:14px; line-height:1.55; color:var(--c-slate); margin-bottom:16px;">Branded employee stores with points &amp; coupon wallets, real-time balances and self-paid overage.</div>
+            <span style="font-size:13px; font-weight:600; color:var(--c-indigo);">Learn more →</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROCESS -->
+      <div style="padding:56px 40px 8px;">
+        <div style="background:linear-gradient(135deg,rgba(42,43,106,.95),rgba(58,60,152,.92)); border-radius:26px; padding:38px; box-shadow:0 24px 60px rgba(42,43,106,.3); position:relative; overflow:hidden;">
+          <div style="position:absolute; top:-60px; right:-40px; width:280px; height:280px; border-radius:50%; background:radial-gradient(circle,rgba(20,155,142,.5),transparent 70%); filter:blur(10px);"></div>
+          <div style="position:relative;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:#9fe7dc; margin-bottom:8px;">How it works</div>
+            <h3 style="font-size:28px; font-weight:800; letter-spacing:-.02em; margin:0 0 28px; color:#fff;">From browse to lead in four steps</h3>
+            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:18px;">
+              <div style="background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); border-radius:16px; padding:20px;"><div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#9fe7dc; margin-bottom:12px;">01</div><div style="font-weight:700; font-size:15px; color:#fff; margin-bottom:6px;">Browse &amp; filter</div><div style="font-size:13px; color:rgba(255,255,255,.7); line-height:1.5;">No login wall — explore the full catalogue freely.</div></div>
+              <div style="background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); border-radius:16px; padding:20px;"><div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#9fe7dc; margin-bottom:12px;">02</div><div style="font-weight:700; font-size:15px; color:#fff; margin-bottom:6px;">Shortlist to cart</div><div style="font-size:13px; color:rgba(255,255,255,.7); line-height:1.5;">Add items with MOQ &amp; branding captured per line.</div></div>
+              <div style="background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); border-radius:16px; padding:20px;"><div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#9fe7dc; margin-bottom:12px;">03</div><div style="font-weight:700; font-size:15px; color:#fff; margin-bottom:6px;">Generate output</div><div style="font-size:13px; color:rgba(255,255,255,.7); line-height:1.5;">Quotation PDF or no-pricing catalogue — OTP at this step.</div></div>
+              <div style="background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); border-radius:16px; padding:20px;"><div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#9fe7dc; margin-bottom:12px;">04</div><div style="font-weight:700; font-size:15px; color:#fff; margin-bottom:6px;">Delivered</div><div style="font-size:13px; color:rgba(255,255,255,.7); line-height:1.5;">WhatsApp routes the lead straight to Supreme's team.</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATS + TESTIMONIAL -->
+      <div style="padding:56px 40px 8px; display:grid; grid-template-columns:1.1fr 1fr; gap:18px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+          <div style="background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.82); border-radius:20px; padding:24px; backdrop-filter:blur(14px); box-shadow:0 12px 34px rgba(34,36,90,.08);"><div style="font-size:38px; font-weight:800; letter-spacing:-.03em; color:var(--c-ink);">18<span style="font-size:22px; color:var(--c-accent);"> yrs</span></div><div style="font-size:13px; color:var(--c-slate); margin-top:4px;">Of corporate gifting</div></div>
+          <div style="background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.82); border-radius:20px; padding:24px; backdrop-filter:blur(14px); box-shadow:0 12px 34px rgba(34,36,90,.08);"><div style="font-size:38px; font-weight:800; letter-spacing:-.03em; color:var(--c-ink);">500<span style="font-size:22px; color:var(--c-accent);">+</span></div><div style="font-size:13px; color:var(--c-slate); margin-top:4px;">Enterprise clients</div></div>
+          <div style="background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.82); border-radius:20px; padding:24px; backdrop-filter:blur(14px); box-shadow:0 12px 34px rgba(34,36,90,.08);"><div style="font-size:38px; font-weight:800; letter-spacing:-.03em; color:var(--c-ink);">12k<span style="font-size:22px; color:var(--c-accent);">+</span></div><div style="font-size:13px; color:var(--c-slate); margin-top:4px;">Products in catalogue</div></div>
+          <div style="background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.82); border-radius:20px; padding:24px; backdrop-filter:blur(14px); box-shadow:0 12px 34px rgba(34,36,90,.08);"><div style="font-size:38px; font-weight:800; letter-spacing:-.03em; color:var(--c-ink);">40<span style="font-size:22px; color:var(--c-accent);">%</span></div><div style="font-size:13px; color:var(--c-slate); margin-top:4px;">Less quotation effort</div></div>
+        </div>
+        <div style="background:rgba(255,255,255,.6); border:1px solid rgba(255,255,255,.85); border-radius:22px; padding:30px; backdrop-filter:blur(16px); box-shadow:0 14px 40px rgba(34,36,90,.1); display:flex; flex-direction:column;">
+          <div style="font-size:40px; color:var(--c-accent); line-height:.5; margin-bottom:18px;">&ldquo;</div>
+          <div style="font-size:19px; line-height:1.5; font-weight:500; color:var(--c-ink); letter-spacing:-.01em; margin-bottom:auto;">We used to wait days for a gifting quote. Now our team self-generates a branded catalogue and quotation before lunch.</div>
+          <div style="display:flex; align-items:center; gap:12px; margin-top:24px;">
+            <div style="width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg,#2a2b6a,#179b8e);"></div>
+            <div><div style="font-weight:700; font-size:14px;">Procurement Lead</div><div style="font-size:12px; color:var(--c-muted);">Fortune 500 manufacturer</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div style="padding:56px 40px 48px;">
+        <div style="position:relative; overflow:hidden; border-radius:26px; padding:48px; text-align:center; background:rgba(255,255,255,.5); border:1px solid rgba(255,255,255,.8); backdrop-filter:blur(20px); box-shadow:0 24px 60px rgba(34,36,90,.14);">
+          <div style="position:absolute; inset:0; pointer-events:none; background:radial-gradient(50% 80% at 50% 0%, rgba(23,155,142,.18), transparent 60%);"></div>
+          <div style="position:relative;">
+            <h3 style="font-size:38px; font-weight:800; letter-spacing:-.025em; margin:0 0 14px; color:var(--c-ink);">Ready to simplify your gifting?</h3>
+            <p style="font-size:17px; color:var(--c-slate); margin:0 auto 28px; max-width:52ch;">Browse the catalogue or send us a quick brief — we'll respond with a tailored quotation.</p>
+            <div style="display:flex; gap:12px; justify-content:center;">
+              <a href="Catalogue.dc.html" style="text-decoration:none; cursor:pointer; font-family:inherit; font-weight:600; font-size:15px; color:#fff; padding:15px 28px; border-radius:14px; background:linear-gradient(135deg,#2a2b6a,#3a3c98); border:none; box-shadow:0 12px 30px rgba(42,43,106,.32);">Browse Products</a>
+              <a href="Quotation Builder.dc.html" style="text-decoration:none; cursor:pointer; font-family:inherit; font-weight:600; font-size:15px; color:var(--c-indigo); padding:15px 28px; border-radius:14px; background:rgba(255,255,255,.7); border:1px solid var(--glass-brd);">Request Quotation</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <div style="background:linear-gradient(135deg,#1c1d44,#23254f); padding:44px 40px 30px;">
+        <div style="display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:24px; margin-bottom:34px;">
+          <div>
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;"><img src="assets/supreme-logo.png" alt="Supreme" style="height:30px; filter:brightness(0) invert(1); opacity:.92;"><span style="width:1px; height:24px; background:rgba(255,255,255,.2);"></span><img src="assets/elate-logo.png" alt="Elate" style="height:34px; filter:brightness(0) invert(1); opacity:.92;"></div>
+            <div style="font-size:13px; line-height:1.6; color:rgba(255,255,255,.55); max-width:32ch;">Corporate gifting &amp; promotional merchandise, engineered for enterprise procurement teams.</div>
+          </div>
+          <div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#9fe7dc; margin-bottom:14px;">Company</div><div style="display:flex; flex-direction:column; gap:10px; font-size:13px; color:rgba(255,255,255,.7);"><span>About Us</span><span>Clients</span><span>Careers</span><span>Contact</span></div></div>
+          <div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#9fe7dc; margin-bottom:14px;">Products</div><div style="display:flex; flex-direction:column; gap:10px; font-size:13px; color:rgba(255,255,255,.7);"><span>Catalogue</span><span>Quotation builder</span><span>Catalogue generator</span><span>Merchandise portal</span></div></div>
+          <div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#9fe7dc; margin-bottom:14px;">Connect</div><div style="display:flex; flex-direction:column; gap:10px; font-size:13px; color:rgba(255,255,255,.7);"><span>WhatsApp</span><span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3142505d54427142444143545c5456585745421f585f">[email&#160;protected]</a></span><span>+91 ·· ···· ····</span></div></div>
+        </div>
+        <div style="border-top:1px solid rgba(255,255,255,.12); padding-top:18px; display:flex; justify-content:space-between; font-size:12px; color:rgba(255,255,255,.45);"><span>© Supreme International</span><span style="font-family:'JetBrains Mono',monospace;">Privacy · Terms</span></div>
+      </div>
+
+    </div>
+   </div>
+  </div>
+
+  <!-- ================= HOME — MOBILE ================= -->
+  <section style="max-width:1180px; margin:0 auto; padding:24px 40px 90px;">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:var(--c-accent); margin-bottom:14px;">04 — Home Page · Mobile</div>
+    <h2 style="font-size:40px; line-height:1.05; letter-spacing:-.02em; font-weight:800; margin:0 0 28px; color:var(--c-ink);">Responsive by design</h2>
+
+    <div style="display:flex; gap:36px; align-items:flex-start; flex-wrap:wrap;">
+      <!-- phone -->
+      <div style="flex:none; width:340px; padding:12px; border-radius:46px; background:linear-gradient(160deg,#26284f,#16173a); box-shadow:0 40px 90px rgba(34,36,90,.3); border:1px solid rgba(255,255,255,.1);">
+        <div style="position:relative; border-radius:36px; overflow:hidden; background:#eef0f8; height:680px;">
+          <div style="position:absolute; inset:0; pointer-events:none; background:radial-gradient(60% 30% at 80% 0%, rgba(20,155,142,.22), transparent 60%),radial-gradient(60% 30% at 0% 12%, rgba(58,60,152,.2), transparent 60%),linear-gradient(180deg,#eef0f8,#f2f1f7);"></div>
+          <!-- status bar -->
+          <div style="position:relative; display:flex; justify-content:space-between; align-items:center; padding:14px 22px 6px; font-size:12px; font-weight:600; color:var(--c-ink);"><span>9:41</span><span style="font-family:'JetBrains Mono',monospace; font-size:10px;">5G ▰▰▰</span></div>
+          <!-- mobile nav -->
+          <div style="position:relative; margin:8px 14px; padding:10px 14px; display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,.62); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,.8); border-radius:16px; box-shadow:0 6px 20px rgba(34,36,90,.1);">
+            <img src="assets/supreme-logo.png" alt="Supreme" style="height:20px;"><img src="assets/elate-logo.png" alt="Elate" style="height:22px; margin-left:8px;">
+            <div style="display:flex; gap:8px; align-items:center;">
+              <div style="height:32px; padding:0 13px; border-radius:9px; background:linear-gradient(135deg,#2a2b6a,#3a3c98); color:#fff; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;">Login</div>
+              <div style="width:32px; height:32px; border-radius:9px; background:rgba(255,255,255,.7); border:1px solid var(--c-line); display:flex; flex-direction:column; justify-content:center; gap:3px; align-items:center;"><span style="width:13px; height:1.6px; background:var(--c-ink); border-radius:2px;"></span><span style="width:13px; height:1.6px; background:var(--c-ink); border-radius:2px;"></span><span style="width:13px; height:1.6px; background:var(--c-ink); border-radius:2px;"></span></div>
+            </div>
+          </div>
+          <!-- mobile hero -->
+          <div style="position:relative; padding:14px 18px 0;">
+            <div style="display:inline-flex; align-items:center; gap:6px; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.1em; text-transform:uppercase; color:var(--c-accent); background:rgba(23,155,142,.1); border:1px solid rgba(23,155,142,.22); padding:5px 10px; border-radius:999px; margin-bottom:14px;"><span style="width:5px;height:5px;border-radius:50%;background:var(--c-accent);"></span>Gifting platform</div>
+            <h1 style="font-size:32px; line-height:1.04; letter-spacing:-.03em; font-weight:800; margin:0 0 10px; color:var(--c-ink);">Corporate gifting, simplified.</h1>
+            <p style="font-size:13px; line-height:1.5; color:var(--c-slate); margin:0 0 16px;">Browse, shortlist, and self-generate quotations &amp; catalogues.</p>
+            <div style="display:flex; gap:8px; margin-bottom:20px;">
+              <button style="cursor:pointer; flex:1; font-family:inherit; font-weight:600; font-size:13px; color:#fff; padding:12px; border-radius:12px; background:linear-gradient(135deg,#2a2b6a,#3a3c98); border:none; box-shadow:0 8px 20px rgba(42,43,106,.3);">Browse</button>
+              <button style="cursor:pointer; flex:1; font-family:inherit; font-weight:600; font-size:13px; color:var(--c-indigo); padding:12px; border-radius:12px; background:rgba(255,255,255,.65); border:1px solid var(--glass-brd);">Quote</button>
+            </div>
+          </div>
+          <!-- mobile category chips -->
+          <div style="position:relative; display:flex; gap:8px; padding:0 18px 16px; overflow:hidden;">
+            <span style="flex:none; font-size:12px; font-weight:600; color:#fff; padding:8px 14px; border-radius:999px; background:linear-gradient(135deg,#2a2b6a,#3a3c98);">All</span>
+            <span style="flex:none; font-size:12px; font-weight:600; color:var(--c-slate); padding:8px 14px; border-radius:999px; background:rgba(255,255,255,.65); border:1px solid var(--c-line);">Drinkware</span>
+            <span style="flex:none; font-size:12px; font-weight:600; color:var(--c-slate); padding:8px 14px; border-radius:999px; background:rgba(255,255,255,.65); border:1px solid var(--c-line);">Bags</span>
+            <span style="flex:none; font-size:12px; font-weight:600; color:var(--c-slate); padding:8px 14px; border-radius:999px; background:rgba(255,255,255,.65); border:1px solid var(--c-line);">Tech</span>
+          </div>
+          <!-- mobile product cards -->
+          <div style="position:relative; display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:0 18px 22px;">
+            <div style="background:rgba(255,255,255,.62); border:1px solid rgba(255,255,255,.85); border-radius:16px; padding:10px; backdrop-filter:blur(14px); box-shadow:0 10px 26px rgba(34,36,90,.1);">
+              <div style="aspect-ratio:1/1; border-radius:11px; background-image:url('assets/img/bottle.png'); background-size:cover; background-position:center; background-color:#e3efed; margin-bottom:9px;"></div>
+              <div style="font-weight:700; font-size:12px; line-height:1.2; margin-bottom:4px;">Steel Bottle</div>
+              <div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-size:13px; font-weight:800; color:var(--c-ink);">₹ 540</span><span style="font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--c-accent);">MOQ 50</span></div>
+            </div>
+            <div style="background:rgba(255,255,255,.62); border:1px solid rgba(255,255,255,.85); border-radius:16px; padding:10px; backdrop-filter:blur(14px); box-shadow:0 10px 26px rgba(34,36,90,.1);">
+              <div style="aspect-ratio:1/1; border-radius:11px; background-image:url('assets/img/backpack.png'); background-size:cover; background-position:center; background-color:#e6eaf6; margin-bottom:9px;"></div>
+              <div style="font-weight:700; font-size:12px; line-height:1.2; margin-bottom:4px;">Backpack</div>
+              <div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-size:13px; font-weight:800; color:var(--c-ink);">₹ 1,250</span><span style="font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--c-accent);">MOQ 100</span></div>
+            </div>
+          </div>
+          <!-- bottom bar -->
+          <div style="position:absolute; bottom:0; left:0; right:0; padding:12px 18px 18px; display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,.75); backdrop-filter:blur(20px); border-top:1px solid rgba(255,255,255,.8);">
+            <div style="font-size:13px;"><span style="font-weight:800; color:var(--c-ink);">Cart · 2</span> <span style="color:var(--c-muted); font-size:12px;">items</span></div>
+            <button style="cursor:pointer; font-family:inherit; font-weight:600; font-size:13px; color:#fff; padding:11px 20px; border-radius:12px; background:var(--c-accent); border:none; box-shadow:0 8px 20px rgba(23,155,142,.3);">Quotation →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- mobile notes -->
+      <div style="flex:1; min-width:280px; padding-top:10px;">
+        <div style="font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--c-muted); margin-bottom:18px;">Interaction notes</div>
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div style="display:flex; gap:14px; align-items:flex-start; background:var(--glass-bg); border:1px solid var(--glass-brd); border-radius:16px; padding:18px; backdrop-filter:blur(14px);"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--c-accent); margin-top:2px;">↗</span><div><div style="font-weight:700; font-size:14px; margin-bottom:4px;">Live this build</div><div style="font-size:13px; color:var(--c-slate); line-height:1.5;">Add-to-cart on the desktop hero &amp; product cards updates the live cart badge with an "Added ✓" confirmation. Tweaks panel switches accent (Teal / Gold / Indigo) and glass strength.</div></div></div>
+          <div style="display:flex; gap:14px; align-items:flex-start; background:var(--glass-bg); border:1px solid var(--glass-brd); border-radius:16px; padding:18px; backdrop-filter:blur(14px);"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--c-accent); margin-top:2px;">◷</span><div><div style="font-weight:700; font-size:14px; margin-bottom:4px;">Micro-interactions</div><div style="font-size:13px; color:var(--c-slate); line-height:1.5;">Floating glass cards drift gently; cards lift on hover; category chips and nav items show a soft active fill. Buttons use a 150ms ease with a subtle shadow bloom.</div></div></div>
+          <div style="display:flex; gap:14px; align-items:flex-start; background:var(--glass-bg); border:1px solid var(--glass-brd); border-radius:16px; padding:18px; backdrop-filter:blur(14px);"><span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--c-accent); margin-top:2px;">→</span><div><div style="font-weight:700; font-size:14px; margin-bottom:4px;">Next screens</div><div style="font-size:13px; color:var(--c-slate); line-height:1.5;">Catalogue + filters, product detail, the Procurement Workspace (cart/quotation), catalogue generator, merchandise portal, and the admin dashboard — all on this system.</div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  </div>
+</div>
+</x-dc>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1180},&quot;accentTheme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Teal&quot;,&quot;Gold&quot;,&quot;Indigo&quot;],&quot;default&quot;:&quot;Teal&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;glassStrength&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Frosted&quot;,&quot;Subtle&quot;],&quot;default&quot;:&quot;Frosted&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { cart: 0, mobileMenu: false, activeCat: 0, tIndex: 0 };
+
+  floats = [
+    { cat: 'Drinkware', count: '1,240 products', name: 'Insulated Steel Bottle', moq: 'MOQ 50', price: '₹ 540', img: 'bottle', catImg: 'cat-drinkware' },
+    { cat: 'Bags & Backpacks', count: '980 products', name: 'Canvas Laptop Backpack', moq: 'MOQ 100', price: '₹ 1,250', img: 'backpack', catImg: 'cat-bags' },
+    { cat: 'Tech & Gadgets', count: '760 products', name: 'Wireless Charging Pad', moq: 'MOQ 100', price: '₹ 890', img: 'charger', catImg: 'cat-tech' },
+  ];
+  fi = 0;
+
+  componentDidMount() { this.applyTheme(); this.startFloatCycle(); }
+  componentDidUpdate() { this.applyTheme(); }
+  componentWillUnmount() { if (this._floatTimer) clearInterval(this._floatTimer); }
+
+  reg = (el) => { if (el && el.dataset && el.dataset.reg) this['_' + el.dataset.reg] = el; };
+
+  startFloatCycle = () => {
+    if (this._floatTimer) return;
+    this._floatTimer = setInterval(() => {
+      const pw = this._fProdWrap, cw = this._fCatWrap;
+      if (pw) pw.style.opacity = '0';
+      if (cw) cw.style.opacity = '0';
+      setTimeout(() => {
+        this.fi = (this.fi + 1) % this.floats.length;
+        const f = this.floats[this.fi];
+        if (this._fProdName) this._fProdName.textContent = f.name;
+        if (this._fProdMoq) this._fProdMoq.textContent = f.moq;
+        if (this._fProdPrice) this._fProdPrice.textContent = f.price;
+        if (this._fProdImg) this._fProdImg.style.backgroundImage = `url('assets/img/${f.img}.png')`;
+        if (this._fCatImg) this._fCatImg.style.backgroundImage = `url('assets/img/${f.catImg}.png')`;
+        if (this._fCatName) this._fCatName.textContent = f.cat;
+        if (this._fCatCount) this._fCatCount.textContent = f.count;
+        if (pw) pw.style.opacity = '1';
+        if (cw) cw.style.opacity = '1';
+      }, 420);
+    }, 3000);
+  };
+
+  applyTheme() {
+    const w = this.wrap; if (!w) return;
+    const a = this.props.accentTheme || 'Teal';
+    const map = { Teal: ['#149b8e', '#13b89f'], Gold: ['#b0823a', '#d2a043'], Indigo: ['#4143b0', '#5a5cd0'] };
+    const [c1, c2] = map[a] || map.Teal;
+    w.style.setProperty('--c-accent', c1);
+    w.style.setProperty('--c-accent2', c2);
+    const g = this.props.glassStrength || 'Frosted';
+    if (g === 'Subtle') { w.style.setProperty('--glass-bg', 'rgba(255,255,255,.8)'); w.style.setProperty('--glass-blur', '7px'); }
+    else { w.style.setProperty('--glass-bg', 'rgba(255,255,255,.52)'); w.style.setProperty('--glass-blur', '18px'); }
+  }
+
+  setWrap = (el) => { this.wrap = el; if (el) this.applyTheme(); };
+
+  addToCart = (e) => {
+    const b = e.currentTarget;
+    const label = b.getAttribute('data-label') || b.textContent;
+    b.textContent = 'Added ✓';
+    b.style.background = 'var(--c-accent)';
+    b.style.color = '#fff';
+    setTimeout(() => { b.textContent = label; b.style.background = ''; b.style.color = ''; }, 1100);
+    this.setState((s) => ({ cart: s.cart + 1 }));
+  };
+
+  toggleMobileMenu = () => this.setState((s) => ({ mobileMenu: !s.mobileMenu }));
+
+  renderVals() {
+    return {
+      setWrap: this.setWrap,
+      reg: this.reg,
+      addToCart: this.addToCart,
+      toggleMobileMenu: this.toggleMobileMenu,
+      cartCount: this.state.cart,
+      mobileMenu: this.state.mobileMenu,
+    };
+  }
+}
+</script>
+</body>
+</html>

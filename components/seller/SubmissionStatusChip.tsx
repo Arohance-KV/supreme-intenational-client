@@ -2,19 +2,28 @@
 
 import type { Submission } from '@/lib/seller/submissions';
 
+// Design-system status colors (mockup `badge()`): amber = pending review,
+// green = approved/live, red = rejected, slate = draft.
 const COLOR_MAP: Record<Submission['status'], string> = {
-  draft: 'bg-zinc-100 text-zinc-600',
-  submitted: 'bg-amber-100 text-amber-700',
-  approved: 'bg-green-100 text-green-700',
-  rejected: 'bg-red-100 text-red-700',
+  draft: 'text-slate bg-[rgba(91,93,122,.12)]',
+  submitted: 'text-[#b5801e] bg-[rgba(224,163,59,.16)]',
+  approved: 'text-[#1a8f5a] bg-[rgba(31,170,107,.12)]',
+  rejected: 'text-[#d8524d] bg-[rgba(224,82,77,.12)]',
+};
+
+const LABEL: Record<Submission['status'], string> = {
+  draft: 'Draft',
+  submitted: 'In review',
+  approved: 'Approved',
+  rejected: 'Rejected',
 };
 
 export function SubmissionStatusChip({ status }: { status: Submission['status'] }) {
   return (
     <span
-      className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${COLOR_MAP[status] ?? 'bg-zinc-100 text-zinc-600'}`}
+      className={`whitespace-nowrap rounded-full px-2.5 py-1 text-[11px] font-bold ${COLOR_MAP[status] ?? COLOR_MAP.draft}`}
     >
-      {status}
+      {LABEL[status] ?? status}
     </span>
   );
 }

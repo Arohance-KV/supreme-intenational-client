@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ApiError } from '@/lib/api';
 import { useRequestOtp, useVerifyOtp, type VerifyOtpResult } from '@/lib/otp';
 
@@ -19,6 +19,34 @@ export default function OtpModal({ open, onClose, onVerified, email }: OtpModalP
 
   const requestMutation = useRequestOtp();
   const verifyMutation = useVerifyOtp();
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // L3: dialog a11y — Esc to close, autofocus, and a Tab focus trap so keyboard/AT users
+  // can't escape the modal into the page behind it (WCAG 2.4.3 / 4.1.2).
+  useEffect(() => {
+    if (!open) return;
+    const focusables = () =>
+      Array.from(
+        dialogRef.current?.querySelectorAll<HTMLElement>(
+          'button, input, [href], [tabindex]:not([tabindex="-1"])',
+        ) ?? [],
+      ).filter((el) => !el.hasAttribute('disabled'));
+
+    focusables()[0]?.focus();
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { onClose(); return; }
+      if (e.key !== 'Tab') return;
+      const els = focusables();
+      if (!els.length) return;
+      const first = els[0];
+      const last = els[els.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [open, step, onClose]);
 
   if (!open) return null;
 
@@ -52,8 +80,14 @@ export default function OtpModal({ open, onClose, onVerified, email }: OtpModalP
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl">
-        <h2 className="mb-1 text-lg font-semibold text-zinc-900">Verify your identity</h2>
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="otp-modal-title"
+        className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl"
+      >
+        <h2 id="otp-modal-title" className="mb-1 text-lg font-semibold text-zinc-900">Verify your identity</h2>
         <p className="mb-5 text-sm text-zinc-500">
           {step === 'request'
             ? `We'll send a 6-digit code to ${email}.`

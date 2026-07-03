@@ -91,6 +91,7 @@ export async function uploadSubmissionImage(file: File): Promise<string> {
   const res = await fetch(`${base}/seller/upload/image`, {
     method: 'POST',
     headers: { 'x-session-id': getSessionId(), ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    credentials: 'include', // H6: send HttpOnly auth cookie
     body: fd,
   });
   const json = await res.json();

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEmployeeCart } from '@/lib/employee/cart';
 import { useWallet } from '@/lib/employee/wallet';
 import { useEmployeeCheckout, type ShippingAddress } from '@/lib/employee/checkout';
+import { useVerifyPayment } from '@/lib/employee/orders';
 import { loadRazorpay, openRazorpay } from '@/lib/employee/razorpay';
 import { ApiError } from '@/lib/api';
 
@@ -24,6 +25,7 @@ export default function EmployeeCheckoutPage() {
   const { data: cart, isLoading: cartLoading } = useEmployeeCart();
   const { data: wallet } = useWallet();
   const checkout = useEmployeeCheckout();
+  const verifyPayment = useVerifyPayment();
 
   const [address, setAddress] = useState<ShippingAddress>(INITIAL_ADDRESS);
   const [couponCode, setCouponCode] = useState('');
@@ -87,7 +89,15 @@ export default function EmployeeCheckoutPage() {
         amount: result.amountInPaise,
         currency: result.currency,
         name: 'Supreme International',
-        onSuccess: () => router.push('/employee/orders/' + result.orderId),
+        onSuccess: async (r) => {
+          // Confirm immediately from the browser; the webhook is the backstop if this fails.
+          try {
+            await verifyPayment.mutateAsync({ orderId: result.orderId, payment: r });
+          } catch {
+            // ignore — the order page polls and the webhook will confirm
+          }
+          router.push('/employee/orders/' + result.orderId);
+        },
         onDismiss: () => router.push('/employee/orders/' + result.orderId),
       });
     } catch (err) {

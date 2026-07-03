@@ -34,6 +34,8 @@ export async function apiFetch<T>(
   const res = await fetch(`${base}${path}`, {
     method: opts?.method ?? 'GET',
     headers,
+    // H6: send the HttpOnly auth cookie on cross-origin (same-site subdomain) requests
+    credentials: 'include',
     body: opts?.body ? JSON.stringify(opts.body) : undefined,
   });
 

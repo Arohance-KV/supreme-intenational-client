@@ -143,11 +143,11 @@ export default function Filters() {
   });
 
   return (
-    <div className="rounded-lg border border-zinc-200 bg-white p-4 space-y-5">
+    <div className="font-display space-y-5 rounded-[20px] border border-white/80 bg-white/55 p-5 shadow-[0_10px_30px_rgba(34,36,90,.08)] backdrop-blur-[14px]">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-zinc-900 uppercase tracking-wide">Filters</h2>
+        <h2 className="font-jbmono text-[11px] font-bold uppercase tracking-[.14em] text-muted">Filters</h2>
         {hasFilters && (
-          <button onClick={onClear} className="text-xs text-blue-600 hover:underline">
+          <button onClick={onClear} className="text-xs font-semibold text-accent hover:underline">
             Clear all
           </button>
         )}
@@ -159,37 +159,37 @@ export default function Filters() {
           <button
             onClick={() => setOtpOpen(true)}
             disabled={catalogue.isPending}
-            className="w-full rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
+            className="w-full rounded-xl bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)] px-3 py-2.5 text-sm font-semibold text-white shadow-[0_8px_22px_rgba(42,43,106,.3)] disabled:opacity-60"
           >
             {catalogue.isPending ? 'Generating…' : 'Generate Catalogue (PDF)'}
           </button>
         ) : (
           <Link
             href="/login"
-            className="block w-full rounded-md border border-blue-600 px-3 py-2 text-center text-sm font-medium text-blue-600 hover:bg-blue-50"
+            className="block w-full rounded-xl border border-indigo px-3 py-2.5 text-center text-sm font-semibold text-indigo no-underline hover:bg-[rgba(42,43,106,.07)]"
           >
             Log in to generate catalogue
           </Link>
         )}
         {catalogue.isError && (
-          <p className="mt-1 text-xs text-red-600">
+          <p className="mt-1 text-xs text-[#e0524d]">
             {(catalogue.error as Error).message === 'NO_PRODUCTS_FOR_FILTERS'
               ? 'No products match these filters.'
               : 'Could not generate catalogue. Try again.'}
           </p>
         )}
         {catalogue.isSuccess && (
-          <p className="mt-1 text-xs text-green-600">Catalogue opened in a new tab.</p>
+          <p className="mt-1 text-xs text-[#1a8f5a]">Catalogue opened in a new tab.</p>
         )}
       </div>
 
       {/* Sort */}
       <div>
-        <label className="block text-xs font-medium text-zinc-700 mb-1">Sort by</label>
+        <label className="mb-1.5 block text-xs font-semibold text-slate">Sort by</label>
         <select
           value={selectedSort}
           onChange={(e) => onSortChange(e.target.value)}
-          className="w-full rounded border border-zinc-300 bg-white px-2 py-1.5 text-sm text-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-xl border border-line bg-white/80 px-3 py-2 text-sm text-ink outline-none transition-colors focus:border-accent focus:bg-white"
         >
           <option value="">Default</option>
           <option value="newest">Newest</option>
@@ -201,7 +201,7 @@ export default function Filters() {
 
       {/* Price range */}
       <div>
-        <label className="block text-xs font-medium text-zinc-700 mb-1">Price range (₹)</label>
+        <label className="mb-1.5 block text-xs font-semibold text-slate">Price range (₹)</label>
         <div className="flex items-center gap-2">
           <input
             type="number"
@@ -211,9 +211,9 @@ export default function Filters() {
             value={minPrice}
             onChange={(e) => setMinPrice(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && applyPrice()}
-            className="w-full rounded border border-zinc-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-xl border border-line bg-white/80 px-3 py-2 text-sm outline-none transition-colors placeholder:text-muted focus:border-accent focus:bg-white"
           />
-          <span className="text-zinc-400">–</span>
+          <span className="text-muted">–</span>
           <input
             type="number"
             inputMode="numeric"
@@ -222,12 +222,12 @@ export default function Filters() {
             value={maxPrice}
             onChange={(e) => setMaxPrice(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && applyPrice()}
-            className="w-full rounded border border-zinc-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-xl border border-line bg-white/80 px-3 py-2 text-sm outline-none transition-colors placeholder:text-muted focus:border-accent focus:bg-white"
           />
         </div>
         <button
           onClick={applyPrice}
-          className="mt-2 w-full rounded border border-zinc-300 px-2 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
+          className="mt-2 w-full rounded-xl border border-line bg-white/60 px-2 py-1.5 text-xs font-semibold text-slate hover:bg-white"
         >
           Apply price
         </button>
@@ -235,13 +235,13 @@ export default function Filters() {
 
       {/* Categories (multi-select) */}
       <div>
-        <label className="block text-xs font-medium text-zinc-700 mb-1">Categories</label>
+        <label className="mb-1.5 block text-xs font-semibold text-slate">Categories</label>
         {catsLoading ? (
-          <div className="h-24 animate-pulse rounded bg-zinc-100" />
+          <div className="h-24 animate-pulse rounded-xl bg-white/60" />
         ) : categories.length === 0 ? (
-          <p className="text-xs text-zinc-400">No categories</p>
+          <p className="text-xs text-muted">No categories</p>
         ) : (
-          <ul className="space-y-1">
+          <ul className="space-y-1.5">
             {categories.map((cat) => (
               <li key={cat._id} className="flex items-center gap-2">
                 <input
@@ -249,9 +249,9 @@ export default function Filters() {
                   id={`cat-${cat.slug}`}
                   checked={selectedCategories.includes(cat.slug)}
                   onChange={() => toggleMulti('category', cat.slug)}
-                  className="rounded border-zinc-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-line text-accent accent-accent focus:ring-accent"
                 />
-                <label htmlFor={`cat-${cat.slug}`} className="text-sm text-zinc-700 cursor-pointer">
+                <label htmlFor={`cat-${cat.slug}`} className="cursor-pointer text-sm text-slate">
                   {cat.name}
                 </label>
               </li>
@@ -269,11 +269,11 @@ export default function Filters() {
 
           return (
             <div key={attr._id}>
-              <p className="text-xs font-medium text-zinc-700 mb-1">
+              <p className="mb-1.5 text-xs font-semibold text-slate">
                 {attr.name}
                 {attr.unit ? ` (${attr.unit})` : ''}
               </p>
-              <ul className="space-y-1">
+              <ul className="space-y-1.5">
                 {activeValues.map((val) => (
                   <li key={val._id} className="flex items-center gap-2">
                     <input
@@ -281,11 +281,11 @@ export default function Filters() {
                       id={`${attr.slug}-${val.slug}`}
                       checked={selectedValues.includes(val.slug)}
                       onChange={() => toggleMulti(attr.slug, val.slug)}
-                      className="rounded border-zinc-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-line text-accent accent-accent focus:ring-accent"
                     />
                     <label
                       htmlFor={`${attr.slug}-${val.slug}`}
-                      className="text-sm text-zinc-700 cursor-pointer"
+                      className="cursor-pointer text-sm text-slate"
                     >
                       {val.label}
                     </label>

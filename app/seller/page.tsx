@@ -8,83 +8,89 @@ function inr(n: number): string {
 }
 
 const STATUS_CHIP: Record<string, string> = {
-  pending: 'bg-amber-100 text-amber-700',
-  active: 'bg-green-100 text-green-700',
-  rejected: 'bg-red-100 text-red-700',
-  suspended: 'bg-zinc-100 text-zinc-600',
+  pending: 'text-[#b5801e] bg-[rgba(224,163,59,.16)]',
+  active: 'text-[#1a8f5a] bg-[rgba(31,170,107,.12)]',
+  rejected: 'text-[#d8524d] bg-[rgba(224,82,77,.12)]',
+  suspended: 'text-slate bg-[rgba(91,93,122,.12)]',
 };
+
+function Kpi({ label, value, sub, tone }: { label: string; value: string; sub: string; tone?: string }) {
+  return (
+    <div className="rounded-[18px] border border-white/80 bg-white/[.62] p-5 shadow-[0_10px_30px_rgba(34,36,90,.07)] backdrop-blur-[16px]">
+      <div className="font-jbmono mb-3 text-[10px] uppercase tracking-[.08em] text-muted">{label}</div>
+      <div className={`text-[30px] font-extrabold tracking-[-.02em] ${tone ?? 'text-ink'}`}>{value}</div>
+      <div className="mt-1.5 text-[11px] text-muted">{sub}</div>
+    </div>
+  );
+}
 
 export default function SellerDashboardPage() {
   const { data: me } = useSellerMe(true);
   const { data: summary } = useEarningsSummary();
 
   return (
-    <main className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+    <div className="px-6 py-6 sm:px-8 sm:py-7">
       {/* Header */}
-      <div className="flex items-start justify-between">
+      <div className="mb-6 flex items-center justify-between gap-5">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-900">
-            {me ? me.businessName : <span className="text-zinc-400">Loading…</span>}
+          <h1 className="mb-0.5 text-[26px] font-extrabold tracking-[-.02em] text-ink">
+            {me ? `Welcome back, ${me.businessName}` : 'Welcome back'}
           </h1>
-          {me && (
-            <div className="mt-1 flex items-center gap-2 text-sm text-zinc-500">
-              <span
-                className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${STATUS_CHIP[me.status] ?? 'bg-zinc-100 text-zinc-600'}`}
-              >
-                {me.status}
-              </span>
-              <span>Margin: {me.marginPercent}%</span>
-            </div>
-          )}
+          <div className="text-[13px] text-slate">Here&apos;s how your catalogue is performing on Supreme.</div>
         </div>
+        <Link
+          href="/seller/submissions/new"
+          className="flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#176054,#179b8e)] px-[18px] py-3 text-sm font-bold text-white no-underline shadow-[0_10px_24px_rgba(23,155,142,.3)]"
+        >
+          ＋ Add Product
+        </Link>
       </div>
 
-      {/* Earnings mini-cards */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="rounded-xl border border-zinc-200 bg-white p-4">
-          <p className="text-xs text-zinc-500 mb-1">Outstanding</p>
-          <p className="text-xl font-semibold text-amber-600">
-            {summary ? inr(summary.outstanding) : '—'}
-          </p>
+      {/* Account status */}
+      {me && (
+        <div className="mb-5 flex flex-wrap items-center gap-3 rounded-[18px] border border-white/80 bg-white/[.62] px-5 py-3.5 backdrop-blur-[16px]">
+          <span className="text-sm font-bold text-ink">Account status</span>
+          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-bold capitalize ${STATUS_CHIP[me.status] ?? STATUS_CHIP.suspended}`}>
+            {me.status}
+          </span>
+          <span className="text-[13px] text-slate">Platform margin: {me.marginPercent}%</span>
         </div>
-        <div className="rounded-xl border border-zinc-200 bg-white p-4">
-          <p className="text-xs text-zinc-500 mb-1">Settled</p>
-          <p className="text-xl font-semibold text-green-600">
-            {summary ? inr(summary.settled) : '—'}
-          </p>
-        </div>
-        <div className="rounded-xl border border-zinc-200 bg-white p-4">
-          <p className="text-xs text-zinc-500 mb-1">Lifetime</p>
-          <p className="text-xl font-semibold text-zinc-900">
-            {summary ? inr(summary.lifetime) : '—'}
-          </p>
-        </div>
+      )}
+
+      {/* Earnings KPIs */}
+      <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <Kpi label="Outstanding" value={summary ? inr(summary.outstanding) : '—'} sub="awaiting payout" tone="text-[#b5801e]" />
+        <Kpi label="Settled" value={summary ? inr(summary.settled) : '—'} sub="paid out to you" tone="text-[#1a8f5a]" />
+        <Kpi label="Lifetime earnings" value={summary ? inr(summary.lifetime) : '—'} sub="since you joined" />
       </div>
 
       {/* Quick links */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Link
           href="/seller/submissions"
-          className="rounded-xl border border-zinc-200 bg-white p-5 hover:bg-zinc-50 transition-colors"
+          className="rounded-[18px] border border-white/80 bg-white/[.55] p-5 no-underline shadow-[0_10px_30px_rgba(34,36,90,.07)] backdrop-blur-[16px] transition-shadow hover:shadow-[0_14px_40px_rgba(34,36,90,.14)]"
         >
-          <p className="font-semibold text-zinc-900">Submissions</p>
-          <p className="mt-1 text-xs text-zinc-500">View and manage your product submissions</p>
+          <div className="mb-2 text-[22px]">◷</div>
+          <p className="font-bold text-ink">Approval status</p>
+          <p className="mt-1 text-xs text-slate">View and manage your product submissions.</p>
         </Link>
         <Link
           href="/seller/products"
-          className="rounded-xl border border-zinc-200 bg-white p-5 hover:bg-zinc-50 transition-colors"
+          className="rounded-[18px] border border-white/80 bg-white/[.55] p-5 no-underline shadow-[0_10px_30px_rgba(34,36,90,.07)] backdrop-blur-[16px] transition-shadow hover:shadow-[0_14px_40px_rgba(34,36,90,.14)]"
         >
-          <p className="font-semibold text-zinc-900">Products</p>
-          <p className="mt-1 text-xs text-zinc-500">Manage your live catalog listings</p>
+          <div className="mb-2 text-[22px]">▤</div>
+          <p className="font-bold text-ink">My products</p>
+          <p className="mt-1 text-xs text-slate">Manage your live catalogue listings.</p>
         </Link>
         <Link
           href="/seller/payouts"
-          className="rounded-xl border border-zinc-200 bg-white p-5 hover:bg-zinc-50 transition-colors"
+          className="rounded-[18px] border border-white/80 bg-white/[.55] p-5 no-underline shadow-[0_10px_30px_rgba(34,36,90,.07)] backdrop-blur-[16px] transition-shadow hover:shadow-[0_14px_40px_rgba(34,36,90,.14)]"
         >
-          <p className="font-semibold text-zinc-900">Payouts</p>
-          <p className="mt-1 text-xs text-zinc-500">Track your earnings and payout history</p>
+          <div className="mb-2 text-[22px]">₹</div>
+          <p className="font-bold text-ink">Payouts</p>
+          <p className="mt-1 text-xs text-slate">Track your earnings and payout history.</p>
         </Link>
       </div>
-    </main>
+    </div>
   );
 }

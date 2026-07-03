@@ -39,7 +39,7 @@ function StarRating({ rating, onChange }: { rating: number; onChange?: (r: numbe
           type={onChange ? 'button' : undefined}
           onClick={() => onChange?.(star)}
           className={`h-6 w-6 ${onChange ? 'cursor-pointer hover:scale-110 transition-transform' : 'cursor-default'} ${
-            star <= rating ? 'text-amber-400' : 'text-zinc-300'
+            star <= rating ? 'text-[#e0a33b]' : 'text-line'
           }`}
         >
           <svg fill="currentColor" viewBox="0 0 20 20">
@@ -86,17 +86,17 @@ function ReviewForm({ slug, onSuccess }: { slug: string; onSuccess: () => void }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-lg border border-zinc-200 bg-white p-5 flex flex-col gap-4">
-      <h3 className="font-semibold text-zinc-900">Write a Review</h3>
+    <form onSubmit={handleSubmit} className="font-display flex flex-col gap-4 rounded-[18px] border border-white/80 bg-white/55 p-5 backdrop-blur-[14px]">
+      <h3 className="font-bold text-ink">Write a Review</h3>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-zinc-700">Rating</label>
+        <label className="mb-1.5 block text-sm font-semibold text-slate">Rating</label>
         <StarRating rating={rating} onChange={setRating} />
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-zinc-700">
-          Title <span className="text-red-500">*</span>
+        <label className="mb-1.5 block text-sm font-semibold text-slate">
+          Title <span className="text-[#e0524d]">*</span>
         </label>
         <input
           type="text"
@@ -104,35 +104,35 @@ function ReviewForm({ slug, onSuccess }: { slug: string; onSuccess: () => void }
           onChange={(e) => setTitle(e.target.value)}
           maxLength={120}
           placeholder="Summary of your experience"
-          className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-xl border border-line bg-white/80 px-3 py-2 text-sm outline-none transition-colors placeholder:text-muted focus:border-accent focus:bg-white"
         />
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-zinc-700">Comment (optional)</label>
+        <label className="mb-1.5 block text-sm font-semibold text-slate">Comment (optional)</label>
         <textarea
           value={body}
           onChange={(e) => setBody(e.target.value)}
           maxLength={2000}
           rows={4}
           placeholder="Share your experience in detail..."
-          className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          className="w-full resize-none rounded-xl border border-line bg-white/80 px-3 py-2 text-sm outline-none transition-colors placeholder:text-muted focus:border-accent focus:bg-white"
         />
-        <p className="mt-1 text-xs text-zinc-400">{body.length}/2000</p>
+        <p className="mt-1 text-xs text-muted">{body.length}/2000</p>
       </div>
 
       {(formError || mutation.isError) && (
-        <p className="text-sm text-red-600">{formError}</p>
+        <p className="text-sm text-[#e0524d]">{formError}</p>
       )}
 
       {mutation.isSuccess && (
-        <p className="text-sm font-medium text-green-600">Review submitted successfully!</p>
+        <p className="text-sm font-semibold text-[#1a8f5a]">Review submitted successfully!</p>
       )}
 
       <button
         type="submit"
         disabled={mutation.isPending}
-        className="w-fit rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+        className="w-fit rounded-xl bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)] px-5 py-2 text-sm font-semibold text-white shadow-[0_8px_22px_rgba(42,43,106,.3)] transition-colors hover:brightness-110 disabled:opacity-50"
       >
         {mutation.isPending ? 'Submitting...' : 'Submit Review'}
       </button>
@@ -154,8 +154,8 @@ export default function Reviews({ slug }: ReviewsProps) {
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      <h2 className="text-xl font-bold text-zinc-900">
+    <div className="font-display flex flex-col gap-6">
+      <h2 className="text-xl font-extrabold tracking-[-.02em] text-ink">
         Reviews
         {data?.pagination.total ? ` (${data.pagination.total})` : ''}
       </h2>
@@ -163,8 +163,8 @@ export default function Reviews({ slug }: ReviewsProps) {
       {/* Create review form — only for logged-in users */}
       {isLoggedIn && <ReviewForm slug={slug} onSuccess={invalidate} />}
       {!isLoggedIn && (
-        <p className="text-sm text-zinc-500">
-          <a href="/login" className="text-blue-600 hover:underline">Sign in</a> to leave a review.
+        <p className="text-sm text-slate">
+          <a href="/login" className="font-semibold text-accent hover:underline">Sign in</a> to leave a review.
         </p>
       )}
 
@@ -172,19 +172,19 @@ export default function Reviews({ slug }: ReviewsProps) {
       {isLoading && (
         <div className="flex flex-col gap-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-24 animate-pulse rounded-lg bg-zinc-200" />
+            <div key={i} className="h-24 animate-pulse rounded-[18px] bg-white/55" />
           ))}
         </div>
       )}
 
       {isError && (
-        <p className="text-sm text-red-500">
+        <p className="text-sm text-[#e0524d]">
           {error instanceof ApiError ? error.message : 'Failed to load reviews.'}
         </p>
       )}
 
       {data && data.reviews.length === 0 && (
-        <p className="text-sm text-zinc-500">No reviews yet. Be the first!</p>
+        <p className="text-sm text-slate">No reviews yet. Be the first!</p>
       )}
 
       {data && data.reviews.length > 0 && (
@@ -200,21 +200,21 @@ export default function Reviews({ slug }: ReviewsProps) {
             return (
               <div
                 key={review._id}
-                className="rounded-lg border border-zinc-200 bg-white p-4 flex flex-col gap-2"
+                className="flex flex-col gap-2 rounded-[18px] border border-white/80 bg-white/55 p-4 backdrop-blur-[14px]"
               >
-                <div className="flex items-center justify-between gap-2 flex-wrap">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <StarRating rating={review.rating} />
-                    <span className="text-sm font-medium text-zinc-800">{review.title}</span>
+                    <span className="text-sm font-semibold text-ink">{review.title}</span>
                   </div>
-                  <span className="text-xs text-zinc-400">
+                  <span className="text-xs text-muted">
                     {new Date(review.createdAt).toLocaleDateString()}
                   </span>
                 </div>
                 {review.body && (
-                  <p className="text-sm text-zinc-600 leading-relaxed">{review.body}</p>
+                  <p className="text-sm leading-relaxed text-slate">{review.body}</p>
                 )}
-                <p className="text-xs text-zinc-400">— {authorName}</p>
+                <p className="text-xs text-muted">— {authorName}</p>
               </div>
             );
           })}

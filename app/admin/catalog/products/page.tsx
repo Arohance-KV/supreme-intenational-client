@@ -11,6 +11,8 @@ import {
   type CreateProductBody,
   type AdminProduct,
 } from '@/lib/admin/products';
+import { useCategories } from '@/lib/admin/taxonomy';
+import { useCompanies } from '@/lib/admin/companies';
 import { StatusChip } from '@/components/admin/StatusChip';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -24,6 +26,9 @@ function inr(n: unknown): string {
 function CreateProductModal({ onClose }: { onClose: () => void }) {
   const router = useRouter();
   const createProduct = useCreateProduct();
+  const { data: categories = [], isLoading: catsLoading } = useCategories();
+  const { data: companiesData, isLoading: companiesLoading } = useCompanies(1);
+  const companies = companiesData?.items ?? [];
   const [form, setForm] = useState<CreateProductBody>({
     name: '',
     categoryId: '',
@@ -77,16 +82,24 @@ function CreateProductModal({ onClose }: { onClose: () => void }) {
 
           <div>
             <label htmlFor="cp-categoryId" className="mb-1 block text-sm font-medium text-zinc-700">
-              Category ID <span className="text-red-500">*</span>
+              Category <span className="text-red-500">*</span>
             </label>
-            <input
+            <select
               id="cp-categoryId"
               required
-              placeholder="MongoDB ObjectId"
               value={form.categoryId}
               onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
-              className="w-full rounded border border-zinc-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-zinc-400"
-            />
+              className="w-full rounded border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400"
+            >
+              <option value="" disabled>
+                {catsLoading ? 'Loading categories…' : 'Select category…'}
+              </option>
+              {categories.map((c) => (
+                <option key={c._id} value={c._id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
@@ -122,16 +135,24 @@ function CreateProductModal({ onClose }: { onClose: () => void }) {
           {form.visibility === 'company' && (
             <div>
               <label htmlFor="cp-ownerCompanyId" className="mb-1 block text-sm font-medium text-zinc-700">
-                Owner company ObjectId <span className="text-red-500">*</span>
+                Owner company <span className="text-red-500">*</span>
               </label>
-              <input
+              <select
                 id="cp-ownerCompanyId"
                 required={form.visibility === 'company'}
-                placeholder="Owner company ObjectId"
                 value={form.ownerCompanyId ?? ''}
                 onChange={(e) => setForm({ ...form, ownerCompanyId: e.target.value })}
-                className="w-full rounded border border-zinc-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-zinc-400"
-              />
+                className="w-full rounded border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400"
+              >
+                <option value="" disabled>
+                  {companiesLoading ? 'Loading companies…' : 'Select company…'}
+                </option>
+                {companies.map((c) => (
+                  <option key={c._id} value={c._id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
             </div>
           )}
 

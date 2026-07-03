@@ -95,6 +95,15 @@ export interface CreateVariantBody {
   attributes: { attributeId: string; valueId: string }[];
 }
 
+// Bulk create variants — matches bulkCreateVariantsValidator + controller.
+// Server generates every combination of the selected values across attributes.
+export interface BulkCreateVariantsBody {
+  attributes: { attributeId: string; valueIds: string[] }[];
+  defaultPrice: number;
+  defaultOriginalPrice: number;
+  defaultStock: number;
+}
+
 // Update variant — matches updateVariantValidator + controller
 export interface UpdateVariantBody {
   price?: number;
@@ -188,6 +197,18 @@ export function useCreateVariant(productId: string, slug: string) {
   return useMutation({
     mutationFn: (body: CreateVariantBody) =>
       adminFetch<ProductVariant>(`/admin/products/${productId}/variants`, {
+        method: 'POST',
+        body,
+      }),
+    onSuccess: inv,
+  });
+}
+
+export function useBulkCreateVariants(productId: string, slug: string) {
+  const inv = useInvalidate(slug);
+  return useMutation({
+    mutationFn: (body: BulkCreateVariantsBody) =>
+      adminFetch<ProductVariant[]>(`/admin/products/${productId}/variants/bulk`, {
         method: 'POST',
         body,
       }),

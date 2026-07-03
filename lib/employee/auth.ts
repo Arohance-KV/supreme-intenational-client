@@ -1,20 +1,7 @@
 'use client';
-import { useSyncExternalStore } from 'react';
+import { useCookieAuth } from '../cookie-auth';
 
-const KEY = 'employeeToken';
-const listeners = new Set<() => void>();
-function emit() { listeners.forEach((l) => l()); }
-
+// H6: employee auth state via HttpOnly cookie + companion flag (no localStorage token).
 export function useEmployeeAuth() {
-  const token = useSyncExternalStore(
-    (cb) => { listeners.add(cb); return () => listeners.delete(cb); },
-    () => (typeof window !== 'undefined' ? localStorage.getItem(KEY) : null),
-    () => null,
-  );
-  return {
-    token,
-    isLoggedIn: !!token,
-    login: (t: string) => { localStorage.setItem(KEY, t); emit(); },
-    logout: () => { localStorage.removeItem(KEY); emit(); },
-  };
+  return useCookieAuth('sov_emp_auth', '/auth/employee/logout');
 }

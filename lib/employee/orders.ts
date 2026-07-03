@@ -119,3 +119,26 @@ export function useRetryPayment() {
     },
   });
 }
+
+// The fields Razorpay Checkout passes to the success handler.
+export interface RazorpayHandlerResponse {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+}
+
+// Confirm the payment immediately from the browser instead of waiting for the webhook.
+export function useVerifyPayment() {
+  const queryClient = useQueryClient();
+  return useMutation<OrderDetail, Error, { orderId: string; payment: RazorpayHandlerResponse }>({
+    mutationFn: ({ orderId, payment }) =>
+      apiFetch<OrderDetail>(`/orders/${orderId}/verify-payment`, {
+        method: 'POST',
+        body: payment,
+        tokenKey: 'employeeToken',
+      }),
+    onSuccess: (_data, { orderId }) => {
+      queryClient.invalidateQueries({ queryKey: ['employee', 'order', orderId] });
+    },
+  });
+}

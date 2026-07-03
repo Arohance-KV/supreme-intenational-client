@@ -11,7 +11,7 @@ export default function CartBadge({ count, href }: CartBadgeProps) {
   return (
     <Link
       href={href}
-      className="relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+      className="relative inline-flex items-center gap-1.5 rounded-xl px-3 py-[9px] text-sm font-medium text-slate no-underline transition-colors hover:bg-[rgba(42,43,106,.07)] hover:text-ink"
       aria-label={`Cart${count > 0 ? ` — ${count} items` : ''}`}
     >
       <svg
@@ -30,7 +30,7 @@ export default function CartBadge({ count, href }: CartBadgeProps) {
       </svg>
       <span>Cart</span>
       {count > 0 && (
-        <span className="absolute -top-1.5 -right-1.5 min-w-[1.25rem] h-5 flex items-center justify-center rounded-full bg-blue-600 text-white text-xs font-bold px-1">
+        <span className="absolute -top-1.5 -right-1.5 min-w-[1.25rem] h-5 flex items-center justify-center rounded-full bg-accent text-white text-xs font-bold px-1 shadow-[0_2px_6px_rgba(0,0,0,.2)]">
           {count > 99 ? '99+' : count}
         </span>
       )}

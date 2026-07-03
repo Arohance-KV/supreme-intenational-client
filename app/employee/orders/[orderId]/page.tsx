@@ -2,7 +2,7 @@
 
 import { use } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useOrder, useRetryPayment } from '@/lib/employee/orders';
+import { useOrder, useRetryPayment, useVerifyPayment } from '@/lib/employee/orders';
 import { loadRazorpay, openRazorpay } from '@/lib/employee/razorpay';
 
 function fmt(n: number | undefined | null) {
@@ -107,6 +107,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ orderId:
   const queryClient = useQueryClient();
   const { data: order, isLoading, isError } = useOrder(orderId);
   const retry = useRetryPayment();
+  const verifyPayment = useVerifyPayment();
 
   async function handleRetry() {
     try {
@@ -128,8 +129,13 @@ export default function OrderDetailPage({ params }: { params: Promise<{ orderId:
         amount: rzpAmount,
         currency: rzpCurrency,
         name: 'Supreme International',
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ['employee', 'order', orderId] });
+        onSuccess: async (r) => {
+          // Confirm immediately; the webhook is the backstop if this fails.
+          try {
+            await verifyPayment.mutateAsync({ orderId, payment: r });
+          } catch {
+            queryClient.invalidateQueries({ queryKey: ['employee', 'order', orderId] });
+          }
         },
         onDismiss: () => {
           queryClient.invalidateQueries({ queryKey: ['employee', 'order', orderId] });

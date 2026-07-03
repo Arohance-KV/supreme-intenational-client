@@ -7,6 +7,7 @@ import {
   useAdminProduct,
   useUpdateProduct,
   useCreateVariant,
+  useBulkCreateVariants,
   useUpdateVariant,
   useAdjustStock,
   useDeleteVariant,
@@ -14,10 +15,10 @@ import {
   uploadAdminImage,
   type AdminProductDetail,
   type UpdateProductBody,
-  type CreateVariantBody,
   type UpdateVariantBody,
   type FlashSaleBody,
 } from '@/lib/admin/products';
+import { useAttributes } from '@/lib/admin/taxonomy';
 import { StatusChip } from '@/components/admin/StatusChip';
 import type { ProductVariant } from '@/lib/catalog';
 
@@ -335,140 +336,328 @@ function VariantRow({
 
 // ── Add variant form ───────────────────────────────────────────────────────────
 
+// Value chips for picking attribute values. `multi` toggles between single-value
+// (single variant) and multi-value (bulk combinations) selection per attribute.
+function AttributeValuePicker({
+  attributes,
+  isSelected,
+  onToggle,
+}: {
+  attributes: ReturnType<typeof useAttributes>['data'];
+  isSelected: (attrId: string, valueId: string) => boolean;
+  onToggle: (attrId: string, valueId: string) => void;
+}) {
+  return (
+    <div className="space-y-3">
+      {(attributes ?? []).map((attr) => (
+        <div key={attr._id}>
+          <p className="mb-1.5 text-xs font-medium text-zinc-600">
+            {attr.name}
+            {attr.unit ? ` (${attr.unit})` : ''}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {attr.values
+              .filter((v) => v.isActive)
+              .map((val) => {
+                const selected = isSelected(attr._id, val._id);
+                return (
+                  <button
+                    key={val._id}
+                    type="button"
+                    onClick={() => onToggle(attr._id, val._id)}
+                    className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
+                      selected
+                        ? 'border-zinc-900 bg-zinc-900 text-white'
+                        : 'border-zinc-200 bg-white text-zinc-600 hover:border-zinc-400'
+                    }`}
+                  >
+                    {val.label}
+                  </button>
+                );
+              })}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const inputCls = 'w-full rounded border border-zinc-300 px-2 py-1 text-sm';
+
 function AddVariantForm({ productId, slug }: { productId: string; slug: string }) {
+  const { data: allAttributes = [], isLoading: attrLoading } = useAttributes();
   const createVariant = useCreateVariant(productId, slug);
-  const [form, setForm] = useState<CreateVariantBody>({
-    price: 0,
-    originalPrice: 0,
-    stock: 0,
-    moq: 1,
-    sku: '',
-    attributes: [],
-  });
-  // Raw attributes text: "attributeId:valueId" pairs, one per line
-  const [attrText, setAttrText] = useState('');
+  const bulkCreate = useBulkCreateVariants(productId, slug);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Parse attribute pairs from text
-    const attributes = attrText
-      .split('\n')
-      .map((line) => line.trim())
-      .filter(Boolean)
-      .map((line) => {
-        const [attributeId, valueId] = line.split(':').map((s) => s.trim());
-        return { attributeId, valueId };
-      })
-      .filter((a) => a.attributeId && a.valueId);
+  // Only attributes that are active and have at least one active value are usable.
+  const attributes = allAttributes.filter(
+    (a) => a.isActive && a.values.some((v) => v.isActive),
+  );
 
-    createVariant.mutate(
-      { ...form, attributes },
-      {
-        onSuccess: () => {
-          setForm({ price: 0, originalPrice: 0, stock: 0, moq: 1, sku: '', attributes: [] });
-          setAttrText('');
-        },
-      },
-    );
+  const [mode, setMode] = useState<'single' | 'bulk' | null>(null);
+
+  // Single mode: one value per attribute, plus pricing.
+  const [singleValues, setSingleValues] = useState<Record<string, string>>({});
+  const [single, setSingle] = useState({ sku: '', price: 0, originalPrice: 0, stock: 0, moq: 1 });
+
+  // Bulk mode: a set of values per attribute → server creates all combinations.
+  const [bulkValues, setBulkValues] = useState<Record<string, Set<string>>>({});
+  const [bulk, setBulk] = useState({ defaultPrice: 0, defaultOriginalPrice: 0, defaultStock: 0 });
+
+  const reset = () => {
+    setMode(null);
+    setSingleValues({});
+    setSingle({ sku: '', price: 0, originalPrice: 0, stock: 0, moq: 1 });
+    setBulkValues({});
+    setBulk({ defaultPrice: 0, defaultOriginalPrice: 0, defaultStock: 0 });
   };
+
+  // Number of variants bulk mode will create = product of selected counts per attribute.
+  const bulkCombinations = Object.values(bulkValues)
+    .filter((s) => s.size > 0)
+    .reduce((acc, s) => acc * s.size, 1);
+  const hasBulkSelection = Object.values(bulkValues).some((s) => s.size > 0);
+
+  const handleSingleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const attrs = Object.entries(singleValues)
+      .filter(([, valueId]) => !!valueId)
+      .map(([attributeId, valueId]) => ({ attributeId, valueId }));
+    if (attrs.length === 0) return;
+    createVariant.mutate({ ...single, attributes: attrs }, { onSuccess: reset });
+  };
+
+  const handleBulkSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const attrs = Object.entries(bulkValues)
+      .filter(([, set]) => set.size > 0)
+      .map(([attributeId, set]) => ({ attributeId, valueIds: Array.from(set) }));
+    if (attrs.length === 0) return;
+    bulkCreate.mutate({ ...bulk, attributes: attrs }, { onSuccess: reset });
+  };
+
+  // Mode picker (collapsed state)
+  if (mode === null) {
+    return (
+      <div className="mt-4 flex items-center gap-2">
+        <button
+          onClick={() => setMode('single')}
+          className="rounded bg-zinc-800 px-3 py-1.5 text-xs font-medium text-white hover:bg-zinc-700"
+        >
+          + Add variant
+        </button>
+        <button
+          onClick={() => setMode('bulk')}
+          className="rounded border border-zinc-300 px-3 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
+        >
+          Bulk create
+        </button>
+      </div>
+    );
+  }
+
+  if (!attrLoading && attributes.length === 0) {
+    return (
+      <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+        No usable attributes yet. Go to{' '}
+        <Link href="/admin/catalog/attributes" className="font-semibold underline">
+          Attributes
+        </Link>{' '}
+        and add some (with values) first.{' '}
+        <button onClick={reset} className="ml-1 underline">
+          Cancel
+        </button>
+      </div>
+    );
+  }
+
+  const mutError = mode === 'single' ? createVariant.error : bulkCreate.error;
+  const submitting = mode === 'single' ? createVariant.isPending : bulkCreate.isPending;
 
   return (
     <form
-      onSubmit={handleSubmit}
-      className="mt-4 rounded border border-dashed border-zinc-300 p-4"
+      onSubmit={mode === 'single' ? handleSingleSubmit : handleBulkSubmit}
+      className="mt-4 space-y-4 rounded-xl border border-dashed border-zinc-300 p-5"
     >
-      <p className="mb-3 text-sm font-medium text-zinc-700">Add variant</p>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
-        <div>
-          <label htmlFor="nv-sku" className="mb-1 block text-xs text-zinc-600">SKU</label>
-          <input
-            id="nv-sku"
-            value={form.sku ?? ''}
-            onChange={(e) => setForm({ ...form, sku: e.target.value })}
-            className="w-full rounded border border-zinc-300 px-2 py-1 text-sm"
-          />
-        </div>
-        <div>
-          <label htmlFor="nv-price" className="mb-1 block text-xs text-zinc-600">
-            Price <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="nv-price"
-            type="number"
-            min={0}
-            required
-            value={form.price}
-            onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
-            className="w-full rounded border border-zinc-300 px-2 py-1 text-sm"
-          />
-        </div>
-        <div>
-          <label htmlFor="nv-orig" className="mb-1 block text-xs text-zinc-600">
-            Original price <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="nv-orig"
-            type="number"
-            min={0}
-            required
-            value={form.originalPrice}
-            onChange={(e) => setForm({ ...form, originalPrice: Number(e.target.value) })}
-            className="w-full rounded border border-zinc-300 px-2 py-1 text-sm"
-          />
-        </div>
-        <div>
-          <label htmlFor="nv-stock" className="mb-1 block text-xs text-zinc-600">Stock</label>
-          <input
-            id="nv-stock"
-            type="number"
-            min={0}
-            value={form.stock}
-            onChange={(e) => setForm({ ...form, stock: Number(e.target.value) })}
-            className="w-full rounded border border-zinc-300 px-2 py-1 text-sm"
-          />
-        </div>
-        <div>
-          <label htmlFor="nv-moq" className="mb-1 block text-xs text-zinc-600">MOQ</label>
-          <input
-            id="nv-moq"
-            type="number"
-            min={1}
-            value={form.moq ?? 1}
-            onChange={(e) => setForm({ ...form, moq: Number(e.target.value) })}
-            className="w-full rounded border border-zinc-300 px-2 py-1 text-sm"
-          />
-        </div>
+      <div className="flex items-center justify-between">
+        <p className="text-sm font-semibold text-zinc-800">
+          {mode === 'single' ? 'Add single variant' : 'Bulk create variants'}
+        </p>
+        {mode === 'bulk' && hasBulkSelection && (
+          <span className="rounded-full bg-zinc-900 px-3 py-1 text-xs font-semibold text-white">
+            {bulkCombinations} variant{bulkCombinations !== 1 ? 's' : ''}
+          </span>
+        )}
       </div>
 
-      <div className="mt-3">
-        <label htmlFor="nv-attrs" className="mb-1 block text-xs text-zinc-600">
-          Attributes (one per line, format: <code className="font-mono">attributeId:valueId</code>) <span className="text-red-500">*</span>
-        </label>
-        <textarea
-          id="nv-attrs"
-          rows={3}
-          value={attrText}
-          onChange={(e) => setAttrText(e.target.value)}
-          placeholder={'64a1b2c3d4e5f6a7b8c9d0e1:64a1b2c3d4e5f6a7b8c9d0e2'}
-          className="w-full rounded border border-zinc-300 px-2 py-1 font-mono text-xs"
-        />
-      </div>
-
-      {createVariant.error && (
-        <p className="mt-2 text-xs text-red-600">
-          {createVariant.error instanceof ApiError
-            ? createVariant.error.message
-            : 'Failed to add variant'}
+      {mode === 'bulk' && (
+        <p className="text-xs text-zinc-400">
+          Select multiple values per attribute — every combination is created automatically.
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={createVariant.isPending}
-        className="mt-3 rounded bg-zinc-800 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-60"
-      >
-        {createVariant.isPending ? 'Adding…' : 'Add variant'}
-      </button>
+      <AttributeValuePicker
+        attributes={attributes}
+        isSelected={(attrId, valueId) =>
+          mode === 'single'
+            ? singleValues[attrId] === valueId
+            : bulkValues[attrId]?.has(valueId) ?? false
+        }
+        onToggle={(attrId, valueId) => {
+          if (mode === 'single') {
+            setSingleValues((prev) => ({
+              ...prev,
+              [attrId]: prev[attrId] === valueId ? '' : valueId,
+            }));
+          } else {
+            setBulkValues((prev) => {
+              const set = new Set(prev[attrId] ?? []);
+              if (set.has(valueId)) set.delete(valueId);
+              else set.add(valueId);
+              return { ...prev, [attrId]: set };
+            });
+          }
+        }}
+      />
+
+      {mode === 'single' ? (
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
+          <div>
+            <label htmlFor="nv-sku" className="mb-1 block text-xs text-zinc-600">SKU</label>
+            <input
+              id="nv-sku"
+              value={single.sku}
+              onChange={(e) => setSingle({ ...single, sku: e.target.value })}
+              className={inputCls}
+            />
+          </div>
+          <div>
+            <label htmlFor="nv-price" className="mb-1 block text-xs text-zinc-600">
+              Price <span className="text-red-500">*</span>
+            </label>
+            <input
+              id="nv-price"
+              type="number"
+              min={0}
+              required
+              value={single.price}
+              onChange={(e) => setSingle({ ...single, price: Number(e.target.value) })}
+              className={inputCls}
+            />
+          </div>
+          <div>
+            <label htmlFor="nv-orig" className="mb-1 block text-xs text-zinc-600">
+              Original price <span className="text-red-500">*</span>
+            </label>
+            <input
+              id="nv-orig"
+              type="number"
+              min={0}
+              required
+              value={single.originalPrice}
+              onChange={(e) => setSingle({ ...single, originalPrice: Number(e.target.value) })}
+              className={inputCls}
+            />
+          </div>
+          <div>
+            <label htmlFor="nv-stock" className="mb-1 block text-xs text-zinc-600">Stock</label>
+            <input
+              id="nv-stock"
+              type="number"
+              min={0}
+              value={single.stock}
+              onChange={(e) => setSingle({ ...single, stock: Number(e.target.value) })}
+              className={inputCls}
+            />
+          </div>
+          <div>
+            <label htmlFor="nv-moq" className="mb-1 block text-xs text-zinc-600">MOQ</label>
+            <input
+              id="nv-moq"
+              type="number"
+              min={1}
+              value={single.moq}
+              onChange={(e) => setSingle({ ...single, moq: Number(e.target.value) })}
+              className={inputCls}
+            />
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-3 gap-3">
+          <div>
+            <label htmlFor="bv-price" className="mb-1 block text-xs text-zinc-600">
+              Default price <span className="text-red-500">*</span>
+            </label>
+            <input
+              id="bv-price"
+              type="number"
+              min={1}
+              required
+              value={bulk.defaultPrice}
+              onChange={(e) => setBulk({ ...bulk, defaultPrice: Number(e.target.value) })}
+              className={inputCls}
+            />
+          </div>
+          <div>
+            <label htmlFor="bv-orig" className="mb-1 block text-xs text-zinc-600">
+              Default original price <span className="text-red-500">*</span>
+            </label>
+            <input
+              id="bv-orig"
+              type="number"
+              min={1}
+              required
+              value={bulk.defaultOriginalPrice}
+              onChange={(e) => setBulk({ ...bulk, defaultOriginalPrice: Number(e.target.value) })}
+              className={inputCls}
+            />
+          </div>
+          <div>
+            <label htmlFor="bv-stock" className="mb-1 block text-xs text-zinc-600">Default stock</label>
+            <input
+              id="bv-stock"
+              type="number"
+              min={0}
+              value={bulk.defaultStock}
+              onChange={(e) => setBulk({ ...bulk, defaultStock: Number(e.target.value) })}
+              className={inputCls}
+            />
+          </div>
+        </div>
+      )}
+
+      {mode === 'bulk' && (
+        <p className="text-xs text-zinc-400">
+          SKUs are auto-generated. Edit any variant row afterwards to set individual prices.
+        </p>
+      )}
+
+      {mutError && (
+        <p className="text-xs text-red-600">
+          {mutError instanceof ApiError ? mutError.message : 'Failed to create variant(s)'}
+        </p>
+      )}
+
+      <div className="flex gap-2">
+        <button
+          type="submit"
+          disabled={submitting || (mode === 'bulk' && !hasBulkSelection)}
+          className="rounded bg-zinc-800 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-60 hover:bg-zinc-700"
+        >
+          {submitting
+            ? 'Creating…'
+            : mode === 'single'
+              ? 'Add variant'
+              : `Create ${hasBulkSelection ? bulkCombinations : ''} variant${bulkCombinations !== 1 ? 's' : ''}`}
+        </button>
+        <button
+          type="button"
+          onClick={reset}
+          className="rounded border border-zinc-200 px-3 py-1.5 text-xs text-zinc-600 hover:bg-zinc-50"
+        >
+          Cancel
+        </button>
+      </div>
     </form>
   );
 }

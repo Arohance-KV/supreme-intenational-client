@@ -17,9 +17,11 @@ interface CartViewProps {
   checkoutHref: string;
   checkoutLabel?: string;
   productHrefBase?: string;
+  // Employees are not bound by MOQ; pass false to allow any qty >= 1.
+  enforceMoq?: boolean;
 }
 
-export default function CartView({ cart, mutations, checkoutHref, checkoutLabel = 'Request Quotation', productHrefBase = '/products' }: CartViewProps) {
+export default function CartView({ cart, mutations, checkoutHref, checkoutLabel = 'Request Quotation', productHrefBase = '/products', enforceMoq = true }: CartViewProps) {
   const { setQty, remove, clear, applyCoupon, removeCoupon } = mutations;
   const [couponCode, setCouponCode] = useState('');
   const [couponError, setCouponError] = useState<string | null>(null);
@@ -114,12 +116,13 @@ export default function CartView({ cart, mutations, checkoutHref, checkoutLabel 
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => {
+                      const floor = enforceMoq ? item.moq : 1;
                       const next = item.qty - 1;
-                      if (next >= item.moq) {
+                      if (next >= floor) {
                         setQty.mutate({ variantId: item.variantId, qty: next });
                       }
                     }}
-                    disabled={item.qty <= item.moq || setQty.isPending}
+                    disabled={item.qty <= (enforceMoq ? item.moq : 1) || setQty.isPending}
                     className="w-7 h-7 rounded border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
                     aria-label="Decrease quantity"
                   >
@@ -136,7 +139,7 @@ export default function CartView({ cart, mutations, checkoutHref, checkoutLabel 
                   </button>
                 </div>
 
-                {item.moq > 1 && (
+                {enforceMoq && item.moq > 1 && (
                   <p className="text-xs text-gray-400">Min. qty: {item.moq}</p>
                 )}
 
@@ -224,7 +227,7 @@ export default function CartView({ cart, mutations, checkoutHref, checkoutLabel 
             </div>
           </div>
 
-          {cart.hasMoqViolations && (
+          {enforceMoq && cart.hasMoqViolations && (
             <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg p-3">
               Some items are below their minimum order quantity. Please adjust quantities.
             </p>
