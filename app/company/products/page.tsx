@@ -10,7 +10,7 @@ import {
   useRequestProducts,
   type CompanyProduct,
 } from '@/lib/company/products';
-import { formatIN, initials } from '@/lib/company/format';
+import { formatIN, initials, parsePointsInput } from '@/lib/company/format';
 import { ApiError } from '@/lib/api';
 
 const GRID = 'grid grid-cols-[minmax(220px,2.2fr)_1fr_.8fr_.7fr_.9fr_.9fr] items-center gap-4';
@@ -58,10 +58,10 @@ function PointsCell({ product }: { product: CompanyProduct }) {
   const cancelEdit = () => setIsEditing(false);
 
   const saveEdit = () => {
-    const n = Number(value);
-    if (!Number.isFinite(n) || n < 0) return;
+    const n = parsePointsInput(value);
+    if (n === null) return;
     editPoints.mutate(
-      { id: product.productId, body: { pointsOverride: Math.round(n) } },
+      { id: product.productId, body: { pointsOverride: n } },
       { onSuccess: () => setIsEditing(false) },
     );
   };
@@ -92,7 +92,7 @@ function PointsCell({ product }: { product: CompanyProduct }) {
         <button
           type="button"
           onClick={saveEdit}
-          disabled={editPoints.isPending}
+          disabled={editPoints.isPending || value.trim() === ''}
           aria-label="Save points price"
           className="rounded-md px-1.5 py-1 text-[12px] font-bold text-[#1a8f5a] hover:bg-[rgba(31,170,107,.12)] disabled:opacity-40"
         >

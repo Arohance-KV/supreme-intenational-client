@@ -1,4 +1,4 @@
-import { formatLakh, formatIN, initials } from './format';
+import { formatLakh, formatIN, initials, parsePointsInput } from './format';
 
 describe('formatLakh', () => {
   test('shortens values >= 1L to one decimal with an L suffix', () => {
@@ -39,5 +39,26 @@ describe('initials', () => {
   test('returns a placeholder for empty input', () => {
     expect(initials('')).toBe('?');
     expect(initials(undefined)).toBe('?');
+  });
+});
+
+describe('parsePointsInput', () => {
+  test('rejects blank or whitespace-only input', () => {
+    expect(parsePointsInput('')).toBeNull();
+    expect(parsePointsInput('   ')).toBeNull();
+  });
+
+  test('rejects negative numbers', () => {
+    expect(parsePointsInput('-5')).toBeNull();
+  });
+
+  test('rejects non-numeric input', () => {
+    expect(parsePointsInput('abc')).toBeNull();
+  });
+
+  test('accepts and rounds valid non-negative numbers', () => {
+    expect(parsePointsInput('120')).toBe(120);
+    expect(parsePointsInput('120.6')).toBe(121);
+    expect(parsePointsInput('0')).toBe(0);
   });
 });

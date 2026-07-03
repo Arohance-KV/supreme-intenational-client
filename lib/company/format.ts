@@ -26,6 +26,18 @@ export function formatDate(iso: unknown): string {
   return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
+/**
+ * Parse a points/price input string into a non-negative integer, or `null` if the
+ * input is blank, negative, or not a finite number. `Number('')` and `Number('  ')`
+ * both evaluate to `0`, so blank input must be rejected explicitly before coercion.
+ */
+export function parsePointsInput(value: string): number | null {
+  if (value.trim() === '') return null;
+  const n = Number(value);
+  if (!Number.isFinite(n) || n < 0) return null;
+  return Math.round(n);
+}
+
 /** Initials for an avatar, e.g. "Priya Sharma" -> "PS", "Ravi" -> "R". */
 export function initials(name: unknown): string {
   if (typeof name !== 'string' || !name.trim()) return '?';
