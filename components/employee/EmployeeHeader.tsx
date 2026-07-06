@@ -7,6 +7,7 @@ import { useEmployeeAuth } from '@/lib/employee/auth';
 import { useEmployeeCart } from '@/lib/employee/cart';
 import { useWallet } from '@/lib/employee/wallet';
 import CartBadge from '@/components/CartBadge';
+import { glass } from '@/components/employee/ui';
 
 export default function EmployeeHeader() {
   const { isLoggedIn, logout } = useEmployeeAuth();
@@ -22,24 +23,33 @@ export default function EmployeeHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
-        <Link href="/employee" className="font-bold text-lg text-gray-900 hover:text-blue-600 transition-colors">
-          Supreme International — Employee Portal
+    <header className={`sticky top-0 z-50 border-b border-line ${glass} font-display`}>
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
+        <Link
+          href="/employee"
+          className="text-lg font-extrabold tracking-[-.01em] text-ink no-underline transition-colors hover:text-indigo"
+        >
+          Supreme International <span className="text-muted font-semibold">— Employee Portal</span>
         </Link>
         <nav className="flex items-center gap-2">
           {isLoggedIn && (
             <>
               <Link
                 href="/employee/products"
-                className="text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                className="rounded-xl px-3 py-[9px] text-sm font-medium text-slate no-underline transition-colors hover:bg-[rgba(42,43,106,.07)] hover:text-ink"
               >
                 Products
+              </Link>
+              <Link
+                href="/employee/orders"
+                className="rounded-xl px-3 py-[9px] text-sm font-medium text-slate no-underline transition-colors hover:bg-[rgba(42,43,106,.07)] hover:text-ink"
+              >
+                Orders
               </Link>
               {walletData && (
                 <Link
                   href="/employee/wallet"
-                  className="text-sm font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-full border border-blue-200 transition-colors"
+                  className="rounded-full border border-[rgba(23,155,142,.25)] bg-[rgba(23,155,142,.12)] px-3 py-[7px] font-jbmono text-sm font-semibold text-accent no-underline transition-colors hover:bg-[rgba(23,155,142,.2)]"
                 >
                   ₹{walletData.balance.toLocaleString('en-IN')}
                 </Link>
@@ -47,7 +57,7 @@ export default function EmployeeHeader() {
               <CartBadge count={cartData?.itemCount ?? 0} href="/employee/cart" />
               <button
                 onClick={handleLogout}
-                className="text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                className="rounded-xl px-3 py-[9px] text-sm font-medium text-slate transition-colors hover:bg-[rgba(42,43,106,.07)] hover:text-ink"
               >
                 Logout
               </button>
