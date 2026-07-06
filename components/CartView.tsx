@@ -6,6 +6,7 @@ import Image from 'next/image';
 import type { Cart } from '@/lib/cart';
 import type { useCartMutations } from '@/lib/cart';
 import { ApiError } from '@/lib/api';
+import { glass, primaryBtn, secondaryBtn, input } from '@/components/employee/ui';
 
 function formatPrice(value: number): string {
   return `₹${value.toFixed(2)}`;
@@ -50,13 +51,13 @@ export default function CartView({ cart, mutations, checkoutHref, checkoutLabel 
   };
 
   return (
-    <main className="max-w-5xl mx-auto px-4 py-8">
+    <main className="max-w-5xl mx-auto px-4 py-8 font-display">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Shopping Cart</h1>
+        <h1 className="text-2xl font-bold text-ink">Shopping Cart</h1>
         <button
           onClick={() => clear.mutate()}
           disabled={clear.isPending}
-          className="text-sm text-red-500 hover:text-red-700 disabled:opacity-50"
+          className="text-sm text-slate hover:text-[#e0524d] disabled:opacity-50"
         >
           Clear cart
         </button>
@@ -68,10 +69,10 @@ export default function CartView({ cart, mutations, checkoutHref, checkoutLabel 
           {cart.items.map((item) => (
             <div
               key={item.variantId}
-              className="flex gap-4 p-4 bg-white border border-gray-200 rounded-xl shadow-sm"
+              className={`flex gap-4 ${glass} rounded-[16px] p-4`}
             >
               {/* Image */}
-              <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+              <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-white/40">
                 {item.image ? (
                   <Image
                     src={item.image}
@@ -80,7 +81,7 @@ export default function CartView({ cart, mutations, checkoutHref, checkoutLabel 
                     className="object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-300 text-xs">
+                  <div className="w-full h-full flex items-center justify-center text-muted text-xs">
                     No image
                   </div>
                 )}
@@ -90,15 +91,15 @@ export default function CartView({ cart, mutations, checkoutHref, checkoutLabel 
               <div className="flex-1 min-w-0">
                 <Link
                   href={`${productHrefBase}/${item.productSlug}`}
-                  className="font-semibold text-gray-900 hover:text-blue-600 truncate block"
+                  className="font-semibold text-ink hover:text-indigo truncate block"
                 >
                   {item.productName}
                 </Link>
-                <p className="text-sm text-gray-500 mt-0.5">SKU: {item.sku}</p>
+                <p className="text-muted font-jbmono text-[11px] mt-0.5">SKU: {item.sku}</p>
                 {item.attributeLabels.length > 0 && (
-                  <p className="text-sm text-gray-500">{item.attributeLabels.join(' / ')}</p>
+                  <p className="text-muted font-jbmono text-[11px]">{item.attributeLabels.join(' / ')}</p>
                 )}
-                <p className="text-sm font-medium text-gray-700 mt-1">
+                <p className="text-sm font-medium text-ink mt-1">
                   Unit price: {formatPrice(item.priceSnapshot)}
                 </p>
                 {item.priceChanged && (
@@ -110,7 +111,7 @@ export default function CartView({ cart, mutations, checkoutHref, checkoutLabel 
 
               {/* Qty + total + remove */}
               <div className="flex flex-col items-end justify-between gap-2 flex-shrink-0">
-                <p className="font-bold text-gray-900">{formatPrice(item.priceSnapshot * item.qty)}</p>
+                <p className="font-extrabold text-ink">{formatPrice(item.priceSnapshot * item.qty)}</p>
 
                 {/* Qty stepper */}
                 <div className="flex items-center gap-1">
@@ -123,16 +124,16 @@ export default function CartView({ cart, mutations, checkoutHref, checkoutLabel 
                       }
                     }}
                     disabled={item.qty <= (enforceMoq ? item.moq : 1) || setQty.isPending}
-                    className="w-7 h-7 rounded border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                    className={`${secondaryBtn} h-8 w-8 flex items-center justify-center`}
                     aria-label="Decrease quantity"
                   >
                     −
                   </button>
-                  <span className="w-10 text-center text-sm font-medium">{item.qty}</span>
+                  <span className="w-10 text-center text-sm font-medium text-ink">{item.qty}</span>
                   <button
                     onClick={() => setQty.mutate({ variantId: item.variantId, qty: item.qty + 1 })}
                     disabled={setQty.isPending}
-                    className="w-7 h-7 rounded border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-40"
+                    className={`${secondaryBtn} h-8 w-8 flex items-center justify-center`}
                     aria-label="Increase quantity"
                   >
                     +
@@ -140,13 +141,13 @@ export default function CartView({ cart, mutations, checkoutHref, checkoutLabel 
                 </div>
 
                 {enforceMoq && item.moq > 1 && (
-                  <p className="text-xs text-gray-400">Min. qty: {item.moq}</p>
+                  <p className="text-xs text-muted">Min. qty: {item.moq}</p>
                 )}
 
                 <button
                   onClick={() => remove.mutate({ variantId: item.variantId })}
                   disabled={remove.isPending}
-                  className="text-xs text-red-400 hover:text-red-600 disabled:opacity-50"
+                  className="text-xs text-slate hover:text-[#e0524d] disabled:opacity-50"
                 >
                   Remove
                 </button>
@@ -158,24 +159,24 @@ export default function CartView({ cart, mutations, checkoutHref, checkoutLabel 
         {/* Order summary */}
         <div className="w-full lg:w-80 flex-shrink-0 space-y-4">
           {/* Coupon */}
-          <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-            <h2 className="font-semibold text-gray-800 mb-3">Coupon</h2>
+          <div className={`${glass} rounded-[20px] p-4`}>
+            <h2 className="font-semibold text-ink mb-3">Coupon</h2>
 
             {cart.coupon ? (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-mono bg-gray-100 px-2 py-1 rounded text-gray-700">
+                  <span className="text-sm font-jbmono bg-white/50 border border-line px-2 py-1 rounded text-ink">
                     {cart.coupon.code}
                   </span>
                   <button
                     onClick={handleRemoveCoupon}
                     disabled={removeCoupon.isPending}
-                    className="text-xs text-red-500 hover:text-red-700 disabled:opacity-50"
+                    className="text-xs text-slate hover:text-[#e0524d] disabled:opacity-50"
                   >
                     Remove
                   </button>
                 </div>
-                <p className="text-sm text-green-600">
+                <p className="text-sm text-[#1a8f5a]">
                   Discount: −{formatPrice(cart.coupon.discountAmount)}
                 </p>
               </div>
@@ -191,37 +192,37 @@ export default function CartView({ cart, mutations, checkoutHref, checkoutLabel 
                     }}
                     onKeyDown={(e) => { if (e.key === 'Enter') handleApplyCoupon(); }}
                     placeholder="Coupon code"
-                    className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className={`${input} flex-1`}
                   />
                   <button
                     onClick={handleApplyCoupon}
                     disabled={!couponCode.trim() || applyCoupon.isPending}
-                    className="px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className={`${secondaryBtn} px-4 py-2 text-sm`}
                   >
                     Apply
                   </button>
                 </div>
                 {couponError && (
-                  <p className="text-xs text-red-500">{couponError}</p>
+                  <p className="text-[#e0524d] text-sm">{couponError}</p>
                 )}
               </div>
             )}
           </div>
 
           {/* Totals */}
-          <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm space-y-3">
-            <h2 className="font-semibold text-gray-800">Order Summary</h2>
-            <div className="flex justify-between text-sm text-gray-600">
+          <div className={`${glass} rounded-[20px] p-6 space-y-3`}>
+            <h2 className="font-semibold text-ink">Order Summary</h2>
+            <div className="flex justify-between text-sm text-slate">
               <span>Subtotal ({cart.itemCount} items)</span>
               <span>{formatPrice(cart.subtotal)}</span>
             </div>
             {cart.coupon && (
-              <div className="flex justify-between text-sm text-green-600">
+              <div className="flex justify-between text-sm text-[#1a8f5a]">
                 <span>Discount</span>
                 <span>−{formatPrice(cart.coupon.discountAmount)}</span>
               </div>
             )}
-            <div className="border-t border-gray-200 pt-3 flex justify-between font-bold text-gray-900">
+            <div className="border-t border-line pt-3 flex justify-between font-extrabold text-ink">
               <span>Total</span>
               <span>{formatPrice(cart.total)}</span>
             </div>
@@ -235,7 +236,7 @@ export default function CartView({ cart, mutations, checkoutHref, checkoutLabel 
 
           <Link
             href={checkoutHref}
-            className="block w-full text-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors"
+            className={`${primaryBtn} block w-full text-center py-3`}
           >
             {checkoutLabel}
           </Link>

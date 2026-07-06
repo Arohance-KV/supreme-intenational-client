@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEmployeeCart, useEmployeeCartMutations } from '@/lib/employee/cart';
 import CartView from '@/components/CartView';
+import { primaryBtn } from '@/components/employee/ui';
 
 export default function EmployeeCartPage() {
   const { data: cart, isLoading, error } = useEmployeeCart();
@@ -10,29 +11,26 @@ export default function EmployeeCartPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Loading cart…</p>
+      <div className="flex min-h-screen items-center justify-center bg-[#eef0f8]">
+        <p className="font-display text-slate">Loading cart…</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-red-500">Failed to load cart. Please try again.</p>
+      <div className="flex min-h-screen items-center justify-center bg-[#eef0f8]">
+        <p className="font-display text-[#e0524d]">Failed to load cart. Please try again.</p>
       </div>
     );
   }
 
   if (!cart || cart.items.length === 0) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <h1 className="text-2xl font-semibold text-gray-800">Your cart is empty</h1>
-        <p className="text-gray-500">Browse our catalog to add items.</p>
-        <Link
-          href="/employee/products"
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#eef0f8] font-display">
+        <h1 className="text-2xl font-extrabold tracking-[-.02em] text-ink">Your cart is empty</h1>
+        <p className="text-slate">Browse our catalog to add items.</p>
+        <Link href="/employee/products" className={`${primaryBtn} px-6 py-2.5`}>
           Browse Products
         </Link>
       </div>
