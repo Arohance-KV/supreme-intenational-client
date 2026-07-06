@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useOrders, type OrderSummary } from '@/lib/employee/orders';
+import { glass, primaryBtn, secondaryBtn, eyebrow, pageWrap, statusPill } from '@/components/employee/ui';
 
 function fmt(n: number | undefined | null) {
   if (n === undefined || n === null) return '—';
@@ -21,21 +22,7 @@ function fmtDate(s: string | undefined) {
 }
 
 function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, string> = {
-    pending: 'bg-yellow-100 text-yellow-800',
-    confirmed: 'bg-blue-100 text-blue-800',
-    processing: 'bg-blue-100 text-blue-800',
-    shipped: 'bg-purple-100 text-purple-800',
-    delivered: 'bg-green-100 text-green-800',
-    cancelled: 'bg-red-100 text-red-800',
-    refunded: 'bg-gray-100 text-gray-700',
-  };
-  const cls = map[status] ?? 'bg-gray-100 text-gray-700';
-  return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize ${cls}`}>
-      {status}
-    </span>
-  );
+  return <span className={statusPill(status)}>{status}</span>;
 }
 
 function OrderRow({ order }: { order: OrderSummary }) {
@@ -43,17 +30,17 @@ function OrderRow({ order }: { order: OrderSummary }) {
   return (
     <Link
       href={`/employee/orders/${order.orderId}`}
-      className="block hover:bg-gray-50 transition-colors"
+      className="block hover:bg-[rgba(42,43,106,.04)] transition-colors"
     >
       <div className="px-4 py-4 sm:px-6 flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-gray-800 font-mono truncate">{order.orderId}</p>
-          <p className="text-xs text-gray-400 mt-0.5">{fmtDate(order.createdAt)}</p>
+          <p className="text-sm font-semibold font-jbmono text-ink truncate">{order.orderId}</p>
+          <p className="text-xs text-muted mt-0.5">{fmtDate(order.createdAt)}</p>
         </div>
         <div className="flex items-center gap-4 flex-shrink-0">
-          <p className="text-sm font-medium text-gray-700">{fmt(billing?.total)}</p>
+          <p className="text-sm font-semibold text-ink">{fmt(billing?.total)}</p>
           <StatusBadge status={order.status} />
-          <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg className="h-4 w-4 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
           </svg>
         </div>
@@ -71,57 +58,64 @@ export default function OrdersPage() {
   const hasMore = typeof pag?.hasNextPage === 'boolean' ? (pag.hasNextPage as boolean) : orders.length === 10;
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
-      <h1 className="text-2xl font-bold text-gray-800">My Orders</h1>
+    <div className="min-h-screen bg-[#eef0f8]">
+      <div className={`${pageWrap} space-y-6`}>
+        <div className="max-w-3xl mx-auto space-y-6">
+          <div>
+            <p className={eyebrow}>YOUR ORDERS</p>
+            <h1 className="text-2xl font-extrabold tracking-[-.02em] text-ink">My Orders</h1>
+          </div>
 
-      {isLoading && (
-        <p className="text-gray-500 animate-pulse">Loading orders…</p>
-      )}
+          {isLoading && (
+            <p className="text-slate animate-pulse">Loading orders…</p>
+          )}
 
-      {isError && (
-        <p className="text-red-500 text-sm">Could not load orders. Please try again.</p>
-      )}
+          {isError && (
+            <p className="text-[#e0524d] text-sm">Could not load orders. Please try again.</p>
+          )}
 
-      {!isLoading && !isError && orders.length === 0 && (
-        <div className="rounded-xl bg-white shadow-sm p-10 text-center space-y-4">
-          <p className="text-gray-500">You haven't placed any orders yet.</p>
-          <Link
-            href="/employee/products"
-            className="inline-block bg-blue-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-          >
-            Browse Products
-          </Link>
+          {!isLoading && !isError && orders.length === 0 && (
+            <div className={`${glass} rounded-[20px] p-10 text-center space-y-4`}>
+              <p className="text-slate">You haven't placed any orders yet.</p>
+              <Link
+                href="/employee/products"
+                className={`inline-block ${primaryBtn} px-6 py-2.5`}
+              >
+                Browse Products
+              </Link>
+            </div>
+          )}
+
+          {!isLoading && !isError && orders.length > 0 && (
+            <div className={`${glass} rounded-[20px] overflow-hidden divide-y divide-line`}>
+              {orders.map((order) => (
+                <OrderRow key={order.orderId} order={order} />
+              ))}
+            </div>
+          )}
+
+          {/* Pagination */}
+          {!isLoading && !isError && orders.length > 0 && (
+            <div className="flex items-center justify-between pt-2">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className={`${secondaryBtn} px-4 py-2 text-sm`}
+              >
+                Previous
+              </button>
+              <span className="text-sm text-slate">Page {page}</span>
+              <button
+                onClick={() => setPage((p) => p + 1)}
+                disabled={!hasMore}
+                className={`${secondaryBtn} px-4 py-2 text-sm`}
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
-      )}
-
-      {!isLoading && !isError && orders.length > 0 && (
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden divide-y divide-gray-100">
-          {orders.map((order) => (
-            <OrderRow key={order.orderId} order={order} />
-          ))}
-        </div>
-      )}
-
-      {/* Pagination */}
-      {!isLoading && !isError && orders.length > 0 && (
-        <div className="flex items-center justify-between pt-2">
-          <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-          >
-            Previous
-          </button>
-          <span className="text-sm text-gray-500">Page {page}</span>
-          <button
-            onClick={() => setPage((p) => p + 1)}
-            disabled={!hasMore}
-            className="px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-          >
-            Next
-          </button>
-        </div>
-      )}
+      </div>
     </div>
   );
 }
