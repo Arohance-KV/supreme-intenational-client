@@ -4,6 +4,7 @@ import { Suspense, useState } from 'react';
 import Link from 'next/link';
 import { useEmployeeLogin } from '@/lib/employee/userAuth';
 import { ApiError } from '@/lib/api';
+import { glass, primaryBtn, input, label, eyebrow, errorBanner } from '@/components/employee/ui';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -19,14 +20,14 @@ function LoginForm() {
   return (
     <>
       {error && (
-        <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+        <div className={`mb-4 ${errorBanner}`}>
           {error instanceof ApiError ? error.message : 'Something went wrong. Please try again.'}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="email" className={label}>
             Email
           </label>
           <input
@@ -35,13 +36,13 @@ function LoginForm() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className={input}
             placeholder="you@example.com"
           />
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="password" className={label}>
             Password
           </label>
           <input
@@ -50,7 +51,7 @@ function LoginForm() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className={input}
             placeholder="••••••••"
           />
         </div>
@@ -58,14 +59,14 @@ function LoginForm() {
         <button
           type="submit"
           disabled={isPending}
-          className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-sm font-semibold rounded-lg transition-colors"
+          className={`${primaryBtn} w-full py-2.5`}
         >
           {isPending ? 'Signing in…' : 'Sign in'}
         </button>
       </form>
 
-      <div className="mt-4 text-center text-sm text-gray-600">
-        <Link href="/employee/forgot-password" className="text-blue-600 hover:underline font-medium">
+      <div className="mt-4 text-center text-sm text-slate">
+        <Link href="/employee/forgot-password" className="text-accent hover:underline font-medium">
           Forgot password?
         </Link>
       </div>
@@ -75,10 +76,20 @@ function LoginForm() {
 
 export default function EmployeeLoginPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Employee Sign in</h1>
-        <p className="text-sm text-gray-500 mb-6">
+    <div
+      className="flex min-h-screen items-center justify-center px-4 font-display"
+      style={{
+        background:
+          'radial-gradient(60% 50% at 12% 8%, rgba(74,76,201,.20), transparent 60%),' +
+          'radial-gradient(52% 46% at 92% 12%, rgba(19,184,159,.18), transparent 60%),' +
+          'radial-gradient(46% 42% at 78% 92%, rgba(124,77,210,.14), transparent 62%),' +
+          'linear-gradient(180deg,#eceefb,#f4f1f8,#e9f1f3)',
+      }}
+    >
+      <div className={`w-full max-w-md rounded-[24px] p-8 ${glass}`}>
+        <p className={eyebrow}>EMPLOYEE PORTAL</p>
+        <h1 className="text-2xl font-extrabold tracking-[-.02em] text-ink mb-2 mt-1">Employee Sign in</h1>
+        <p className="text-sm text-slate mb-6">
           Enter your credentials to access the employee portal.
         </p>
         <Suspense>

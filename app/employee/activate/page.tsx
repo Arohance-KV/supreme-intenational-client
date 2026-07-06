@@ -4,6 +4,7 @@ import { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useVerifyInvite, useActivate } from '@/lib/employee/userAuth';
 import { ApiError } from '@/lib/api';
+import { glass, primaryBtn, input, label, eyebrow, errorBanner } from '@/components/employee/ui';
 
 function ActivateForm() {
   const searchParams = useSearchParams();
@@ -18,13 +19,13 @@ function ActivateForm() {
 
   if (isLoading) {
     return (
-      <p className="text-sm text-gray-500 text-center">Verifying invite…</p>
+      <p className="text-sm text-slate text-center">Verifying invite…</p>
     );
   }
 
   if (!token || isError) {
     return (
-      <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm text-center">
+      <div className={`${errorBanner} text-center`}>
         This invite is invalid or has expired.
       </div>
     );
@@ -32,7 +33,7 @@ function ActivateForm() {
 
   if (isSuccess) {
     return (
-      <div className="p-3 rounded-lg bg-green-50 border border-green-200 text-green-700 text-sm text-center">
+      <div className="p-3 rounded-[13px] bg-[rgba(31,170,107,.1)] border border-[rgba(31,170,107,.3)] text-[#1a8f5a] text-sm text-center">
         Account activated! Redirecting…
       </div>
     );
@@ -51,14 +52,14 @@ function ActivateForm() {
   return (
     <>
       {error && (
-        <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+        <div className={`mb-4 ${errorBanner}`}>
           {error instanceof ApiError ? error.message : 'Something went wrong. Please try again.'}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="password" className={label}>
             Password
           </label>
           <input
@@ -67,13 +68,13 @@ function ActivateForm() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className={input}
             placeholder="••••••••"
           />
         </div>
 
         <div>
-          <label htmlFor="confirm" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="confirm" className={label}>
             Confirm Password
           </label>
           <input
@@ -82,19 +83,19 @@ function ActivateForm() {
             required
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className={input}
             placeholder="••••••••"
           />
         </div>
 
         {matchError && (
-          <p className="text-sm text-red-600">{matchError}</p>
+          <p className="text-sm text-[#e0524d]">{matchError}</p>
         )}
 
         <button
           type="submit"
           disabled={isPending}
-          className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-sm font-semibold rounded-lg transition-colors"
+          className={`${primaryBtn} w-full py-2.5`}
         >
           {isPending ? 'Activating…' : 'Activate account'}
         </button>
@@ -105,13 +106,23 @@ function ActivateForm() {
 
 export default function ActivatePage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Activate your account</h1>
-        <p className="text-sm text-gray-500 mb-6">
+    <div
+      className="flex min-h-screen items-center justify-center px-4 font-display"
+      style={{
+        background:
+          'radial-gradient(60% 50% at 12% 8%, rgba(74,76,201,.20), transparent 60%),' +
+          'radial-gradient(52% 46% at 92% 12%, rgba(19,184,159,.18), transparent 60%),' +
+          'radial-gradient(46% 42% at 78% 92%, rgba(124,77,210,.14), transparent 62%),' +
+          'linear-gradient(180deg,#eceefb,#f4f1f8,#e9f1f3)',
+      }}
+    >
+      <div className={`w-full max-w-md rounded-[24px] p-8 ${glass}`}>
+        <p className={eyebrow}>EMPLOYEE PORTAL</p>
+        <h1 className="text-2xl font-extrabold tracking-[-.02em] text-ink mb-2 mt-1">Activate your account</h1>
+        <p className="text-sm text-slate mb-6">
           Set a password to complete your account setup.
         </p>
-        <Suspense fallback={<p className="text-sm text-gray-500 text-center">Verifying invite…</p>}>
+        <Suspense fallback={<p className="text-sm text-slate text-center">Verifying invite…</p>}>
           <ActivateForm />
         </Suspense>
       </div>
