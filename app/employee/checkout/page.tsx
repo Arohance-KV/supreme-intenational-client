@@ -8,6 +8,7 @@ import { useEmployeeCheckout, type ShippingAddress } from '@/lib/employee/checko
 import { useVerifyPayment } from '@/lib/employee/orders';
 import { loadRazorpay, openRazorpay } from '@/lib/employee/razorpay';
 import { ApiError } from '@/lib/api';
+import { glass, primaryBtn, input, label, eyebrow, pageWrap, errorBanner } from '@/components/employee/ui';
 
 const INITIAL_ADDRESS: ShippingAddress = {
   fullName: '',
@@ -41,8 +42,8 @@ export default function EmployeeCheckoutPage() {
 
   if (cartLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Loading…</p>
+      <div className="min-h-screen bg-[#eef0f8] flex items-center justify-center font-display">
+        <p className="text-slate">Loading…</p>
       </div>
     );
   }
@@ -113,12 +114,14 @@ export default function EmployeeCheckoutPage() {
   const walletBalance = wallet?.balance ?? 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div className={`min-h-screen bg-[#eef0f8] ${pageWrap}`}>
+      <p className={eyebrow}>CHECKOUT</p>
+      <h1 className="text-2xl font-extrabold tracking-[-.02em] text-ink mb-6">Checkout</h1>
       <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
 
         {/* Left: Address Form */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-6">Shipping Address</h2>
+        <div className={`${glass} rounded-[22px] p-6`}>
+          <h2 className="text-xl font-semibold text-ink mb-6">Shipping Address</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <Field
               label="Full Name"
@@ -190,7 +193,7 @@ export default function EmployeeCheckoutPage() {
             </div>
 
             <div className="pt-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className={label}>
                 Coupon Code (optional)
               </label>
               <input
@@ -198,12 +201,12 @@ export default function EmployeeCheckoutPage() {
                 value={couponCode}
                 onChange={(e) => setCouponCode(e.target.value)}
                 placeholder="Enter coupon code"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={input}
               />
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-700">
+              <div className={errorBanner}>
                 {error}
               </div>
             )}
@@ -211,7 +214,7 @@ export default function EmployeeCheckoutPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className={`${primaryBtn} w-full py-3`}
             >
               {submitting ? 'Processing…' : 'Place Order'}
             </button>
@@ -221,50 +224,50 @@ export default function EmployeeCheckoutPage() {
         {/* Right: Order Summary */}
         <div className="space-y-4">
           {/* Wallet Balance */}
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-2">Wallet Balance</h2>
-            <p className="text-2xl font-bold text-green-600">
+          <div className={`${glass} rounded-[20px] p-6`}>
+            <h2 className="text-lg font-semibold text-ink mb-2">Wallet Balance</h2>
+            <span className="inline-block bg-[rgba(23,155,142,.12)] text-accent border border-[rgba(23,155,142,.25)] rounded-full px-3 py-1 font-jbmono text-sm">
               ₹{walletBalance.toFixed(2)}
-            </p>
+            </span>
             {walletBalance > 0 && (
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-slate mt-2">
                 Your wallet balance will be applied automatically at checkout.
               </p>
             )}
           </div>
 
           {/* Cart Summary */}
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Order Summary</h2>
-            <ul className="divide-y divide-gray-100">
+          <div className={`${glass} rounded-[20px] p-6`}>
+            <h2 className="text-lg font-semibold text-ink mb-4">Order Summary</h2>
+            <ul className="divide-y divide-line">
               {cart?.items.map((item) => (
                 <li key={item.variantId} className="py-3 flex justify-between items-start">
                   <div className="flex-1 min-w-0 pr-4">
-                    <p className="text-sm font-medium text-gray-800 truncate">{item.productName}</p>
+                    <p className="text-sm font-medium text-ink truncate">{item.productName}</p>
                     {item.attributeLabels.length > 0 && (
-                      <p className="text-xs text-gray-500">{item.attributeLabels.join(', ')}</p>
+                      <p className="text-xs text-slate">{item.attributeLabels.join(', ')}</p>
                     )}
-                    <p className="text-xs text-gray-500">Qty: {item.qty}</p>
+                    <p className="text-xs text-slate">Qty: {item.qty}</p>
                   </div>
-                  <p className="text-sm font-medium text-gray-800 whitespace-nowrap">
+                  <p className="text-sm font-medium text-ink whitespace-nowrap">
                     ₹{(item.priceSnapshot * item.qty).toFixed(2)}
                   </p>
                 </li>
               ))}
             </ul>
 
-            <div className="border-t border-gray-100 mt-4 pt-4 space-y-2">
-              <div className="flex justify-between text-sm text-gray-600">
+            <div className="border-t border-line mt-4 pt-4 space-y-2">
+              <div className="flex justify-between text-sm text-slate">
                 <span>Subtotal</span>
                 <span>₹{cart?.subtotal.toFixed(2)}</span>
               </div>
               {cart?.coupon && (
-                <div className="flex justify-between text-sm text-green-600">
+                <div className="flex justify-between text-sm text-accent">
                   <span>Coupon ({cart.coupon.code})</span>
                   <span>-₹{cart.coupon.discountAmount.toFixed(2)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-base font-semibold text-gray-800 pt-1">
+              <div className="flex justify-between text-base font-semibold text-ink pt-1">
                 <span>Total</span>
                 <span>₹{cart?.total.toFixed(2)}</span>
               </div>
@@ -287,12 +290,12 @@ interface FieldProps {
   inputMode?: 'text' | 'search' | 'none' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal';
 }
 
-function Field({ label, name, value, onChange, required, placeholder, type = 'text', inputMode }: FieldProps) {
+function Field({ label: fieldLabel, name, value, onChange, required, placeholder, type = 'text', inputMode }: FieldProps) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-        {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+      <label className={label}>
+        {fieldLabel}
+        {required && <span className="text-[#e0524d] ml-1">*</span>}
       </label>
       <input
         type={type}
@@ -302,7 +305,7 @@ function Field({ label, name, value, onChange, required, placeholder, type = 'te
         onChange={onChange}
         required={required}
         placeholder={placeholder}
-        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className={input}
       />
     </div>
   );
