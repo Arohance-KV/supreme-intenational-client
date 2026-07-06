@@ -1,6 +1,7 @@
 'use client';
 
 import { useWallet, useWalletLedger, type LedgerEntry } from '@/lib/employee/wallet';
+import { glass, eyebrow } from '@/components/employee/ui';
 
 function formatDate(value: unknown): string {
   if (!value) return '—';
@@ -19,8 +20,8 @@ function formatAmount(entry: LedgerEntry): string {
 
 function amountClass(entry: LedgerEntry): string {
   const num = Number(entry.amount);
-  if (isNaN(num)) return 'text-gray-700';
-  return num >= 0 ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold';
+  if (isNaN(num)) return 'text-slate';
+  return num >= 0 ? 'text-[#1a8f5a] font-semibold' : 'text-[#e0524d] font-semibold';
 }
 
 export default function WalletPage() {
@@ -28,64 +29,63 @@ export default function WalletPage() {
   const { data: ledger, isLoading: ledgerLoading, isError: ledgerError } = useWalletLedger();
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8 space-y-8">
-      {/* Balance card */}
-      <section className="rounded-2xl bg-gradient-to-br from-blue-600 to-blue-800 text-white p-8 shadow-lg">
-        <p className="text-sm font-medium uppercase tracking-widest opacity-75 mb-2">Wallet Balance</p>
+    <div className="min-h-screen bg-[#eef0f8] mx-auto max-w-3xl px-4 py-8 font-display space-y-8">
+      {/* Balance hero */}
+      <section className="rounded-[24px] bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)] p-8 text-white shadow-[0_24px_60px_rgba(34,36,90,.2)]">
+        <p className={`${eyebrow} mb-2 !text-white/70`}>WALLET BALANCE</p>
         {walletLoading ? (
-          <p className="text-4xl font-bold animate-pulse">Loading…</p>
+          <p className="animate-pulse text-4xl font-extrabold">Loading…</p>
         ) : walletError || !wallet ? (
           <p className="text-2xl font-semibold opacity-80">Unavailable</p>
         ) : (
-          <p className="text-5xl font-bold">
-            ₹{wallet.balance.toLocaleString('en-IN')}
-          </p>
+          <p className="text-5xl font-extrabold tracking-[-.02em]">₹{wallet.balance.toLocaleString('en-IN')}</p>
         )}
-        {wallet?.currency && (
-          <p className="mt-2 text-sm opacity-70">{wallet.currency}</p>
-        )}
+        {wallet?.currency && <p className="mt-2 text-sm opacity-70">{wallet.currency}</p>}
       </section>
 
       {/* Ledger */}
       <section>
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">Transaction History</h2>
+        <div className="mb-4">
+          <p className={eyebrow}>TRANSACTION HISTORY</p>
+          <h2 className="text-xl font-extrabold tracking-[-.02em] text-ink">Transaction History</h2>
+        </div>
 
         {ledgerLoading && (
-          <p className="text-gray-500 animate-pulse">Loading transactions…</p>
+          <p className="text-slate animate-pulse">Loading transactions…</p>
         )}
 
         {ledgerError && (
-          <p className="text-red-500 text-sm">Could not load transaction history.</p>
+          <p className="text-[#e0524d] text-sm">Could not load transaction history.</p>
         )}
 
         {!ledgerLoading && !ledgerError && ledger && ledger.length === 0 && (
-          <p className="text-gray-500 text-sm">No transactions yet.</p>
+          <p className="text-slate text-sm">No transactions yet.</p>
         )}
 
         {!ledgerLoading && !ledgerError && ledger && ledger.length > 0 && (
-          <div className="overflow-x-auto rounded-xl border border-gray-200">
-            <table className="min-w-full divide-y divide-gray-200 text-sm">
-              <thead className="bg-gray-50">
+          <div className={`${glass} rounded-[20px] overflow-hidden overflow-x-auto`}>
+            <table className="min-w-full divide-y divide-line text-sm">
+              <thead className="bg-white/40">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Description</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Balance After</th>
+                  <th className="px-4 py-3 text-left font-jbmono text-[10px] uppercase tracking-[.08em] text-muted">Date</th>
+                  <th className="px-4 py-3 text-left font-jbmono text-[10px] uppercase tracking-[.08em] text-muted">Description</th>
+                  <th className="px-4 py-3 text-right font-jbmono text-[10px] uppercase tracking-[.08em] text-muted">Amount</th>
+                  <th className="px-4 py-3 text-right font-jbmono text-[10px] uppercase tracking-[.08em] text-muted">Balance After</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-100">
+              <tbody className="divide-y divide-line">
                 {ledger.map((entry: LedgerEntry, i: number) => (
-                  <tr key={i} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 text-gray-600 whitespace-nowrap">
+                  <tr key={i} className="hover:bg-[rgba(42,43,106,.04)] transition-colors">
+                    <td className="px-4 py-3 text-slate whitespace-nowrap">
                       {formatDate(entry.createdAt ?? entry.date)}
                     </td>
-                    <td className="px-4 py-3 text-gray-800">
+                    <td className="px-4 py-3 text-slate">
                       {entry.description ? String(entry.description) : '—'}
                     </td>
                     <td className={`px-4 py-3 text-right whitespace-nowrap ${amountClass(entry)}`}>
                       {formatAmount(entry)}
                     </td>
-                    <td className="px-4 py-3 text-right text-gray-600 whitespace-nowrap">
+                    <td className="px-4 py-3 text-right text-ink whitespace-nowrap">
                       {entry.balanceAfter !== undefined
                         ? `₹${Number(entry.balanceAfter).toLocaleString('en-IN')}`
                         : '—'}
