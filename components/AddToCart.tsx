@@ -23,20 +23,72 @@ export default function AddToCart({
 
   const minQty = (v: ProductVariant | undefined) => (enforceMoq ? v?.moq ?? 1 : 1);
 
-  const [selectedId, setSelectedId] = useState<string>(firstActive?._id ?? '');
-  const [qty, setQty] = useState<number>(minQty(firstActive));
+  // Distinct attributes (first-seen order), each with its distinct values — drives the chips.
+  const groups: { slug: string; name: string; values: { slug: string; label: string }[] }[] = [];
+  for (const v of variants) {
+    for (const a of v.attributes) {
+      let g = groups.find((x) => x.slug === a.attributeSlug);
+      if (!g) { g = { slug: a.attributeSlug, name: a.attributeName, values: [] }; groups.push(g); }
+      if (!g.values.some((x) => x.slug === a.valueSlug)) g.values.push({ slug: a.valueSlug, label: a.valueLabel });
+    }
+  }
+  // ponytail: multi-variant products always carry attributes here, so chips cover them.
+  const hasAttributes = groups.length > 0;
 
-  const selected = variants.find((v) => v._id === selectedId) ?? firstActive;
+  const variantFor = (sel: Record<string, string>): ProductVariant | undefined =>
+    variants.find(
+      (v) =>
+        v.attributes.length === Object.keys(sel).length &&
+        v.attributes.every((a) => sel[a.attributeSlug] === a.valueSlug),
+    );
+
+  const [selection, setSelection] = useState<Record<string, string>>(() => {
+    const sel: Record<string, string> = {};
+    for (const a of firstActive?.attributes ?? []) sel[a.attributeSlug] = a.valueSlug;
+    return sel;
+  });
+
+  const selected = variantFor(selection) ?? firstActive;
+  const [qty, setQty] = useState<number>(minQty(firstActive));
   const queryClient = useQueryClient();
 
-  // Reset qty to the min when the selected variant changes — derived during render
-  // (the React-recommended alternative to a setState-in-effect). See "you might not
-  // need an effect".
-  const [prevId, setPrevId] = useState(selectedId);
-  if (selectedId !== prevId) {
-    setPrevId(selectedId);
+  // Reset qty to the min when the resolved variant changes — derived during render
+  // (the React-recommended alternative to a setState-in-effect).
+  const [prevId, setPrevId] = useState(selected?._id ?? '');
+  if ((selected?._id ?? '') !== prevId) {
+    setPrevId(selected?._id ?? '');
     setQty(minQty(selected));
   }
+
+  // A value is selectable if some active variant has it alongside the other current picks.
+  const isValueAvailable = (groupSlug: string, valueSlug: string) =>
+    variants.some(
+      (v) =>
+        v.isActive &&
+        v.attributes.some((a) => a.attributeSlug === groupSlug && a.valueSlug === valueSlug) &&
+        Object.entries(selection).every(
+          ([s, val]) => s === groupSlug || v.attributes.some((a) => a.attributeSlug === s && a.valueSlug === val),
+        ),
+    );
+
+  // Pick a value, then snap the whole selection to the active variant that best preserves
+  // the other picks — guarantees the combo always resolves to a real, active variant.
+  const selectValue = (groupSlug: string, valueSlug: string) => {
+    const candidates = variants.filter(
+      (v) => v.isActive && v.attributes.some((a) => a.attributeSlug === groupSlug && a.valueSlug === valueSlug),
+    );
+    let best = candidates[0];
+    let bestScore = -1;
+    for (const v of candidates) {
+      const score = Object.entries(selection).filter(
+        ([s, val]) => s !== groupSlug && v.attributes.some((a) => a.attributeSlug === s && a.valueSlug === val),
+      ).length;
+      if (score > bestScore) { bestScore = score; best = v; }
+    }
+    const next: Record<string, string> = { [groupSlug]: valueSlug };
+    if (best) for (const a of best.attributes) next[a.attributeSlug] = a.valueSlug;
+    setSelection(next);
+  };
 
   const mutation = useMutation({
     mutationFn: () =>
@@ -49,7 +101,7 @@ export default function AddToCart({
   });
 
   if (!selected) {
-    return <p className="text-sm text-zinc-500">No variants available.</p>;
+    return <p className="text-sm text-muted">No variants available.</p>;
   }
 
   const floor = enforceMoq ? selected.moq : 1;
@@ -63,39 +115,37 @@ export default function AddToCart({
 
   return (
     <div className="font-display flex flex-col gap-4">
-      {/* Variant Selector */}
-      {variants.length > 1 && (
-        <div>
-          <label className="mb-1.5 block text-sm font-semibold text-slate">Variant</label>
-          <select
-            value={selectedId}
-            onChange={(e) => setSelectedId(e.target.value)}
-            className="w-full rounded-xl border border-line bg-white/80 px-3 py-2 text-sm text-ink outline-none transition-colors focus:border-accent focus:bg-white"
-          >
-            {variants.map((v) => {
-              const label =
-                v.attributes.map((a) => `${a.attributeName}: ${a.valueLabel}`).join(', ') ||
-                v.sku;
-              return (
-                <option key={v._id} value={v._id} disabled={!v.isActive}>
-                  {label} {!v.isActive ? '(unavailable)' : ''}
-                </option>
-              );
-            })}
-          </select>
-        </div>
-      )}
-
-      {/* Variant attributes display */}
-      {selected.attributes.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {selected.attributes.map((attr) => (
-            <span
-              key={attr.attributeSlug}
-              className="font-jbmono rounded-full border border-[rgba(23,155,142,.25)] bg-[rgba(23,155,142,.12)] px-3 py-1 text-[11px] text-accent"
-            >
-              {attr.attributeName}: {attr.valueLabel}
-            </span>
+      {/* Variant Selector — one chip group per attribute */}
+      {variants.length > 1 && hasAttributes && (
+        <div className="flex flex-col gap-3">
+          {groups.map((g) => (
+            <div key={g.slug}>
+              <label className="mb-1.5 block text-sm font-semibold text-slate">{g.name}</label>
+              <div className="flex flex-wrap gap-2">
+                {g.values.map((val) => {
+                  const active = selection[g.slug] === val.slug;
+                  const available = isValueAvailable(g.slug, val.slug);
+                  return (
+                    <button
+                      key={val.slug}
+                      type="button"
+                      onClick={() => selectValue(g.slug, val.slug)}
+                      disabled={!available}
+                      aria-pressed={active}
+                      className={
+                        active
+                          ? 'rounded-full border border-accent bg-accent px-3.5 py-1.5 text-sm font-semibold text-white'
+                          : available
+                            ? 'rounded-full border border-line bg-white/80 px-3.5 py-1.5 text-sm text-slate transition-colors hover:border-accent'
+                            : 'cursor-not-allowed rounded-full border border-line bg-white/40 px-3.5 py-1.5 text-sm text-muted line-through opacity-50'
+                      }
+                    >
+                      {val.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           ))}
         </div>
       )}
