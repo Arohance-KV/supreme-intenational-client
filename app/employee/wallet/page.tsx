@@ -29,7 +29,8 @@ export default function WalletPage() {
   const { data: ledger, isLoading: ledgerLoading, isError: ledgerError } = useWalletLedger();
 
   return (
-    <div className="min-h-screen bg-[#eef0f8] mx-auto max-w-3xl px-4 py-8 font-display space-y-8">
+    <div className="min-h-screen bg-[#eef0f8]">
+    <div className="mx-auto max-w-3xl px-4 py-8 font-display space-y-8">
       {/* Balance hero */}
       <section className="rounded-[24px] bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)] p-8 text-white shadow-[0_24px_60px_rgba(34,36,90,.2)]">
         <p className={`${eyebrow} mb-2 !text-white/70`}>WALLET BALANCE</p>
@@ -97,6 +98,7 @@ export default function WalletPage() {
           </div>
         )}
       </section>
+    </div>
     </div>
   );
 }

@@ -115,8 +115,10 @@ export default function EmployeeCheckoutPage() {
 
   return (
     <div className={`min-h-screen bg-[#eef0f8] ${pageWrap}`}>
-      <p className={eyebrow}>CHECKOUT</p>
-      <h1 className="text-2xl font-extrabold tracking-[-.02em] text-ink mb-6">Checkout</h1>
+      <div className="max-w-4xl mx-auto">
+        <p className={eyebrow}>CHECKOUT</p>
+        <h1 className="text-2xl font-extrabold tracking-[-.02em] text-ink mb-6">Checkout</h1>
+      </div>
       <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
 
         {/* Left: Address Form */}

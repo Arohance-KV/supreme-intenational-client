@@ -87,7 +87,7 @@ export default function EmployeeProductsPage() {
               <select
                 value={sort}
                 onChange={(e) => { setSort(e.target.value); setPage(1); }}
-                className={`${input} w-auto`}
+                className={`${input} !w-auto sm:!w-56`}
               >
                 {SORT_OPTIONS.map((o) => (
                   <option key={o.value} value={o.value}>{o.label}</option>

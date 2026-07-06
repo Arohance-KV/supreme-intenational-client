@@ -37,5 +37,9 @@ export default function EmployeeCartPage() {
     );
   }
 
-  return <CartView cart={cart} mutations={mutations} checkoutHref="/employee/checkout" checkoutLabel="Proceed to Checkout" productHrefBase="/employee/products" enforceMoq={false} />;
+  return (
+    <div className="min-h-screen bg-[#eef0f8]">
+      <CartView cart={cart} mutations={mutations} checkoutHref="/employee/checkout" checkoutLabel="Proceed to Checkout" productHrefBase="/employee/products" enforceMoq={false} />
+    </div>
+  );
 }

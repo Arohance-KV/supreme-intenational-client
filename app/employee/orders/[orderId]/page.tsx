@@ -97,11 +97,15 @@ function StatusTimeline({ status }: { status: string }) {
     <ol>
       {TIMELINE_STEPS.map((step, i) => {
         const completed = currentIdx >= 0 && i <= currentIdx;
+        const isCurrent = i === currentIdx;
         const isLast = i === TIMELINE_STEPS.length - 1;
         return (
           <li key={step} className="flex gap-3">
             <div className="flex flex-col items-center">
-              <span className={`h-3 w-3 flex-shrink-0 rounded-full ${completed ? 'bg-accent' : 'bg-line'}`} />
+              <span
+                aria-current={isCurrent ? 'step' : undefined}
+                className={`h-3 w-3 flex-shrink-0 rounded-full ${completed ? 'bg-accent' : 'bg-line'}`}
+              />
               {!isLast && <div className="w-px flex-1 min-h-[24px] border-l border-line" />}
             </div>
             <p className={`font-jbmono text-[11px] uppercase text-slate ${isLast ? '' : 'pb-6'}`}>{step}</p>
