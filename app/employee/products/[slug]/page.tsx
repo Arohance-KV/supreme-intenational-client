@@ -5,6 +5,7 @@ import { useEmployeeProduct, useEmployeeRelated } from '@/lib/employee/catalog';
 import { apiFetch } from '@/lib/api';
 import AddToCart from '@/components/AddToCart';
 import ProductCard from '@/components/ProductCard';
+import { glass, eyebrow, pageWrap } from '@/components/employee/ui';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -29,18 +30,18 @@ export default function EmployeeProductPage({ params }: PageProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-zinc-50 flex items-center justify-center">
-        <p className="text-zinc-500 text-sm">Loading product…</p>
+      <div className="min-h-screen bg-[#eef0f8] flex items-center justify-center">
+        <p className="text-slate text-sm">Loading product…</p>
       </div>
     );
   }
 
   if (isError || !data) {
     return (
-      <div className="min-h-screen bg-zinc-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#eef0f8] flex items-center justify-center">
         <div className="text-center">
-          <p className="text-lg font-semibold text-zinc-800">Product not found</p>
-          <p className="text-sm text-zinc-500 mt-1">
+          <p className="text-lg font-semibold text-ink">Product not found</p>
+          <p className="text-sm text-slate mt-1">
             This product may not be available to you.
           </p>
         </div>
@@ -53,14 +54,14 @@ export default function EmployeeProductPage({ params }: PageProps) {
   const related = relatedData ?? [];
 
   return (
-    <div className="min-h-screen bg-zinc-50">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#eef0f8]">
+      <div className={pageWrap}>
         {/* Product Hero */}
         <div className="flex flex-col gap-8 lg:flex-row">
           {/* Image Gallery */}
-          <div className="w-full lg:w-1/2 shrink-0">
+          <div className={`w-full lg:w-1/2 shrink-0 ${glass} rounded-[22px] p-3.5`}>
             {mainImage ? (
-              <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-zinc-100">
+              <div className="relative aspect-square w-full overflow-hidden rounded-[14px] bg-[#eef0f8]">
                 <Image
                   src={mainImage}
                   alt={product.name}
@@ -71,7 +72,7 @@ export default function EmployeeProductPage({ params }: PageProps) {
                 />
               </div>
             ) : (
-              <div className="flex aspect-square w-full items-center justify-center rounded-xl bg-zinc-200 text-zinc-400">
+              <div className="flex aspect-square w-full items-center justify-center rounded-[14px] bg-[#eef0f8] text-muted">
                 No image
               </div>
             )}
@@ -80,7 +81,7 @@ export default function EmployeeProductPage({ params }: PageProps) {
                 {product.images.slice(1).map((img, i) => (
                   <div
                     key={i}
-                    className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-zinc-200 bg-zinc-100"
+                    className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-line bg-[#eef0f8]"
                   >
                     <Image
                       src={img}
@@ -96,18 +97,22 @@ export default function EmployeeProductPage({ params }: PageProps) {
           </div>
 
           {/* Product Info */}
-          <div className="flex flex-col gap-5 flex-1">
+          <div className={`flex flex-col gap-5 flex-1 ${glass} rounded-[20px] p-6`}>
+            {product.category && <span className={`w-fit ${eyebrow}`}>{product.category}</span>}
+
             {product.badge && (
               <span
                 className={`w-fit rounded-full px-3 py-1 text-xs font-medium text-white ${
-                  product.badge.variant === 'primary' ? 'bg-blue-600' : 'bg-rose-500'
+                  product.badge.variant === 'primary' ? 'bg-indigo' : 'bg-accent'
                 }`}
               >
                 {product.badge.label}
               </span>
             )}
 
-            <h1 className="text-2xl font-bold text-zinc-900 sm:text-3xl">{product.name}</h1>
+            <h1 className="text-2xl font-extrabold tracking-[-.02em] text-ink sm:text-3xl">
+              {product.name}
+            </h1>
 
             {/* Rating */}
             <div className="flex items-center gap-2">
@@ -116,9 +121,7 @@ export default function EmployeeProductPage({ params }: PageProps) {
                   <svg
                     key={star}
                     className={`h-4 w-4 ${
-                      star <= Math.round(product.rating)
-                        ? 'text-amber-400'
-                        : 'text-zinc-300'
+                      star <= Math.round(product.rating) ? 'text-amber-400' : 'text-line'
                     }`}
                     fill="currentColor"
                     viewBox="0 0 20 20"
@@ -127,16 +130,11 @@ export default function EmployeeProductPage({ params }: PageProps) {
                   </svg>
                 ))}
               </div>
-              <span className="text-sm text-zinc-500">
+              <span className="text-sm text-slate">
                 {product.rating.toFixed(1)} ({product.totalReviews} review
                 {product.totalReviews !== 1 ? 's' : ''})
               </span>
             </div>
-
-            {/* Description */}
-            {product.description && (
-              <p className="text-sm text-zinc-600 leading-relaxed">{product.description}</p>
-            )}
 
             {/* Add to Cart — employee-isolated */}
             <AddToCart
@@ -148,10 +146,18 @@ export default function EmployeeProductPage({ params }: PageProps) {
           </div>
         </div>
 
+        {/* Description */}
+        {product.description && (
+          <div className={`mt-8 ${glass} rounded-[20px] p-6`}>
+            <h2 className="mb-2 text-lg font-bold text-ink">Description</h2>
+            <p className="text-sm text-slate leading-[1.6]">{product.description}</p>
+          </div>
+        )}
+
         {/* Related Products */}
         {related.length > 0 && (
           <div className="mt-12">
-            <h2 className="mb-6 text-xl font-bold text-zinc-900">Related Products</h2>
+            <h2 className="mb-6 text-xl font-bold text-ink">Related Products</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
               {related.map((p) => (
                 <ProductCard key={p._id} product={p} hrefBase="/employee/products" />
