@@ -1276,7 +1276,7 @@ function CompanyDetailInner({ id }: { id: string }) {
       </div>
 
       {/* Employees section */}
-      <EmployeesSection companyId={id} companyStatus={company.status} walletMode={company.walletMode} />
+      <EmployeesSection companyId={id} companyStatus={company.status} walletMode={company.walletMode ?? 'points'} />
 
       {/* Catalog editor */}
       <CompanyCatalogSection companyId={id} />
