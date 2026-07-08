@@ -244,7 +244,23 @@ export function useBulkIssueCoupons(companyId: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (file: File) =>
-      adminUpload<{ issued: number }>(`/admin/companies/${companyId}/employees/bulk-coupon`, file),
+      adminUpload<{ issued?: number; credited?: number }>(`/admin/companies/${companyId}/employees/bulk-coupon`, file),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: EMPLOYEES_KEY(companyId) });
+      qc.invalidateQueries({ queryKey: ['admin', 'employee-wallet'] });
+    },
+  });
+}
+
+// In-app picker: allocate the same value to selected employees (mode-aware server-side).
+export function useBulkAllocateSelected(companyId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: { employeeIds: string[]; value: number }) =>
+      adminFetch<{ issued?: number; credited?: number }>(`/admin/companies/${companyId}/employees/bulk-allocate`, {
+        method: 'POST',
+        body,
+      }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: EMPLOYEES_KEY(companyId) });
       qc.invalidateQueries({ queryKey: ['admin', 'employee-wallet'] });

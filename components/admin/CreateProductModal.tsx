@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { ApiError } from '@/lib/api';
 import { useCreateProduct, type CreateProductBody } from '@/lib/admin/products';
@@ -49,8 +50,14 @@ export default function CreateProductModal({
     });
   };
 
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4">
+  // Portal to <body> so the overlay escapes any backdrop-filter/transform ancestor
+  // that would otherwise trap `fixed` positioning and let sibling cards paint over it.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  if (!mounted || typeof document === 'undefined') return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-[rgba(22,23,58,.5)] p-4 backdrop-blur-md">
       <div className="w-full max-w-lg rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-6">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-base font-semibold text-ink">
@@ -185,6 +192,7 @@ export default function CreateProductModal({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

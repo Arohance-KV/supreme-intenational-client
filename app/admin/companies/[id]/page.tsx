@@ -1,6 +1,7 @@
 'use client';
 
 import { use, useState, useEffect, Suspense } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { ApiError } from '@/lib/api';
 import { StatusChip } from '@/components/admin/StatusChip';
@@ -14,6 +15,7 @@ import {
   useInviteEmployee,
   useBulkInvite,
   useBulkIssueCoupons,
+  useBulkAllocateSelected,
   useResendInvite,
   useUpdateEmployeeStatus,
   useEmployeeWallet,
@@ -42,6 +44,24 @@ const primaryBtn =
   'rounded-lg bg-gradient-to-br from-indigo to-indigo2 px-3 py-1.5 text-xs font-medium text-white shadow-sm transition hover:opacity-90 disabled:opacity-60';
 
 // ── Shared section primitives ─────────────────────────────────────────────────
+
+// Portals a full-screen overlay to <body> so modals escape any ancestor with
+// backdrop-filter/transform (which would otherwise trap `fixed` positioning and
+// let sibling cards with z-index paint over the modal). Blurs the whole screen.
+function ModalShell({ onClose, children }: { onClose: () => void; children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  if (!mounted || typeof document === 'undefined') return null;
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-[rgba(22,23,58,.5)] p-4 backdrop-blur-md"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      {children}
+    </div>,
+    document.body,
+  );
+}
 
 function CardHeader({
   title,
@@ -647,83 +667,187 @@ function EmployeeWalletPanel({
 
 // ── BulkImportModal ───────────────────────────────────────────────────────────
 
-function BulkImportModal({
+interface SelectMode {
+  employees: AdminEmployee[];
+  valueLabel: string;
+  actionLabel: string;
+  apply: (employeeIds: string[], value: number) => Promise<string>;
+}
+
+function BulkModal({
   title,
   blurb,
   templateFilename,
   templateCsv,
   onClose,
-  upload,
+  uploadFile,
+  select,
 }: {
   title: string;
   blurb: string;
   templateFilename: string;
   templateCsv: string;
   onClose: () => void;
-  upload: (file: File) => Promise<string>; // resolves to a success message
+  uploadFile: (file: File) => Promise<string>; // resolves to a success message
+  select?: SelectMode; // when present, adds the "Select employees" tab
 }) {
-  const [file, setFile] = useState<File | null>(null);
+  const [tab, setTab] = useState<'select' | 'file'>(select ? 'select' : 'file');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<string | null>(null);
+
+  // file tab
+  const [file, setFile] = useState<File | null>(null);
+  // select tab
+  const [checked, setChecked] = useState<Set<string>>(new Set());
+  const [value, setValue] = useState('');
+  const [search, setSearch] = useState('');
+
+  const reset = () => { setError(null); setDone(null); };
 
   function downloadTemplate() {
     const blob = new Blob([templateCsv], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url;
-    a.download = templateFilename;
-    a.click();
+    a.href = url; a.download = templateFilename; a.click();
     URL.revokeObjectURL(url);
   }
 
-  async function handleUpload() {
-    if (!file) return;
-    setBusy(true); setError(null); setDone(null);
-    try {
-      setDone(await upload(file));
-      setFile(null);
-    } catch (e) {
-      setError(e instanceof ApiError ? e.message : 'Upload failed. Please try again.');
-    } finally {
-      setBusy(false);
-    }
+  async function run(fn: () => Promise<string>) {
+    setBusy(true); reset();
+    try { setDone(await fn()); }
+    catch (e) { setError(e instanceof ApiError ? e.message : 'Something went wrong. Please try again.'); }
+    finally { setBusy(false); }
   }
 
+  const filtered = (select?.employees ?? []).filter((e) => {
+    const q = search.trim().toLowerCase();
+    if (!q) return true;
+    return `${e.firstName} ${e.lastName ?? ''} ${e.email}`.toLowerCase().includes(q);
+  });
+  const allShownChecked = filtered.length > 0 && filtered.every((e) => checked.has(e._id));
+
+  function toggle(id: string) {
+    setChecked((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+    reset();
+  }
+  function toggleAllShown() {
+    setChecked((prev) => {
+      const n = new Set(prev);
+      if (allShownChecked) filtered.forEach((e) => n.delete(e._id));
+      else filtered.forEach((e) => n.add(e._id));
+      return n;
+    });
+    reset();
+  }
+
+  const tabCls = (on: boolean) =>
+    `flex-1 rounded-lg px-3 py-2 text-sm font-medium transition ${on ? 'bg-white text-ink shadow-sm' : 'text-slate hover:text-ink'}`;
+
   return (
-    <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-[rgba(22,23,58,.42)] p-4 backdrop-blur-sm"
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
-    >
-      <div className="w-full max-w-lg overflow-hidden rounded-[22px] border border-white/80 bg-white shadow-[0_40px_100px_rgba(22,23,58,.35)]">
+    <ModalShell onClose={onClose}>
+      <div className="flex max-h-[88vh] w-full max-w-2xl flex-col overflow-hidden rounded-[22px] border border-white/80 bg-white shadow-[0_40px_100px_rgba(22,23,58,.35)]">
         <div className="flex items-center justify-between border-b border-line px-5 py-4">
           <h2 className="text-base font-semibold text-ink">{title}</h2>
           <button onClick={onClose} className="rounded-lg p-1.5 text-muted hover:bg-black/5 hover:text-slate" aria-label="Close">✕</button>
         </div>
-        <div className="space-y-4 p-5">
+
+        <div className="flex-1 space-y-4 overflow-y-auto p-5">
           <p className="text-sm text-slate">{blurb}</p>
 
-          <div className="flex items-center justify-between gap-3 rounded-xl border border-line bg-white/50 px-4 py-3">
-            <div className="min-w-0">
-              <p className="text-sm font-medium text-ink">Need the format?</p>
-              <p className="text-xs text-muted">Download the template, fill it in, and upload.</p>
+          {select && (
+            <div className="flex gap-1 rounded-xl border border-line bg-black/[.03] p-1">
+              <button type="button" className={tabCls(tab === 'select')} onClick={() => { setTab('select'); reset(); }}>Select employees</button>
+              <button type="button" className={tabCls(tab === 'file')} onClick={() => { setTab('file'); reset(); }}>Upload file</button>
             </div>
-            <button
-              type="button"
-              onClick={downloadTemplate}
-              className="shrink-0 rounded-lg border border-line px-3 py-2 text-xs font-medium text-slate hover:bg-white/70"
-            >
-              ↓ Template
-            </button>
-          </div>
+          )}
 
-          <label className={labelCls}>Spreadsheet file (.xlsx, .xls or .csv)</label>
-          <input
-            type="file"
-            accept=".xlsx,.xls,.csv"
-            onChange={(e) => { setFile(e.target.files?.[0] ?? null); setError(null); setDone(null); }}
-            className="block w-full text-sm text-slate file:mr-3 file:rounded-lg file:border-0 file:bg-indigo/10 file:px-3 file:py-2 file:text-xs file:font-medium file:text-indigo hover:file:bg-indigo/15"
-          />
+          {/* SELECT TAB */}
+          {select && tab === 'select' && (
+            <div className="space-y-3">
+              <input
+                type="text"
+                placeholder="Search employees…"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className={inputCls}
+              />
+              <div className="overflow-hidden rounded-xl border border-line">
+                <label className="flex cursor-pointer items-center gap-2 border-b border-line bg-black/[.02] px-3 py-2 text-xs font-medium text-slate">
+                  <input type="checkbox" checked={allShownChecked} onChange={toggleAllShown} className="accent-indigo" />
+                  Select all{search ? ' shown' : ''} ({filtered.length})
+                </label>
+                <ul className="max-h-56 overflow-y-auto">
+                  {filtered.map((e) => (
+                    <li key={e._id}>
+                      <label className="flex cursor-pointer items-center gap-3 px-3 py-2 text-sm hover:bg-black/[.03]">
+                        <input type="checkbox" checked={checked.has(e._id)} onChange={() => toggle(e._id)} className="accent-indigo" />
+                        <Avatar name={`${e.firstName} ${e.lastName ?? ''}`} size={28} />
+                        <span className="min-w-0">
+                          <span className="block truncate text-ink">{e.firstName} {e.lastName ?? ''}</span>
+                          <span className="block truncate text-xs text-muted">{e.email}</span>
+                        </span>
+                      </label>
+                    </li>
+                  ))}
+                  {filtered.length === 0 && <li className="px-3 py-6 text-center text-xs text-muted">No employees match.</li>}
+                </ul>
+              </div>
+              <div className="flex items-end gap-2">
+                <div className="flex-1">
+                  <label className={labelCls}>{select.valueLabel}</label>
+                  <div className="relative">
+                    <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted">₹</span>
+                    <input
+                      type="number" min="0.01" step="0.01" placeholder="0"
+                      value={value} onChange={(e) => { setValue(e.target.value); reset(); }}
+                      className={`${inputCls} pl-7`}
+                    />
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  disabled={busy || checked.size === 0 || !(Number(value) > 0)}
+                  onClick={() => run(async () => select.apply([...checked], Number(value)))}
+                  className="rounded-lg bg-gradient-to-br from-indigo to-indigo2 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 disabled:opacity-50"
+                >
+                  {busy ? 'Applying…' : `${select.actionLabel} (${checked.size})`}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* FILE TAB */}
+          {(!select || tab === 'file') && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between gap-3 rounded-xl border border-line bg-white/50 px-4 py-3">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-ink">Need the format?</p>
+                  <p className="text-xs text-muted">Download the template, fill it in, and upload.</p>
+                </div>
+                <button type="button" onClick={downloadTemplate} className="shrink-0 rounded-lg border border-line px-3 py-2 text-xs font-medium text-slate hover:bg-white/70">
+                  ↓ Template
+                </button>
+              </div>
+              <div>
+                <label className={labelCls}>Spreadsheet file (.xlsx, .xls or .csv)</label>
+                <input
+                  type="file"
+                  accept=".xlsx,.xls,.csv"
+                  onChange={(e) => { setFile(e.target.files?.[0] ?? null); reset(); }}
+                  className="block w-full text-sm text-slate file:mr-3 file:rounded-lg file:border-0 file:bg-indigo/10 file:px-3 file:py-2 file:text-xs file:font-medium file:text-indigo hover:file:bg-indigo/15"
+                />
+              </div>
+              <button
+                type="button"
+                disabled={!file || busy}
+                onClick={() => run(async () => { const m = await uploadFile(file!); setFile(null); return m; })}
+                className="rounded-lg bg-gradient-to-br from-indigo to-indigo2 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 disabled:opacity-50"
+              >
+                {busy ? 'Uploading…' : 'Upload & apply'}
+              </button>
+            </div>
+          )}
 
           {error && (
             <pre className="max-h-40 overflow-auto whitespace-pre-wrap rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700">{error}</pre>
@@ -731,23 +855,15 @@ function BulkImportModal({
           {done && (
             <div className="rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">✓ {done}</div>
           )}
+        </div>
 
-          <div className="flex justify-end gap-3 pt-1">
-            <button type="button" onClick={onClose} className="rounded-lg border border-line px-4 py-2 text-sm text-slate hover:bg-white/60">
-              {done ? 'Done' : 'Cancel'}
-            </button>
-            <button
-              type="button"
-              onClick={handleUpload}
-              disabled={!file || busy}
-              className="rounded-lg bg-gradient-to-br from-indigo to-indigo2 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 disabled:opacity-50"
-            >
-              {busy ? 'Uploading…' : 'Upload'}
-            </button>
-          </div>
+        <div className="flex justify-end border-t border-line px-5 py-4">
+          <button type="button" onClick={onClose} className="rounded-lg border border-line px-4 py-2 text-sm text-slate hover:bg-white/60">
+            {done ? 'Done' : 'Close'}
+          </button>
         </div>
       </div>
-    </div>
+    </ModalShell>
   );
 }
 
@@ -769,6 +885,7 @@ function EmployeesSection({
   const invite = useInviteEmployee(companyId);
   const bulkInvite = useBulkInvite(companyId);
   const bulkCoupons = useBulkIssueCoupons(companyId);
+  const bulkAllocate = useBulkAllocateSelected(companyId);
   const resend = useResendInvite();
   const updateStatus = useUpdateEmployeeStatus(companyId);
 
@@ -827,11 +944,9 @@ function EmployeesSection({
               <button onClick={() => setBulkMode('invite')} className="rounded-lg border border-line px-3 py-1.5 text-xs font-medium text-slate hover:bg-white/70">
                 Bulk invite
               </button>
-              {walletMode === 'coupon' && (
-                <button onClick={() => setBulkMode('coupon')} className="rounded-lg border border-line px-3 py-1.5 text-xs font-medium text-slate hover:bg-white/70">
-                  Bulk coupon
-                </button>
-              )}
+              <button onClick={() => setBulkMode('coupon')} className="rounded-lg border border-line px-3 py-1.5 text-xs font-medium text-slate hover:bg-white/70">
+                {walletMode === 'coupon' ? 'Bulk coupon' : 'Bulk points'}
+              </button>
               <button onClick={() => setShowInvite(!showInvite)} className={primaryBtn}>
                 {showInvite ? 'Cancel' : '+ Invite employee'}
               </button>
@@ -1016,33 +1131,48 @@ function EmployeesSection({
 
       {/* Bulk import modals */}
       {bulkMode === 'invite' && (
-        <BulkImportModal
+        <BulkModal
           title="Bulk invite employees"
-          blurb="Upload a spreadsheet of employees to invite. Required columns: firstName and email. Optional: lastName, isdCode, phoneNumber. The whole file is validated first — if any row is invalid, nothing is imported."
+          blurb="Invite many employees at once from a spreadsheet. Required columns: firstName and email. Optional: lastName, isdCode, phoneNumber. The whole file is validated first — if any row is invalid, nothing is imported."
           templateFilename="employee-invite-template.csv"
           templateCsv={INVITE_TEMPLATE_CSV}
           onClose={() => setBulkMode(null)}
-          upload={async (file) => { const r = await bulkInvite.mutateAsync(file); return `${r.invited} employee(s) invited.`; }}
+          uploadFile={async (file) => { const r = await bulkInvite.mutateAsync(file); return `${r.invited} employee(s) invited.`; }}
         />
       )}
       {bulkMode === 'coupon' && (
-        <BulkImportModal
-          title="Bulk issue coupons"
-          blurb="Upload a spreadsheet to set each employee's coupon. Required columns: email (must match an employee in this company) and value. The whole file is validated first — if any row is invalid, no coupons are issued."
+        <BulkModal
+          title={walletMode === 'coupon' ? 'Bulk issue coupons' : 'Bulk credit points'}
+          blurb={
+            walletMode === 'coupon'
+              ? "Set the same coupon value for several employees at once — pick them below, or upload a spreadsheet (columns: email, value). Coupon mode sets each employee's coupon to the value (replacing any existing one)."
+              : 'Credit the same points to several employees at once — pick them below, or upload a spreadsheet (columns: email, value).'
+          }
           templateFilename="coupon-template.csv"
           templateCsv={COUPON_TEMPLATE_CSV}
           onClose={() => setBulkMode(null)}
-          upload={async (file) => { const r = await bulkCoupons.mutateAsync(file); return `${r.issued} coupon(s) issued.`; }}
+          uploadFile={async (file) => {
+            const r = await bulkCoupons.mutateAsync(file);
+            const n = r.issued ?? r.credited ?? 0;
+            return walletMode === 'coupon' ? `${n} coupon(s) issued.` : `${n} employee(s) credited.`;
+          }}
+          select={{
+            employees: list,
+            valueLabel: walletMode === 'coupon' ? 'Coupon value' : 'Points to credit',
+            actionLabel: walletMode === 'coupon' ? 'Issue coupon' : 'Credit',
+            apply: async (employeeIds, value) => {
+              const r = await bulkAllocate.mutateAsync({ employeeIds, value });
+              const n = r.issued ?? r.credited ?? employeeIds.length;
+              return walletMode === 'coupon' ? `${n} coupon(s) issued.` : `${n} employee(s) credited.`;
+            },
+          }}
         />
       )}
 
       {/* Wallet / coupon management modal */}
       {walletModalEmp && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-[rgba(22,23,58,.42)] p-4 backdrop-blur-sm"
-          onClick={(e) => { if (e.target === e.currentTarget) setWalletModalEmp(null); }}
-        >
-          <div className="flex max-h-[88vh] w-full max-w-2xl flex-col overflow-hidden rounded-[22px] border border-white/80 bg-white shadow-[0_40px_100px_rgba(22,23,58,.35)]">
+        <ModalShell onClose={() => setWalletModalEmp(null)}>
+          <div className="flex max-h-[88vh] w-full max-w-3xl flex-col overflow-hidden rounded-[22px] border border-white/80 bg-white shadow-[0_40px_100px_rgba(22,23,58,.35)]">
             <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
               <div className="flex min-w-0 items-center gap-3">
                 <Avatar name={`${walletModalEmp.firstName} ${walletModalEmp.lastName ?? ''}`} />
@@ -1065,7 +1195,7 @@ function EmployeesSection({
               <EmployeeWalletPanel employee={walletModalEmp} walletMode={walletMode} />
             </div>
           </div>
-        </div>
+        </ModalShell>
       )}
     </section>
   );
