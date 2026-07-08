@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { adminFetch } from './api';
+import { adminFetch, adminUpload } from './api';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -228,6 +228,27 @@ export function useCompanyEmployees(companyId: string) {
     queryFn: () =>
       adminFetch<AdminEmployee[]>(`/admin/companies/${companyId}/employees`),
     enabled: !!companyId,
+  });
+}
+
+export function useBulkInvite(companyId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (file: File) =>
+      adminUpload<{ invited: number }>(`/admin/companies/${companyId}/employees/bulk-invite`, file),
+    onSuccess: () => qc.invalidateQueries({ queryKey: EMPLOYEES_KEY(companyId) }),
+  });
+}
+
+export function useBulkIssueCoupons(companyId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (file: File) =>
+      adminUpload<{ issued: number }>(`/admin/companies/${companyId}/employees/bulk-coupon`, file),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: EMPLOYEES_KEY(companyId) });
+      qc.invalidateQueries({ queryKey: ['admin', 'employee-wallet'] });
+    },
   });
 }
 

@@ -12,6 +12,8 @@ import {
   useUpdateCompany,
   useCompanyEmployees,
   useInviteEmployee,
+  useBulkInvite,
+  useBulkIssueCoupons,
   useResendInvite,
   useUpdateEmployeeStatus,
   useEmployeeWallet,
@@ -643,6 +645,115 @@ function EmployeeWalletPanel({
   );
 }
 
+// ── BulkImportModal ───────────────────────────────────────────────────────────
+
+function BulkImportModal({
+  title,
+  blurb,
+  templateFilename,
+  templateCsv,
+  onClose,
+  upload,
+}: {
+  title: string;
+  blurb: string;
+  templateFilename: string;
+  templateCsv: string;
+  onClose: () => void;
+  upload: (file: File) => Promise<string>; // resolves to a success message
+}) {
+  const [file, setFile] = useState<File | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [done, setDone] = useState<string | null>(null);
+
+  function downloadTemplate() {
+    const blob = new Blob([templateCsv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = templateFilename;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function handleUpload() {
+    if (!file) return;
+    setBusy(true); setError(null); setDone(null);
+    try {
+      setDone(await upload(file));
+      setFile(null);
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : 'Upload failed. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-[rgba(22,23,58,.42)] p-4 backdrop-blur-sm"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div className="w-full max-w-lg overflow-hidden rounded-[22px] border border-white/80 bg-white shadow-[0_40px_100px_rgba(22,23,58,.35)]">
+        <div className="flex items-center justify-between border-b border-line px-5 py-4">
+          <h2 className="text-base font-semibold text-ink">{title}</h2>
+          <button onClick={onClose} className="rounded-lg p-1.5 text-muted hover:bg-black/5 hover:text-slate" aria-label="Close">✕</button>
+        </div>
+        <div className="space-y-4 p-5">
+          <p className="text-sm text-slate">{blurb}</p>
+
+          <div className="flex items-center justify-between gap-3 rounded-xl border border-line bg-white/50 px-4 py-3">
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-ink">Need the format?</p>
+              <p className="text-xs text-muted">Download the template, fill it in, and upload.</p>
+            </div>
+            <button
+              type="button"
+              onClick={downloadTemplate}
+              className="shrink-0 rounded-lg border border-line px-3 py-2 text-xs font-medium text-slate hover:bg-white/70"
+            >
+              ↓ Template
+            </button>
+          </div>
+
+          <label className={labelCls}>Spreadsheet file (.xlsx, .xls or .csv)</label>
+          <input
+            type="file"
+            accept=".xlsx,.xls,.csv"
+            onChange={(e) => { setFile(e.target.files?.[0] ?? null); setError(null); setDone(null); }}
+            className="block w-full text-sm text-slate file:mr-3 file:rounded-lg file:border-0 file:bg-indigo/10 file:px-3 file:py-2 file:text-xs file:font-medium file:text-indigo hover:file:bg-indigo/15"
+          />
+
+          {error && (
+            <pre className="max-h-40 overflow-auto whitespace-pre-wrap rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700">{error}</pre>
+          )}
+          {done && (
+            <div className="rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">✓ {done}</div>
+          )}
+
+          <div className="flex justify-end gap-3 pt-1">
+            <button type="button" onClick={onClose} className="rounded-lg border border-line px-4 py-2 text-sm text-slate hover:bg-white/60">
+              {done ? 'Done' : 'Cancel'}
+            </button>
+            <button
+              type="button"
+              onClick={handleUpload}
+              disabled={!file || busy}
+              className="rounded-lg bg-gradient-to-br from-indigo to-indigo2 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 disabled:opacity-50"
+            >
+              {busy ? 'Uploading…' : 'Upload'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const INVITE_TEMPLATE_CSV = 'firstName,lastName,email,isdCode,phoneNumber\nAsha,Rao,asha@example.com,+91,9876543210\n';
+const COUPON_TEMPLATE_CSV = 'email,value\nasha@example.com,2000\n';
+
 // ── EmployeesSection ──────────────────────────────────────────────────────────
 
 function EmployeesSection({
@@ -656,10 +767,13 @@ function EmployeesSection({
 }) {
   const { data: employees, isLoading, isError, error } = useCompanyEmployees(companyId);
   const invite = useInviteEmployee(companyId);
+  const bulkInvite = useBulkInvite(companyId);
+  const bulkCoupons = useBulkIssueCoupons(companyId);
   const resend = useResendInvite();
   const updateStatus = useUpdateEmployeeStatus(companyId);
 
   const [showInvite, setShowInvite] = useState(false);
+  const [bulkMode, setBulkMode] = useState<'invite' | 'coupon' | null>(null);
   const [inviteForm, setInviteForm] = useState<InviteEmployeeBody>({
     firstName: '',
     lastName: '',
@@ -709,9 +823,19 @@ function EmployeesSection({
         count={list.length}
         action={
           companyStatus === 'active' ? (
-            <button onClick={() => setShowInvite(!showInvite)} className={primaryBtn}>
-              {showInvite ? 'Cancel' : '+ Invite employee'}
-            </button>
+            <div className="flex flex-wrap items-center gap-2">
+              <button onClick={() => setBulkMode('invite')} className="rounded-lg border border-line px-3 py-1.5 text-xs font-medium text-slate hover:bg-white/70">
+                Bulk invite
+              </button>
+              {walletMode === 'coupon' && (
+                <button onClick={() => setBulkMode('coupon')} className="rounded-lg border border-line px-3 py-1.5 text-xs font-medium text-slate hover:bg-white/70">
+                  Bulk coupon
+                </button>
+              )}
+              <button onClick={() => setShowInvite(!showInvite)} className={primaryBtn}>
+                {showInvite ? 'Cancel' : '+ Invite employee'}
+              </button>
+            </div>
           ) : (
             <span className="text-xs italic text-muted">Activate company to invite</span>
           )
@@ -888,6 +1012,28 @@ function EmployeesSection({
             ? updateStatus.error.message
             : 'Status update failed'}
         </p>
+      )}
+
+      {/* Bulk import modals */}
+      {bulkMode === 'invite' && (
+        <BulkImportModal
+          title="Bulk invite employees"
+          blurb="Upload a spreadsheet of employees to invite. Required columns: firstName and email. Optional: lastName, isdCode, phoneNumber. The whole file is validated first — if any row is invalid, nothing is imported."
+          templateFilename="employee-invite-template.csv"
+          templateCsv={INVITE_TEMPLATE_CSV}
+          onClose={() => setBulkMode(null)}
+          upload={async (file) => { const r = await bulkInvite.mutateAsync(file); return `${r.invited} employee(s) invited.`; }}
+        />
+      )}
+      {bulkMode === 'coupon' && (
+        <BulkImportModal
+          title="Bulk issue coupons"
+          blurb="Upload a spreadsheet to set each employee's coupon. Required columns: email (must match an employee in this company) and value. The whole file is validated first — if any row is invalid, no coupons are issued."
+          templateFilename="coupon-template.csv"
+          templateCsv={COUPON_TEMPLATE_CSV}
+          onClose={() => setBulkMode(null)}
+          upload={async (file) => { const r = await bulkCoupons.mutateAsync(file); return `${r.issued} coupon(s) issued.`; }}
+        />
       )}
 
       {/* Wallet / coupon management modal */}
