@@ -107,19 +107,19 @@ function CouponFormModal({ mode, initial, couponId, onClose }: CouponFormModalPr
   }
 
   const inputCls =
-    'w-full rounded border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400';
-  const labelCls = 'mb-1 block text-sm font-medium text-zinc-700';
+    'w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20';
+  const labelCls = 'mb-1 block text-sm font-medium text-slate';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 overflow-y-auto">
-      <div className="my-8 w-full max-w-2xl rounded-xl border border-zinc-200 bg-white p-6 shadow-xl">
+      <div className="my-8 w-full max-w-2xl rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-6 shadow-xl">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-base font-semibold text-zinc-900">
+          <h2 className="text-base font-semibold text-ink">
             {mode === 'create' ? 'Create coupon' : 'Edit coupon'}
           </h2>
           <button
             onClick={onClose}
-            className="rounded p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700"
+            className="rounded p-1 text-muted hover:bg-black/5 hover:text-slate"
             aria-label="Close"
           >
             ✕
@@ -139,7 +139,7 @@ function CouponFormModal({ mode, initial, couponId, onClose }: CouponFormModalPr
                 value={form.code}
                 onChange={(e) => set('code', e.target.value.toUpperCase())}
                 placeholder="SUMMER20"
-                className={`${inputCls} uppercase font-mono ${mode === 'edit' ? 'bg-zinc-50 text-zinc-400 cursor-not-allowed' : ''}`}
+                className={`${inputCls} uppercase font-jbmono ${mode === 'edit' ? 'bg-white/50 text-muted cursor-not-allowed' : ''}`}
               />
             </div>
             <div>
@@ -162,7 +162,7 @@ function CouponFormModal({ mode, initial, couponId, onClose }: CouponFormModalPr
             <div>
               <label className={labelCls}>
                 Discount value <span className="text-red-500">*</span>
-                <span className="ml-1 font-normal text-zinc-400">
+                <span className="ml-1 font-normal text-muted">
                   {form.type === 'percent' ? '(0–100)' : '(₹)'}
                 </span>
               </label>
@@ -196,7 +196,7 @@ function CouponFormModal({ mode, initial, couponId, onClose }: CouponFormModalPr
               <label className={labelCls}>
                 Max discount amount (₹)
                 {form.type === 'flat' && (
-                  <span className="ml-1 font-normal text-zinc-400">(ignored for flat)</span>
+                  <span className="ml-1 font-normal text-muted">(ignored for flat)</span>
                 )}
               </label>
               <input
@@ -227,7 +227,7 @@ function CouponFormModal({ mode, initial, couponId, onClose }: CouponFormModalPr
             <div>
               <label className={labelCls}>
                 Expires at
-                <span className="ml-1 font-normal text-zinc-400">(optional)</span>
+                <span className="ml-1 font-normal text-muted">(optional)</span>
               </label>
               <input
                 type="datetime-local"
@@ -239,7 +239,7 @@ function CouponFormModal({ mode, initial, couponId, onClose }: CouponFormModalPr
             <div>
               <label className={labelCls}>
                 Usage limit
-                <span className="ml-1 font-normal text-zinc-400">(0 = unlimited)</span>
+                <span className="ml-1 font-normal text-muted">(0 = unlimited)</span>
               </label>
               <input
                 type="number"
@@ -257,7 +257,7 @@ function CouponFormModal({ mode, initial, couponId, onClose }: CouponFormModalPr
             <div>
               <label className={labelCls}>
                 Per-user limit
-                <span className="ml-1 font-normal text-zinc-400">(0 = unlimited)</span>
+                <span className="ml-1 font-normal text-muted">(0 = unlimited)</span>
               </label>
               <input
                 type="number"
@@ -271,14 +271,14 @@ function CouponFormModal({ mode, initial, couponId, onClose }: CouponFormModalPr
             <div>
               <label className={labelCls}>
                 Company ID
-                <span className="ml-1 font-normal text-zinc-400">(optional, employee-only)</span>
+                <span className="ml-1 font-normal text-muted">(optional, employee-only)</span>
               </label>
               <input
                 type="text"
                 placeholder="MongoDB ObjectId"
                 value={form.companyId ?? ''}
                 onChange={(e) => set('companyId', e.target.value)}
-                className={`${inputCls} font-mono`}
+                className={`${inputCls} font-jbmono`}
               />
             </div>
           </div>
@@ -307,14 +307,14 @@ function CouponFormModal({ mode, initial, couponId, onClose }: CouponFormModalPr
             <button
               type="button"
               onClick={onClose}
-              className="rounded border border-zinc-200 px-4 py-2 text-sm text-zinc-600 hover:bg-zinc-50"
+              className="rounded border border-line px-4 py-2 text-sm text-slate hover:bg-white/60"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isPending}
-              className="rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+              className="rounded bg-gradient-to-br from-indigo to-indigo2 text-white px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
             >
               {isPending
                 ? mode === 'create'
@@ -349,20 +349,20 @@ function CouponRow({ coupon }: { coupon: AdminCoupon }) {
 
   return (
     <>
-      <div className="grid grid-cols-[140px_1fr_120px_100px_120px_110px_140px] items-center gap-3 border-b border-zinc-100 px-5 py-3 hover:bg-zinc-50 transition-colors">
+      <div className="grid grid-cols-[140px_1fr_120px_100px_120px_110px_140px] items-center gap-3 border-b border-line px-5 py-3 hover:bg-white/50 transition-colors">
         {/* Code */}
-        <span className="font-mono text-sm font-semibold text-zinc-900 truncate">
+        <span className="font-jbmono text-sm font-semibold text-ink truncate">
           {coupon.code}
         </span>
 
         {/* Discount */}
-        <span className="text-sm text-zinc-700">{discountLabel}</span>
+        <span className="text-sm text-slate">{discountLabel}</span>
 
         {/* Min order */}
-        <span className="text-sm text-zinc-600">{inr(coupon.minOrderValue)}</span>
+        <span className="text-sm text-slate">{inr(coupon.minOrderValue)}</span>
 
         {/* Usage */}
-        <span className="text-sm text-zinc-600">
+        <span className="text-sm text-slate">
           {typeof coupon.usedCount === 'number' ? coupon.usedCount : 0}
           {typeof coupon.usageLimit === 'number' && coupon.usageLimit > 0
             ? ` / ${coupon.usageLimit}`
@@ -370,7 +370,7 @@ function CouponRow({ coupon }: { coupon: AdminCoupon }) {
         </span>
 
         {/* Expiry */}
-        <span className="text-xs text-zinc-500">{fmtDate(coupon.expiresAt)}</span>
+        <span className="text-xs text-slate">{fmtDate(coupon.expiresAt)}</span>
 
         {/* Status */}
         <StatusChip
@@ -382,7 +382,7 @@ function CouponRow({ coupon }: { coupon: AdminCoupon }) {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowEdit(true)}
-            className="rounded border border-zinc-200 px-3 py-1 text-xs text-zinc-700 hover:bg-zinc-50"
+            className="rounded border border-line px-3 py-1 text-xs text-slate hover:bg-white/60"
           >
             Edit
           </button>
@@ -428,14 +428,14 @@ function CouponsTable() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-slate">
           {Array.isArray(coupons)
             ? `${coupons.length.toLocaleString('en-IN')} coupon${coupons.length !== 1 ? 's' : ''}`
             : ''}
         </p>
         <button
           onClick={() => setShowCreate(true)}
-          className="rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 transition-colors"
+          className="rounded bg-gradient-to-br from-indigo to-indigo2 text-white px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-colors"
         >
           + New coupon
         </button>
@@ -451,14 +451,14 @@ function CouponsTable() {
 
       {/* Loading skeleton */}
       {isLoading && (
-        <div className="rounded-xl border border-zinc-200 bg-white divide-y divide-zinc-100">
+        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] divide-y divide-line">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="flex items-center gap-4 px-5 py-3 animate-pulse">
-              <div className="h-4 w-28 rounded bg-zinc-200 font-mono" />
-              <div className="h-4 w-20 rounded bg-zinc-200" />
-              <div className="h-4 w-16 rounded bg-zinc-200" />
-              <div className="h-5 w-16 rounded-full bg-zinc-200" />
-              <div className="h-5 w-20 rounded bg-zinc-200" />
+              <div className="h-4 w-28 rounded bg-black/5 font-jbmono" />
+              <div className="h-4 w-20 rounded bg-black/5" />
+              <div className="h-4 w-16 rounded bg-black/5" />
+              <div className="h-5 w-16 rounded-full bg-black/5" />
+              <div className="h-5 w-20 rounded bg-black/5" />
             </div>
           ))}
         </div>
@@ -475,16 +475,16 @@ function CouponsTable() {
 
       {/* Empty state */}
       {!isLoading && !isError && list.length === 0 && (
-        <div className="rounded-xl border border-zinc-200 bg-white p-10 text-center">
-          <p className="text-sm text-zinc-500">No coupons found. Create your first one above.</p>
+        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-10 text-center">
+          <p className="text-sm text-slate">No coupons found. Create your first one above.</p>
         </div>
       )}
 
       {/* Table */}
       {!isLoading && !isError && list.length > 0 && (
-        <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
+        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] overflow-hidden">
           {/* Header */}
-          <div className="grid grid-cols-[140px_1fr_120px_100px_120px_110px_140px] gap-3 bg-zinc-50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+          <div className="grid grid-cols-[140px_1fr_120px_100px_120px_110px_140px] gap-3 bg-white/50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-slate">
             <span>Code</span>
             <span>Discount</span>
             <span>Min Order</span>
@@ -508,15 +508,15 @@ export default function AdminCouponsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Coupons</h1>
-        <p className="mt-1 text-sm text-zinc-500">
+        <h1 className="text-2xl font-extrabold tracking-tight text-ink">Coupons</h1>
+        <p className="mt-1 text-sm text-slate">
           Manage discount coupons — flat and percentage based
         </p>
       </div>
 
       <Suspense
         fallback={
-          <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center text-sm text-zinc-500 animate-pulse">
+          <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-8 text-center text-sm text-slate animate-pulse">
             Loading coupons…
           </div>
         }

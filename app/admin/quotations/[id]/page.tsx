@@ -46,10 +46,10 @@ export default function AdminQuotationDetailPage({
   if (isLoading) {
     return (
       <main className="max-w-4xl mx-auto space-y-6">
-        <div className="h-7 w-48 rounded bg-zinc-200 animate-pulse" />
-        <div className="rounded-xl border border-zinc-200 bg-white p-6 space-y-3 animate-pulse">
+        <div className="h-7 w-48 rounded bg-black/5 animate-pulse" />
+        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-6 space-y-3 animate-pulse">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={`skeleton-${i}`} className="h-4 w-full rounded bg-zinc-200" />
+            <div key={`skeleton-${i}`} className="h-4 w-full rounded bg-black/5" />
           ))}
         </div>
       </main>
@@ -59,10 +59,10 @@ export default function AdminQuotationDetailPage({
   if (isError || !quotation) {
     return (
       <main className="max-w-4xl mx-auto space-y-4">
-        <Link href="/admin/quotations" className="text-sm text-zinc-500 hover:underline">
+        <Link href="/admin/quotations" className="text-sm text-slate hover:underline">
           ← Back to Quotations
         </Link>
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-[20px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           Quotation not found or could not be loaded.
         </div>
       </main>
@@ -89,17 +89,17 @@ export default function AdminQuotationDetailPage({
   return (
     <main className="max-w-4xl mx-auto space-y-6">
       {/* Back link */}
-      <Link href="/admin/quotations" className="text-sm text-zinc-500 hover:underline">
+      <Link href="/admin/quotations" className="text-sm text-slate hover:underline">
         ← Back to Quotations
       </Link>
 
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-900 font-mono">
+          <h1 className="text-2xl font-extrabold tracking-tight text-ink font-jbmono">
             {quotation.quotationNumber}
           </h1>
-          <p className="mt-0.5 text-sm text-zinc-500">
+          <p className="mt-0.5 text-sm text-slate">
             Created {fmtDateTime(quotation.createdAt)}
           </p>
         </div>
@@ -108,7 +108,7 @@ export default function AdminQuotationDetailPage({
 
       {/* Error banner */}
       {actionError && (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-[20px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {actionError}
         </div>
       )}
@@ -117,23 +117,23 @@ export default function AdminQuotationDetailPage({
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
 
         {/* Contact / Customer */}
-        <section className="rounded-xl border border-zinc-200 bg-white p-5">
-          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+        <section className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate">
             Contact
           </h2>
           <dl className="space-y-1 text-sm">
             <div className="flex justify-between gap-2">
-              <dt className="text-zinc-500 shrink-0">Name</dt>
-              <dd className="text-zinc-800 text-right truncate">{quotation.contact?.name ?? '—'}</dd>
+              <dt className="text-slate shrink-0">Name</dt>
+              <dd className="text-ink text-right truncate">{quotation.contact?.name ?? '—'}</dd>
             </div>
             <div className="flex justify-between gap-2">
-              <dt className="text-zinc-500 shrink-0">Email</dt>
-              <dd className="text-zinc-800 text-right truncate">{quotation.contact?.email ?? '—'}</dd>
+              <dt className="text-slate shrink-0">Email</dt>
+              <dd className="text-ink text-right truncate">{quotation.contact?.email ?? '—'}</dd>
             </div>
             {quotation.contact?.phoneNumber && (
               <div className="flex justify-between gap-2">
-                <dt className="text-zinc-500 shrink-0">Phone</dt>
-                <dd className="text-zinc-800 text-right">
+                <dt className="text-slate shrink-0">Phone</dt>
+                <dd className="text-ink text-right">
                   {quotation.contact.isdCode ? `+${quotation.contact.isdCode} ` : ''}
                   {quotation.contact.phoneNumber}
                 </dd>
@@ -141,57 +141,57 @@ export default function AdminQuotationDetailPage({
             )}
             {quotation.contact?.company && (
               <div className="flex justify-between gap-2">
-                <dt className="text-zinc-500 shrink-0">Company</dt>
-                <dd className="text-zinc-800 text-right truncate">{quotation.contact.company}</dd>
+                <dt className="text-slate shrink-0">Company</dt>
+                <dd className="text-ink text-right truncate">{quotation.contact.company}</dd>
               </div>
             )}
           </dl>
         </section>
 
         {/* Summary */}
-        <section className="rounded-xl border border-zinc-200 bg-white p-5">
-          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+        <section className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate">
             Summary
           </h2>
           <dl className="space-y-1 text-sm">
             <div className="flex justify-between">
-              <dt className="text-zinc-500">Source</dt>
-              <dd className="text-zinc-800 capitalize">{quotation.sourceType ?? '—'}</dd>
+              <dt className="text-slate">Source</dt>
+              <dd className="text-ink capitalize">{quotation.sourceType ?? '—'}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-zinc-500">Subtotal</dt>
-              <dd className="text-zinc-800">{inr(quotation.subtotal)}</dd>
+              <dt className="text-slate">Subtotal</dt>
+              <dd className="text-ink">{inr(quotation.subtotal)}</dd>
             </div>
             {typeof quotation.discountAmount === 'number' && quotation.discountAmount > 0 && (
               <div className="flex justify-between">
-                <dt className="text-zinc-500">
+                <dt className="text-slate">
                   Discount{quotation.couponCode ? ` (${quotation.couponCode})` : ''}
                 </dt>
                 <dd className="text-green-700">−{inr(quotation.discountAmount)}</dd>
               </div>
             )}
-            <div className="flex justify-between border-t border-zinc-100 pt-1 mt-1 font-semibold">
-              <dt className="text-zinc-700">Total</dt>
-              <dd className="text-zinc-900">{inr(quotation.total)}</dd>
+            <div className="flex justify-between border-t border-line pt-1 mt-1 font-semibold">
+              <dt className="text-slate">Total</dt>
+              <dd className="text-ink">{inr(quotation.total)}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-zinc-500">Currency</dt>
-              <dd className="text-zinc-800">{quotation.currency ?? '—'}</dd>
+              <dt className="text-slate">Currency</dt>
+              <dd className="text-ink">{quotation.currency ?? '—'}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-zinc-500">Downloads</dt>
-              <dd className="text-zinc-800">
+              <dt className="text-slate">Downloads</dt>
+              <dd className="text-ink">
                 {typeof quotation.downloadCount === 'number' ? quotation.downloadCount : '—'}
               </dd>
             </div>
             {quotation.lastDownloadedAt && (
               <div className="flex justify-between">
-                <dt className="text-zinc-500">Last Downloaded</dt>
-                <dd className="text-zinc-800">{fmtDateTime(quotation.lastDownloadedAt)}</dd>
+                <dt className="text-slate">Last Downloaded</dt>
+                <dd className="text-ink">{fmtDateTime(quotation.lastDownloadedAt)}</dd>
               </div>
             )}
             <div className="flex justify-between">
-              <dt className="text-zinc-500">Follow-up</dt>
+              <dt className="text-slate">Follow-up</dt>
               <dd>
                 <StatusChip
                   status={quotation.followUpStatus ?? 'new'}
@@ -214,19 +214,19 @@ export default function AdminQuotationDetailPage({
       </div>
 
       {/* Line Items */}
-      <section className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
-        <div className="px-5 py-3 bg-zinc-50 border-b border-zinc-200">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+      <section className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] overflow-hidden">
+        <div className="px-5 py-3 bg-white/50 border-b border-line">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-slate">
             Line Items ({Array.isArray(quotation.items) ? quotation.items.length : '—'})
           </h2>
         </div>
 
         {!Array.isArray(quotation.items) || quotation.items.length === 0 ? (
-          <p className="px-5 py-4 text-sm text-zinc-400">No items.</p>
+          <p className="px-5 py-4 text-sm text-muted">No items.</p>
         ) : (
-          <div className="divide-y divide-zinc-100">
+          <div className="divide-y divide-line">
             {/* Table header */}
-            <div className="hidden md:grid grid-cols-[1fr_80px_100px_80px_120px] gap-4 px-5 py-2 bg-zinc-50 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+            <div className="hidden md:grid grid-cols-[1fr_80px_100px_80px_120px] gap-4 px-5 py-2 bg-white/50 text-xs font-semibold text-slate uppercase tracking-wider">
               <span>Product</span>
               <span className="text-right">MOQ</span>
               <span className="text-right">Unit Price</span>
@@ -239,29 +239,29 @@ export default function AdminQuotationDetailPage({
                 className="flex flex-col md:grid md:grid-cols-[1fr_80px_100px_80px_120px] gap-2 md:gap-4 items-start md:items-center px-5 py-3"
               >
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-zinc-900 truncate">
+                  <p className="text-sm font-medium text-ink truncate">
                     {item.productName ?? '—'}
                   </p>
-                  <p className="text-xs text-zinc-500 font-mono">{item.sku ?? '—'}</p>
+                  <p className="text-xs text-slate font-jbmono">{item.sku ?? '—'}</p>
                   {Array.isArray(item.attributeLabels) && item.attributeLabels.length > 0 && (
-                    <p className="text-xs text-zinc-400 mt-0.5">
+                    <p className="text-xs text-muted mt-0.5">
                       {item.attributeLabels.join(' / ')}
                     </p>
                   )}
                 </div>
-                <p className="text-sm text-zinc-600 md:text-right">
-                  <span className="md:hidden text-xs text-zinc-400">MOQ: </span>
+                <p className="text-sm text-slate md:text-right">
+                  <span className="md:hidden text-xs text-muted">MOQ: </span>
                   {typeof item.moq === 'number' ? item.moq : '—'}
                 </p>
-                <p className="text-sm text-zinc-800 md:text-right">
-                  <span className="md:hidden text-xs text-zinc-400">Unit: </span>
+                <p className="text-sm text-ink md:text-right">
+                  <span className="md:hidden text-xs text-muted">Unit: </span>
                   {inr(item.unitPrice)}
                 </p>
-                <p className="text-sm text-zinc-800 md:text-right">
-                  <span className="md:hidden text-xs text-zinc-400">Qty: </span>
+                <p className="text-sm text-ink md:text-right">
+                  <span className="md:hidden text-xs text-muted">Qty: </span>
                   {typeof item.qty === 'number' ? item.qty : '—'}
                 </p>
-                <p className="text-sm font-semibold text-zinc-900 md:text-right">
+                <p className="text-sm font-semibold text-ink md:text-right">
                   {inr(item.lineTotal)}
                 </p>
               </div>
@@ -271,11 +271,11 @@ export default function AdminQuotationDetailPage({
       </section>
 
       {/* Status update */}
-      <section className="rounded-xl border border-zinc-200 bg-white p-5 space-y-4">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+      <section className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5 space-y-4">
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-slate">
           Update Status
         </h2>
-        <p className="text-sm text-zinc-600">
+        <p className="text-sm text-slate">
           Current status:{' '}
           <span className="inline-flex ml-1">
             <StatusChip status={quotation.status} />
@@ -285,14 +285,14 @@ export default function AdminQuotationDetailPage({
         {otherStatuses.length > 0 ? (
           <div className="flex flex-wrap items-end gap-3">
             <div className="space-y-1">
-              <label htmlFor="quotation-status" className="text-xs text-zinc-500">
+              <label htmlFor="quotation-status" className="text-xs text-slate">
                 New status
               </label>
               <select
                 id="quotation-status"
                 value={pendingStatus}
                 onChange={(e) => setPendingStatus(e.target.value as QuotationStatus | '')}
-                className="rounded border border-zinc-300 bg-white px-3 py-1.5 text-sm text-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-400"
+                className="rounded border border-line bg-white px-3 py-1.5 text-sm text-ink focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
               >
                 <option value="">— select —</option>
                 {otherStatuses.map((s) => (
@@ -305,13 +305,13 @@ export default function AdminQuotationDetailPage({
             <button
               onClick={handleStatusChange}
               disabled={!pendingStatus || updateStatus.isPending}
-              className="rounded bg-zinc-800 px-4 py-1.5 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="rounded bg-gradient-to-br from-indigo to-indigo2 px-4 py-1.5 text-sm font-medium text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               {updateStatus.isPending ? 'Updating…' : 'Apply'}
             </button>
           </div>
         ) : (
-          <p className="text-sm text-zinc-400">All other statuses are already available.</p>
+          <p className="text-sm text-muted">All other statuses are already available.</p>
         )}
       </section>
     </main>

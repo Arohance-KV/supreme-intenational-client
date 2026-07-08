@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
-import DcNav from '@/components/DcNav';
 import DcFooter from '@/components/DcFooter';
 import DcPhoto from '@/components/DcPhoto';
 
@@ -46,7 +45,6 @@ export default function AboutPage() {
       <div className="pointer-events-none fixed -left-[120px] -top-[160px] z-0 h-[500px] w-[500px] animate-blob1 rounded-full bg-[radial-gradient(circle,rgba(58,60,152,.2),transparent_70%)] blur-[20px]" />
 
       <div className="relative z-[1] mx-auto max-w-[1180px] px-6">
-        <DcNav active="about" />
 
         {/* HERO */}
         <section className="pb-6 pt-12">

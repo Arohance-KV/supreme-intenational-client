@@ -1,8 +1,23 @@
 'use client';
 
 import { Suspense, useState } from 'react';
+import Link from 'next/link';
 import { useCompanyLogin } from '@/lib/company/userAuth';
 import { ApiError } from '@/lib/api';
+import DcWordmark from '@/components/DcWordmark';
+
+// Design-system auth styles (see DESIGN_SYSTEM.md).
+const mesh =
+  'bg-[radial-gradient(60%_50%_at_12%_8%,rgba(74,76,201,.20),transparent_60%),radial-gradient(52%_46%_at_92%_12%,rgba(19,184,159,.18),transparent_60%),radial-gradient(46%_42%_at_78%_92%,rgba(124,77,210,.14),transparent_62%),linear-gradient(180deg,#eceefb,#f4f1f8,#e9f1f3)]';
+const card =
+  'w-full max-w-md rounded-[24px] p-8 bg-white/60 border border-white/85 backdrop-blur-[14px] backdrop-saturate-150 shadow-[0_12px_44px_rgba(34,36,90,.08)]';
+const input =
+  'w-full bg-white/65 border border-line rounded-[13px] px-3.5 py-3 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-indigo transition-colors';
+const label = 'block text-sm font-medium text-slate mb-1.5';
+const primaryBtn =
+  'w-full rounded-[13px] py-3 bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)] text-white text-sm font-semibold shadow-[0_8px_22px_rgba(42,43,106,.3)] transition-shadow hover:shadow-[0_10px_28px_rgba(42,43,106,.4)] disabled:opacity-50 disabled:cursor-not-allowed';
+const errorBanner =
+  'mb-4 p-3 rounded-[13px] bg-[rgba(224,82,77,.1)] border border-[rgba(224,82,77,.3)] text-[#e0524d] text-sm';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -18,47 +33,39 @@ function LoginForm() {
   return (
     <>
       {error && (
-        <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+        <div className={errorBanner}>
           {error instanceof ApiError ? error.message : 'Something went wrong. Please try again.'}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-slate mb-1">
-            Email
-          </label>
+          <label htmlFor="email" className={label}>Email</label>
           <input
             id="email"
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-3 py-2 border border-line rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo focus:border-transparent"
+            className={input}
             placeholder="you@company.com"
           />
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-slate mb-1">
-            Password
-          </label>
+          <label htmlFor="password" className={label}>Password</label>
           <input
             id="password"
             type="password"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-3 py-2 border border-line rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo focus:border-transparent"
+            className={input}
             placeholder="••••••••"
           />
         </div>
 
-        <button
-          type="submit"
-          disabled={isPending}
-          className="w-full py-2.5 px-4 bg-indigo hover:bg-indigo2 disabled:opacity-60 text-white text-sm font-semibold rounded-lg transition-colors"
-        >
+        <button type="submit" disabled={isPending} className={primaryBtn}>
           {isPending ? 'Signing in…' : 'Sign in'}
         </button>
       </form>
@@ -68,12 +75,12 @@ function LoginForm() {
 
 export default function CompanyLoginPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#eef0f8] px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-[0_8px_26px_rgba(34,36,90,.08)] border border-line p-8">
-        <h1 className="text-2xl font-bold text-ink mb-2">Company Sign in</h1>
-        <p className="text-sm text-muted mb-6">
-          Enter your credentials to access the company portal.
-        </p>
+    <div className={`flex min-h-screen items-center justify-center px-4 py-10 font-display ${mesh}`}>
+      <div className={card}>
+        <Link href="/" className="mb-6 inline-block no-underline"><DcWordmark /></Link>
+        <p className="font-jbmono text-[11px] uppercase tracking-[.14em] text-accent">Company Portal</p>
+        <h1 className="mb-2 mt-1 text-2xl font-extrabold tracking-[-.02em] text-ink">Company Sign in</h1>
+        <p className="mb-6 text-sm text-slate">Manage employees, orders and quotations for your organization.</p>
         <Suspense>
           <LoginForm />
         </Suspense>

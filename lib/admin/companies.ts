@@ -102,6 +102,7 @@ export interface LedgerResponse {
 // Catalog: products (with per-product hidden/pointsOverride state) + categoryIds
 export interface CompanyCatalogProduct {
   productId: string;
+  name: string | null;
   hidden: boolean;
   pointsOverride: number | null;
 }
@@ -170,7 +171,12 @@ const COMPANY_PRODUCTS_KEY = (companyId: string) =>
 
 // ── Hooks ─────────────────────────────────────────────────────────────────────
 
-export function useCompanies(page = 1, search?: string, status?: string) {
+export function useCompanies(
+  page = 1,
+  search?: string,
+  status?: string,
+  options?: { enabled?: boolean },
+) {
   const qs = new URLSearchParams();
   qs.set('page', String(page));
   if (search) qs.set('search', search);
@@ -180,6 +186,7 @@ export function useCompanies(page = 1, search?: string, status?: string) {
     queryKey: COMPANIES_LIST_KEY(page, search, status),
     queryFn: () =>
       adminFetch<CompaniesListResponse>(`/admin/companies?${qs.toString()}`),
+    enabled: options?.enabled ?? true,
   });
 }
 

@@ -20,29 +20,29 @@ function SubmissionRow({ submission }: { submission: AdminSubmission }) {
     : null;
 
   return (
-    <div className="grid grid-cols-[1fr_140px_80px_120px_100px_72px] items-center gap-3 border-b border-zinc-100 px-5 py-3 hover:bg-zinc-50 transition-colors">
+    <div className="grid grid-cols-[1fr_140px_80px_120px_100px_72px] items-center gap-3 border-b border-line px-5 py-3 hover:bg-white/50 transition-colors">
       <div className="min-w-0">
         <Link
           href={`/admin/submissions/${submission._id}`}
-          className="text-sm font-medium text-zinc-900 hover:underline truncate block"
+          className="text-sm font-medium text-ink hover:underline truncate block"
         >
           {submission.name}
         </Link>
-        <span className="text-xs text-zinc-400 font-mono truncate block">
+        <span className="text-xs text-muted font-mono truncate block">
           {submission._id}
         </span>
       </div>
-      <span className="text-xs text-zinc-500 truncate">
+      <span className="text-xs text-slate truncate">
         {typeof submission.sellerId === 'string' ? submission.sellerId : '—'}
       </span>
-      <span className="text-xs text-zinc-500">
+      <span className="text-xs text-slate">
         {variantsArray.length}
       </span>
-      <span className="text-xs text-zinc-500">
+      <span className="text-xs text-slate">
         {minPrice !== null ? `₹${minPrice.toLocaleString('en-IN')}` : '—'}
       </span>
       <StatusChip status={submission.status} label={submission.status} />
-      <span className="text-xs text-zinc-400">{fmtDate(submission.createdAt)}</span>
+      <span className="text-xs text-muted">{fmtDate(submission.createdAt)}</span>
     </div>
   );
 }
@@ -71,7 +71,7 @@ function SubmissionsTable() {
             setStatusFilter(e.target.value as SubmissionStatus | '');
             setPage(1);
           }}
-          className="rounded border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400"
+          className="rounded border border-line px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-line"
         >
           <option value="">All statuses</option>
           <option value="submitted">Submitted</option>
@@ -83,13 +83,13 @@ function SubmissionsTable() {
 
       {/* Loading */}
       {isLoading && (
-        <div className="rounded-xl border border-zinc-200 bg-white divide-y divide-zinc-100">
+        <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] divide-y divide-line">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={`skeleton-${i}`} className="flex items-center gap-4 px-5 py-3 animate-pulse">
-              <div className="h-4 w-48 rounded bg-zinc-200" />
-              <div className="h-4 w-32 rounded bg-zinc-200" />
-              <div className="h-4 w-24 rounded bg-zinc-200" />
-              <div className="h-5 w-16 rounded-full bg-zinc-200" />
+              <div className="h-4 w-48 rounded bg-black/5" />
+              <div className="h-4 w-32 rounded bg-black/5" />
+              <div className="h-4 w-24 rounded bg-black/5" />
+              <div className="h-5 w-16 rounded-full bg-black/5" />
             </div>
           ))}
         </div>
@@ -104,15 +104,15 @@ function SubmissionsTable() {
 
       {/* Empty */}
       {!isLoading && !isError && items.length === 0 && (
-        <div className="rounded-xl border border-zinc-200 bg-white p-10 text-center">
-          <p className="text-sm text-zinc-500">No submissions found.</p>
+        <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] p-10 text-center">
+          <p className="text-sm text-slate">No submissions found.</p>
         </div>
       )}
 
       {/* Table */}
       {!isLoading && !isError && items.length > 0 && (
-        <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
-          <div className="grid grid-cols-[1fr_140px_80px_120px_100px_72px] gap-3 bg-zinc-50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+        <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] overflow-hidden">
+          <div className="grid grid-cols-[1fr_140px_80px_120px_100px_72px] gap-3 bg-white/50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-slate">
             <span>Submission</span>
             <span>Seller ID</span>
             <span>Variants</span>
@@ -128,7 +128,7 @@ function SubmissionsTable() {
 
       {/* Pagination */}
       {pagination && pagination.pages > 1 && (
-        <div className="flex items-center justify-between text-sm text-zinc-500">
+        <div className="flex items-center justify-between text-sm text-slate">
           <span>
             Page {pagination.page} of {pagination.pages} ({pagination.total.toLocaleString()} total)
           </span>
@@ -136,14 +136,14 @@ function SubmissionsTable() {
             <button
               disabled={pagination.page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="rounded border border-zinc-200 px-3 py-1 hover:bg-zinc-50 disabled:opacity-40"
+              className="rounded border border-line px-3 py-1 hover:bg-white/60 disabled:opacity-40"
             >
               Previous
             </button>
             <button
               disabled={pagination.page >= pagination.pages}
               onClick={() => setPage((p) => p + 1)}
-              className="rounded border border-zinc-200 px-3 py-1 hover:bg-zinc-50 disabled:opacity-40"
+              className="rounded border border-line px-3 py-1 hover:bg-white/60 disabled:opacity-40"
             >
               Next
             </button>
@@ -160,15 +160,15 @@ export default function AdminSubmissionsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Seller Submissions</h1>
-        <p className="mt-1 text-sm text-zinc-500">
+        <h1 className="text-2xl font-bold text-ink">Seller Submissions</h1>
+        <p className="mt-1 text-sm text-slate">
           Review and moderate seller product submissions — approve or reject with a reason
         </p>
       </div>
 
       <Suspense
         fallback={
-          <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center text-sm text-zinc-500 animate-pulse">
+          <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] p-8 text-center text-sm text-slate animate-pulse">
             Loading submissions…
           </div>
         }

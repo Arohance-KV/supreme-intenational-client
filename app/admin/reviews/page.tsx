@@ -34,14 +34,14 @@ function getAuthorName(review: AdminReview): string {
 /** Render star rating as text (★★★★☆ style) */
 function StarRating({ rating }: { rating: unknown }) {
   if (typeof rating !== 'number' || rating < 1 || rating > 5) {
-    return <span className="text-zinc-400">—</span>;
+    return <span className="text-muted">—</span>;
   }
   const filled = Math.round(rating);
   return (
     <span className="text-amber-500 tracking-tight" aria-label={`${filled} out of 5 stars`}>
       {'★'.repeat(filled)}
       {'☆'.repeat(5 - filled)}
-      <span className="ml-1 text-xs text-zinc-500">{rating}/5</span>
+      <span className="ml-1 text-xs text-slate">{rating}/5</span>
     </span>
   );
 }
@@ -87,17 +87,17 @@ function CreateReviewModal({ onClose }: CreateReviewModalProps) {
   }
 
   const inputCls =
-    'w-full rounded border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400';
-  const labelCls = 'mb-1 block text-sm font-medium text-zinc-700';
+    'w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent';
+  const labelCls = 'mb-1 block text-sm font-medium text-slate';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 overflow-y-auto">
-      <div className="my-8 w-full max-w-lg rounded-xl border border-zinc-200 bg-white p-6 shadow-xl">
+      <div className="my-8 w-full max-w-lg rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] p-6 shadow-xl">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-base font-semibold text-zinc-900">Create admin review</h2>
+          <h2 className="text-base font-semibold text-ink">Create admin review</h2>
           <button
             onClick={onClose}
-            className="rounded p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700"
+            className="rounded p-1 text-muted hover:bg-white/50 hover:text-slate"
             aria-label="Close"
           >
             ✕
@@ -140,7 +140,7 @@ function CreateReviewModal({ onClose }: CreateReviewModalProps) {
           <div>
             <label className={labelCls}>
               User ID
-              <span className="ml-1 font-normal text-zinc-400">(optional — links to an account)</span>
+              <span className="ml-1 font-normal text-muted">(optional — links to an account)</span>
             </label>
             <input
               type="text"
@@ -189,7 +189,7 @@ function CreateReviewModal({ onClose }: CreateReviewModalProps) {
           <div>
             <label className={labelCls}>
               Review body
-              <span className="ml-1 font-normal text-zinc-400">(optional, up to 2000 chars)</span>
+              <span className="ml-1 font-normal text-muted">(optional, up to 2000 chars)</span>
             </label>
             <textarea
               rows={4}
@@ -215,14 +215,14 @@ function CreateReviewModal({ onClose }: CreateReviewModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="rounded border border-zinc-200 px-4 py-2 text-sm text-zinc-600 hover:bg-zinc-50"
+              className="rounded border border-line px-4 py-2 text-sm text-slate hover:bg-white/60"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={createReview.isPending}
-              className="rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+              className="rounded bg-gradient-to-br from-indigo to-indigo2 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
             >
               {createReview.isPending ? 'Creating…' : 'Create review'}
             </button>
@@ -253,19 +253,19 @@ function ReviewRow({ review }: { review: AdminReview }) {
   const productName = getProductName(review.productId);
 
   return (
-    <div className="grid grid-cols-[1fr_160px_120px_80px_100px_130px] items-start gap-3 border-b border-zinc-100 px-5 py-3 hover:bg-zinc-50 transition-colors">
+    <div className="grid grid-cols-[1fr_160px_120px_80px_100px_130px] items-start gap-3 border-b border-line px-5 py-3 hover:bg-white/50 transition-colors">
       {/* Product + title */}
       <div className="min-w-0">
-        <p className="truncate text-sm font-medium text-zinc-900">{review.title || '—'}</p>
-        <p className="truncate text-xs text-zinc-500 mt-0.5">{productName}</p>
+        <p className="truncate text-sm font-medium text-ink">{review.title || '—'}</p>
+        <p className="truncate text-xs text-slate mt-0.5">{productName}</p>
         {review.body && (
-          <p className="mt-1 text-xs text-zinc-500 line-clamp-2">{review.body}</p>
+          <p className="mt-1 text-xs text-slate line-clamp-2">{review.body}</p>
         )}
       </div>
 
       {/* Author */}
       <div className="min-w-0">
-        <p className="truncate text-sm text-zinc-700">{authorName}</p>
+        <p className="truncate text-sm text-slate">{authorName}</p>
         {review.isAdminCreated && (
           <span className="mt-0.5 inline-block rounded bg-indigo-100 px-1.5 py-0.5 text-xs text-indigo-700">
             admin
@@ -284,7 +284,7 @@ function ReviewRow({ review }: { review: AdminReview }) {
           className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
             review.isVisible
               ? 'bg-green-100 text-green-700'
-              : 'bg-zinc-100 text-zinc-500'
+              : 'bg-black/5 text-slate'
           }`}
         >
           {review.isVisible ? 'Visible' : 'Hidden'}
@@ -292,7 +292,7 @@ function ReviewRow({ review }: { review: AdminReview }) {
       </div>
 
       {/* Date */}
-      <span className="text-xs text-zinc-500">{fmtDate(review.createdAt)}</span>
+      <span className="text-xs text-slate">{fmtDate(review.createdAt)}</span>
 
       {/* Actions */}
       <div className="flex items-center gap-2">
@@ -327,7 +327,7 @@ interface PaginationProps {
 function Pagination({ page, pages, total, onPage }: PaginationProps) {
   if (pages <= 1) return null;
   return (
-    <div className="flex items-center justify-between pt-2 text-sm text-zinc-500">
+    <div className="flex items-center justify-between pt-2 text-sm text-slate">
       <span>
         {typeof total === 'number' ? total.toLocaleString('en-IN') : '—'} reviews total
       </span>
@@ -335,7 +335,7 @@ function Pagination({ page, pages, total, onPage }: PaginationProps) {
         <button
           onClick={() => onPage(page - 1)}
           disabled={page <= 1}
-          className="rounded border border-zinc-200 px-3 py-1 text-xs disabled:opacity-40 hover:bg-zinc-50"
+          className="rounded border border-line px-3 py-1 text-xs disabled:opacity-40 hover:bg-white/60"
         >
           Previous
         </button>
@@ -345,7 +345,7 @@ function Pagination({ page, pages, total, onPage }: PaginationProps) {
         <button
           onClick={() => onPage(page + 1)}
           disabled={page >= pages}
-          className="rounded border border-zinc-200 px-3 py-1 text-xs disabled:opacity-40 hover:bg-zinc-50"
+          className="rounded border border-line px-3 py-1 text-xs disabled:opacity-40 hover:bg-white/60"
         >
           Next
         </button>
@@ -367,14 +367,14 @@ function ReviewsTable() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-slate">
           {pagination
             ? `${typeof pagination.total === 'number' ? pagination.total.toLocaleString('en-IN') : '—'} review${pagination.total !== 1 ? 's' : ''}`
             : ''}
         </p>
         <button
           onClick={() => setShowCreate(true)}
-          className="rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 transition-colors"
+          className="rounded bg-gradient-to-br from-indigo to-indigo2 px-4 py-2 text-sm font-medium text-white hover:opacity-95 transition-colors"
         >
           + New review
         </button>
@@ -384,17 +384,17 @@ function ReviewsTable() {
 
       {/* Loading skeleton */}
       {isLoading && (
-        <div className="rounded-xl border border-zinc-200 bg-white divide-y divide-zinc-100">
+        <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] divide-y divide-line">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={`skeleton-${i}`} className="flex items-start gap-4 px-5 py-3 animate-pulse">
               <div className="flex-1 space-y-2">
-                <div className="h-4 w-48 rounded bg-zinc-200" />
-                <div className="h-3 w-32 rounded bg-zinc-200" />
+                <div className="h-4 w-48 rounded bg-black/5" />
+                <div className="h-3 w-32 rounded bg-black/5" />
               </div>
-              <div className="h-4 w-24 rounded bg-zinc-200" />
-              <div className="h-4 w-20 rounded bg-zinc-200" />
-              <div className="h-5 w-14 rounded-full bg-zinc-200" />
-              <div className="h-5 w-16 rounded bg-zinc-200" />
+              <div className="h-4 w-24 rounded bg-black/5" />
+              <div className="h-4 w-20 rounded bg-black/5" />
+              <div className="h-5 w-14 rounded-full bg-black/5" />
+              <div className="h-5 w-16 rounded bg-black/5" />
             </div>
           ))}
         </div>
@@ -411,16 +411,16 @@ function ReviewsTable() {
 
       {/* Empty state */}
       {!isLoading && !isError && list.length === 0 && (
-        <div className="rounded-xl border border-zinc-200 bg-white p-10 text-center">
-          <p className="text-sm text-zinc-500">No reviews found.</p>
+        <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] p-10 text-center">
+          <p className="text-sm text-slate">No reviews found.</p>
         </div>
       )}
 
       {/* Table */}
       {!isLoading && !isError && list.length > 0 && (
-        <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
+        <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] overflow-hidden">
           {/* Header */}
-          <div className="grid grid-cols-[1fr_160px_120px_80px_100px_130px] gap-3 bg-zinc-50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+          <div className="grid grid-cols-[1fr_160px_120px_80px_100px_130px] gap-3 bg-white/50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-slate">
             <span>Review / Product</span>
             <span>Author</span>
             <span>Rating</span>
@@ -453,15 +453,15 @@ export default function AdminReviewsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Reviews</h1>
-        <p className="mt-1 text-sm text-zinc-500">
+        <h1 className="text-2xl font-bold text-ink">Reviews</h1>
+        <p className="mt-1 text-sm text-slate">
           Moderate customer reviews — view, create admin-authored reviews, or delete
         </p>
       </div>
 
       <Suspense
         fallback={
-          <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center text-sm text-zinc-500 animate-pulse">
+          <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] p-8 text-center text-sm text-slate animate-pulse">
             Loading reviews…
           </div>
         }

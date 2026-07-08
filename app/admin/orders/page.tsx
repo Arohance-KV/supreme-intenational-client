@@ -56,15 +56,15 @@ function OrdersTable() {
     <div className="space-y-4">
       {/* Status filter */}
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mr-1">
+        <span className="text-xs font-semibold text-slate uppercase tracking-wider mr-1">
           Filter:
         </span>
         <button
           onClick={() => setFilter('status', null)}
           className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
             !statusParam
-              ? 'bg-zinc-800 text-white'
-              : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+              ? 'bg-indigo text-white'
+              : 'bg-white/70 border border-line text-slate hover:bg-white'
           }`}
         >
           All
@@ -75,8 +75,8 @@ function OrdersTable() {
             onClick={() => setFilter('status', s)}
             className={`rounded-full px-3 py-1 text-xs font-medium capitalize transition-colors ${
               statusParam === s
-                ? 'bg-zinc-800 text-white'
-                : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                ? 'bg-indigo text-white'
+                : 'bg-white/70 border border-line text-slate hover:bg-white'
             }`}
           >
             {s}
@@ -86,14 +86,14 @@ function OrdersTable() {
 
       {/* Table */}
       {isLoading && (
-        <div className="rounded-xl border border-zinc-200 bg-white divide-y divide-zinc-100">
+        <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] divide-y divide-line">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="flex items-center gap-4 px-5 py-3 animate-pulse">
-              <div className="h-4 w-32 rounded bg-zinc-200" />
-              <div className="h-4 w-40 rounded bg-zinc-200 flex-1" />
-              <div className="h-5 w-20 rounded-full bg-zinc-200" />
-              <div className="h-4 w-20 rounded bg-zinc-200" />
-              <div className="h-4 w-28 rounded bg-zinc-200" />
+              <div className="h-4 w-32 rounded bg-black/5" />
+              <div className="h-4 w-40 rounded bg-black/5 flex-1" />
+              <div className="h-5 w-20 rounded-full bg-black/5" />
+              <div className="h-4 w-20 rounded bg-black/5" />
+              <div className="h-4 w-28 rounded bg-black/5" />
             </div>
           ))}
         </div>
@@ -106,15 +106,15 @@ function OrdersTable() {
       )}
 
       {!isLoading && !isError && orders.length === 0 && (
-        <div className="rounded-xl border border-zinc-200 bg-white p-10 text-center">
-          <p className="text-sm text-zinc-500">No orders found.</p>
+        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-10 text-center">
+          <p className="text-sm text-slate">No orders found.</p>
         </div>
       )}
 
       {!isLoading && !isError && orders.length > 0 && (
-        <div className="rounded-xl border border-zinc-200 bg-white divide-y divide-zinc-100 overflow-hidden">
+        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] divide-y divide-line overflow-hidden">
           {/* Header */}
-          <div className="grid grid-cols-[160px_1fr_120px_120px_160px] gap-4 px-5 py-2 bg-zinc-50 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+          <div className="grid grid-cols-[160px_1fr_120px_120px_160px] gap-4 px-5 py-2 bg-white/50 text-xs font-semibold text-slate uppercase tracking-wider">
             <span>Order ID</span>
             <span>Customer</span>
             <span>Status</span>
@@ -126,24 +126,24 @@ function OrdersTable() {
             <Link
               key={order._id}
               href={`/admin/orders/${order.orderId}`}
-              className="grid grid-cols-[160px_1fr_120px_120px_160px] gap-4 items-center px-5 py-3 hover:bg-zinc-50 transition-colors"
+              className="grid grid-cols-[160px_1fr_120px_120px_160px] gap-4 items-center px-5 py-3 hover:bg-white/50 transition-colors"
             >
-              <span className="font-mono text-xs text-zinc-700 truncate">
+              <span className="font-jbmono text-xs text-slate truncate">
                 {order.orderId}
               </span>
               <div className="min-w-0">
-                <p className="text-sm text-zinc-900 truncate">{order.customerEmail}</p>
+                <p className="text-sm text-ink truncate">{order.customerEmail}</p>
                 {order.guestInfo?.name && (
-                  <p className="text-xs text-zinc-400 truncate">{order.guestInfo.name}</p>
+                  <p className="text-xs text-muted truncate">{order.guestInfo.name}</p>
                 )}
               </div>
               <div>
                 <StatusChip status={order.status} />
               </div>
-              <span className="text-sm font-semibold text-zinc-900">
+              <span className="text-sm font-semibold text-ink">
                 {inr(order.billing?.total)}
               </span>
-              <span className="text-xs text-zinc-400">
+              <span className="text-xs text-muted">
                 {order.createdAt
                   ? new Date(order.createdAt).toLocaleString('en-IN', {
                       day: '2-digit',
@@ -162,7 +162,7 @@ function OrdersTable() {
       {/* Pagination */}
       {pagination && pagination.pages > 1 && (
         <div className="flex items-center justify-between pt-2">
-          <p className="text-xs text-zinc-500">
+          <p className="text-xs text-slate">
             Page {pagination.page} of {pagination.pages} ·{' '}
             {typeof pagination.total === 'number'
               ? `${pagination.total.toLocaleString('en-IN')} orders`
@@ -172,14 +172,14 @@ function OrdersTable() {
             <button
               disabled={pagination.page <= 1}
               onClick={() => setFilter('page', String(pagination.page - 1))}
-              className="rounded border border-zinc-200 px-3 py-1 text-xs font-medium text-zinc-600 hover:bg-zinc-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="rounded border border-line px-3 py-1 text-xs font-medium text-slate hover:bg-white/60 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               Previous
             </button>
             <button
               disabled={pagination.page >= pagination.pages}
               onClick={() => setFilter('page', String(pagination.page + 1))}
-              className="rounded border border-zinc-200 px-3 py-1 text-xs font-medium text-zinc-600 hover:bg-zinc-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="rounded border border-line px-3 py-1 text-xs font-medium text-slate hover:bg-white/60 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               Next
             </button>
@@ -197,14 +197,14 @@ export default function AdminOrdersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-900">Orders</h1>
-          <p className="mt-1 text-sm text-zinc-500">Manage and track all customer orders</p>
+          <h1 className="text-2xl font-bold font-extrabold tracking-tight text-ink">Orders</h1>
+          <p className="mt-1 text-sm text-slate">Manage and track all customer orders</p>
         </div>
       </div>
 
       <Suspense
         fallback={
-          <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center text-sm text-zinc-500 animate-pulse">
+          <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-8 text-center text-sm text-slate animate-pulse">
             Loading orders…
           </div>
         }

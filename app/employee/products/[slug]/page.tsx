@@ -160,7 +160,7 @@ export default function EmployeeProductPage({ params }: PageProps) {
             <h2 className="mb-6 text-xl font-bold text-ink">Related Products</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
               {related.map((p) => (
-                <ProductCard key={p._id} product={p} hrefBase="/employee/products" />
+                <ProductCard key={p._id} product={p} hrefBase="/employee/products" showAddToCart={false} />
               ))}
             </div>
           </div>

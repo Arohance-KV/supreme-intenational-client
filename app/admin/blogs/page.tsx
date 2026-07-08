@@ -22,11 +22,11 @@ function BlogRow({ blog }: { blog: AdminBlog }) {
   }
 
   return (
-    <div className="grid grid-cols-[1fr_120px_120px_100px_140px] items-center gap-3 border-b border-zinc-100 px-5 py-3 hover:bg-zinc-50 transition-colors">
+    <div className="grid grid-cols-[1fr_120px_120px_100px_140px] items-center gap-3 border-b border-line px-5 py-3 hover:bg-white/50 transition-colors">
       {/* Title + slug */}
       <div className="min-w-0">
-        <p className="truncate text-sm font-medium text-zinc-900">{blog.title}</p>
-        <p className="truncate font-mono text-xs text-zinc-400">{blog.slug}</p>
+        <p className="truncate text-sm font-medium text-ink">{blog.title}</p>
+        <p className="truncate font-mono text-xs text-muted">{blog.slug}</p>
       </div>
 
       {/* Status */}
@@ -36,16 +36,16 @@ function BlogRow({ blog }: { blog: AdminBlog }) {
       />
 
       {/* Published at */}
-      <span className="text-xs text-zinc-500">{fmtDate(blog.publishedAt)}</span>
+      <span className="text-xs text-slate">{fmtDate(blog.publishedAt)}</span>
 
       {/* Created */}
-      <span className="text-xs text-zinc-500">{fmtDate(blog.createdAt)}</span>
+      <span className="text-xs text-slate">{fmtDate(blog.createdAt)}</span>
 
       {/* Actions */}
       <div className="flex items-center gap-2">
         <Link
           href={`/admin/blogs/${blog._id}`}
-          className="rounded border border-zinc-200 px-3 py-1 text-xs text-zinc-700 hover:bg-zinc-50 transition-colors"
+          className="rounded border border-line px-3 py-1 text-xs text-slate hover:bg-white/60 transition-colors"
         >
           Edit
         </Link>
@@ -76,14 +76,14 @@ function BlogsTable() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-slate">
           {data
             ? `${typeof data.pagination?.total === 'number' ? data.pagination.total.toLocaleString('en-IN') : list.length} blog${list.length !== 1 ? 's' : ''}`
             : ''}
         </p>
         <Link
           href="/admin/blogs/new"
-          className="rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 transition-colors"
+          className="rounded bg-gradient-to-br from-indigo to-indigo2 px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-colors"
         >
           + New blog
         </Link>
@@ -91,14 +91,14 @@ function BlogsTable() {
 
       {/* Loading skeleton */}
       {isLoading && (
-        <div className="rounded-xl border border-zinc-200 bg-white divide-y divide-zinc-100">
+        <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] divide-y divide-line">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={`skeleton-${i}`} className="flex items-center gap-4 px-5 py-3 animate-pulse">
-              <div className="h-4 flex-1 rounded bg-zinc-200" />
-              <div className="h-5 w-20 rounded-full bg-zinc-200" />
-              <div className="h-4 w-24 rounded bg-zinc-200" />
-              <div className="h-4 w-20 rounded bg-zinc-200" />
-              <div className="h-6 w-24 rounded bg-zinc-200" />
+              <div className="h-4 flex-1 rounded bg-black/5" />
+              <div className="h-5 w-20 rounded-full bg-black/5" />
+              <div className="h-4 w-24 rounded bg-black/5" />
+              <div className="h-4 w-20 rounded bg-black/5" />
+              <div className="h-6 w-24 rounded bg-black/5" />
             </div>
           ))}
         </div>
@@ -115,16 +115,16 @@ function BlogsTable() {
 
       {/* Empty */}
       {!isLoading && !isError && list.length === 0 && (
-        <div className="rounded-xl border border-zinc-200 bg-white p-10 text-center">
-          <p className="text-sm text-zinc-500">No blogs yet. Create your first one above.</p>
+        <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] p-10 text-center">
+          <p className="text-sm text-slate">No blogs yet. Create your first one above.</p>
         </div>
       )}
 
       {/* Table */}
       {!isLoading && !isError && list.length > 0 && (
-        <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
+        <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] overflow-hidden">
           {/* Header */}
-          <div className="grid grid-cols-[1fr_120px_120px_100px_140px] gap-3 bg-zinc-50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+          <div className="grid grid-cols-[1fr_120px_120px_100px_140px] gap-3 bg-white/50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-slate">
             <span>Title / Slug</span>
             <span>Status</span>
             <span>Published</span>
@@ -146,15 +146,15 @@ export default function AdminBlogsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Blogs</h1>
-        <p className="mt-1 text-sm text-zinc-500">
+        <h1 className="text-2xl font-bold text-ink">Blogs</h1>
+        <p className="mt-1 text-sm text-slate">
           Create and manage blog posts
         </p>
       </div>
 
       <Suspense
         fallback={
-          <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center text-sm text-zinc-500 animate-pulse">
+          <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] p-8 text-center text-sm text-slate animate-pulse">
             Loading blogs…
           </div>
         }

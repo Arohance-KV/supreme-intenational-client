@@ -56,11 +56,11 @@ function DetailDrawer({ id, onClose }: DetailDrawerProps) {
         className="fixed right-0 top-0 h-full w-full max-w-lg bg-white shadow-xl z-50 overflow-y-auto"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-200 sticky top-0 bg-white">
-          <h2 className="text-base font-semibold text-zinc-900">Payout Detail</h2>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-line sticky top-0 bg-white">
+          <h2 className="text-base font-semibold text-ink">Payout Detail</h2>
           <button
             onClick={onClose}
-            className="rounded p-1 text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors"
+            className="rounded p-1 text-muted hover:text-slate hover:bg-white/50 transition-colors"
             aria-label="Close"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -74,7 +74,7 @@ function DetailDrawer({ id, onClose }: DetailDrawerProps) {
           {isLoading && (
             <div className="space-y-3 animate-pulse">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={`skeleton-${i}`} className="h-4 rounded bg-zinc-200 w-full" />
+                <div key={`skeleton-${i}`} className="h-4 rounded bg-black/5 w-full" />
               ))}
             </div>
           )}
@@ -109,32 +109,32 @@ function DetailDrawer({ id, onClose }: DetailDrawerProps) {
 
               {/* Quotation info */}
               <section className="space-y-2">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-slate">
                   Quotation
                 </h3>
                 <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
-                  <dt className="text-zinc-500">Quotation #</dt>
-                  <dd className="font-mono text-zinc-900">{payout.quotationNumber || '—'}</dd>
-                  <dt className="text-zinc-500">Company</dt>
-                  <dd className="text-zinc-900 truncate">{payout.contactCompany || '—'}</dd>
-                  <dt className="text-zinc-500">Currency</dt>
-                  <dd className="text-zinc-900">{payout.currency || '—'}</dd>
-                  <dt className="text-zinc-500">Created</dt>
-                  <dd className="text-zinc-900">{fmtDateTime(payout.createdAt)}</dd>
+                  <dt className="text-slate">Quotation #</dt>
+                  <dd className="font-mono text-ink">{payout.quotationNumber || '—'}</dd>
+                  <dt className="text-slate">Company</dt>
+                  <dd className="text-ink truncate">{payout.contactCompany || '—'}</dd>
+                  <dt className="text-slate">Currency</dt>
+                  <dd className="text-ink">{payout.currency || '—'}</dd>
+                  <dt className="text-slate">Created</dt>
+                  <dd className="text-ink">{fmtDateTime(payout.createdAt)}</dd>
                 </dl>
               </section>
 
               {/* Money summary */}
               <section className="space-y-2">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-slate">
                   Amounts (all in rupees)
                 </h3>
                 <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
-                  <dt className="text-zinc-500">Gross</dt>
-                  <dd className="font-semibold text-zinc-900">{inr(payout.grossAmount)}</dd>
-                  <dt className="text-zinc-500">Commission ({typeof payout.marginPercent === 'number' ? `${payout.marginPercent}%` : '—'})</dt>
-                  <dd className="text-zinc-900">{inr(payout.commissionAmount)}</dd>
-                  <dt className="text-zinc-500">Seller Earning</dt>
+                  <dt className="text-slate">Gross</dt>
+                  <dd className="font-semibold text-ink">{inr(payout.grossAmount)}</dd>
+                  <dt className="text-slate">Commission ({typeof payout.marginPercent === 'number' ? `${payout.marginPercent}%` : '—'})</dt>
+                  <dd className="text-ink">{inr(payout.commissionAmount)}</dd>
+                  <dt className="text-slate">Seller Earning</dt>
                   <dd className="font-semibold text-green-700">{inr(payout.earningAmount)}</dd>
                 </dl>
               </section>
@@ -142,14 +142,14 @@ function DetailDrawer({ id, onClose }: DetailDrawerProps) {
               {/* Settlement info (when settled) */}
               {payout.status === 'settled' && (
                 <section className="space-y-2">
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-slate">
                     Settlement
                   </h3>
                   <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
-                    <dt className="text-zinc-500">Settled At</dt>
-                    <dd className="text-zinc-900">{fmtDateTime(payout.settledAt)}</dd>
-                    <dt className="text-zinc-500">Settled By</dt>
-                    <dd className="font-mono text-xs text-zinc-700">{payout.settledBy || '—'}</dd>
+                    <dt className="text-slate">Settled At</dt>
+                    <dd className="text-ink">{fmtDateTime(payout.settledAt)}</dd>
+                    <dt className="text-slate">Settled By</dt>
+                    <dd className="font-mono text-xs text-slate">{payout.settledBy || '—'}</dd>
                   </dl>
                 </section>
               )}
@@ -157,12 +157,12 @@ function DetailDrawer({ id, onClose }: DetailDrawerProps) {
               {/* Voided info */}
               {payout.status === 'voided' && payout.voidedAt && (
                 <section className="space-y-2">
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-slate">
                     Voided
                   </h3>
                   <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
-                    <dt className="text-zinc-500">Voided At</dt>
-                    <dd className="text-zinc-900">{fmtDateTime(payout.voidedAt)}</dd>
+                    <dt className="text-slate">Voided At</dt>
+                    <dd className="text-ink">{fmtDateTime(payout.voidedAt)}</dd>
                   </dl>
                 </section>
               )}
@@ -170,11 +170,11 @@ function DetailDrawer({ id, onClose }: DetailDrawerProps) {
               {/* Line items */}
               {Array.isArray(payout.lineItems) && payout.lineItems.length > 0 && (
                 <section className="space-y-2">
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-slate">
                     Line Items
                   </h3>
-                  <div className="rounded-lg border border-zinc-200 overflow-hidden">
-                    <div className="grid grid-cols-[1fr_60px_90px_90px] gap-2 px-3 py-2 bg-zinc-50 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+                  <div className="rounded-lg border border-line overflow-hidden">
+                    <div className="grid grid-cols-[1fr_60px_90px_90px] gap-2 px-3 py-2 bg-white/50 text-xs font-semibold text-slate uppercase tracking-wider">
                       <span>Product</span>
                       <span className="text-right">Qty</span>
                       <span className="text-right">Unit</span>
@@ -183,17 +183,17 @@ function DetailDrawer({ id, onClose }: DetailDrawerProps) {
                     {payout.lineItems.map((item, i) => (
                       <div
                         key={item.productId ?? `line-${i}`}
-                        className="grid grid-cols-[1fr_60px_90px_90px] gap-2 items-start px-3 py-2 text-sm border-t border-zinc-100"
+                        className="grid grid-cols-[1fr_60px_90px_90px] gap-2 items-start px-3 py-2 text-sm border-t border-line"
                       >
                         <div className="min-w-0">
-                          <p className="text-zinc-900 truncate">{item.productName || '—'}</p>
-                          <p className="text-xs text-zinc-400 font-mono">{item.sku || ''}</p>
+                          <p className="text-ink truncate">{item.productName || '—'}</p>
+                          <p className="text-xs text-muted font-mono">{item.sku || ''}</p>
                         </div>
-                        <span className="text-right text-zinc-700">
+                        <span className="text-right text-slate">
                           {typeof item.qty === 'number' ? item.qty : '—'}
                         </span>
-                        <span className="text-right text-zinc-700">{inr(item.unitPrice)}</span>
-                        <span className="text-right font-medium text-zinc-900">{inr(item.lineTotal)}</span>
+                        <span className="text-right text-slate">{inr(item.unitPrice)}</span>
+                        <span className="text-right font-medium text-ink">{inr(item.lineTotal)}</span>
                       </div>
                     ))}
                   </div>
@@ -284,15 +284,15 @@ function PayoutsTable() {
       <div className="flex flex-wrap items-start gap-4">
         {/* Status filter pills */}
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+          <span className="text-xs font-semibold text-slate uppercase tracking-wider">
             Status:
           </span>
           <button
             onClick={() => setParam('status', null)}
             className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
               !statusParam
-                ? 'bg-zinc-800 text-white'
-                : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                ? 'bg-indigo text-white'
+                : 'bg-white/70 border border-line text-slate hover:bg-white'
             }`}
           >
             All
@@ -303,8 +303,8 @@ function PayoutsTable() {
               onClick={() => setParam('status', s)}
               className={`rounded-full px-3 py-1 text-xs font-medium capitalize transition-colors ${
                 statusParam === s
-                  ? 'bg-zinc-800 text-white'
-                  : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                  ? 'bg-indigo text-white'
+                  : 'bg-white/70 border border-line text-slate hover:bg-white'
               }`}
             >
               {s}
@@ -314,7 +314,7 @@ function PayoutsTable() {
 
         {/* Seller ID filter */}
         <div className="flex items-center gap-2 ml-auto">
-          <label htmlFor="seller-filter" className="text-xs font-semibold text-zinc-500 uppercase tracking-wider whitespace-nowrap">
+          <label htmlFor="seller-filter" className="text-xs font-semibold text-slate uppercase tracking-wider whitespace-nowrap">
             Seller ID:
           </label>
           <input
@@ -323,44 +323,44 @@ function PayoutsTable() {
             placeholder="MongoDB ObjectId"
             value={sellerIdParam}
             onChange={(e) => setParam('sellerId', e.target.value || null)}
-            className="rounded-lg border border-zinc-200 px-3 py-1.5 text-xs text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-300 w-52"
+            className="rounded-lg border border-line px-3 py-1.5 text-xs text-ink placeholder-muted focus:outline-none focus:ring-2 focus:ring-accent w-52"
           />
         </div>
 
         {/* Date range */}
         <div className="flex items-center gap-2">
-          <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider whitespace-nowrap">
+          <label className="text-xs font-semibold text-slate uppercase tracking-wider whitespace-nowrap">
             From:
           </label>
           <input
             type="date"
             value={fromDateParam}
             onChange={(e) => setParam('fromDate', e.target.value || null)}
-            className="rounded-lg border border-zinc-200 px-3 py-1.5 text-xs text-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-300"
+            className="rounded-lg border border-line px-3 py-1.5 text-xs text-ink focus:outline-none focus:ring-2 focus:ring-accent"
           />
-          <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider whitespace-nowrap">
+          <label className="text-xs font-semibold text-slate uppercase tracking-wider whitespace-nowrap">
             To:
           </label>
           <input
             type="date"
             value={toDateParam}
             onChange={(e) => setParam('toDate', e.target.value || null)}
-            className="rounded-lg border border-zinc-200 px-3 py-1.5 text-xs text-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-300"
+            className="rounded-lg border border-line px-3 py-1.5 text-xs text-ink focus:outline-none focus:ring-2 focus:ring-accent"
           />
         </div>
       </div>
 
       {/* Table */}
       {isLoading && (
-        <div className="rounded-xl border border-zinc-200 bg-white divide-y divide-zinc-100">
+        <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] divide-y divide-line">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={`skeleton-${i}`} className="flex items-center gap-4 px-5 py-3 animate-pulse">
-              <div className="h-4 w-32 rounded bg-zinc-200" />
-              <div className="h-4 w-40 rounded bg-zinc-200 flex-1" />
-              <div className="h-4 w-24 rounded bg-zinc-200" />
-              <div className="h-4 w-20 rounded bg-zinc-200" />
-              <div className="h-4 w-20 rounded bg-zinc-200" />
-              <div className="h-5 w-16 rounded-full bg-zinc-200" />
+              <div className="h-4 w-32 rounded bg-black/5" />
+              <div className="h-4 w-40 rounded bg-black/5 flex-1" />
+              <div className="h-4 w-24 rounded bg-black/5" />
+              <div className="h-4 w-20 rounded bg-black/5" />
+              <div className="h-4 w-20 rounded bg-black/5" />
+              <div className="h-5 w-16 rounded-full bg-black/5" />
             </div>
           ))}
         </div>
@@ -373,15 +373,15 @@ function PayoutsTable() {
       )}
 
       {!isLoading && !isError && payouts.length === 0 && (
-        <div className="rounded-xl border border-zinc-200 bg-white p-10 text-center">
-          <p className="text-sm text-zinc-500">No payouts found.</p>
+        <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] p-10 text-center">
+          <p className="text-sm text-slate">No payouts found.</p>
         </div>
       )}
 
       {!isLoading && !isError && payouts.length > 0 && (
-        <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
+        <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] overflow-hidden">
           {/* Header */}
-          <div className="grid grid-cols-[160px_1fr_110px_110px_110px_90px_80px] gap-3 px-5 py-2 bg-zinc-50 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+          <div className="grid grid-cols-[160px_1fr_110px_110px_110px_90px_80px] gap-3 px-5 py-2 bg-white/50 text-xs font-semibold text-slate uppercase tracking-wider">
             <span>Quotation</span>
             <span>Company</span>
             <span className="text-right">Gross</span>
@@ -391,29 +391,29 @@ function PayoutsTable() {
             <span>Action</span>
           </div>
 
-          <div className="divide-y divide-zinc-100">
+          <div className="divide-y divide-line">
             {payouts.map((payout) => (
               <div
                 key={payout._id}
                 onClick={() => setDrawerPayoutId(payout._id)}
-                className="grid grid-cols-[160px_1fr_110px_110px_110px_90px_80px] gap-3 items-center px-5 py-3 hover:bg-zinc-50 cursor-pointer transition-colors"
+                className="grid grid-cols-[160px_1fr_110px_110px_110px_90px_80px] gap-3 items-center px-5 py-3 hover:bg-white/50 cursor-pointer transition-colors"
               >
                 <div className="min-w-0">
-                  <p className="font-mono text-xs text-zinc-700 truncate">
+                  <p className="font-mono text-xs text-slate truncate">
                     {payout.quotationNumber || '—'}
                   </p>
-                  <p className="text-xs text-zinc-400">{fmtDate(payout.createdAt)}</p>
+                  <p className="text-xs text-muted">{fmtDate(payout.createdAt)}</p>
                 </div>
 
-                <span className="text-sm text-zinc-700 truncate">
+                <span className="text-sm text-slate truncate">
                   {payout.contactCompany || '—'}
                 </span>
 
-                <span className="text-right text-sm font-medium text-zinc-900">
+                <span className="text-right text-sm font-medium text-ink">
                   {inr(payout.grossAmount)}
                 </span>
 
-                <span className="text-right text-sm text-zinc-600">
+                <span className="text-right text-sm text-slate">
                   {inr(payout.commissionAmount)}
                 </span>
 
@@ -429,7 +429,7 @@ function PayoutsTable() {
                   {payout.status === 'pending' ? (
                     <RowSettleButton payout={payout} />
                   ) : (
-                    <span className="text-xs text-zinc-400">—</span>
+                    <span className="text-xs text-muted">—</span>
                   )}
                 </div>
               </div>
@@ -441,7 +441,7 @@ function PayoutsTable() {
       {/* Pagination */}
       {pagination && pagination.pages > 1 && (
         <div className="flex items-center justify-between pt-2">
-          <p className="text-xs text-zinc-500">
+          <p className="text-xs text-slate">
             Page {pagination.page} of {pagination.pages} ·{' '}
             {typeof pagination.total === 'number'
               ? `${pagination.total.toLocaleString('en-IN')} payouts`
@@ -451,14 +451,14 @@ function PayoutsTable() {
             <button
               disabled={pagination.page <= 1}
               onClick={() => setParam('page', String(pagination.page - 1))}
-              className="rounded border border-zinc-200 px-3 py-1 text-xs font-medium text-zinc-600 hover:bg-zinc-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="rounded border border-line px-3 py-1 text-xs font-medium text-slate hover:bg-white/60 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               Previous
             </button>
             <button
               disabled={pagination.page >= pagination.pages}
               onClick={() => setParam('page', String(pagination.page + 1))}
-              className="rounded border border-zinc-200 px-3 py-1 text-xs font-medium text-zinc-600 hover:bg-zinc-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="rounded border border-line px-3 py-1 text-xs font-medium text-slate hover:bg-white/60 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               Next
             </button>
@@ -484,8 +484,8 @@ export default function AdminPayoutsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-900">Seller Payouts</h1>
-          <p className="mt-1 text-sm text-zinc-500">
+          <h1 className="text-2xl font-bold text-ink">Seller Payouts</h1>
+          <p className="mt-1 text-sm text-slate">
             Review and settle seller earnings from converted quotations
           </p>
         </div>
@@ -493,7 +493,7 @@ export default function AdminPayoutsPage() {
 
       <Suspense
         fallback={
-          <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center text-sm text-zinc-500 animate-pulse">
+          <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] p-8 text-center text-sm text-slate animate-pulse">
             Loading payouts…
           </div>
         }

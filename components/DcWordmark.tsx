@@ -1,11 +1,14 @@
-// Supreme × Elate text wordmark (placeholder until real logo assets land in /public).
+import Image from 'next/image';
+
+// Brand lockup: Supreme International + Elate logos (from /public).
+// `dark` inverts the dark-on-transparent PNGs to white for dark backgrounds.
 export default function DcWordmark({ dark = false }: { dark?: boolean }) {
-  const c = dark ? 'text-white' : 'text-indigo';
+  const inv = dark ? 'brightness-0 invert' : '';
   return (
-    <div className="flex items-center gap-2.5">
-      <span className={`text-[17px] font-extrabold tracking-[-.02em] ${c}`}>Supreme</span>
-      <span className={`h-[22px] w-px ${dark ? 'bg-white/20' : 'bg-line'}`} />
-      <span className={`text-base font-bold italic opacity-90 ${c}`}>Elate</span>
-    </div>
+    <span className="flex items-center gap-2.5">
+      <Image src="/supreme-logo.png" alt="Supreme International" width={300} height={87} className={`h-7 w-auto ${inv}`} />
+      <span className={`h-7 w-px ${dark ? 'bg-white/25' : 'bg-line'}`} />
+      <Image src="/elate-logo.png" alt="Elate" width={198} height={102} className={`h-9 w-auto ${inv}`} />
+    </span>
   );
 }

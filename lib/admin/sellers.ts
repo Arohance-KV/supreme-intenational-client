@@ -25,6 +25,8 @@ export interface AdminSeller {
   reviewedAt?: string;
   createdAt: string;
   updatedAt: string;
+  productCount?: number;       // live products owned by this seller
+  pendingSubmissions?: number; // submissions awaiting review (status 'submitted')
 }
 
 export interface SellersListResponse {

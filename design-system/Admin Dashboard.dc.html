@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  ::selection { background: rgba(23,155,142,.22); }
+  [data-admin-input]:focus { border-color: var(--c-accent) !important; background: #fff !important; box-shadow: 0 0 0 3px rgba(20,155,142,.12) !important; }
+  [data-k]:hover { background: rgba(255,255,255,.07) !important; }
+
+  /* responsive-dash */
+  @media (max-width: 900px){
+    [data-app-root]{ flex-direction:column !important; }
+    [data-app-side]{ width:100% !important; height:auto !important; position:relative !important; flex-direction:row !important; overflow-x:auto !important; align-items:center; }
+    [data-app-side] [data-nav]{ flex-direction:row !important; gap:4px !important; flex-wrap:nowrap; }
+    [data-app-side] [data-nav] span{ white-space:nowrap; }
+    [data-app-side] [data-nav] [data-sec]{ display:none !important; }
+    [data-app-main]{ overflow-x:auto !important; }
+    [data-sidefoot]{ display:none !important; }
+    [style*="grid-template-columns: repeat"]{ grid-template-columns:repeat(2,1fr) !important; }
+  }
+  @media (max-width: 760px){
+    [style*="1.6fr 1fr"],[style*="1.3fr 1fr"],[style*="1.2fr 1fr"],[style*="1.45fr 1fr"],[style*="1.35fr 1fr"]{ grid-template-columns:1fr !important; }
+    [data-searchbox]{ display:none !important; }
+    [style*="display: grid"][style*="border-bottom: 1px solid var(--c-line)"]{ min-width:660px !important; }
+  }
+  @media (max-width: 560px){
+    [style*="grid-template-columns: repeat"]{ grid-template-columns:repeat(2,1fr) !important; }
+    [style*="font-size: 26px"]{ font-size:21px !important; }
+  }
+</style>
+</helmet>
+
+<div data-app-root ref="{{ setWrap }}" style="position:relative; min-height:100vh; width:100%; display:flex; background:#eef0f8; color:#16173a; --c-ink:#16173a; --c-indigo:#2a2b6a; --c-indigo2:#3a3c98; --c-accent:#149b8e; --c-accent2:#13b89f; --c-slate:#5b5d7a; --c-muted:#9295b6; --c-line:#e6e7f2; --glass-bg:rgba(255,255,255,.62); --glass-brd:rgba(255,255,255,.8);">
+
+  <div style="position:fixed; inset:0; z-index:0; pointer-events:none; background:
+      radial-gradient(42% 42% at 100% 0%, rgba(20,155,142,.12), transparent 60%),
+      radial-gradient(42% 42% at 18% 100%, rgba(58,60,152,.10), transparent 60%),
+      radial-gradient(34% 34% at 62% 48%, rgba(124,77,210,.06), transparent 62%),
+      linear-gradient(180deg,#eceefb,#f1f1f7);"></div>
+
+  <!-- SIDEBAR -->
+  <div data-app-side style="position:sticky; top:0; align-self:flex-start; z-index:10; width:252px; height:100vh; flex:none; padding:20px 16px; background:linear-gradient(180deg,#1c1d44,#23254f); box-shadow:inset -1px 0 0 rgba(255,255,255,.05); display:flex; flex-direction:column; overflow-y:auto;">
+    <div style="display:flex; align-items:center; gap:10px; padding:6px 8px 18px; border-bottom:1px solid rgba(255,255,255,.08); margin-bottom:14px;">
+      <img src="assets/supreme-logo.png" alt="Supreme" style="height:26px; filter:brightness(0) invert(1); opacity:.95;">
+      <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.1em; color:#9fe7dc; border:1px solid rgba(159,231,220,.4); padding:2px 6px; border-radius:5px;">ADMIN</span>
+    </div>
+    <div data-nav style="display:flex; flex-direction:column; gap:2px;"></div>
+    <div data-sidefoot style="margin-top:auto; display:flex; align-items:center; gap:10px; padding:10px; border-radius:12px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.06);">
+      <div style="position:relative; width:34px; height:34px; border-radius:10px; background:linear-gradient(135deg,#179b8e,#13b89f); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:12px;">PM<span style="position:absolute; bottom:-2px; right:-2px; width:10px; height:10px; border-radius:50%; background:#1fa463; border:2px solid #23254f;"></span></div>
+      <div style="flex:1;"><div style="font-size:12.5px; font-weight:700; color:#fff;">Priya Menon</div><div style="font-size:10px; color:rgba(255,255,255,.5);">Super Admin</div></div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div data-app-main style="position:relative; z-index:1; flex:1; min-width:0; padding:22px 28px 48px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:20px; margin-bottom:22px;">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--c-accent); margin-bottom:6px;">Supreme Admin</div>
+        <h1 data-title style="font-size:26px; font-weight:800; letter-spacing:-.02em; margin:0 0 2px;">Dashboard</h1>
+        <div data-sub style="font-size:13px; color:var(--c-slate);">Welcome back — here's what's happening across the platform.</div>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div data-searchbox style="display:flex; align-items:center; gap:8px; padding:10px 14px; border-radius:12px; background:var(--glass-bg); border:1px solid var(--c-line); min-width:210px; backdrop-filter:blur(12px);"><span style="width:13px;height:13px;border:2px solid var(--c-muted);border-radius:50%;"></span><span style="font-size:13px; color:var(--c-muted);">Search…</span></div>
+        <div style="position:relative; width:42px; height:42px; flex:none; border-radius:12px; background:var(--glass-bg); border:1px solid var(--c-line); display:flex; align-items:center; justify-content:center; font-size:16px; backdrop-filter:blur(12px);">🔔<span style="position:absolute; top:8px; right:9px; width:7px; height:7px; border-radius:50%; background:var(--c-accent); border:1.5px solid #fff;"></span></div>
+        <button data-primary style="cursor:pointer; display:none; align-items:center; gap:7px; font-family:inherit; font-weight:700; font-size:13.5px; color:#fff; padding:11px 16px; border-radius:12px; background:linear-gradient(135deg,#2a2b6a,#3a3c98); border:none; box-shadow:0 8px 20px rgba(42,43,106,.28);">+ New</button>
+      </div>
+    </div>
+    <div data-view></div>
+  </div>
+
+  <!-- GENERIC MODAL -->
+  <div data-modal style="display:none; position:fixed; inset:0; z-index:90; align-items:center; justify-content:center; padding:24px; background:rgba(22,23,58,.42); backdrop-filter:blur(6px);">
+    <div data-modal-card style="width:720px; max-width:100%; max-height:92vh; overflow:hidden; background:rgba(255,255,255,.96); backdrop-filter:blur(24px); border:1px solid rgba(255,255,255,.85); border-radius:24px; box-shadow:0 40px 100px rgba(22,23,58,.35); display:flex; flex-direction:column;">
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:22px 26px; border-bottom:1px solid var(--c-line);">
+        <div data-modal-title style="font-size:19px; font-weight:800; letter-spacing:-.01em;">Edit</div>
+        <span data-modal-close style="cursor:pointer; width:36px; height:36px; border-radius:10px; background:rgba(42,43,106,.07); display:flex; align-items:center; justify-content:center; font-size:15px; color:var(--c-slate);">✕</span>
+      </div>
+      <div data-modal-body style="padding:24px; display:flex; flex-direction:column; gap:14px; flex:1; overflow:auto; min-height:0;"></div>
+      <div style="display:flex; gap:12px; justify-content:flex-end; padding:0 26px 24px; flex:none; border-top:1px solid var(--c-line); padding-top:16px; margin-top:0;">
+        <button data-modal-cancel style="cursor:pointer; font-family:inherit; font-weight:600; font-size:14px; color:var(--c-slate); padding:12px 18px; border-radius:12px; background:rgba(255,255,255,.7); border:1px solid var(--c-line);">Cancel</button>
+        <button data-modal-save style="cursor:pointer; font-family:inherit; font-weight:700; font-size:14px; color:#fff; padding:12px 20px; border-radius:12px; background:linear-gradient(135deg,#2a2b6a,#3a3c98); border:none;">Save</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280},&quot;accentTheme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Teal&quot;,&quot;Gold&quot;,&quot;Indigo&quot;],&quot;default&quot;:&quot;Teal&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;role&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Super Admin&quot;,&quot;Admin&quot;,&quot;Sales Manager&quot;],&quot;default&quot;:&quot;Super Admin&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  view = 'dashboard';
+  nav = [
+    { k: 'dashboard', t: 'Dashboard', i: '🏠', sec: 'Overview' },
+    { k: 'analytics', t: 'Analytics', i: '📊' },
+    { k: 'quotations', t: 'Quotations', i: '📄', badge: '2', sec: 'Sales & Leads' },
+    { k: 'enquiries', t: 'Enquiries', i: '📨', badge: '9' },
+    { k: 'merch_enquiries', t: 'Merch Enquiries', i: '🛍️', badge: '3' },
+    { k: 'customers', t: 'Customers', i: '👥', sec: 'Customers', badge: '2' },
+    { k: 'products', t: 'Products', i: '📦', sec: 'Catalogue' },
+    { k: 'companies', t: 'Companies', i: '🏢', sec: 'Companies' },
+    { k: 'portal', t: 'Merch Portal Builder', i: '🏬' },
+    { k: 'clients', t: 'Clients & Logos', i: '🤝', sec: 'Website Content' },
+    { k: 'casestudies', t: 'Case Studies', i: '⭐' },
+    { k: 'blogs', t: 'Blogs', i: '📝' },
+    { k: 'marketing', t: 'Marketing', i: '📣' },
+    { k: 'branding', t: 'Brand Theming', i: '🎨', sec: 'Settings' },
+    { k: 'sellers', t: 'Sellers', i: '🏷️', tag: 'P2' },
+    { k: 'logs', t: 'Activity Log', i: '🧾' },
+  ];
+  titles = {
+    dashboard: ['Dashboard', "Welcome back — here's what's happening across the platform."],
+    products: ['Products', 'Manage the catalogue, Excel uploads, and bulk actions.'],
+    quotations: ['Quotations', 'Create, edit, approve and control download access for client quotations.'],
+    companies: ['Companies', 'Manage client companies, employees, points and merchandise.'],
+    portal: ['Merchandise Portal Builder', 'Create and configure a company’s employee store.'],
+    clients: ['Clients & Logos', 'Manage client records and the logo wall.'],
+    casestudies: ['Case Studies', 'Add, edit and remove the success stories shown on the website.'],
+    blogs: ['Blogs', 'Write and manage articles published to the website.'],
+    marketing: ['Marketing', 'Pop-ups shown across the website.'],
+    enquiries: ['Enquiries', 'Leads, sample uploads and follow-up tracking.'],
+    sellers: ['Sellers (Phase 2)', 'Seller accounts and product approvals.'],
+    logs: ['Activity Log', 'A live feed of everything happening on the platform.'],
+    analytics: ['Analytics', 'Sales, enquiries, employee purchases and seller performance at a glance.'],
+    merch_enquiries: ['Merch Enquiries', 'Merchandising enquiry intake, follow-up and resolution tracking.'],
+    branding: ['Brand Theming', 'Apply custom palettes to quotations, catalogues and company dashboards.'],
+    customers: ['Customers', 'Approve who can download catalogues and generate quotations. Everyone else can only browse the website.'],
+  };
+
+  data = {
+    products: [
+      { name: 'Canvas Laptop Backpack', cat: 'Bags', price: 1250, moq: 100, status: 'Live', img: 'backpack', desc: '15.6" padded compartment, water-resistant canvas, USB pass-through.', material: 'Canvas + PU', colors: 'Navy · Black · Grey' },
+      { name: 'Insulated Steel Bottle', cat: 'Drinkware', price: 540, moq: 50, status: 'Live', img: 'bottle', desc: 'Double-wall vacuum, 750ml — cold 24h / hot 12h.', material: 'Stainless Steel', colors: 'Steel · Matte Black · White' },
+      { name: 'Premium Roller Pen Set', cat: 'Writing', price: 320, moq: 200, status: 'Live', img: 'pen-set', desc: 'Twin metal roller pens in a magnetic gift box.', material: 'Brass + Lacquer', colors: 'Gunmetal · Rose Gold' },
+      { name: 'Wireless Charging Pad', cat: 'Tech', price: 890, moq: 100, status: 'Live', img: 'charger', desc: '15W fast Qi charging, anti-slip surface, LED indicator.', material: 'ABS + Silicone', colors: 'Black · White' },
+      { name: 'Hardbound Notebook', cat: 'Writing', price: 280, moq: 150, status: 'Live', img: 'notebook', desc: 'A5 hardcover, 192 pages, 100gsm ivory paper, elastic closure.', material: 'PU Hardcover', colors: 'Teal · Navy · Tan' },
+      { name: 'Ceramic Coffee Mug', cat: 'Drinkware', price: 240, moq: 200, status: 'Live', img: 'mug', desc: '350ml stoneware mug, microwave-safe, full-wrap print area.', material: 'Ceramic', colors: 'White · Black · Matte Blue' },
+      { name: 'Cotton Tote Bag', cat: 'Bags', price: 180, moq: 250, status: 'Live', img: 'tote', desc: '12oz heavy cotton canvas, reinforced handles, large print area.', material: 'Organic Cotton', colors: 'Natural · Black' },
+      { name: 'Embroidered Polo Shirt', cat: 'Apparel', price: 460, moq: 100, status: 'Live', img: 'polo', desc: 'Pique cotton polo, breathable, custom chest embroidery included.', material: 'Cotton Pique', colors: 'Navy · White · Maroon' },
+      { name: 'Anti-Theft Backpack', cat: 'Bags', price: 1420, moq: 100, status: 'Draft', img: 'antitheft', desc: 'Hidden zippers, RFID pocket, TSA-friendly, USB port.', material: 'Polyester 900D', colors: 'Black · Charcoal' },
+      { name: 'Bamboo Desk Organizer', cat: 'Home', price: 620, moq: 80, status: 'Live', img: 'organizer', desc: 'Natural bamboo multi-slot organizer with phone stand, laser-engravable.', material: 'Bamboo', colors: 'Natural' },
+    ],
+    quotations: [
+      { id: 'QT-2041', co: 'L&T Construction', by: 'Rohan Shah · Sales', status: 'Pending review', disc: 5, terms: '50% advance · delivery in 3 weeks',
+        items: [{ name: 'Canvas Laptop Backpack', qty: 200, price: 1180 }, { name: 'Insulated Steel Bottle', qty: 500, price: 520 }],
+        recipients: [{ email: 'procurement@lnt.com', role: 'Buyer', on: true }, { email: 'rohan@supremegifts.in', role: 'Sales', on: true }, { email: 'cfo@lnt.com', role: 'Finance', on: false }], downloads: [] },
+      { id: 'QT-2042', co: 'Infosys BPM', by: 'Anita Rao · Admin', status: 'Approved', disc: 0, terms: 'Net 30 · branded packaging',
+        items: [{ name: 'Premium Roller Pen Set', qty: 300, price: 300 }, { name: 'Hardbound Notebook', qty: 300, price: 270 }],
+        recipients: [{ email: 'admin@infosysbpm.com', role: 'Buyer', on: true }], downloads: [{ who: 'admin@infosysbpm.com', when: '2 hrs ago' }] },
+      { id: 'QT-2044', co: 'Wipro', by: 'Suresh K · Sales', status: 'Pending review', disc: 0, terms: '50% advance · balance on delivery',
+        items: [{ name: 'Wireless Charging Pad', qty: 150, price: 860 }], recipients: [{ email: 'gifts@wipro.com', role: 'Buyer', on: false }], downloads: [] },
+      { id: 'QT-2043', co: 'HDFC Bank', by: 'Meena Iyer · Admin', status: 'Draft', disc: 0, terms: '50% advance',
+        items: [{ name: 'Hardbound Notebook', qty: 400, price: 260 }], recipients: [{ email: 'gifts@hdfc.com', role: 'Buyer', on: false }], downloads: [] },
+      { id: 'QT-2040', co: 'Tata Motors', by: 'Priya Menon · Super Admin', status: 'Sent', disc: 8, terms: 'Net 15',
+        items: [{ name: 'Canvas Laptop Backpack', qty: 120, price: 1200 }, { name: 'Insulated Steel Bottle', qty: 400, price: 530 }],
+        recipients: [{ email: 'procurement@tatamotors.com', role: 'Buyer', on: true }, { email: 'audit@tatamotors.com', role: 'Finance', on: true }],
+        downloads: [{ who: 'procurement@tatamotors.com', when: 'Yesterday' }, { who: 'procurement@tatamotors.com', when: '3 days ago' }] },
+    ],
+    companies: [
+      { name: 'L&T Construction', model: 'Points', employees: 1240, pts: 2400, portal: true },
+      { name: 'Infosys BPM', model: 'Coupon', employees: 860, pts: 1500, portal: true },
+      { name: 'HDFC Bank', model: 'Points', employees: 2100, pts: 2000, portal: true },
+      { name: 'Tata Motors', model: 'Points', employees: 540, pts: 1800, portal: false },
+    ],
+    employees: [
+      { id: 'LT-0418', name: 'Rohan Shah', role: 'Manager', pts: 3600 },
+      { id: 'LT-0419', name: 'Anita Rao', role: 'Manager', pts: 3600 },
+      { id: 'LT-1102', name: 'Suresh Kumar', role: 'Staff', pts: 1800 },
+      { id: 'LT-1108', name: 'Meena Iyer', role: 'Staff', pts: 1800 },
+      { id: 'LT-2231', name: 'Arjun Nair', role: 'Labour', pts: 900 },
+    ],
+    clients: ['L&T', 'Reliance', 'Tata', 'Infosys', 'HDFC', 'Wipro', 'Bosch', 'TVS'],
+    cases: [
+      { ind: 'IT & Software', t: '10,000 onboarding kits in 3 weeks', live: true },
+      { ind: 'Manufacturing', t: 'Annual safety-week merchandise', live: true },
+      { ind: 'Banking', t: 'Branch-wide festival hampers', live: false },
+    ],
+    blogs: [
+      { t: '7 corporate gifting trends for 2026', cat: 'Trends', date: '18 Jun 2026', live: true },
+      { t: 'How to brief a branded merchandise run', cat: 'Guides', date: '02 Jun 2026', live: true },
+      { t: 'Sustainable gifting: materials that matter', cat: 'Sustainability', date: '20 May 2026', live: false },
+    ],
+    banners: [
+      { t: 'Diwali 2026 Collection', place: 'Homepage hero', active: true },
+      { t: 'New: Tech & Gadgets', place: 'Catalogue top', active: true },
+      { t: 'Year-end gifting', place: 'Homepage strip', active: false },
+    ],
+    popups: [
+      { t: 'Quick enquiry', trigger: 'After 20s', active: true },
+      { t: 'Newsletter signup', trigger: 'Exit intent', active: false },
+    ],
+    enquiries: [
+      { name: 'Vikram Iyer', co: 'Reliance Retail', subj: 'Custom trophies', sample: true, status: 'New' },
+      { name: 'Sneha K.', co: 'Tata Motors', subj: 'Safety gear bulk', sample: false, status: 'Follow-up' },
+      { name: 'Arjun Nair', co: 'HDFC Bank', subj: 'Festival hampers', sample: true, status: 'New' },
+      { name: 'Priya S.', co: 'Wipro', subj: 'Onboarding kits', sample: false, status: 'Won' },
+    ],
+    sellers: [
+      { name: 'Meridian Mfg.', margin: 30, status: 'Approved', items: [
+        { name: 'Ceramic Coffee Mug', code: 'MRD-201', price: 240, status: 'Live' },
+        { name: 'Wheat Straw Bottle', code: 'MRD-205', price: 180, status: 'Live' },
+        { name: 'Bamboo Desk Organizer', code: 'MRD-208', price: 420, status: 'In review' },
+        { name: 'Cork Yoga Mat', code: 'MRD-211', price: 650, status: 'In review' },
+        { name: 'Recycled Tote', code: 'MRD-214', price: 150, status: 'Blocked' },
+      ] },
+      { name: 'EcoCraft Goods', margin: 25, status: 'Approved', items: [
+        { name: 'Jute Conference Folder', code: 'ECO-012', price: 120, status: 'Live' },
+        { name: 'Seed Paper Pencils', code: 'ECO-018', price: 60, status: 'In review' },
+        { name: 'Bagasse Lunchbox', code: 'ECO-021', price: 95, status: 'Live' },
+      ] },
+      { name: 'Urban Threads', margin: 0, status: 'Pending review', items: [] },
+      { name: 'Spectra Imports', margin: 20, status: 'Blocked', items: [
+        { name: 'Desk LED Lamp', code: 'SPC-003', price: 540, status: 'Blocked' },
+      ] },
+    ],
+    customers: [
+      { name: 'Rohan Shah', email: 'rohan.shah@lnt.in', co: 'L&T Construction', since: '14 May 2026', quotes: 8, status: 'Approved' },
+      { name: 'Anita Rao', email: 'anita@infosysbpm.com', co: 'Infosys BPM', since: '02 Jun 2026', quotes: 3, status: 'Approved' },
+      { name: 'Vikram Iyer', email: 'vikram@relianceretail.com', co: 'Reliance Retail', since: '21 Jun 2026', quotes: 0, status: 'Pending' },
+      { name: 'Sneha Kulkarni', email: 'sneha.k@tatamotors.com', co: 'Tata Motors', since: '23 Jun 2026', quotes: 0, status: 'Pending' },
+      { name: 'Karan Mehta', email: 'karan@gmail.com', co: '—', since: '18 Jun 2026', quotes: 1, status: 'Blocked' },
+    ],
+    logs: [
+      { who: 'L&T Procurement', what: 'sent a quotation via WhatsApp', when: '12 min ago', i: '💬', c: '#1fa463', bg: 'rgba(31,164,99,.12)' },
+      { who: 'Infosys', what: 'generated a catalogue (Drinkware)', when: '41 min ago', i: '📄', c: '#2a2b6a', bg: 'rgba(42,43,106,.1)' },
+      { who: 'Admin', what: 'approved 6 seller products', when: '1 hr ago', i: '✓', c: '#1a8f5a', bg: 'rgba(31,170,107,.12)' },
+      { who: 'Wipro', what: 'submitted an enquiry with sample', when: '1 hr ago', i: '📎', c: '#b5801e', bg: 'rgba(224,163,59,.16)' },
+      { who: 'Admin', what: 'topped up HDFC store points', when: '3 hr ago', i: '★', c: '#2a2b6a', bg: 'rgba(42,43,106,.1)' },
+    ],
+  };
+  portalDraft = { name: 'L&T Construction', defPts: 2400, products: 8 };
+
+  componentDidMount() { this.applyTheme(); this.renderNav(); this.renderView(); this.bindModal(); }
+  componentDidUpdate() { this.applyTheme(); if (this.wrap) { this.renderNav(); this.renderView(); } }
+  applyTheme() {
+    const w = this.wrap; if (!w) return;
+    const a = this.props.accentTheme || 'Teal';
+    const map = { Teal: ['#149b8e', '#13b89f'], Gold: ['#b0823a', '#d2a043'], Indigo: ['#4143b0', '#5a5cd0'] };
+    const [c1, c2] = map[a] || map.Teal;
+    w.style.setProperty('--c-accent', c1); w.style.setProperty('--c-accent2', c2);
+  }
+  setWrap = (el) => { this.wrap = el; if (el) { this.applyTheme(); this.renderNav(); this.renderView(); this.bindModal(); } };
+
+  renderNav() {
+    const host = this.wrap.querySelector('[data-nav]');
+    host.innerHTML = this.nav.map((n) => {
+      const on = n.k === this.view;
+      const ic = n.i || '•';
+      const badge = n.badge ? `<span style="margin-left:auto; font-size:10px; font-weight:700; background:var(--c-accent); color:#fff; padding:1px 7px; border-radius:999px;">${n.badge}</span>` : '';
+      const tag = n.tag ? `<span style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:8px; color:#9fe7dc; border:1px solid rgba(159,231,220,.35); padding:1px 5px; border-radius:4px;">${n.tag}</span>` : '';
+      const header = n.sec ? `<div data-sec style="font-family:'JetBrains Mono',monospace; font-size:8.5px; letter-spacing:.13em; text-transform:uppercase; color:rgba(159,176,231,.55); padding:14px 12px 5px;">${n.sec}</div>` : '';
+      return `${header}<span data-k="${n.k}" style="cursor:pointer; position:relative; display:flex; align-items:center; gap:11px; font-size:13px; font-weight:${on ? '600' : '500'}; color:${on ? '#fff' : 'rgba(255,255,255,.6)'}; padding:9px 12px; border-radius:11px; background:${on ? 'rgba(255,255,255,.12)' : 'transparent'}; box-shadow:${on ? 'inset 0 0 0 1px rgba(255,255,255,.06)' : 'none'};">${on ? '<span style="position:absolute; left:1px; top:50%; transform:translateY(-50%); width:3px; height:18px; border-radius:2px; background:var(--c-accent);"></span>' : ''}<span style="width:20px; text-align:center; font-size:13px;">${ic}</span>${n.t}${badge}${tag}</span>`;
+    }).join('');
+    host.querySelectorAll('[data-k]').forEach((s) => s.addEventListener('click', () => { this.view = s.getAttribute('data-k'); this.renderNav(); this.renderView(); }));
+  }
+
+  // ---------- helpers ----------
+  card(inner, pad) { return `<div style="background:var(--glass-bg); border:1px solid var(--glass-brd); border-radius:20px; padding:${pad == null ? 22 : pad}px; backdrop-filter:blur(16px) saturate(1.4); box-shadow:0 12px 34px rgba(34,36,90,.08), inset 0 1px 0 rgba(255,255,255,.6);">${inner}</div>`; }
+  kpi(label, val, badge, sub) {
+    const down = badge && String(badge).indexOf('↓') > -1;
+    const bc = down ? '#c0413c' : '#1a8f5a';
+    const bbg = down ? 'rgba(224,82,77,.12)' : 'rgba(31,170,107,.12)';
+    return `<div style="position:relative; overflow:hidden; background:var(--glass-bg); border:1px solid var(--glass-brd); border-radius:18px; padding:20px; backdrop-filter:blur(16px) saturate(1.4); box-shadow:0 12px 34px rgba(34,36,90,.08), inset 0 1px 0 rgba(255,255,255,.6);"><div style="position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--c-indigo),var(--c-accent));"></div><div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--c-muted); margin-bottom:12px;">${label}</div><div style="font-size:30px; font-weight:800; letter-spacing:-.02em;">${val}</div><div style="display:flex; align-items:center; gap:6px; margin-top:8px;">${badge ? `<span style="font-size:11px; font-weight:700; color:${bc}; background:${bbg}; padding:2px 8px; border-radius:999px;">${badge}</span>` : ''}<span style="font-size:11px; color:var(--c-muted);">${sub || ''}</span></div></div>`;
+  }
+  badge(s) {
+    const m = { Live: ['#1a8f5a', 'rgba(31,170,107,.12)'], Draft: ['#b5801e', 'rgba(224,163,59,.16)'], New: ['#2a2b6a', 'rgba(42,43,106,.1)'], 'Follow-up': ['#b5801e', 'rgba(224,163,59,.16)'], Won: ['#1a8f5a', 'rgba(31,170,107,.12)'], Approved: ['#1a8f5a', 'rgba(31,170,107,.12)'], 'Pending review': ['#b5801e', 'rgba(224,163,59,.16)'], Points: ['#2a2b6a', 'rgba(42,43,106,.1)'], Coupon: ['#149b8e', 'rgba(23,155,142,.12)'], Sent: ['#127d72', 'rgba(23,155,142,.12)'], Rejected: ['#c0413c', 'rgba(224,82,77,.14)'], Blocked: ['#c0413c', 'rgba(224,82,77,.14)'], 'In review': ['#b5801e', 'rgba(224,163,59,.16)'], 'Changes requested': ['#c0413c', 'rgba(224,82,77,.12)'], Pending: ['#b5801e', 'rgba(224,163,59,.16)'], 'In Progress': ['#b5801e', 'rgba(224,163,59,.16)'], Quoted: ['#127d72', 'rgba(23,155,142,.12)'], Closed: ['#5b5d7a', 'rgba(91,93,122,.12)'] };
+    const [c, bg] = m[s] || m.New;
+    return `<span style="font-size:11px; font-weight:700; color:${c}; background:${bg}; padding:4px 11px; border-radius:999px; white-space:nowrap;">${s}</span>`;
+  }
+  pill(t, on) { return `<span style="font-size:11px; font-weight:700; color:${on ? '#1a8f5a' : 'var(--c-muted)'}; background:${on ? 'rgba(31,170,107,.12)' : 'rgba(91,93,122,.1)'}; padding:4px 11px; border-radius:999px;">${on ? 'Active' : 'Hidden'}</span>`; }
+  thumb(t) { const bg = t === 't' ? 'repeating-linear-gradient(135deg,rgba(23,155,142,.07) 0 8px,rgba(23,155,142,.02) 8px 16px),linear-gradient(135deg,#e3efed,#daece9)' : 'repeating-linear-gradient(135deg,rgba(42,43,106,.06) 0 8px,rgba(42,43,106,.02) 8px 16px),linear-gradient(135deg,#e6eaf6,#dde2f1)'; return `<span style="width:40px; height:40px; flex:none; border-radius:10px; background:${bg};"></span>`; }
+  setPrimary(label, fn) {
+    const b = this.wrap.querySelector('[data-primary]');
+    if (!label) { b.style.display = 'none'; return; }
+    b.style.display = 'flex'; b.textContent = '+ ' + label;
+    b.onclick = fn;
+  }
+
+  renderView() {
+    const [title, sub] = this.titles[this.view];
+    this.wrap.querySelector('[data-title]').textContent = title;
+    this.wrap.querySelector('[data-sub]').textContent = sub;
+    this.setPrimary(null);
+    const host = this.wrap.querySelector('[data-view]');
+    host.innerHTML = this['v_' + this.view]();
+    const after = this['after_' + this.view];
+    if (after) after.call(this);
+  }
+
+  // ---------- DASHBOARD ----------
+  v_dashboard() {
+    const kpis = `<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:20px;">
+      ${this.kpi('Quotations', '1,240', '↑ 12.4%', 'vs last month')}
+      ${this.kpi('Catalogues', '863', '↑ 8.1%', 'vs last month')}
+      ${this.kpi('Active logins', '312', '↑ 4.6%', 'vs last month')}
+      ${this.kpi('Enquiries', '47', '', '9 new · awaiting follow-up')}
+    </div>`;
+    const chart = this.card(`<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;"><div><div style="font-size:15px; font-weight:800;">Downloads over time</div><div style="font-size:12px; color:var(--c-muted);">Quotations &amp; catalogues</div></div><div style="display:flex; gap:14px; font-size:11px;"><span style="display:flex; align-items:center; gap:6px; color:var(--c-slate);"><span style="width:9px;height:9px;border-radius:3px;background:var(--c-indigo);"></span>Quotations</span><span style="display:flex; align-items:center; gap:6px; color:var(--c-slate);"><span style="width:9px;height:9px;border-radius:3px;background:var(--c-accent);"></span>Catalogues</span></div></div><div style="display:flex; align-items:flex-end; gap:10px; height:180px;">${[66, 75, 58, 82, 70, 94, 80, 108, 90, 115].map((v) => `<div style="flex:1; display:flex; flex-direction:column; justify-content:flex-end; gap:3px; height:100%;"><div style="height:${Math.min(100, v * .7)}%; border-radius:6px 6px 0 0; background:linear-gradient(180deg,#3a3c98,#2a2b6a);"></div><div style="height:${Math.round(v * .3)}%; border-radius:0 0 6px 6px; background:linear-gradient(180deg,#13b89f,#149b8e);"></div></div>`).join('')}</div>`);
+    const activity = this.card(`<div style="font-size:15px; font-weight:800; margin-bottom:18px;">Recent activity</div>${this.data.logs.map((l) => `<div style="display:flex; gap:12px; margin-bottom:16px;"><span style="width:30px; height:30px; flex:none; border-radius:9px; background:${l.bg}; color:${l.c}; display:flex; align-items:center; justify-content:center; font-size:13px;">${l.i}</span><div><div style="font-size:13px; line-height:1.4;"><strong>${l.who}</strong> ${l.what}</div><div style="font-size:11px; color:var(--c-muted); font-family:'JetBrains Mono',monospace;">${l.when}</div></div></div>`).join('')}`);
+    return kpis + `<div style="display:grid; grid-template-columns:1.6fr 1fr; gap:16px;">${chart}${activity}</div>`;
+  }
+
+  // ---------- PRODUCTS ----------
+  v_products() {
+    const toolbar = `<div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+      <div style="display:flex; align-items:center; gap:8px; padding:10px 14px; border-radius:12px; background:rgba(255,255,255,.7); border:1px solid var(--c-line); flex:1; max-width:280px;"><span style="width:12px;height:12px;border:2px solid var(--c-muted);border-radius:50%;"></span><span style="font-size:13px; color:var(--c-muted);">Search products…</span></div>
+      <span data-bulk style="cursor:pointer; font-size:12px; font-weight:600; color:var(--c-indigo); padding:9px 14px; border-radius:11px; background:rgba(42,43,106,.07); border:1px solid rgba(42,43,106,.12);">⬆ Excel upload</span>
+      <span data-recs style="cursor:pointer; font-size:12px; font-weight:600; color:var(--c-accent); padding:9px 14px; border-radius:11px; background:rgba(23,155,142,.1); border:1px solid rgba(23,155,142,.22);">✦ Recommendations</span>
+    </div>`;
+    const head = `<div style="display:grid; grid-template-columns:36px 1.8fr 1fr .8fr .6fr .9fr .6fr; gap:14px; padding:0 14px 12px; border-bottom:1px solid var(--c-line); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.05em; text-transform:uppercase; color:var(--c-muted);"><span></span><span>Product</span><span>Category</span><span>Price</span><span>MOQ</span><span>Status</span><span></span></div>`;
+    const rows = this.data.products.map((p, i) => `<div data-row="${i}" style="display:grid; grid-template-columns:36px 1.8fr 1fr .8fr .6fr .9fr .6fr; gap:14px; padding:13px 14px; border-bottom:1px solid var(--c-line); align-items:center; font-size:13px;">
+      <span data-chk style="width:18px; height:18px; border-radius:5px; border:1.5px solid var(--c-line); background:#fff; cursor:pointer;"></span>
+      <span style="display:flex; align-items:center; gap:11px;"><span style="width:38px; height:38px; flex:none; border-radius:9px; background:#f1f3fa ${p.img ? `url('assets/img/${p.img}.png') center/cover no-repeat` : ''};"></span><span style="font-weight:700;">${p.name}</span></span>
+      <span style="color:var(--c-slate);">${p.cat}</span>
+      <span style="font-weight:700;">₹ ${p.price}</span>
+      <span>${p.moq}</span>
+      <span>${this.badge(p.status)}</span>
+      <span style="display:flex; gap:6px; justify-content:flex-end;"><span data-edit="${i}" style="cursor:pointer; color:var(--c-indigo); font-size:13px;">✎</span><span data-del="${i}" style="cursor:pointer; color:#d8524d; font-size:13px;">✕</span></span>
+    </div>`).join('');
+    return toolbar + this.card(head + `<div data-list>${rows}</div>`);
+  }
+  after_products() {
+    this.setPrimary('Add Product', () => this.openForm('Add product', [['name', 'Product name', ''], ['cat', 'Category', ''], ['price', 'Price ₹', ''], ['moq', 'MOQ', '']], (vals) => {
+      this.data.products.push({ name: vals.name || 'New product', cat: vals.cat || 'Uncategorised', price: +vals.price || 0, moq: +vals.moq || 50, status: 'Draft' });
+      this.renderView();
+    }));
+    const host = this.wrap.querySelector('[data-view]');
+    host.querySelectorAll('[data-chk]').forEach((c) => c.addEventListener('click', () => {
+      const on = c.getAttribute('data-on') === '1';
+      c.setAttribute('data-on', on ? '0' : '1');
+      c.style.background = on ? '#fff' : 'var(--c-accent)'; c.style.borderColor = on ? 'var(--c-line)' : 'var(--c-accent)';
+    }));
+    host.querySelectorAll('[data-del]').forEach((b) => b.addEventListener('click', () => { this.data.products.splice(+b.getAttribute('data-del'), 1); this.renderView(); }));
+    host.querySelectorAll('[data-edit]').forEach((b) => b.addEventListener('click', () => {
+      const i = +b.getAttribute('data-edit'); const p = this.data.products[i];
+      this.openForm('Edit product', [['name', 'Product name', p.name], ['cat', 'Category', p.cat], ['price', 'Price ₹', p.price], ['moq', 'MOQ', p.moq]], (vals) => {
+        Object.assign(p, { name: vals.name, cat: vals.cat, price: +vals.price, moq: +vals.moq }); this.renderView();
+      });
+    }));
+    const bulk = host.querySelector('[data-bulk]'); if (bulk) bulk.addEventListener('click', () => { bulk.textContent = '✓ 32 rows imported'; setTimeout(() => { bulk.textContent = '⬆ Excel upload'; this.renderView(); }, 1300); });
+    const recs = host.querySelector('[data-recs]'); if (recs) recs.addEventListener('click', () => { recs.textContent = '✓ Recompute queued'; setTimeout(() => { recs.textContent = '✦ Recommendations'; }, 1300); });
+  }
+
+  // ---------- QUOTATIONS ----------
+  resetModalCard() {
+    const card = this.wrap.querySelector('[data-modal-card]');
+    if (card) { card.style.width = '520px'; card.style.maxWidth = '100%'; card.style.height = 'auto'; }
+    const body = this.wrap.querySelector('[data-modal-body]');
+    if (body) { body.style.padding = '24px'; body.style.gap = '14px'; }
+  }
+  get role() { return this.props.role || 'Super Admin'; }
+  roleCaps() { const r = this.role; return { approve: r === 'Super Admin', edit: r === 'Super Admin' || r === 'Admin', access: r === 'Super Admin' || r === 'Admin' }; }
+  quoteTotal(q) { const sub = q.items.reduce((a, it) => a + (+it.qty || 0) * (+it.price || 0), 0); return Math.round(sub * (1 - (+q.disc || 0) / 100)); }
+  granted(q) { return q.recipients.filter((r) => r.on).length; }
+  toast(el, txt) { const o = el.textContent; el.textContent = txt; setTimeout(() => { el.textContent = o; }, 1100); }
+
+  v_quotations() {
+    const caps = this.roleCaps();
+    const pending = this.data.quotations.filter((q) => q.status === 'Pending review').length;
+    const chips = `<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,auto)); align-items:start; gap:10px; margin-bottom:16px;">
+      <div style="display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:12px; background:rgba(42,43,106,.06); border:1px solid rgba(42,43,106,.12);"><span style="width:30px; height:30px; flex:none; border-radius:9px; background:linear-gradient(135deg,#2a2b6a,#3a3c98); color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px;">👤</span><div><div style="font-size:12.5px; font-weight:800;">Acting as ${this.role}</div><div style="font-size:11px; color:var(--c-muted);">${caps.approve ? 'Full approval rights · can release downloads' : caps.edit ? 'Can draft &amp; edit · approvals route to Super Admin' : 'Read-only · can view download history'}</div></div></div>
+      ${pending ? `<div style="display:flex; align-items:center; gap:8px; padding:10px 14px; border-radius:12px; background:rgba(224,163,59,.12); border:1px solid rgba(224,163,59,.28);"><span style="font-size:13px;">⏳</span><span style="font-size:12.5px; font-weight:700; color:#b5801e;">${pending} awaiting approval</span></div>` : ''}
+      <div style="display:flex; align-items:center; gap:8px; padding:10px 14px; border-radius:12px; background:rgba(23,155,142,.1); border:1px solid rgba(23,155,142,.22);"><span style="font-size:13px;">🔒</span><span style="font-size:12.5px; font-weight:700; color:#127d72;">Downloads locked until approved</span></div>
+    </div>`;
+    const cols = 'grid-template-columns:.85fr 1.3fr .5fr .9fr 1fr .95fr 1.5fr';
+    const head = `<div style="display:grid; ${cols}; gap:12px; padding:0 14px 12px; border-bottom:1px solid var(--c-line); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.05em; text-transform:uppercase; color:var(--c-muted);"><span>Quote #</span><span>Company</span><span>Items</span><span>Total</span><span>Status</span><span>Access</span><span></span></div>`;
+    const rows = this.data.quotations.map((q, i) => {
+      const g = this.granted(q);
+      const unlocked = (q.status === 'Approved' || q.status === 'Sent') && g > 0;
+      const access = g
+        ? `<span data-qaccess="${i}" style="cursor:pointer; font-size:11px; font-weight:600; color:var(--c-indigo); padding:6px 10px; border-radius:8px; background:rgba(42,43,106,.07);">${g} can download</span>`
+        : `<span data-qaccess="${i}" style="cursor:pointer; font-size:11px; font-weight:700; color:#b5801e; padding:6px 10px; border-radius:8px; background:rgba(224,163,59,.14);">🔒 Locked</span>`;
+      return `<div style="display:grid; ${cols}; gap:12px; padding:14px; border-bottom:1px solid var(--c-line); align-items:center; font-size:13px;">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600; color:var(--c-slate);">${q.id}</span>
+        <span><strong>${q.co}</strong><div style="font-size:11px; color:var(--c-muted); margin-top:2px;">by ${q.by}</div></span>
+        <span style="color:var(--c-slate);">${q.items.length}</span>
+        <span style="font-weight:800;">₹ ${this.quoteTotal(q).toLocaleString('en-IN')}</span>
+        <span>${this.badge(q.status)}</span>
+        <span>${access}</span>
+        <span style="display:flex; gap:6px; justify-content:flex-end; flex-wrap:wrap;">${this.quoteActions(q, i, caps, unlocked)}</span>
+      </div>`;
+    }).join('');
+    return `<div style="display:flex; flex-direction:column; gap:16px;">${chips}${this.card(head + `<div data-qlist>${rows}</div>`)}</div>`;
+  }
+  quoteActions(q, i, caps, unlocked) {
+    const A = [];
+    const chip = (attr, txt, bg, col) => `<span ${attr} style="cursor:pointer; font-size:11px; font-weight:600; color:${col}; padding:6px 10px; border-radius:8px; background:${bg};">${txt}</span>`;
+    if (caps.edit) A.push(chip(`data-qedit="${i}"`, '✎ Edit', 'rgba(42,43,106,.07)', 'var(--c-indigo)'));
+    if (q.status === 'Draft' || q.status === 'Rejected') { if (caps.edit) A.push(chip(`data-qsubmit="${i}"`, 'Submit →', 'rgba(42,43,106,.07)', 'var(--c-indigo)')); }
+    else if (q.status === 'Pending review') {
+      if (caps.approve) { A.push(chip(`data-qok="${i}"`, '✓ Approve', 'var(--c-accent)', '#fff')); A.push(chip(`data-qno="${i}"`, 'Reject', 'rgba(224,82,77,.12)', '#c0413c')); }
+      else A.push(`<span style="font-size:11px; font-weight:600; color:#b5801e; padding:6px 10px; border-radius:8px; background:rgba(224,163,59,.12);">Awaiting Super Admin</span>`);
+    } else if (q.status === 'Approved') A.push(chip(`data-qsend="${i}"`, 'Send →', 'rgba(23,155,142,.12)', '#127d72'));
+    else if (q.status === 'Sent') A.push(chip(`data-qsend="${i}"`, 'Resend', 'rgba(42,43,106,.07)', 'var(--c-indigo)'));
+    if (unlocked) A.push(chip(`data-qdl="${i}"`, '↓ PDF', 'linear-gradient(135deg,#2a2b6a,#3a3c98)', '#fff'));
+    else A.push(`<span title="Download unlocks after Super Admin approval and granted access" style="font-size:11px; font-weight:600; color:var(--c-muted); padding:6px 10px; border-radius:8px; background:rgba(91,93,122,.08);">🔒 PDF</span>`);
+    return A.join('');
+  }
+  after_quotations() {
+    if (this.roleCaps().edit) this.setPrimary('New Quotation', () => this.openQuoteEditor(null)); else this.setPrimary(null);
+    const host = this.wrap.querySelector('[data-view]');
+    host.querySelectorAll('[data-qedit]').forEach((b) => b.addEventListener('click', () => this.openQuoteEditor(+b.getAttribute('data-qedit'))));
+    host.querySelectorAll('[data-qsubmit]').forEach((b) => b.addEventListener('click', () => { this.data.quotations[+b.getAttribute('data-qsubmit')].status = 'Pending review'; this.renderView(); }));
+    host.querySelectorAll('[data-qok]').forEach((b) => b.addEventListener('click', () => { this.data.quotations[+b.getAttribute('data-qok')].status = 'Approved'; this.renderView(); }));
+    host.querySelectorAll('[data-qno]').forEach((b) => b.addEventListener('click', () => { this.data.quotations[+b.getAttribute('data-qno')].status = 'Rejected'; this.renderView(); }));
+    host.querySelectorAll('[data-qsend]').forEach((b) => b.addEventListener('click', () => { this.data.quotations[+b.getAttribute('data-qsend')].status = 'Sent'; this.renderView(); }));
+    host.querySelectorAll('[data-qaccess]').forEach((b) => b.addEventListener('click', () => this.openAccess(+b.getAttribute('data-qaccess'))));
+    host.querySelectorAll('[data-qdl]').forEach((b) => b.addEventListener('click', () => { const q = this.data.quotations[+b.getAttribute('data-qdl')]; q.downloads.unshift({ who: this.role + ' (you)', when: 'just now' }); this.toast(b, '✓ Downloaded'); }));
+  }
+  openQuoteEditor(idx) {
+    const isNew = idx == null;
+    const q = isNew
+      ? { id: 'QT-' + (2050 + this.data.quotations.length), co: '', contact: '', email: '', phone: '', delivery: '', notes: '', by: this.role, status: 'Draft', disc: 0, terms: '50% advance · balance on delivery', recipients: [], downloads: [], items: [] }
+      : JSON.parse(JSON.stringify(this.data.quotations[idx]));
+    ['contact', 'email', 'phone', 'delivery', 'notes'].forEach((k) => { if (q[k] == null) q[k] = ''; });
+    if (q.theme == null) q.theme = 0;
+    if (q.logo == null) q.logo = '';
+    const quoteThemes = [
+      { name: 'Navy & Teal', h: ['#2a2b6a', '#3a3c98'], a: '#149b8e' },
+      { name: 'Midnight Gold', h: ['#1a1a2e', '#2d2d4e'], a: '#b0823a' },
+      { name: 'Deep Indigo', h: ['#1e1b4b', '#312e81'], a: '#4143b0' },
+      { name: 'Forest', h: ['#1a3329', '#2d5a46'], a: '#5a7c3a' },
+    ];
+    const caps = this.roleCaps();
+    const wasApproved = !isNew && (this.data.quotations[idx].status === 'Approved' || this.data.quotations[idx].status === 'Sent');
+    const modal = this.wrap.querySelector('[data-modal]');
+    const card = modal.querySelector('[data-modal-card]');
+    card.style.width = '1100px'; card.style.maxWidth = '96vw'; card.style.height = '90vh';
+    modal.querySelector('[data-modal-title]').textContent = isNew ? 'Generate quotation' : 'Edit ' + q.id;
+    const body = modal.querySelector('[data-modal-body]');
+    body.style.padding = '0'; body.style.gap = '0';
+    const IN = 'height:38px; padding:0 12px; font-family:inherit; font-size:13px; border-radius:9px; background:#fff; border:1px solid var(--c-line); outline:none; width:100%;';
+    const esc = (s) => (s == null ? '' : String(s)).replace(/"/g, '&quot;');
+    let search = '', activeCat = 'All';
+    const cats = ['All', ...Array.from(new Set(this.data.products.map((p) => p.cat)))];
+
+    const recalc = () => {
+      q.items.forEach((it, j) => { const el = body.querySelector(`[data-qline="${j}"]`); if (el) el.textContent = '₹ ' + ((+it.qty || 0) * (+it.price || 0)).toLocaleString('en-IN'); });
+      const t = body.querySelector('[data-qtotal]'); if (t) t.textContent = '₹ ' + this.quoteTotal(q).toLocaleString('en-IN');
+      const dl = body.querySelector('[data-disclabel]'); if (dl) dl.innerHTML = q.disc ? ` <span style="font-weight:500; color:var(--c-muted);">(${q.disc}% off)</span>` : '';
+    };
+
+    const catalogCards = () => {
+      const filtered = this.data.products.filter((p) => (activeCat === 'All' || p.cat === activeCat) && (!search || (p.name + ' ' + p.cat + ' ' + (p.desc || '')).toLowerCase().includes(search.toLowerCase())));
+      if (!filtered.length) return `<div style="grid-column:1/-1; padding:40px 20px; text-align:center; color:var(--c-muted); font-size:13px;">No products match your search.</div>`;
+      return filtered.map((p) => {
+        const pi = this.data.products.indexOf(p);
+        const inQuote = q.items.findIndex((it) => it._pid === pi) > -1;
+        return `<div style="background:#fff; border:1px solid var(--c-line); border-radius:13px; overflow:hidden; display:flex; flex-direction:column;">
+          <div style="height:104px; background:#eef0f8 url('assets/img/${p.img}.png') center/cover no-repeat; position:relative;">${p.status === 'Draft' ? '<span style="position:absolute; top:8px; left:8px; font-size:9px; font-weight:700; color:#b5801e; background:rgba(255,255,255,.92); padding:2px 7px; border-radius:6px;">Draft</span>' : ''}</div>
+          <div style="padding:10px 12px 12px; display:flex; flex-direction:column; flex:1;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:.05em; color:var(--c-accent); margin-bottom:3px;">${p.cat}</div>
+            <div style="font-size:13px; font-weight:700; line-height:1.25; margin-bottom:4px;">${p.name}</div>
+            <div style="font-size:11px; color:var(--c-muted); line-height:1.4; margin-bottom:9px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.desc || ''}</div>
+            <div style="font-size:10px; color:var(--c-slate); margin-bottom:10px;">${p.material || ''}${p.colors ? ' · ' + p.colors : ''}</div>
+            <div style="margin-top:auto; display:flex; align-items:center; justify-content:space-between; gap:8px;">
+              <div style="white-space:nowrap;"><span style="font-size:15px; font-weight:800;">₹ ${p.price}</span><span style="font-size:10px; color:var(--c-muted); margin-left:4px;">MOQ ${p.moq}</span></div>
+              ${inQuote
+                ? `<span style="font-size:11px; font-weight:700; color:var(--c-accent); white-space:nowrap;">In quote ✓</span>`
+                : `<span data-padd="${pi}" style="cursor:pointer; font-size:11px; font-weight:700; color:#fff; padding:7px 13px; border-radius:9px; background:linear-gradient(135deg,#2a2b6a,#3a3c98); white-space:nowrap;">+ Add</span>`}
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    };
+
+    const renderLeft = () => `
+      <div style="display:flex; flex-direction:column; height:100%; background:rgba(245,246,251,.6); border-right:1px solid var(--c-line); min-width:0;">
+        <div style="padding:16px 18px 12px; background:#fff; border-bottom:1px solid var(--c-line);">
+          <div style="font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; margin-bottom:10px;">Product catalogue <span style="font-weight:500; color:var(--c-muted); text-transform:none; letter-spacing:0;">· search &amp; add</span></div>
+          <div style="display:flex; align-items:center; gap:9px; height:40px; padding:0 13px; border-radius:10px; background:rgba(245,246,251,.9); border:1px solid var(--c-line); margin-bottom:11px;">
+            <span style="width:13px; height:13px; border:2px solid var(--c-muted); border-radius:50%; flex:none;"></span>
+            <input data-psearch value="${esc(search)}" placeholder="Search by name, category or material…" style="border:none; background:transparent; outline:none; font-family:inherit; font-size:13px; width:100%;">
+          </div>
+          <div data-catchips style="display:flex; gap:7px; overflow-x:auto; padding-bottom:2px;">${cats.map((c) => `<span data-cat="${c}" style="cursor:pointer; font-size:11.5px; font-weight:600; white-space:nowrap; color:${c === activeCat ? '#fff' : 'var(--c-slate)'}; padding:6px 13px; border-radius:999px; background:${c === activeCat ? 'linear-gradient(135deg,#2a2b6a,#3a3c98)' : '#fff'}; border:1px solid ${c === activeCat ? 'transparent' : 'var(--c-line)'};">${c}</span>`).join('')}</div>
+        </div>
+        <div data-cards style="overflow-y:auto; flex:1; padding:14px 18px; display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:13px; align-content:start;">${catalogCards()}</div>
+      </div>`;
+
+    const itemRows = () => q.items.length ? q.items.map((it, j) => {
+      const p = it._pid != null ? this.data.products[it._pid] : null;
+      const img = `<div style="width:46px; height:46px; flex:none; border-radius:9px; background:#eef0f8 ${p ? `url('assets/img/${p.img}.png') center/cover no-repeat` : ''};"></div>`;
+      return `<div style="display:flex; align-items:center; gap:11px; padding:11px 0; border-bottom:1px solid var(--c-line);">
+        ${img}
+        <div style="flex:1; min-width:0;">
+          <div style="font-size:13px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${it.name}</div>
+          <div style="display:flex; align-items:center; gap:8px; margin-top:6px; flex-wrap:wrap;">
+            <span style="display:flex; align-items:center; background:#fff; border:1px solid var(--c-line); border-radius:8px;">
+              <span data-qdec="${j}" style="cursor:pointer; width:24px; height:26px; display:flex; align-items:center; justify-content:center; color:var(--c-slate); font-size:15px;">−</span>
+              <input data-qi-qty="${j}" value="${it.qty}" style="width:46px; height:26px; text-align:center; border:none; border-left:1px solid var(--c-line); border-right:1px solid var(--c-line); outline:none; font-family:inherit; font-size:12px; font-weight:600;">
+              <span data-qinc="${j}" style="cursor:pointer; width:24px; height:26px; display:flex; align-items:center; justify-content:center; color:var(--c-slate); font-size:14px;">+</span>
+            </span>
+            <span style="font-size:11px; color:var(--c-muted);">×</span>
+            ${caps.approve
+              ? `<span style="display:flex; align-items:center; gap:1px; background:#fff; border:1px solid ${it._edited ? 'var(--c-indigo)' : 'var(--c-line)'}; border-radius:8px; padding:0 9px; height:26px;"><span style="font-size:11px; color:var(--c-muted);">₹</span><input data-qi-price="${j}" value="${it.price}" style="width:54px; height:24px; text-align:right; border:none; outline:none; font-family:inherit; font-size:12px; font-weight:700;"></span>`
+              : `<span style="font-size:12px; font-weight:700;">₹ ${it.price}</span>`}
+            <span data-qline="${j}" style="margin-left:auto; font-size:13px; font-weight:800; color:var(--c-indigo); white-space:nowrap;">₹ ${((+it.qty || 0) * (+it.price || 0)).toLocaleString('en-IN')}</span>
+          </div>
+        </div>
+        <span data-qi-del="${j}" style="cursor:pointer; color:#d8524d; font-size:13px; flex:none;">✕</span>
+      </div>`;
+    }).join('') : `<div style="padding:34px 16px; text-align:center; color:var(--c-muted); font-size:13px; line-height:1.7;">No items in this quotation yet.<br><span style="font-size:12px;">Search products on the left and tap <strong style="color:var(--c-indigo);">+ Add</strong>.</span></div>`;
+
+    const field = (label, key, ph, full) => `<div style="${full ? 'grid-column:1/-1;' : ''}"><div style="font-size:11px; font-weight:600; color:var(--c-slate); margin-bottom:5px;">${label}</div><input data-qf="${key}" value="${esc(q[key])}" placeholder="${ph}" style="${IN}"></div>`;
+
+    const renderRight = () => `
+      <div style="display:flex; flex-direction:column; height:100%; background:#fff; min-width:0;">
+        <div style="overflow-y:auto; flex:1; padding:16px 18px;">
+          <div style="font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; margin-bottom:12px;">Client details</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">
+            ${field('Company', 'co', 'Company name', true)}
+            ${field('Contact person', 'contact', 'Full name')}
+            ${field('Email', 'email', 'name@company.com')}
+            ${field('Phone', 'phone', '+91 ·····')}
+            ${field('Delivery by', 'delivery', 'e.g. 15 Dec 2025')}
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+            <div style="font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.05em;">Items <span data-qcount style="color:var(--c-muted);">${q.items.length}</span></div>
+            ${caps.approve ? `<span style="font-size:10px; font-weight:600; color:var(--c-accent);">✓ Prices editable</span>` : `<span style="font-size:10px; color:var(--c-muted);">List prices (locked)</span>`}
+          </div>
+          <div data-qitems>${itemRows()}</div>
+          <div style="margin-top:22px; padding-top:18px; border-top:1px solid var(--c-line);">
+            <div style="font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; margin-bottom:12px;">Quotation branding</div>
+            <div style="display:flex; gap:14px; align-items:stretch;">
+              <div data-qlogo style="cursor:pointer; width:104px; flex:none; border-radius:12px; border:1px dashed ${q.logo ? 'var(--c-accent)' : 'var(--c-line)'}; background:${q.logo ? 'rgba(23,155,142,.07)' : 'rgba(255,255,255,.7)'}; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; text-align:center; padding:10px;">
+                ${q.logo
+                  ? `<span style="font-size:18px; color:var(--c-accent);">✓</span><span style="font-size:10px; font-weight:700; color:#127d72; word-break:break-all; line-height:1.3;">${q.logo}</span><span style="font-size:9px; color:var(--c-muted);">tap to replace</span>`
+                  : `<span style="font-size:18px; color:var(--c-muted);">⬆</span><span style="font-size:10px; color:var(--c-muted); line-height:1.3;">Client brand<br>logo</span>`}
+              </div>
+              <div style="flex:1; min-width:0;">
+                <div style="font-size:11px; font-weight:600; color:var(--c-slate); margin-bottom:8px;">Quotation colour theme</div>
+                <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:8px;">
+                  ${quoteThemes.map((t, ti) => `<div data-qtheme="${ti}" style="cursor:pointer; display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:10px; background:${ti === q.theme ? 'rgba(42,43,106,.07)' : 'rgba(255,255,255,.6)'}; border:1.5px solid ${ti === q.theme ? 'var(--c-indigo)' : 'var(--c-line)'};">
+                    <span style="display:flex; gap:3px; flex:none;"><span style="width:15px; height:15px; border-radius:4px; background:linear-gradient(135deg,${t.h[0]},${t.h[1]});"></span><span style="width:15px; height:15px; border-radius:4px; background:${t.a};"></span></span>
+                    <span style="font-size:11px; font-weight:${ti === q.theme ? '700' : '500'}; color:${ti === q.theme ? 'var(--c-indigo)' : 'var(--c-slate)'}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.name}</span>
+                  </div>`).join('')}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:20px;">
+            <div style="font-size:11px; font-weight:600; color:var(--c-slate); margin-bottom:5px;">Branding / special requirements</div>
+            <textarea data-qf="notes" placeholder="e.g. Logo in white on navy, individual gift boxing, delivery split across 2 cities…" style="${IN} height:60px; padding:9px 12px; resize:none; line-height:1.5;">${esc(q.notes)}</textarea>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1.4fr; gap:10px; margin-top:14px;">
+            <div><div style="font-size:11px; font-weight:600; color:var(--c-slate); margin-bottom:5px;">Discount %</div><input data-qf="disc" value="${q.disc || 0}" style="${IN}"></div>
+            <div><div style="font-size:11px; font-weight:600; color:var(--c-slate); margin-bottom:5px;">Payment terms</div><input data-qf="terms" value="${esc(q.terms)}" style="${IN}"></div>
+          </div>
+          ${wasApproved ? `<div style="font-size:11px; color:#b5801e; background:rgba(224,163,59,.12); border:1px solid rgba(224,163,59,.28); border-radius:9px; padding:9px 11px; margin-top:14px;">Editing returns this quotation to <strong>Draft</strong> — re-approval required before download.</div>` : ''}
+        </div>
+        <div style="padding:14px 18px; border-top:1px solid var(--c-line); background:rgba(245,246,251,.7); flex:none;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div style="font-size:12px; font-weight:700; color:var(--c-slate);">Quotation total<span data-disclabel>${q.disc ? ` <span style="font-weight:500; color:var(--c-muted);">(${q.disc}% off)</span>` : ''}</span></div>
+            <div data-qtotal style="font-size:23px; font-weight:800; color:var(--c-indigo);">₹ ${this.quoteTotal(q).toLocaleString('en-IN')}</div>
+          </div>
+        </div>
+      </div>`;
+
+    const wireCards = () => {
+      body.querySelectorAll('[data-padd]').forEach((b) => b.onclick = () => {
+        const pi = +b.getAttribute('data-padd'); const p = this.data.products[pi];
+        q.items.push({ name: p.name, qty: p.moq || 100, price: p.price, _pid: pi });
+        body.querySelector('[data-cards]').innerHTML = catalogCards(); wireCards();
+        renderRightPanel();
+      });
+    };
+    const wireRight = () => {
+      body.querySelectorAll('[data-qi-qty]').forEach((inp) => inp.oninput = (e) => { q.items[+inp.getAttribute('data-qi-qty')].qty = +e.target.value || 0; recalc(); });
+      body.querySelectorAll('[data-qinc]').forEach((b) => b.onclick = () => { q.items[+b.getAttribute('data-qinc')].qty += 10; renderRightPanel(); });
+      body.querySelectorAll('[data-qdec]').forEach((b) => b.onclick = () => { const it = q.items[+b.getAttribute('data-qdec')]; it.qty = Math.max(0, it.qty - 10); renderRightPanel(); });
+      body.querySelectorAll('[data-qi-price]').forEach((inp) => inp.oninput = (e) => { const it = q.items[+inp.getAttribute('data-qi-price')]; it.price = +e.target.value || 0; it._edited = true; recalc(); });
+      body.querySelectorAll('[data-qi-del]').forEach((b) => b.onclick = () => { q.items.splice(+b.getAttribute('data-qi-del'), 1); body.querySelector('[data-cards]').innerHTML = catalogCards(); wireCards(); renderRightPanel(); });
+      body.querySelectorAll('[data-qf]').forEach((inp) => inp.oninput = (e) => { const k = inp.getAttribute('data-qf'); q[k] = (k === 'disc') ? (+e.target.value || 0) : e.target.value; if (k === 'disc') recalc(); });
+      const lg = body.querySelector('[data-qlogo]'); if (lg) lg.onclick = () => { q.logo = q.logo ? '' : 'brand-logo.png'; renderRightPanel(); };
+      body.querySelectorAll('[data-qtheme]').forEach((b) => b.onclick = () => { q.theme = +b.getAttribute('data-qtheme'); renderRightPanel(); });
+    };
+    const renderRightPanel = () => { body.querySelector('[data-rightpanel]').innerHTML = renderRight(); wireRight(); };
+
+    const wireLeft = () => {
+      const sb = body.querySelector('[data-psearch]');
+      if (sb) sb.oninput = (e) => { search = e.target.value; body.querySelector('[data-cards]').innerHTML = catalogCards(); wireCards(); };
+      body.querySelectorAll('[data-cat]').forEach((c) => c.onclick = () => {
+        activeCat = c.getAttribute('data-cat');
+        body.querySelector('[data-leftpanel]').innerHTML = renderLeft();
+        wireLeft(); wireCards();
+      });
+    };
+    const render = () => {
+      body.innerHTML = `<div style="display:grid; grid-template-columns:1.45fr 1fr; height:100%; min-height:0;">
+        <div data-leftpanel style="min-width:0; overflow:hidden;">${renderLeft()}</div>
+        <div data-rightpanel style="min-width:0; overflow:hidden;">${renderRight()}</div>
+      </div>`;
+      wireLeft(); wireCards(); wireRight();
+    };
+
+    this._modalSave = () => {
+      if (isNew) { this.data.quotations.unshift(q); }
+      else { if (wasApproved) q.status = 'Draft'; this.data.quotations[idx] = q; }
+      this.renderView();
+    };
+    modal.style.display = 'flex';
+    render();
+  }
+  openAccess(idx) {
+    const q = this.data.quotations[idx];
+    const caps = this.roleCaps();
+    this.resetModalCard();
+    const modal = this.wrap.querySelector('[data-modal]');
+    modal.querySelector('[data-modal-title]').textContent = 'Download access · ' + q.id;
+    const body = modal.querySelector('[data-modal-body]');
+    const render = () => {
+      const locked = !(q.status === 'Approved' || q.status === 'Sent');
+      body.innerHTML = `
+        ${locked
+          ? `<div style="font-size:11.5px; color:#b5801e; background:rgba(224,163,59,.12); border:1px solid rgba(224,163,59,.28); border-radius:10px; padding:10px 12px;">This quotation is <strong>${q.status}</strong>. Granted users can download only after Super Admin approval.</div>`
+          : `<div style="font-size:11.5px; color:#127d72; background:rgba(23,155,142,.1); border:1px solid rgba(23,155,142,.22); border-radius:10px; padding:10px 12px;">Approved — granted users below can download the PDF.</div>`}
+        <div><div style="font-size:12px; font-weight:700; color:var(--c-slate); margin-bottom:8px;">Authorized to download</div>
+          <div style="display:flex; flex-direction:column; gap:8px;">${q.recipients.map((r, j) => `<div style="display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:11px; background:rgba(255,255,255,.7); border:1px solid var(--c-line);"><div style="flex:1;"><div style="font-size:13px; font-weight:600;">${r.email}</div><div style="font-size:11px; color:var(--c-muted);">${r.role}</div></div>${caps.access ? `<span data-acc-tog="${j}" style="cursor:pointer;">${this.toggle(r.on)}</span>` : `<span style="font-size:11px; color:var(--c-muted);">${r.on ? 'Granted' : 'No access'}</span>`}</div>`).join('')}</div>
+          ${caps.access ? `<div style="display:flex; gap:8px; margin-top:10px;"><input data-admin-input data-acc-new placeholder="add email…" style="flex:1; height:40px; padding:0 12px; font-family:inherit; font-size:13px; border-radius:10px; background:rgba(255,255,255,.85); border:1px solid var(--c-line); outline:none;"><span data-acc-add style="cursor:pointer; font-size:13px; font-weight:700; color:#fff; padding:0 16px; height:40px; display:flex; align-items:center; border-radius:10px; background:linear-gradient(135deg,#2a2b6a,#3a3c98);">Grant</span></div>` : ''}</div>
+        <div><div style="font-size:12px; font-weight:700; color:var(--c-slate); margin-bottom:8px;">Download history</div>${q.downloads.length ? q.downloads.map((d) => `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--c-line); font-size:12.5px;"><span>${d.who}</span><span style="color:var(--c-muted); font-family:'JetBrains Mono',monospace;">${d.when}</span></div>`).join('') : `<div style="font-size:12.5px; color:var(--c-muted);">No downloads yet.</div>`}</div>
+      `;
+      body.querySelectorAll('[data-acc-tog]').forEach((b) => b.onclick = () => { const r = q.recipients[+b.getAttribute('data-acc-tog')]; r.on = !r.on; render(); });
+      const add = body.querySelector('[data-acc-add]'); if (add) add.onclick = () => { const v = body.querySelector('[data-acc-new]').value.trim(); if (!v) return; q.recipients.push({ email: v, role: 'Buyer', on: true }); render(); };
+    };
+    this._modalSave = () => this.renderView();
+    modal.style.display = 'flex';
+    render();
+  }
+
+  // ---------- COMPANIES ----------
+  v_companies() {
+    const head = `<div style="display:grid; grid-template-columns:1.6fr .8fr .8fr .9fr 1fr; gap:14px; padding:0 14px 12px; border-bottom:1px solid var(--c-line); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.05em; text-transform:uppercase; color:var(--c-muted);"><span>Company</span><span>Model</span><span>Employees</span><span>Default pts</span><span></span></div>`;
+    const rows = this.data.companies.map((c, i) => `<div style="display:grid; grid-template-columns:1.6fr .8fr .8fr .9fr 1fr; gap:14px; padding:14px; border-bottom:1px solid var(--c-line); align-items:center; font-size:13px;">
+      <span style="display:flex; align-items:center; gap:11px;"><span style="width:36px; height:36px; flex:none; border-radius:10px; background:linear-gradient(135deg,#2a2b6a,#179b8e); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px;">${c.name.slice(0, 2).toUpperCase()}</span><strong>${c.name}</strong></span>
+      <span>${this.badge(c.model)}</span>
+      <span style="font-weight:700;">${c.employees.toLocaleString('en-IN')}</span>
+      <span>${c.pts.toLocaleString('en-IN')} pts</span>
+      <span style="display:flex; gap:8px; justify-content:flex-end;">${c.portal ? `<span data-openportal="${i}" style="cursor:pointer; font-size:11px; font-weight:600; color:var(--c-indigo); padding:7px 12px; border-radius:9px; background:rgba(42,43,106,.07);">Manage portal</span>` : `<span data-makeportal="${i}" style="cursor:pointer; font-size:11px; font-weight:600; color:#fff; padding:7px 12px; border-radius:9px; background:var(--c-accent);">Create portal</span>`}</span>
+    </div>`).join('');
+    return this.card(head + rows);
+  }
+  after_companies() {
+    this.setPrimary('Add Company', () => this.openForm('Add company', [['name', 'Company name', ''], ['employees', 'No. of employees', ''], ['pts', 'Default points', '']], (vals) => {
+      this.data.companies.push({ name: vals.name || 'New Co', model: 'Points', employees: +vals.employees || 0, pts: +vals.pts || 0, portal: false }); this.renderView();
+    }));
+    const host = this.wrap.querySelector('[data-view]');
+    host.querySelectorAll('[data-openportal]').forEach((b) => b.addEventListener('click', () => { this.portalDraft.name = this.data.companies[+b.getAttribute('data-openportal')].name; this.view = 'portal'; this.renderNav(); this.renderView(); }));
+    host.querySelectorAll('[data-makeportal]').forEach((b) => b.addEventListener('click', () => { const c = this.data.companies[+b.getAttribute('data-makeportal')]; c.portal = true; this.portalDraft.name = c.name; this.view = 'portal'; this.renderNav(); this.renderView(); }));
+  }
+
+  // ---------- MERCH PORTAL BUILDER ----------
+  v_portal() {
+    const d = this.portalDraft;
+    const left = this.card(`
+      <div style="font-size:15px; font-weight:800; margin-bottom:16px;">Portal setup</div>
+      <div style="display:flex; gap:16px; margin-bottom:18px;">
+        <label style="cursor:pointer; width:96px; height:96px; flex:none; border-radius:16px; border:1px dashed var(--c-line); background:rgba(255,255,255,.6); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; color:var(--c-muted);"><span style="font-size:20px;">⬆</span><span style="font-size:10px;">Company logo</span></label>
+        <div style="flex:1; display:flex; flex-direction:column; gap:10px;">
+          <div><div style="font-size:11px; font-weight:600; color:var(--c-slate); margin-bottom:5px;">Portal name</div><input data-admin-input value="${d.name} Merchandise Store" style="width:100%; height:42px; padding:0 13px; font-family:inherit; font-size:14px; border-radius:11px; background:rgba(255,255,255,.8); border:1px solid var(--c-line); outline:none; transition:.15s;"></div>
+          <div style="display:flex; gap:10px;">
+            <div style="flex:1;"><div style="font-size:11px; font-weight:600; color:var(--c-slate); margin-bottom:5px;">Wallet model</div><div style="display:flex; gap:6px;"><span data-model="Points" style="cursor:pointer; flex:1; text-align:center; font-size:12px; font-weight:600; color:#fff; padding:10px; border-radius:10px; background:var(--c-indigo);">Points</span><span data-model="Coupon" style="cursor:pointer; flex:1; text-align:center; font-size:12px; font-weight:600; color:var(--c-slate); padding:10px; border-radius:10px; background:rgba(255,255,255,.7); border:1px solid var(--c-line);">Coupon</span></div></div>
+            <div style="width:130px;"><div style="font-size:11px; font-weight:600; color:var(--c-slate); margin-bottom:5px;">Default points</div><input data-admin-input data-defpts value="${d.defPts}" style="width:100%; height:42px; padding:0 13px; font-family:inherit; font-size:14px; border-radius:11px; background:rgba(255,255,255,.8); border:1px solid var(--c-line); outline:none; transition:.15s;"></div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:14px; border-radius:12px; background:rgba(23,155,142,.08); border:1px solid rgba(23,155,142,.2);">
+        <div><div style="font-size:13px; font-weight:700; color:#127d72;">Products in this portal</div><div style="font-size:12px; color:#127d72;">${d.products} added · curate from the catalogue</div></div>
+        <span data-addprod style="cursor:pointer; font-size:12px; font-weight:600; color:#fff; padding:9px 14px; border-radius:10px; background:var(--c-accent);">+ Add products</span>
+      </div>
+    `);
+    const empHead = `<div style="display:grid; grid-template-columns:1fr 1.4fr .9fr 1.2fr .5fr; gap:12px; padding:0 12px 10px; border-bottom:1px solid var(--c-line); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.05em; text-transform:uppercase; color:var(--c-muted);"><span>Emp ID</span><span>Name</span><span>Role</span><span>Points</span><span></span></div>`;
+    const empRows = this.data.employees.map((e, i) => `<div style="display:grid; grid-template-columns:1fr 1.4fr .9fr 1.2fr .5fr; gap:12px; padding:11px 12px; border-bottom:1px solid var(--c-line); align-items:center; font-size:13px;">
+      <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--c-slate);">${e.id}</span>
+      <span style="font-weight:600;">${e.name}</span>
+      <span><span style="font-size:11px; font-weight:600; color:var(--c-indigo); background:rgba(42,43,106,.08); padding:3px 9px; border-radius:999px;">${e.role}</span></span>
+      <span style="display:flex; align-items:center; gap:4px; background:rgba(255,255,255,.7); border:1px solid var(--c-line); border-radius:9px; padding:3px; width:fit-content;"><span data-epts-dec="${i}" style="cursor:pointer; width:24px; height:24px; display:flex; align-items:center; justify-content:center; color:var(--c-slate); font-size:15px;">−</span><span data-epts="${i}" style="min-width:48px; text-align:center; font-weight:700; font-size:13px;">${e.pts}</span><span data-epts-inc="${i}" style="cursor:pointer; width:24px; height:24px; display:flex; align-items:center; justify-content:center; color:var(--c-slate); font-size:15px;">+</span></span>
+      <span style="text-align:right;"><span data-empdel="${i}" style="cursor:pointer; color:#d8524d; font-size:13px;">✕</span></span>
+    </div>`).join('');
+    const addEmp = `<div style="display:flex; gap:10px; margin-top:14px;"><input data-admin-input data-newemp-id placeholder="Emp ID" style="width:120px; height:40px; padding:0 12px; font-family:inherit; font-size:13px; border-radius:10px; background:rgba(255,255,255,.8); border:1px solid var(--c-line); outline:none; transition:.15s;"><input data-admin-input data-newemp-name placeholder="Name" style="flex:1; height:40px; padding:0 12px; font-family:inherit; font-size:13px; border-radius:10px; background:rgba(255,255,255,.8); border:1px solid var(--c-line); outline:none; transition:.15s;"><span data-empadd style="cursor:pointer; font-size:13px; font-weight:700; color:#fff; padding:0 18px; height:40px; display:flex; align-items:center; border-radius:10px; background:linear-gradient(135deg,#2a2b6a,#3a3c98);">Add employee</span></div>`;
+    const right = this.card(`<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;"><div style="font-size:15px; font-weight:800;">Employees &amp; access</div><span style="font-size:12px; color:var(--c-muted);">${this.data.employees.length} with access</span></div>${empHead}<div data-emplist>${empRows}</div>${addEmp}`);
+    return `<div style="display:grid; grid-template-columns:1fr; gap:16px; margin-bottom:16px;">${left}</div>${right}<div style="margin-top:16px; display:flex; justify-content:flex-end;"><span data-publish style="cursor:pointer; font-size:14px; font-weight:700; color:#fff; padding:13px 24px; border-radius:13px; background:linear-gradient(135deg,#176054,#179b8e); box-shadow:0 10px 24px rgba(23,155,142,.3);">Publish portal</span></div>`;
+  }
+  after_portal() {
+    const host = this.wrap.querySelector('[data-view]');
+    host.querySelectorAll('[data-model]').forEach((m) => m.addEventListener('click', () => {
+      host.querySelectorAll('[data-model]').forEach((x) => { x.style.background = 'rgba(255,255,255,.7)'; x.style.color = 'var(--c-slate)'; x.style.border = '1px solid var(--c-line)'; });
+      m.style.background = 'var(--c-indigo)'; m.style.color = '#fff'; m.style.border = 'none';
+    }));
+    host.querySelectorAll('[data-epts-inc]').forEach((b) => b.addEventListener('click', () => this.empPts(+b.getAttribute('data-epts-inc'), 300)));
+    host.querySelectorAll('[data-epts-dec]').forEach((b) => b.addEventListener('click', () => this.empPts(+b.getAttribute('data-epts-dec'), -300)));
+    host.querySelectorAll('[data-empdel]').forEach((b) => b.addEventListener('click', () => { this.data.employees.splice(+b.getAttribute('data-empdel'), 1); this.renderView(); }));
+    const add = host.querySelector('[data-empadd]'); if (add) add.addEventListener('click', () => {
+      const id = host.querySelector('[data-newemp-id]').value.trim();
+      const name = host.querySelector('[data-newemp-name]').value.trim();
+      if (!name && !id) return;
+      this.data.employees.push({ id: id || 'EMP-' + (1000 + this.data.employees.length), name: name || 'New Employee', role: 'Staff', pts: +this.portalDraft.defPts || 1800 });
+      this.renderView();
+    });
+    const addprod = host.querySelector('[data-addprod]'); if (addprod) addprod.addEventListener('click', () => { this.portalDraft.products += 4; addprod.textContent = '✓ 4 added'; setTimeout(() => this.renderView(), 800); });
+    const pub = host.querySelector('[data-publish]'); if (pub) pub.addEventListener('click', () => { pub.textContent = '✓ Portal published'; setTimeout(() => { pub.textContent = 'Publish portal'; }, 1500); });
+  }
+  empPts(i, d) { const e = this.data.employees[i]; e.pts = Math.max(0, e.pts + d); const el = this.wrap.querySelector(`[data-epts="${i}"]`); if (el) el.textContent = e.pts; }
+
+  // ---------- CLIENTS & LOGOS ----------
+  v_clients() {
+    const wall = this.card(`<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;"><div style="font-size:15px; font-weight:800;">Logo wall</div><span style="font-size:12px; color:var(--c-muted);">${this.data.clients.length} logos</span></div><div data-logos style="display:grid; grid-template-columns:repeat(6,1fr); gap:12px;">${this.data.clients.map((c, i) => `<div style="position:relative; background:rgba(255,255,255,.6); border:1px solid var(--c-line); border-radius:14px; height:74px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:15px; color:var(--c-indigo);">${c}<span data-logodel="${i}" style="position:absolute; top:6px; right:6px; cursor:pointer; width:20px; height:20px; border-radius:50%; background:rgba(224,82,77,.12); color:#d8524d; display:flex; align-items:center; justify-content:center; font-size:11px;">✕</span></div>`).join('')}<label style="cursor:pointer; border:1px dashed var(--c-line); border-radius:14px; height:74px; display:flex; align-items:center; justify-content:center; color:var(--c-muted); font-size:13px; gap:6px;"><span data-logoadd style="display:flex; align-items:center; gap:6px;">⬆ Add</span></label></div>`);
+    return wall;
+  }
+  after_clients() {
+    const host = this.wrap.querySelector('[data-view]');
+    host.querySelectorAll('[data-logodel]').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); this.data.clients.splice(+b.getAttribute('data-logodel'), 1); this.renderView(); }));
+    const add = host.querySelector('[data-logoadd]'); if (add) add.addEventListener('click', () => { this.data.clients.push('New Co'); this.renderView(); });
+  }
+
+  // ---------- CASE STUDIES ----------
+  v_casestudies() {
+    const rows = this.data.cases.map((c, i) => `<div style="display:flex; align-items:center; gap:14px; background:rgba(255,255,255,.55); border:1px solid var(--glass-brd); border-radius:16px; padding:16px 18px; margin-bottom:12px; backdrop-filter:blur(12px);">
+      <span style="width:46px; height:46px; flex:none; border-radius:12px; background:repeating-linear-gradient(135deg,rgba(42,43,106,.07) 0 8px,rgba(42,43,106,.02) 8px 16px),linear-gradient(135deg,#e6eaf6,#dde2f1);"></span>
+      <div style="flex:1;"><div style="font-size:15px; font-weight:700;">${c.t}</div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--c-accent); text-transform:uppercase; letter-spacing:.06em; margin-top:3px;">${c.ind}</div></div>
+      ${this.pill('', c.live)}
+      <span data-cstoggle="${i}" style="cursor:pointer; font-size:11px; font-weight:600; color:var(--c-slate); padding:7px 11px; border-radius:9px; background:rgba(91,93,122,.08);">${c.live ? 'Hide' : 'Publish'}</span>
+      <span data-csedit="${i}" style="cursor:pointer; color:var(--c-indigo); font-size:14px;">✎</span>
+      <span data-csdel="${i}" style="cursor:pointer; color:#d8524d; font-size:14px;">✕</span>
+    </div>`).join('');
+    return this.card(`<div data-list>${rows}</div>`, 18);
+  }
+  after_casestudies() {
+    this.setPrimary('New Case Study', () => this.openForm('New case study', [['t', 'Title', ''], ['ind', 'Industry', '']], (v) => { this.data.cases.push({ t: v.t || 'Untitled', ind: v.ind || 'General', live: false }); this.renderView(); }));
+    const host = this.wrap.querySelector('[data-view]');
+    host.querySelectorAll('[data-cstoggle]').forEach((b) => b.addEventListener('click', () => { const c = this.data.cases[+b.getAttribute('data-cstoggle')]; c.live = !c.live; this.renderView(); }));
+    host.querySelectorAll('[data-csdel]').forEach((b) => b.addEventListener('click', () => { this.data.cases.splice(+b.getAttribute('data-csdel'), 1); this.renderView(); }));
+    host.querySelectorAll('[data-csedit]').forEach((b) => b.addEventListener('click', () => { const i = +b.getAttribute('data-csedit'); const c = this.data.cases[i]; this.openForm('Edit case study', [['t', 'Title', c.t], ['ind', 'Industry', c.ind]], (v) => { c.t = v.t; c.ind = v.ind; this.renderView(); }); }));
+  }
+
+  // ---------- BLOGS ----------
+  v_blogs() {
+    const rows = this.data.blogs.map((b, i) => `<div style="display:flex; align-items:center; gap:14px; background:rgba(255,255,255,.55); border:1px solid var(--glass-brd); border-radius:16px; padding:16px 18px; margin-bottom:12px; backdrop-filter:blur(12px);">
+      <span style="width:46px; height:46px; flex:none; border-radius:12px; background:repeating-linear-gradient(135deg,rgba(23,155,142,.07) 0 8px,rgba(23,155,142,.02) 8px 16px),linear-gradient(135deg,#e3efed,#daece9);"></span>
+      <div style="flex:1;"><div style="font-size:15px; font-weight:700;">${b.t}</div><div style="font-size:11px; color:var(--c-muted); margin-top:3px;"><span style="font-family:'JetBrains Mono',monospace; color:var(--c-accent); text-transform:uppercase; letter-spacing:.06em;">${b.cat}</span> · ${b.date}</div></div>
+      ${this.pill('', b.live)}
+      <span data-bgtoggle="${i}" style="cursor:pointer; font-size:11px; font-weight:600; color:var(--c-slate); padding:7px 11px; border-radius:9px; background:rgba(91,93,122,.08);">${b.live ? 'Unpublish' : 'Publish'}</span>
+      <span data-bgedit="${i}" style="cursor:pointer; color:var(--c-indigo); font-size:14px;">✎</span>
+      <span data-bgdel="${i}" style="cursor:pointer; color:#d8524d; font-size:14px;">✕</span>
+    </div>`).join('');
+    return this.card(`<div data-list>${rows}</div>`, 18);
+  }
+  after_blogs() {
+    this.setPrimary('New Article', () => this.openForm('New article', [['t', 'Title', ''], ['cat', 'Category', '']], (v) => { this.data.blogs.unshift({ t: v.t || 'Untitled', cat: v.cat || 'General', date: '22 Jun 2026', live: false }); this.renderView(); }));
+    const host = this.wrap.querySelector('[data-view]');
+    host.querySelectorAll('[data-bgtoggle]').forEach((b) => b.addEventListener('click', () => { const x = this.data.blogs[+b.getAttribute('data-bgtoggle')]; x.live = !x.live; this.renderView(); }));
+    host.querySelectorAll('[data-bgdel]').forEach((b) => b.addEventListener('click', () => { this.data.blogs.splice(+b.getAttribute('data-bgdel'), 1); this.renderView(); }));
+    host.querySelectorAll('[data-bgedit]').forEach((b) => b.addEventListener('click', () => { const i = +b.getAttribute('data-bgedit'); const x = this.data.blogs[i]; this.openForm('Edit article', [['t', 'Title', x.t], ['cat', 'Category', x.cat]], (v) => { x.t = v.t; x.cat = v.cat; this.renderView(); }); }));
+  }
+
+  // ---------- MARKETING ----------
+  v_marketing() {
+    const popups = this.card(`<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;"><div style="font-size:15px; font-weight:800;">Pop-ups</div><span style="font-size:11.5px; color:var(--c-muted);">${this.data.popups.filter((p) => p.active).length} active</span></div>${this.data.popups.map((p, i) => `<div style="display:flex; align-items:center; gap:14px; padding:14px 0; border-bottom:1px solid var(--c-line);"><span style="width:38px; height:38px; flex:none; border-radius:10px; background:rgba(42,43,106,.1); color:var(--c-indigo); display:flex; align-items:center; justify-content:center; font-size:15px;">⏳</span><div style="flex:1;"><div style="font-size:14px; font-weight:700;">${p.t}</div><div style="font-size:11px; color:var(--c-muted);">Trigger: ${p.trigger}</div></div><span data-ptoggle="${i}" style="cursor:pointer;">${this.toggle(p.active)}</span><span data-pdel="${i}" style="cursor:pointer; color:#d8524d; font-size:13px;">✕</span></div>`).join('')}<span data-padd style="cursor:pointer; display:inline-block; margin-top:14px; font-size:12px; font-weight:600; color:var(--c-indigo); padding:9px 14px; border-radius:10px; background:rgba(42,43,106,.07);">+ Add pop-up</span>`);
+    return `<div style="max-width:680px;">${popups}</div>`;
+  }
+  toggle(on) { return `<span style="display:inline-flex; width:38px; height:22px; border-radius:999px; background:${on ? 'var(--c-accent)' : 'var(--c-line)'}; padding:2px; transition:.15s;"><span style="width:18px; height:18px; border-radius:50%; background:#fff; transform:translateX(${on ? '16px' : '0'}); transition:.15s; box-shadow:0 1px 3px rgba(0,0,0,.2);"></span></span>`; }
+  after_marketing() {
+    const host = this.wrap.querySelector('[data-view]');
+    host.querySelectorAll('[data-ptoggle]').forEach((b) => b.addEventListener('click', () => { const x = this.data.popups[+b.getAttribute('data-ptoggle')]; x.active = !x.active; this.renderView(); }));
+    host.querySelectorAll('[data-pdel]').forEach((b) => b.addEventListener('click', () => { this.data.popups.splice(+b.getAttribute('data-pdel'), 1); this.renderView(); }));
+    const pa = host.querySelector('[data-padd]'); if (pa) pa.addEventListener('click', () => this.openForm('Add pop-up', [['t', 'Pop-up title', ''], ['trigger', 'Trigger', '']], (v) => { this.data.popups.push({ t: v.t || 'New pop-up', trigger: v.trigger || 'After 10s', active: false }); this.renderView(); }));
+  }
+
+  // ---------- ENQUIRIES ----------
+  v_enquiries() {
+    const head = `<div style="display:grid; grid-template-columns:1.2fr 1.2fr 1.4fr .8fr .9fr .9fr; gap:14px; padding:0 14px 12px; border-bottom:1px solid var(--c-line); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.05em; text-transform:uppercase; color:var(--c-muted);"><span>Name</span><span>Company</span><span>Subject</span><span>Sample</span><span>Status</span><span></span></div>`;
+    const rows = this.data.enquiries.map((e, i) => `<div style="display:grid; grid-template-columns:1.2fr 1.2fr 1.4fr .8fr .9fr .9fr; gap:14px; padding:14px; border-bottom:1px solid var(--c-line); align-items:center; font-size:13px;">
+      <span style="font-weight:700;">${e.name}</span>
+      <span style="color:var(--c-slate);">${e.co}</span>
+      <span style="color:var(--c-slate);">${e.subj}</span>
+      <span>${e.sample ? '<span style="font-size:11px; font-weight:600; color:var(--c-accent); background:rgba(23,155,142,.12); padding:3px 9px; border-radius:999px;">📎 Yes</span>' : '<span style="color:var(--c-muted);">—</span>'}</span>
+      <span>${this.badge(e.status)}</span>
+      <span style="text-align:right;"><span data-enqnext="${i}" style="cursor:pointer; font-size:11px; font-weight:600; color:var(--c-indigo); padding:7px 11px; border-radius:9px; background:rgba(42,43,106,.07);">Advance →</span></span>
+    </div>`).join('');
+    return this.card(head + rows);
+  }
+  after_enquiries() {
+    const host = this.wrap.querySelector('[data-view]');
+    const flow = { New: 'Follow-up', 'Follow-up': 'Won', Won: 'Won' };
+    host.querySelectorAll('[data-enqnext]').forEach((b) => b.addEventListener('click', () => { const e = this.data.enquiries[+b.getAttribute('data-enqnext')]; e.status = flow[e.status]; this.renderView(); }));
+  }
+
+  // ---------- SELLERS ----------
+  sPending(s) { return s.items.filter((it) => it.status === 'In review').length; }
+  v_sellers() {
+    const totalPending = this.data.sellers.reduce((a, s) => a + this.sPending(s), 0);
+    const kpis = `<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:18px;">
+      ${this.kpi('Sellers', String(this.data.sellers.length), '', this.data.sellers.filter((s) => s.status === 'Approved').length + ' approved')}
+      ${this.kpi('Products pending', String(totalPending), '', 'awaiting review')}
+      ${this.kpi('Live products', String(this.data.sellers.reduce((a, s) => a + s.items.filter((it) => it.status === 'Live').length, 0)), '', 'across all sellers')}
+      ${this.kpi('Blocked', String(this.data.sellers.filter((s) => s.status === 'Blocked').length), '', 'sellers suspended')}
+    </div>`;
+    const cols = 'grid-template-columns:1.7fr .7fr .7fr 1fr 1fr 1.6fr';
+    const head = `<div style="display:grid; ${cols}; gap:14px; padding:0 14px 12px; border-bottom:1px solid var(--c-line); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.05em; text-transform:uppercase; color:var(--c-muted);"><span>Seller</span><span>Products</span><span>Pending</span><span>Margin</span><span>Status</span><span></span></div>`;
+    const rows = this.data.sellers.map((s, i) => {
+      const pending = this.sPending(s);
+      let actions = '';
+      if (s.status === 'Pending review') {
+        actions = `<span data-sellerok="${i}" style="cursor:pointer; font-size:11px; font-weight:600; color:#fff; padding:7px 12px; border-radius:9px; background:var(--c-accent);">✓ Approve seller</span><span data-sellerblock="${i}" style="cursor:pointer; font-size:11px; font-weight:600; color:#c0413c; padding:7px 12px; border-radius:9px; background:rgba(224,82,77,.1);">Reject</span>`;
+      } else if (s.status === 'Blocked') {
+        actions = `<span data-sellerunblock="${i}" style="cursor:pointer; font-size:11px; font-weight:600; color:#127d72; padding:7px 12px; border-radius:9px; background:rgba(23,155,142,.12);">Unblock</span>`;
+      } else {
+        actions = `<span data-sellermanage="${i}" style="cursor:pointer; font-size:11px; font-weight:600; color:var(--c-indigo); padding:7px 12px; border-radius:9px; background:rgba(42,43,106,.07);">Review products</span><span data-sellerblock="${i}" style="cursor:pointer; font-size:11px; font-weight:600; color:#c0413c; padding:7px 12px; border-radius:9px; background:rgba(224,82,77,.1);">Block</span>`;
+      }
+      return `<div style="display:grid; ${cols}; gap:14px; padding:14px; border-bottom:1px solid var(--c-line); align-items:center; font-size:13px;">
+        <span style="display:flex; align-items:center; gap:11px;"><span style="width:34px; height:34px; flex:none; border-radius:10px; background:linear-gradient(135deg,#176054,#179b8e); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px;">${s.name.slice(0, 2).toUpperCase()}</span><strong>${s.name}</strong></span>
+        <span style="font-weight:700;">${s.items.length}</span>
+        <span>${pending ? `<span style="font-size:11px; font-weight:700; color:#b5801e; background:rgba(224,163,59,.16); padding:3px 9px; border-radius:999px;">${pending}</span>` : '<span style="color:var(--c-muted);">0</span>'}</span>
+        <span style="display:flex; align-items:center; gap:3px; background:rgba(255,255,255,.7); border:1px solid var(--c-line); border-radius:9px; padding:3px; width:fit-content;"><span data-smargin-dec="${i}" style="cursor:pointer; width:22px; height:22px; display:flex; align-items:center; justify-content:center; color:var(--c-slate); font-size:14px;">−</span><span data-smargin="${i}" style="min-width:38px; text-align:center; font-weight:700; font-size:12px;">${s.margin}%</span><span data-smargin-inc="${i}" style="cursor:pointer; width:22px; height:22px; display:flex; align-items:center; justify-content:center; color:var(--c-slate); font-size:13px;">+</span></span>
+        <span>${this.badge(s.status)}</span>
+        <span style="display:flex; gap:6px; justify-content:flex-end; flex-wrap:wrap;">${actions}</span>
+      </div>`;
+    }).join('');
+    return kpis + this.card(head + rows);
+  }
+  after_sellers() {
+    const host = this.wrap.querySelector('[data-view]');
+    host.querySelectorAll('[data-sellerok]').forEach((b) => b.addEventListener('click', () => { this.data.sellers[+b.getAttribute('data-sellerok')].status = 'Approved'; this.renderView(); }));
+    host.querySelectorAll('[data-sellerblock]').forEach((b) => b.addEventListener('click', () => { this.data.sellers[+b.getAttribute('data-sellerblock')].status = 'Blocked'; this.renderView(); }));
+    host.querySelectorAll('[data-sellerunblock]').forEach((b) => b.addEventListener('click', () => { this.data.sellers[+b.getAttribute('data-sellerunblock')].status = 'Approved'; this.renderView(); }));
+    host.querySelectorAll('[data-sellermanage]').forEach((b) => b.addEventListener('click', () => this.openSeller(+b.getAttribute('data-sellermanage'))));
+    host.querySelectorAll('[data-smargin-inc]').forEach((b) => b.addEventListener('click', () => this.sellerMargin(+b.getAttribute('data-smargin-inc'), 5)));
+    host.querySelectorAll('[data-smargin-dec]').forEach((b) => b.addEventListener('click', () => this.sellerMargin(+b.getAttribute('data-smargin-dec'), -5)));
+  }
+  sellerMargin(i, d) { const s = this.data.sellers[i]; s.margin = Math.max(0, Math.min(90, s.margin + d)); const el = this.wrap.querySelector(`[data-smargin="${i}"]`); if (el) el.textContent = s.margin + '%'; }
+  openSeller(idx) {
+    const s = this.data.sellers[idx];
+    this.resetModalCard();
+    const modal = this.wrap.querySelector('[data-modal]');
+    const card = modal.querySelector('[data-modal-card]');
+    card.style.width = '760px';
+    modal.querySelector('[data-modal-title]').textContent = s.name + ' · products';
+    const body = modal.querySelector('[data-modal-body]');
+    const livePrice = (p) => Math.round(p * (1 + s.margin / 100));
+    const render = () => {
+      body.innerHTML = `
+        <div style="display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:12px; background:rgba(42,43,106,.06); border:1px solid rgba(42,43,106,.12);">
+          <div style="flex:1;"><div style="font-size:12.5px; font-weight:800;">Admin margin</div><div style="font-size:11px; color:var(--c-muted);">Applied to each seller cost to get the live price.</div></div>
+          <span style="display:flex; align-items:center; gap:4px; background:#fff; border:1px solid var(--c-line); border-radius:10px; padding:4px;"><span data-mm-dec style="cursor:pointer; width:26px; height:26px; display:flex; align-items:center; justify-content:center; color:var(--c-slate); font-size:16px;">−</span><span data-mm style="min-width:46px; text-align:center; font-weight:800; font-size:14px;">${s.margin}%</span><span data-mm-inc style="cursor:pointer; width:26px; height:26px; display:flex; align-items:center; justify-content:center; color:var(--c-slate); font-size:15px;">+</span></span>
+        </div>
+        ${s.items.length ? s.items.map((it, j) => `<div style="display:flex; align-items:center; gap:13px; padding:12px 14px; border-radius:12px; background:rgba(255,255,255,.7); border:1px solid var(--c-line);">
+          <span style="width:42px; height:42px; flex:none; border-radius:10px; background:repeating-linear-gradient(135deg,rgba(23,155,142,.07) 0 8px,rgba(23,155,142,.02) 8px 16px),linear-gradient(135deg,#e3efed,#daece9);"></span>
+          <div style="flex:1; min-width:0;"><div style="font-size:13.5px; font-weight:700;">${it.name}</div><div style="font-size:11px; color:var(--c-muted); font-family:'JetBrains Mono',monospace;">${it.code} · cost ₹${it.price} → live ₹${livePrice(it.price)}</div></div>
+          ${this.badge(it.status)}
+          <span style="display:flex; gap:6px; flex:none;">
+            ${it.status !== 'Live' && it.status !== 'Blocked' ? `<span data-iok="${j}" style="cursor:pointer; font-size:11px; font-weight:600; color:#fff; padding:6px 10px; border-radius:8px; background:var(--c-accent);">Approve</span>` : ''}
+            ${it.status === 'In review' ? `<span data-ichg="${j}" style="cursor:pointer; font-size:11px; font-weight:600; color:#b5801e; padding:6px 10px; border-radius:8px; background:rgba(224,163,59,.14);">Request changes</span>` : ''}
+            ${it.status === 'Blocked' ? `<span data-iunblock="${j}" style="cursor:pointer; font-size:11px; font-weight:600; color:#127d72; padding:6px 10px; border-radius:8px; background:rgba(23,155,142,.12);">Unblock</span>` : `<span data-iblock="${j}" style="cursor:pointer; font-size:11px; font-weight:600; color:#c0413c; padding:6px 10px; border-radius:8px; background:rgba(224,82,77,.1);">Block</span>`}
+          </span>
+        </div>`).join('') : `<div style="padding:30px; text-align:center; color:var(--c-muted); font-size:13px;">This seller has no products yet.</div>`}
+      `;
+      body.querySelector('[data-mm-inc]').onclick = () => { s.margin = Math.min(90, s.margin + 5); render(); };
+      body.querySelector('[data-mm-dec]').onclick = () => { s.margin = Math.max(0, s.margin - 5); render(); };
+      body.querySelectorAll('[data-iok]').forEach((b) => b.onclick = () => { s.items[+b.getAttribute('data-iok')].status = 'Live'; render(); });
+      body.querySelectorAll('[data-ichg]').forEach((b) => b.onclick = () => { s.items[+b.getAttribute('data-ichg')].status = 'Changes requested'; render(); });
+      body.querySelectorAll('[data-iblock]').forEach((b) => b.onclick = () => { s.items[+b.getAttribute('data-iblock')].status = 'Blocked'; render(); });
+      body.querySelectorAll('[data-iunblock]').forEach((b) => b.onclick = () => { s.items[+b.getAttribute('data-iunblock')].status = 'In review'; render(); });
+    };
+    this._modalSave = () => this.renderView();
+    modal.style.display = 'flex';
+    render();
+  }
+
+  // ---------- LOGS ----------
+  v_logs() {
+    return this.card(`${this.data.logs.concat(this.data.logs).map((l) => `<div style="display:flex; gap:12px; padding:13px 0; border-bottom:1px solid var(--c-line);"><span style="width:32px; height:32px; flex:none; border-radius:9px; background:${l.bg}; color:${l.c}; display:flex; align-items:center; justify-content:center; font-size:13px;">${l.i}</span><div style="flex:1;"><div style="font-size:13.5px; line-height:1.4;"><strong>${l.who}</strong> ${l.what}</div></div><span style="font-size:11px; color:var(--c-muted); font-family:'JetBrains Mono',monospace; white-space:nowrap;">${l.when}</span></div>`).join('')}`);
+  }
+
+  // ---------- ANALYTICS ----------
+  v_analytics() {
+    const kpis = `<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:20px;">
+      ${this.kpi('Total enquiries', '284', 'all time', '')}
+      ${this.kpi('This month', '38', '+12% vs last month', '')}
+      ${this.kpi('Conversion rate', '31%', 'enquiry → quotation', '')}
+      ${this.kpi('Avg. quotation', '₹ 3.8L', 'last 90 days', '')}
+    </div>`;
+    const months = [{ m: 'Jan', e: 28, q: 9 }, { m: 'Feb', e: 32, q: 10 }, { m: 'Mar', e: 41, q: 13 }, { m: 'Apr', e: 35, q: 11 }, { m: 'May', e: 52, q: 16 }, { m: 'Jun', e: 38, q: 12 }];
+    const maxE = Math.max(...months.map((x) => x.e));
+    const chart = this.card(`<div style="font-size:15px; font-weight:800; margin-bottom:4px;">Enquiries vs Quotations sent</div><div style="font-size:12px; color:var(--c-muted); margin-bottom:18px;">Last 6 months</div><div style="display:flex; align-items:flex-end; gap:16px; height:160px;">${months.map((x) => `<div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; height:100%; justify-content:flex-end;"><div style="width:100%; display:flex; align-items:flex-end; gap:3px; height:100%;"><div style="width:48%; border-radius:5px 5px 0 0; background:linear-gradient(180deg,#3a3c98,#2a2b6a); height:${Math.round(x.e / maxE * 100)}%;" title="Enquiries: ${x.e}"></div><div style="width:48%; border-radius:5px 5px 0 0; background:linear-gradient(180deg,#149b8e,#13b89f); height:${Math.round(x.q / maxE * 100)}%;" title="Quotations: ${x.q}"></div></div><span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--c-muted);">${x.m}</span></div>`).join('')}</div><div style="display:flex; gap:16px; margin-top:14px; font-size:11.5px; color:var(--c-slate);"><span style="display:flex; align-items:center; gap:6px;"><span style="width:10px; height:10px; border-radius:3px; background:#2a2b6a; display:inline-block;"></span>Enquiries</span><span style="display:flex; align-items:center; gap:6px;"><span style="width:10px; height:10px; border-radius:3px; background:#149b8e; display:inline-block;"></span>Quotations sent</span></div>`);
+    const tCols = 'grid-template-columns:1.8fr .6fr .9fr .7fr';
+    const tHead = `<div style="display:grid; ${tCols}; gap:12px; padding:0 14px 12px; border-bottom:1px solid var(--c-line); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.05em; text-transform:uppercase; color:var(--c-muted);"><span>Product</span><span>Orders</span><span>Revenue</span><span>Trend</span></div>`;
+    const tRows = [
+      { name: 'Canvas Laptop Backpack', orders: 142, rev: '₹ 17.8L', t: '↑' },
+      { name: 'Insulated Steel Bottle', orders: 98, rev: '₹ 5.3L', t: '↑' },
+      { name: 'Premium Roller Pen Set', orders: 76, rev: '₹ 2.4L', t: '→' },
+      { name: 'Hardbound Notebook', orders: 54, rev: '₹ 1.5L', t: '↓' },
+    ].map((r) => `<div style="display:grid; ${tCols}; gap:12px; padding:12px 14px; border-bottom:1px solid var(--c-line); align-items:center; font-size:13px;"><span style="font-weight:600;">${r.name}</span><span>${r.orders}</span><span style="font-weight:700;">${r.rev}</span><span style="font-weight:800; color:${r.t === '↑' ? '#1a8f5a' : r.t === '↓' ? '#c0413c' : 'var(--c-muted)'};">${r.t}</span></div>`).join('');
+    const sCols = 'grid-template-columns:1.5fr .5fr .6fr .6fr .9fr';
+    const sHead = `<div style="display:grid; ${sCols}; gap:12px; padding:0 14px 12px; border-bottom:1px solid var(--c-line); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.05em; text-transform:uppercase; color:var(--c-muted);"><span>Team member</span><span>Role</span><span>Enquiries</span><span>Conv.</span><span>Revenue</span></div>`;
+    const sRows = [
+      { name: 'Rohan Shah', role: 'Sales', e: 48, c: '35%', r: '₹ 12.4L' },
+      { name: 'Anita Rao', role: 'Admin', e: 36, c: '42%', r: '₹ 9.8L' },
+      { name: 'Suresh Kumar', role: 'Sales', e: 29, c: '28%', r: '₹ 6.2L' },
+      { name: 'Priya Menon', role: 'Sales', e: 24, c: '33%', r: '₹ 5.1L' },
+    ].map((s) => `<div style="display:grid; ${sCols}; gap:12px; padding:12px 14px; border-bottom:1px solid var(--c-line); align-items:center; font-size:13px;"><span style="font-weight:700;">${s.name}</span><span style="color:var(--c-slate);">${s.role}</span><span>${s.e}</span><span style="font-weight:700; color:#1a8f5a;">${s.c}</span><span style="font-weight:800;">${s.r}</span></div>`).join('');
+    return kpis + `<div style="display:grid; grid-template-columns:1.35fr 1fr; gap:16px; margin-bottom:16px;">${chart}${this.card(`<div style="font-size:15px; font-weight:800; margin-bottom:14px;">Top products</div>${tHead}${tRows}`)}</div>${this.card(`<div style="font-size:15px; font-weight:800; margin-bottom:14px;">Seller performance</div>${sHead}${sRows}`)}`;
+  }
+
+  // ---------- MERCH ENQUIRIES ----------
+  v_merch_enquiries() {
+    if (!this.data.merch_enquiries) this.data.merch_enquiries = [
+      { id: 'ME-301', co: 'L&T Construction', contact: 'Rohan Shah', type: 'Diwali Hamper', items: '500 × custom hampers', value: '₹ 8.5L', status: 'New', date: '24 Jun' },
+      { id: 'ME-302', co: 'Wipro', contact: 'Priya S.', type: 'Annual Gifting', items: '300 × laptop bags', value: '₹ 3.6L', status: 'In Progress', date: '23 Jun' },
+      { id: 'ME-303', co: 'Infosys BPM', contact: 'Anita Rao', type: 'Custom Branded', items: '200 × engraved pens', value: '₹ 0.7L', status: 'Quoted', date: '22 Jun' },
+      { id: 'ME-304', co: 'HDFC Bank', contact: 'Meena Iyer', type: 'Safety Kits', items: '150 × safety-week kits', value: '₹ 1.2L', status: 'New', date: '21 Jun' },
+      { id: 'ME-305', co: 'Tata Motors', contact: 'Vikram K.', type: 'Events', items: '600 × event merchandise', value: '₹ 5.4L', status: 'Closed', date: '18 Jun' },
+    ];
+    const cols = '.65fr 1.2fr 1fr 1.3fr .7fr .65fr .9fr 1fr';
+    const head = `<div style="display:grid; grid-template-columns:${cols}; gap:12px; padding:0 14px 12px; border-bottom:1px solid var(--c-line); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.05em; text-transform:uppercase; color:var(--c-muted);"><span>ID</span><span>Company</span><span>Type</span><span>Items</span><span>Value</span><span>Date</span><span>Status</span><span></span></div>`;
+    const rows = this.data.merch_enquiries.map((e, i) => `<div style="display:grid; grid-template-columns:${cols}; gap:12px; padding:13px 14px; border-bottom:1px solid var(--c-line); align-items:center; font-size:13px;">
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--c-slate);">${e.id}</span>
+      <span><strong>${e.co}</strong><div style="font-size:11px; color:var(--c-muted);">${e.contact}</div></span>
+      <span style="color:var(--c-slate);">${e.type}</span>
+      <span style="color:var(--c-slate); font-size:12px;">${e.items}</span>
+      <span style="font-weight:800;">${e.value}</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--c-muted);">${e.date}</span>
+      <span>${this.badge(e.status)}</span>
+      <span style="display:flex; gap:6px; justify-content:flex-end;">${e.status !== 'Closed' && e.status !== 'Quoted' ? `<span data-meq="${i}" style="cursor:pointer; font-size:11px; font-weight:600; color:var(--c-indigo); padding:6px 10px; border-radius:8px; background:rgba(42,43,106,.07);">→ Quotation</span>` : `<span style="font-size:11px; font-weight:600; color:var(--c-muted); padding:6px 10px;">${e.status === 'Quoted' ? '✓ Quoted' : 'Closed'}</span>`}</span>
+    </div>`).join('');
+    return this.card(head + `<div>${rows}</div>`);
+  }
+  after_merch_enquiries() {
+    this.setPrimary('New Enquiry', () => this.openMEnq());
+    const host = this.wrap.querySelector('[data-view]');
+    host.querySelectorAll('[data-meq]').forEach((b) => b.addEventListener('click', () => { this.data.merch_enquiries[+b.getAttribute('data-meq')].status = 'Quoted'; this.renderView(); }));
+  }
+  openMEnq() {
+    const modal = this.wrap.querySelector('[data-modal]');
+    this.resetModalCard();
+    modal.querySelector('[data-modal-title]').textContent = 'New merchandising enquiry';
+    const IN = 'width:100%; height:42px; padding:0 13px; font-family:inherit; font-size:14px; border-radius:11px; background:rgba(255,255,255,.85); border:1px solid var(--c-line); outline:none;';
+    modal.querySelector('[data-modal-body]').innerHTML = [['co', 'Company name'], ['contact', 'Contact person'], ['type', 'Enquiry type (e.g. Diwali Hamper)'], ['items', 'Items requested'], ['value', 'Estimated value']].map((f) => `<div><div style="font-size:12px; font-weight:600; color:var(--c-slate); margin-bottom:6px;">${f[1]}</div><input data-admin-input data-mef="${f[0]}" style="${IN}"></div>`).join('');
+    this._modalSave = () => {
+      const v = {}; modal.querySelectorAll('[data-mef]').forEach((i) => { v[i.getAttribute('data-mef')] = i.value; });
+      if (!this.data.merch_enquiries) this.data.merch_enquiries = [];
+      const n = this.data.merch_enquiries.length;
+      this.data.merch_enquiries.unshift({ id: 'ME-' + (306 + n), co: v.co || 'New company', contact: v.contact || '—', type: v.type || 'General', items: v.items || '—', value: v.value || '—', status: 'New', date: 'Today' });
+      this.renderView();
+    };
+    modal.style.display = 'flex';
+  }
+
+  // ---------- CUSTOMERS ----------
+  v_customers() {
+    const c = this.data.customers;
+    const approved = c.filter((x) => x.status === 'Approved').length;
+    const pending = c.filter((x) => x.status === 'Pending').length;
+    const blocked = c.filter((x) => x.status === 'Blocked').length;
+    const banner = `<div style="display:flex; gap:10px; align-items:flex-start; padding:13px 16px; border-radius:14px; background:rgba(23,155,142,.08); border:1px solid rgba(23,155,142,.2); margin-bottom:16px; font-size:12.5px; color:#127d72; line-height:1.5;"><span style="font-size:15px;">🔒</span><span>Only <strong>approved</strong> customers can download catalogues and generate quotations. Anyone else can browse the website but cannot download or quote. Approve or block access below.</span></div>`;
+    const kpis = `<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:18px;">
+      ${this.kpi('Approved', String(approved), '', 'can download & quote')}
+      ${this.kpi('Pending', String(pending), '', 'awaiting approval')}
+      ${this.kpi('Blocked', String(blocked), '', 'browse only')}
+    </div>`;
+    const cols = 'grid-template-columns:1.4fr 1.3fr .6fr 1fr 1.6fr';
+    const head = `<div style="display:grid; ${cols}; gap:14px; padding:0 14px 12px; border-bottom:1px solid var(--c-line); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.05em; text-transform:uppercase; color:var(--c-muted);"><span>Customer</span><span>Company</span><span>Quotes</span><span>Access</span><span></span></div>`;
+    const rows = c.map((x, i) => {
+      let actions = '';
+      if (x.status === 'Pending') actions = `<span data-custok="${i}" style="cursor:pointer; font-size:11px; font-weight:600; color:#fff; padding:7px 12px; border-radius:9px; background:var(--c-accent);">✓ Approve</span><span data-custblock="${i}" style="cursor:pointer; font-size:11px; font-weight:600; color:#c0413c; padding:7px 12px; border-radius:9px; background:rgba(224,82,77,.1);">Block</span>`;
+      else if (x.status === 'Approved') actions = `<span data-custblock="${i}" style="cursor:pointer; font-size:11px; font-weight:600; color:#c0413c; padding:7px 12px; border-radius:9px; background:rgba(224,82,77,.1);">Block</span>`;
+      else actions = `<span data-custok="${i}" style="cursor:pointer; font-size:11px; font-weight:600; color:#127d72; padding:7px 12px; border-radius:9px; background:rgba(23,155,142,.12);">Approve</span>`;
+      const access = x.status === 'Approved'
+        ? `<span style="font-size:11px; font-weight:700; color:#1a8f5a;">✓ Download &amp; quote</span>`
+        : x.status === 'Blocked'
+          ? `<span style="font-size:11px; font-weight:700; color:#c0413c;">✕ Browse only</span>`
+          : `<span style="font-size:11px; font-weight:700; color:#b5801e;">⏳ Browse only</span>`;
+      return `<div style="display:grid; ${cols}; gap:14px; padding:14px; border-bottom:1px solid var(--c-line); align-items:center; font-size:13px;">
+        <span style="display:flex; align-items:center; gap:11px;"><span style="width:34px; height:34px; flex:none; border-radius:10px; background:linear-gradient(135deg,#2a2b6a,#179b8e); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:11px;">${x.name.split(' ').map((w) => w[0]).join('').slice(0, 2)}</span><span style="min-width:0;"><strong>${x.name}</strong><div style="font-size:11px; color:var(--c-muted); font-family:'JetBrains Mono',monospace; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${x.email}</div></span></span>
+        <span style="color:var(--c-slate);">${x.co}</span>
+        <span style="font-weight:700;">${x.quotes}</span>
+        <span>${access}</span>
+        <span style="display:flex; gap:6px; justify-content:flex-end; flex-wrap:wrap;">${actions}</span>
+      </div>`;
+    }).join('');
+    return banner + kpis + this.card(head + rows);
+  }
+  after_customers() {
+    this.setPrimary('Add Customer', () => this.openForm('Add customer', [['name', 'Full name', ''], ['email', 'Email', ''], ['co', 'Company', '']], (v) => {
+      this.data.customers.unshift({ name: v.name || 'New customer', email: v.email || '—', co: v.co || '—', since: 'Today', quotes: 0, status: 'Pending' }); this.renderView();
+    }));
+    const host = this.wrap.querySelector('[data-view]');
+    host.querySelectorAll('[data-custok]').forEach((b) => b.addEventListener('click', () => { this.data.customers[+b.getAttribute('data-custok')].status = 'Approved'; this.renderView(); }));
+    host.querySelectorAll('[data-custblock]').forEach((b) => b.addEventListener('click', () => { this.data.customers[+b.getAttribute('data-custblock')].status = 'Blocked'; this.renderView(); }));
+  }
+
+  // ---------- BRAND THEMING ----------
+  brandPalettes = [
+    { name: 'Navy & Teal', p: ['#2a2b6a', '#3a3c98', '#149b8e', '#13b89f', '#eef0f8'] },
+    { name: 'Midnight Gold', p: ['#1a1a2e', '#2d2d4e', '#b0823a', '#d2a043', '#f8f4ec'] },
+    { name: 'Deep Indigo', p: ['#1e1b4b', '#312e81', '#4143b0', '#5a5cd0', '#ede9fe'] },
+    { name: 'Forest & Stone', p: ['#1a3329', '#2d5a46', '#5a7c3a', '#82a85c', '#f0f4ec'] },
+  ];
+  brandTargets = { catalogue: 0, quotation: 0, dashboard: 2, email: 0 };
+  brandTarget = 'catalogue';
+  v_branding() {
+    const palettes = this.brandPalettes;
+    const targets = [
+      { k: 'catalogue', t: 'Catalogues', d: 'Product catalogue PDFs & the online catalogue' },
+      { k: 'quotation', t: 'Quotations', d: 'Quotation PDFs sent to clients' },
+      { k: 'dashboard', t: 'Company Dashboards', d: 'Branded company & employee portals' },
+      { k: 'email', t: 'Email Templates', d: 'Transactional & marketing emails' },
+    ];
+    const target = this.brandTarget;
+    const sel = this.brandTargets[target] || 0;
+    const pal = palettes[sel];
+    const cur = targets.find((t) => t.k === target);
+
+    const tabs = `<div data-btargets style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px;">${targets.map((t) => {
+      const on = t.k === target;
+      return `<span data-btarget="${t.k}" style="cursor:pointer; display:flex; flex-direction:column; gap:2px; padding:11px 16px; border-radius:13px; background:${on ? 'linear-gradient(135deg,#2a2b6a,#3a3c98)' : 'rgba(255,255,255,.6)'}; border:1px solid ${on ? 'transparent' : 'var(--c-line)'}; min-width:150px;">
+        <span style="font-size:13px; font-weight:700; color:${on ? '#fff' : 'var(--c-ink)'};">${t.t}</span>
+        <span style="font-size:10.5px; color:${on ? 'rgba(255,255,255,.7)' : 'var(--c-muted)'};">${palettes[this.brandTargets[t.k] || 0].name}</span>
+      </span>`;
+    }).join('')}</div>`;
+
+    const swatches = palettes.map((p, i) => `<div data-bpal="${i}" style="cursor:pointer; display:flex; align-items:center; gap:12px; padding:13px 14px; border-radius:13px; background:${i === sel ? 'rgba(42,43,106,.07)' : 'rgba(255,255,255,.5)'}; border:1.5px solid ${i === sel ? 'var(--c-indigo)' : 'var(--c-line)'};">
+      <div style="display:flex; gap:4px;">${p.p.map((c) => `<div style="width:22px; height:22px; border-radius:6px; background:${c};"></div>`).join('')}</div>
+      <span style="font-size:13px; font-weight:${i === sel ? '700' : '500'}; color:${i === sel ? 'var(--c-indigo)' : 'var(--c-slate)'}; flex:1;">${p.name}</span>
+      ${i === sel ? '<span style="font-size:11px; font-weight:700; color:var(--c-accent);">Active ✓</span>' : ''}
+    </div>`).join('');
+
+    const left = this.card(`<div style="font-size:15px; font-weight:800; margin-bottom:3px;">Palette for ${cur.t}</div><div style="font-size:12px; color:var(--c-muted); margin-bottom:14px;">${cur.d}</div><div style="display:flex; flex-direction:column; gap:8px;" data-bswatches>${swatches}</div>`);
+    const preview = `<div><div style="font-size:12px; font-weight:700; color:var(--c-slate); text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px;">${cur.t} preview</div>${this.brandPreview(target, pal)}</div>`;
+    return tabs + `<div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:start;">${left}${preview}</div>`;
+  }
+  brandPreview(target, pal) {
+    if (target === 'catalogue') {
+      const tile = (n, pr) => `<div style="background:#fff; border:1px solid rgba(0,0,0,.06); border-radius:10px; overflow:hidden;"><div style="height:62px; background:${pal.p[4]}; display:flex; align-items:center; justify-content:center; color:${pal.p[2]}; font-size:18px;">🖼</div><div style="padding:8px 10px;"><div style="font-size:11px; font-weight:700; color:${pal.p[0]};">${n}</div><div style="font-size:11px; font-weight:800; color:${pal.p[2]}; margin-top:2px;">${pr}</div></div></div>`;
+      return `<div style="background:#fff; border:1px solid var(--c-line); border-radius:16px; overflow:hidden; box-shadow:0 12px 30px rgba(34,36,90,.1);">
+        <div style="background:linear-gradient(135deg,${pal.p[0]},${pal.p[1]}); padding:20px 24px;"><div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.12em; text-transform:uppercase; color:${pal.p[3]}; margin-bottom:4px;">PRODUCT CATALOGUE</div><div style="font-size:18px; font-weight:800; color:#fff;">Drinkware · 2026</div></div>
+        <div style="padding:18px 20px; display:grid; grid-template-columns:repeat(3,1fr); gap:10px;">${tile('Steel Bottle', '₹ 540')}${tile('Coffee Mug', '₹ 240')}${tile('Tumbler', '₹ 410')}</div>
+      </div>`;
+    }
+    if (target === 'dashboard') {
+      return `<div style="background:#fff; border:1px solid var(--c-line); border-radius:16px; overflow:hidden; box-shadow:0 12px 30px rgba(34,36,90,.1); display:flex; min-height:230px;">
+        <div style="width:78px; flex:none; background:linear-gradient(180deg,${pal.p[0]},${pal.p[1]}); padding:16px 10px; display:flex; flex-direction:column; gap:8px;">${['🏠', '📄', '👥', '📦'].map((i, k) => `<span style="width:100%; height:30px; border-radius:8px; background:${k === 0 ? 'rgba(255,255,255,.18)' : 'transparent'}; color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px;">${i}</span>`).join('')}</div>
+        <div style="flex:1; padding:18px 20px; background:${pal.p[4]};">
+          <div style="font-size:14px; font-weight:800; color:${pal.p[0]}; margin-bottom:12px;">Company store</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">${[1, 2].map(() => `<div style="background:#fff; border-radius:10px; padding:12px;"><div style="font-size:9px; text-transform:uppercase; color:#9295b6;">Points used</div><div style="font-size:19px; font-weight:800; color:${pal.p[2]};">18.4L</div></div>`).join('')}</div>
+          <div style="height:8px; border-radius:999px; background:#fff; margin-top:14px; overflow:hidden;"><div style="height:100%; width:62%; background:linear-gradient(90deg,${pal.p[0]},${pal.p[2]});"></div></div>
+        </div>
+      </div>`;
+    }
+    if (target === 'email') {
+      return `<div style="background:#fff; border:1px solid var(--c-line); border-radius:16px; overflow:hidden; box-shadow:0 12px 30px rgba(34,36,90,.1);">
+        <div style="background:linear-gradient(135deg,${pal.p[0]},${pal.p[1]}); padding:24px; text-align:center;"><div style="font-size:16px; font-weight:800; color:#fff;">Supreme International</div></div>
+        <div style="padding:22px 24px;"><div style="font-size:14px; font-weight:700; color:${pal.p[0]}; margin-bottom:8px;">Your quotation is ready</div><div style="font-size:12px; color:#5b5d7a; line-height:1.6; margin-bottom:16px;">Hi Rohan, your quotation QT-2041 has been approved and is ready to download.</div><span style="display:inline-block; font-size:12px; font-weight:700; color:#fff; padding:11px 20px; border-radius:10px; background:${pal.p[2]};">Download PDF</span></div>
+      </div>`;
+    }
+    return `<div style="background:#fff; border:1px solid var(--c-line); border-radius:16px; overflow:hidden; box-shadow:0 12px 30px rgba(34,36,90,.1);">
+      <div style="background:linear-gradient(135deg,${pal.p[0]},${pal.p[1]}); padding:20px 24px; display:flex; align-items:center; justify-content:space-between;">
+        <div><div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.12em; text-transform:uppercase; color:${pal.p[3]}; margin-bottom:4px;">COMMERCIAL QUOTATION</div><div style="font-size:18px; font-weight:800; color:#fff;">QT-2041</div></div>
+        <div style="width:36px; height:36px; border-radius:10px; background:rgba(255,255,255,.15); display:flex; align-items:center; justify-content:center; color:#fff; font-size:16px;">📄</div>
+      </div>
+      <div style="padding:20px 24px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:16px;"><div><div style="font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--c-muted); margin-bottom:4px;">Prepared for</div><div style="font-weight:700; font-size:14px;">L&T Construction</div></div><div style="text-align:right;"><div style="font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--c-muted); margin-bottom:4px;">Date</div><div style="font-weight:700; font-size:14px;">24 Jun 2025</div></div></div>
+        <div style="background:${pal.p[4]}; border-radius:10px; padding:14px;">
+          <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:600; margin-bottom:8px; color:${pal.p[0]};"><span>Canvas Laptop Backpack × 200</span><span>₹ 2,36,000</span></div>
+          <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:600; color:${pal.p[0]};"><span>Insulated Steel Bottle × 500</span><span>₹ 2,60,000</span></div>
+          <div style="border-top:1px solid rgba(0,0,0,.1); margin-top:10px; padding-top:10px; display:flex; justify-content:space-between; font-size:14px; font-weight:800; color:${pal.p[0]};"><span>Total (5% disc.)</span><span>₹ 4,71,200</span></div>
+        </div>
+      </div>
+    </div>`;
+  }
+  after_branding() {
+    const host = this.wrap.querySelector('[data-view]');
+    host.querySelectorAll('[data-btarget]').forEach((b) => b.addEventListener('click', () => { this.brandTarget = b.getAttribute('data-btarget'); this.renderView(); }));
+    host.querySelectorAll('[data-bpal]').forEach((b) => b.addEventListener('click', () => { this.brandTargets[this.brandTarget] = +b.getAttribute('data-bpal'); this.renderView(); }));
+    this.setPrimary('Apply Theme', () => { const btn = this.wrap.querySelector('[data-primary]'); this.toast(btn, '✓ Applied to ' + this.brandTarget); });
+  }
+
+  // ---------- MODAL ----------
+  bindModal() {
+    if (!this.wrap || this._mb) return; this._mb = true;
+    const modal = this.wrap.querySelector('[data-modal]');
+    const close = () => { modal.style.display = 'none'; };
+    this.wrap.querySelector('[data-modal-close]').addEventListener('click', close);
+    this.wrap.querySelector('[data-modal-cancel]').addEventListener('click', close);
+    modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+    this.wrap.querySelector('[data-modal-save]').addEventListener('click', () => {
+      const vals = {};
+      modal.querySelectorAll('[data-mfield]').forEach((f) => { vals[f.getAttribute('data-mfield')] = f.value; });
+      if (this._modalSave) this._modalSave(vals);
+      close();
+    });
+  }
+  openForm(title, fields, onSave) {
+    this.resetModalCard();
+    const modal = this.wrap.querySelector('[data-modal]');
+    modal.querySelector('[data-modal-title]').textContent = title;
+    modal.querySelector('[data-modal-body]').innerHTML = fields.map((f) => `<div><div style="font-size:12px; font-weight:600; color:var(--c-slate); margin-bottom:6px;">${f[1]}</div><input data-admin-input data-mfield="${f[0]}" value="${f[2] != null ? f[2] : ''}" style="width:100%; height:44px; padding:0 14px; font-family:inherit; font-size:14px; border-radius:12px; background:rgba(255,255,255,.85); border:1px solid var(--c-line); outline:none; transition:.15s;"></div>`).join('');
+    this._modalSave = onSave;
+    modal.style.display = 'flex';
+    const first = modal.querySelector('[data-mfield]'); if (first) setTimeout(() => first.focus(), 50);
+  }
+
+  renderVals() { return { setWrap: this.setWrap }; }
+}
+</script>
+</body>
+</html>

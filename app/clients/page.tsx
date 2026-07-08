@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
-import DcNav from '@/components/DcNav';
 import DcFooter from '@/components/DcFooter';
 import DcPhoto from '@/components/DcPhoto';
 
@@ -46,7 +45,6 @@ export default function ClientsPage() {
       <div className="pointer-events-none fixed -right-[120px] -top-[160px] z-0 h-[500px] w-[500px] animate-blob1 rounded-full bg-[radial-gradient(circle,rgba(20,155,142,.16),transparent_70%)] blur-[20px]" />
 
       <div className="relative z-[1] mx-auto max-w-[1180px] px-6">
-        <DcNav active="clients" />
 
         {/* HEADER */}
         <section className="pb-[26px] pt-12">

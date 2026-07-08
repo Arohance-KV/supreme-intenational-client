@@ -53,7 +53,7 @@ function CoverImageField({
   const fileRef = useRef<HTMLInputElement>(null);
 
   const inputCls =
-    'w-full rounded border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400';
+    'w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-line';
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -84,7 +84,7 @@ function CoverImageField({
           <img
             src={value}
             alt="Cover"
-            className="h-28 w-auto max-w-xs rounded border border-zinc-200 object-cover"
+            className="h-28 w-auto max-w-xs rounded border border-line object-cover"
           />
           <button
             type="button"
@@ -103,9 +103,9 @@ function CoverImageField({
           accept="image/*"
           onChange={handleFile}
           disabled={uploading}
-          className="text-xs text-zinc-600 file:mr-2 file:rounded file:border-0 file:bg-zinc-100 file:px-3 file:py-1 file:text-xs file:font-medium file:text-zinc-700 hover:file:bg-zinc-200"
+          className="text-xs text-slate file:mr-2 file:rounded file:border-0 file:bg-black/5 file:px-3 file:py-1 file:text-xs file:font-medium file:text-slate hover:file:bg-black/10"
         />
-        {uploading && <span className="text-xs text-zinc-400">Uploading…</span>}
+        {uploading && <span className="text-xs text-muted">Uploading…</span>}
       </div>
       <div>
         <input
@@ -130,8 +130,8 @@ function CreateBlogForm() {
   const [tagsRaw, setTagsRaw] = useState('');
 
   const inputCls =
-    'w-full rounded border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400';
-  const labelCls = 'mb-1 block text-sm font-medium text-zinc-700';
+    'w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-line';
+  const labelCls = 'mb-1 block text-sm font-medium text-slate';
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -165,14 +165,14 @@ function CreateBlogForm() {
           placeholder="Post title"
           className={inputCls}
         />
-        <p className="mt-0.5 text-xs text-zinc-400">Slug is auto-generated from the title.</p>
+        <p className="mt-0.5 text-xs text-muted">Slug is auto-generated from the title.</p>
       </div>
 
       {/* Excerpt */}
       <div>
         <label htmlFor="b-excerpt" className={labelCls}>
           Excerpt
-          <span className="ml-1 font-normal text-zinc-400">(max 500 chars, optional)</span>
+          <span className="ml-1 font-normal text-muted">(max 500 chars, optional)</span>
         </label>
         <textarea
           id="b-excerpt"
@@ -189,7 +189,7 @@ function CreateBlogForm() {
       <div>
         <label htmlFor="b-content" className={labelCls}>
           Content
-          <span className="ml-1 font-normal text-zinc-400">(plain text / HTML, optional)</span>
+          <span className="ml-1 font-normal text-muted">(plain text / HTML, optional)</span>
         </label>
         <textarea
           id="b-content"
@@ -214,7 +214,7 @@ function CreateBlogForm() {
       <div>
         <label htmlFor="b-tags" className={labelCls}>
           Tags
-          <span className="ml-1 font-normal text-zinc-400">(comma-separated, optional)</span>
+          <span className="ml-1 font-normal text-muted">(comma-separated, optional)</span>
         </label>
         <input
           id="b-tags"
@@ -228,7 +228,7 @@ function CreateBlogForm() {
 
       {/* Published */}
       <div>
-        <label className="flex items-center gap-2 text-sm text-zinc-700">
+        <label className="flex items-center gap-2 text-sm text-slate">
           <input
             type="checkbox"
             checked={!!form.isPublished}
@@ -251,13 +251,13 @@ function CreateBlogForm() {
         <button
           type="submit"
           disabled={createBlog.isPending}
-          className="rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-60 transition-colors"
+          className="rounded bg-gradient-to-br from-indigo to-indigo2 px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-60 transition-colors"
         >
           {createBlog.isPending ? 'Creating…' : 'Create blog'}
         </button>
         <Link
           href="/admin/blogs"
-          className="rounded border border-zinc-200 px-4 py-2 text-sm text-zinc-600 hover:bg-zinc-50 transition-colors"
+          className="rounded border border-line px-4 py-2 text-sm text-slate hover:bg-white/60 transition-colors"
         >
           Cancel
         </Link>
@@ -294,15 +294,15 @@ function EditBlogForm({ blogId }: { blogId: string }) {
   }, [blog, initialised]);
 
   const inputCls =
-    'w-full rounded border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400';
-  const labelCls = 'mb-1 block text-sm font-medium text-zinc-700';
+    'w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-line';
+  const labelCls = 'mb-1 block text-sm font-medium text-slate';
 
   if (isLoading) {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-6 w-1/2 rounded bg-zinc-200" />
-        <div className="h-32 rounded bg-zinc-100" />
-        <div className="h-64 rounded bg-zinc-100" />
+        <div className="h-6 w-1/2 rounded bg-black/5" />
+        <div className="h-32 rounded bg-black/5" />
+        <div className="h-64 rounded bg-black/5" />
       </div>
     );
   }
@@ -350,7 +350,7 @@ function EditBlogForm({ blogId }: { blogId: string }) {
         <input
           readOnly
           value={blog.slug}
-          className="w-full rounded border border-zinc-100 bg-zinc-50 px-3 py-2 font-mono text-sm text-zinc-400"
+          className="w-full rounded border border-line bg-white/50 px-3 py-2 font-mono text-sm text-muted"
         />
       </div>
 
@@ -358,7 +358,7 @@ function EditBlogForm({ blogId }: { blogId: string }) {
       <div>
         <label htmlFor="b-excerpt" className={labelCls}>
           Excerpt
-          <span className="ml-1 font-normal text-zinc-400">(max 500 chars)</span>
+          <span className="ml-1 font-normal text-muted">(max 500 chars)</span>
         </label>
         <textarea
           id="b-excerpt"
@@ -374,7 +374,7 @@ function EditBlogForm({ blogId }: { blogId: string }) {
       <div>
         <label htmlFor="b-content" className={labelCls}>
           Content
-          <span className="ml-1 font-normal text-zinc-400">(plain text / HTML)</span>
+          <span className="ml-1 font-normal text-muted">(plain text / HTML)</span>
         </label>
         <textarea
           id="b-content"
@@ -398,7 +398,7 @@ function EditBlogForm({ blogId }: { blogId: string }) {
       <div>
         <label htmlFor="b-tags" className={labelCls}>
           Tags
-          <span className="ml-1 font-normal text-zinc-400">(comma-separated)</span>
+          <span className="ml-1 font-normal text-muted">(comma-separated)</span>
         </label>
         <input
           id="b-tags"
@@ -412,7 +412,7 @@ function EditBlogForm({ blogId }: { blogId: string }) {
 
       {/* Published */}
       <div>
-        <label className="flex items-center gap-2 text-sm text-zinc-700">
+        <label className="flex items-center gap-2 text-sm text-slate">
           <input
             type="checkbox"
             checked={!!form.isPublished}
@@ -438,13 +438,13 @@ function EditBlogForm({ blogId }: { blogId: string }) {
         <button
           type="submit"
           disabled={updateBlog.isPending}
-          className="rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-60 transition-colors"
+          className="rounded bg-gradient-to-br from-indigo to-indigo2 px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-60 transition-colors"
         >
           {updateBlog.isPending ? 'Saving…' : 'Save changes'}
         </button>
         <Link
           href="/admin/blogs"
-          className="rounded border border-zinc-200 px-4 py-2 text-sm text-zinc-600 hover:bg-zinc-50 transition-colors"
+          className="rounded border border-line px-4 py-2 text-sm text-slate hover:bg-white/60 transition-colors"
         >
           Back to list
         </Link>
@@ -466,21 +466,21 @@ export default function AdminBlogEditorPage({
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-zinc-500">
+      <div className="flex items-center gap-2 text-sm text-slate">
         <Link href="/admin/blogs" className="hover:underline">
           Blogs
         </Link>
         <span>/</span>
-        <span className="text-zinc-800 font-medium">
+        <span className="text-ink font-medium">
           {isCreate ? 'New blog' : 'Edit blog'}
         </span>
       </div>
 
-      <h1 className="text-2xl font-bold text-zinc-900">
+      <h1 className="text-2xl font-bold text-ink">
         {isCreate ? 'New blog' : 'Edit blog'}
       </h1>
 
-      <section className="rounded-xl border border-zinc-200 bg-white p-6">
+      <section className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] p-6">
         {isCreate ? (
           <CreateBlogForm />
         ) : (

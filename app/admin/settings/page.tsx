@@ -30,10 +30,10 @@ function ProfileSection() {
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-zinc-200 bg-white p-6 animate-pulse space-y-3">
-        <div className="h-4 w-32 rounded bg-zinc-200" />
-        <div className="h-4 w-48 rounded bg-zinc-200" />
-        <div className="h-4 w-40 rounded bg-zinc-200" />
+      <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] p-6 animate-pulse space-y-3">
+        <div className="h-4 w-32 rounded bg-black/5" />
+        <div className="h-4 w-48 rounded bg-black/5" />
+        <div className="h-4 w-40 rounded bg-black/5" />
       </div>
     );
   }
@@ -49,19 +49,19 @@ function ProfileSection() {
   const fullName = [profile?.firstName, profile?.lastName].filter(Boolean).join(' ') || '—';
 
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-6">
-      <h2 className="mb-4 text-base font-semibold text-zinc-900">Profile</h2>
+    <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] p-6">
+      <h2 className="mb-4 text-base font-semibold text-ink">Profile</h2>
       <dl className="space-y-3">
         <div className="grid grid-cols-[140px_1fr] gap-2">
-          <dt className="text-sm font-medium text-zinc-500">Name</dt>
-          <dd className="text-sm text-zinc-900">{fullName}</dd>
+          <dt className="text-sm font-medium text-slate">Name</dt>
+          <dd className="text-sm text-ink">{fullName}</dd>
         </div>
         <div className="grid grid-cols-[140px_1fr] gap-2">
-          <dt className="text-sm font-medium text-zinc-500">Email</dt>
-          <dd className="text-sm text-zinc-900">{profile?.email ?? '—'}</dd>
+          <dt className="text-sm font-medium text-slate">Email</dt>
+          <dd className="text-sm text-ink">{profile?.email ?? '—'}</dd>
         </div>
         <div className="grid grid-cols-[140px_1fr] gap-2">
-          <dt className="text-sm font-medium text-zinc-500">Account status</dt>
+          <dt className="text-sm font-medium text-slate">Account status</dt>
           <dd className="text-sm">
             {profile?.isActive !== undefined ? (
               <span
@@ -79,12 +79,12 @@ function ProfileSection() {
           </dd>
         </div>
         <div className="grid grid-cols-[140px_1fr] gap-2">
-          <dt className="text-sm font-medium text-zinc-500">Last login</dt>
-          <dd className="text-sm text-zinc-900">{fmtDate(profile?.lastLoginAt)}</dd>
+          <dt className="text-sm font-medium text-slate">Last login</dt>
+          <dd className="text-sm text-ink">{fmtDate(profile?.lastLoginAt)}</dd>
         </div>
         <div className="grid grid-cols-[140px_1fr] gap-2">
-          <dt className="text-sm font-medium text-zinc-500">Account created</dt>
-          <dd className="text-sm text-zinc-900">{fmtDate(profile?.createdAt)}</dd>
+          <dt className="text-sm font-medium text-slate">Account created</dt>
+          <dd className="text-sm text-ink">{fmtDate(profile?.createdAt)}</dd>
         </div>
       </dl>
     </div>
@@ -143,14 +143,14 @@ function ChangePasswordSection() {
   }
 
   const inputCls =
-    'w-full rounded border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400';
-  const labelCls = 'mb-1 block text-sm font-medium text-zinc-700';
+    'w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent';
+  const labelCls = 'mb-1 block text-sm font-medium text-slate';
 
   const serverErr = changePassword.error;
 
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-6">
-      <h2 className="mb-4 text-base font-semibold text-zinc-900">Change password</h2>
+    <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] p-6">
+      <h2 className="mb-4 text-base font-semibold text-ink">Change password</h2>
       <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
         <div>
           <label className={labelCls}>
@@ -213,13 +213,13 @@ function ChangePasswordSection() {
           <button
             type="submit"
             disabled={changePassword.isPending}
-            className="rounded bg-zinc-900 px-5 py-2 text-sm font-medium text-white disabled:opacity-60 hover:bg-zinc-700 transition-colors"
+            className="rounded bg-gradient-to-br from-indigo to-indigo2 px-5 py-2 text-sm font-medium text-white disabled:opacity-60 hover:opacity-95 transition-colors"
           >
             {changePassword.isPending ? 'Updating…' : 'Update password'}
           </button>
         </div>
 
-        <p className="text-xs text-zinc-400">
+        <p className="text-xs text-muted">
           After a successful password change, you will be logged out and redirected to the login page.
         </p>
       </form>
@@ -233,8 +233,8 @@ export default function AdminSettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Settings</h1>
-        <p className="mt-1 text-sm text-zinc-500">
+        <h1 className="text-2xl font-bold text-ink">Settings</h1>
+        <p className="mt-1 text-sm text-slate">
           Manage your admin profile and account security
         </p>
       </div>

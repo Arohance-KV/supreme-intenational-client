@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useEmployeeLogin } from '@/lib/employee/userAuth';
 import { ApiError } from '@/lib/api';
 import { glass, primaryBtn, input, label, eyebrow, errorBanner } from '@/components/employee/ui';
+import DcWordmark from '@/components/DcWordmark';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -87,6 +88,7 @@ export default function EmployeeLoginPage() {
       }}
     >
       <div className={`w-full max-w-md rounded-[24px] p-8 ${glass}`}>
+        <Link href="/" className="mb-6 inline-block no-underline"><DcWordmark /></Link>
         <p className={eyebrow}>EMPLOYEE PORTAL</p>
         <h1 className="text-2xl font-extrabold tracking-[-.02em] text-ink mb-2 mt-1">Employee Sign in</h1>
         <p className="text-sm text-slate mb-6">

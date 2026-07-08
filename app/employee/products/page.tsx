@@ -139,6 +139,7 @@ export default function EmployeeProductsPage() {
                   key={product._id}
                   product={product}
                   hrefBase="/employee/products"
+                  showAddToCart={false}
                 />
               ))}
             </div>

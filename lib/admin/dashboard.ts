@@ -92,3 +92,96 @@ export function useLowStock() {
       adminFetch<LowStockVariant[]>('/admin/inventory/low-stock'),
   });
 }
+
+// ── Dashboard summary (quotations / catalogues / enquiries counts) ─────────────
+// GET /admin/analytics/dashboard-summary
+export interface DashboardSummary {
+  quotations: number;
+  catalogues: number;
+  enquiries: number;
+}
+
+export function useDashboardSummary() {
+  return useQuery<DashboardSummary>({
+    queryKey: ['admin', 'dashboard-summary'],
+    queryFn: () => adminFetch<DashboardSummary>('/admin/analytics/dashboard-summary'),
+  });
+}
+
+// ── Generated-per-month (downloads-over-time chart) ────────────────────────────
+// GET /admin/analytics/generated-timeseries?months=10
+export interface GeneratedPoint {
+  month: string;
+  quotations: number;
+  catalogues: number;
+}
+
+export function useGeneratedTimeseries(months = 10) {
+  return useQuery<GeneratedPoint[]>({
+    queryKey: ['admin', 'generated-timeseries', months],
+    queryFn: () => adminFetch<GeneratedPoint[]>(`/admin/analytics/generated-timeseries?months=${months}`),
+  });
+}
+
+// ── Recent activity feed ────────────────────────────────────────────────────────
+// GET /admin/analytics/recent-activity?limit=8
+export interface ActivityItem {
+  who: string;
+  what: string;
+  when: string;
+  type: 'quotation' | 'catalogue' | 'order';
+}
+
+export function useRecentActivity(limit = 8) {
+  return useQuery<ActivityItem[]>({
+    queryKey: ['admin', 'recent-activity', limit],
+    queryFn: () => adminFetch<ActivityItem[]>(`/admin/analytics/recent-activity?limit=${limit}`),
+  });
+}
+
+// ── Analytics page: enquiry headline metrics ───────────────────────────────────
+// GET /admin/analytics/enquiries-summary
+export interface EnquiriesSummary {
+  totalEnquiries: number;
+  conversionRate: number; // fraction 0..1
+  avgQuotationValue: number;
+}
+
+export function useEnquiriesSummary() {
+  return useQuery<EnquiriesSummary>({
+    queryKey: ['admin', 'enquiries-summary'],
+    queryFn: () => adminFetch<EnquiriesSummary>('/admin/analytics/enquiries-summary'),
+  });
+}
+
+// ── Analytics page: enquiries vs quotations (monthly) ──────────────────────────
+// GET /admin/analytics/enquiries-vs-quotations?months=6
+export interface EnqVsQuotePoint {
+  month: string;
+  enquiries: number;
+  quotations: number;
+}
+
+export function useEnquiriesVsQuotations(months = 6) {
+  return useQuery<EnqVsQuotePoint[]>({
+    queryKey: ['admin', 'enq-vs-quote', months],
+    queryFn: () => adminFetch<EnqVsQuotePoint[]>(`/admin/analytics/enquiries-vs-quotations?months=${months}`),
+  });
+}
+
+// ── Analytics page: seller performance leaderboard ─────────────────────────────
+// GET /admin/analytics/seller-performance?limit=10
+export interface SellerPerf {
+  sellerId: string;
+  name: string;
+  gross: number;
+  earnings: number;
+  deals: number;
+}
+
+export function useSellerPerformance(limit = 10) {
+  return useQuery<SellerPerf[]>({
+    queryKey: ['admin', 'seller-performance', limit],
+    queryFn: () => adminFetch<SellerPerf[]>(`/admin/analytics/seller-performance?limit=${limit}`),
+  });
+}

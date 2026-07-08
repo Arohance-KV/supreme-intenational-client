@@ -1,82 +1,26 @@
-'use client';
-
-import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
-import DcNav from '@/components/DcNav';
+import Image from 'next/image';
 import DcFooter from '@/components/DcFooter';
 import DcPhoto from '@/components/DcPhoto';
-
-const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'], variable: '--font-jakarta' });
-const mono = JetBrains_Mono({ subsets: ['latin'], weight: ['400', '500', '700'], variable: '--font-mono-jb' });
+import ProductCard from '@/components/ProductCard';
+import HomeHeroFloats from '@/components/HomeHeroFloats';
+import TrustedBy from '@/components/TrustedBy';
+import { getCategories, getFeatured, type Category, type Product } from '@/lib/catalog';
 
 // Shared class fragments
 const gradClip = 'bg-clip-text text-transparent';
 const sectionWrap = 'mx-auto max-w-[1280px] px-[18px] sm:px-10';
 const eyebrow = 'font-jbmono text-[11px] uppercase tracking-[.14em] text-accent mb-2';
 
-const categories = [
-  { name: 'Drinkware', count: '1,240' },
-  { name: 'Bags & Backpacks', count: '980' },
-  { name: 'Writing & Office', count: '2,110' },
-  { name: 'Tech & Gadgets', count: '760' },
-  { name: 'Apparel', count: '1,520' },
-  { name: 'Home & Living', count: '1,340' },
-];
-
-const featured = [
-  { cat: 'Bags', name: 'Canvas Laptop Backpack', price: '₹ 1,250', moq: 'MOQ 100', rec: true },
-  { cat: 'Drinkware', name: 'Insulated Steel Bottle', price: '₹ 540', moq: 'MOQ 50' },
-  { cat: 'Writing', name: 'Premium Roller Pen Set', price: '₹ 320', moq: 'MOQ 200' },
-  { cat: 'Tech', name: 'Wireless Charging Pad', price: '₹ 890', moq: 'MOQ 100' },
-];
-
-// Hero float cluster cycles through these every 3s (matches the mockup)
-const floats = [
-  { cat: 'Drinkware', count: '1,240 products', name: 'Insulated Steel Bottle', moq: 'MOQ 50', price: '₹ 540' },
-  { cat: 'Bags & Backpacks', count: '980 products', name: 'Canvas Laptop Backpack', moq: 'MOQ 100', price: '₹ 1,250' },
-  { cat: 'Tech & Gadgets', count: '760 products', name: 'Wireless Charging Pad', moq: 'MOQ 100', price: '₹ 890' },
-];
-
-function AddButton({ variant }: { variant: 'solid' | 'soft' }) {
-  const [added, setAdded] = useState(false);
-  const base = 'w-full cursor-pointer rounded-xl py-[11px] text-[13px] font-semibold transition-colors';
-  const rest = added
-    ? 'bg-accent text-white'
-    : variant === 'solid'
-      ? 'bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)] text-white'
-      : 'bg-[rgba(42,43,106,0.07)] text-indigo border border-[rgba(42,43,106,0.12)]';
-  return (
-    <button
-      className={`${base} ${rest}`}
-      onClick={() => {
-        setAdded(true);
-        setTimeout(() => setAdded(false), 1100);
-      }}
-    >
-      {added ? 'Added ✓' : 'Add to cart'}
-    </button>
-  );
-}
-
-export default function HomePage() {
-  const [fi, setFi] = useState(0);
-  const [fade, setFade] = useState(true);
-  const timer = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  useEffect(() => {
-    timer.current = setInterval(() => {
-      setFade(false);
-      setTimeout(() => { setFi((i) => (i + 1) % floats.length); setFade(true); }, 420);
-    }, 3000);
-    return () => { if (timer.current) clearInterval(timer.current); };
-  }, []);
-
-  const f = floats[fi];
-  const fadeCls = `transition-opacity duration-[450ms] ${fade ? 'opacity-100' : 'opacity-0'}`;
+export default async function HomePage() {
+  // Dynamic catalogue data — degrade gracefully if the API is unreachable.
+  let categories: Category[] = [];
+  let featured: Product[] = [];
+  try { [categories, featured] = await Promise.all([getCategories(), getFeatured()]); }
+  catch { /* leave empty; sections render their headers only */ }
 
   return (
-    <main className={`${jakarta.variable} ${mono.variable} font-display relative min-h-screen w-full overflow-x-hidden bg-[#eef0f8] text-ink selection:bg-[rgba(23,155,142,0.22)]`}>
+    <main className="font-display relative min-h-screen w-full overflow-x-hidden bg-[#eef0f8] text-ink selection:bg-[rgba(23,155,142,0.22)]">
       {/* ambient mesh */}
       <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(60%_50%_at_12%_8%,rgba(74,76,201,.32),transparent_60%),radial-gradient(52%_46%_at_92%_12%,rgba(19,184,159,.30),transparent_60%),radial-gradient(50%_48%_at_78%_90%,rgba(124,77,210,.22),transparent_62%),radial-gradient(46%_42%_at_6%_88%,rgba(20,155,142,.22),transparent_62%),radial-gradient(42%_40%_at_50%_48%,rgba(224,163,59,.12),transparent_60%),linear-gradient(180deg,#eceefb_0%,#f4f1f8_50%,#e9f1f3_100%)]" />
       <div className="pointer-events-none fixed -left-[120px] -top-[160px] z-0 h-[520px] w-[520px] animate-blob1 rounded-full bg-[radial-gradient(circle,rgba(86,68,210,.40),transparent_70%)] blur-[20px]" />
@@ -84,16 +28,10 @@ export default function HomePage() {
       <div className="pointer-events-none fixed -bottom-[200px] left-[38%] z-0 h-[480px] w-[480px] animate-blob3 rounded-full bg-[radial-gradient(circle,rgba(124,77,210,.26),transparent_70%)] blur-[24px]" />
 
       <div className="relative z-[1]">
-        {/* NAV — unified across all public pages */}
-        <div className="mx-auto max-w-[1280px] px-[18px] sm:px-10"><DcNav /></div>
-
         {/* HERO */}
-        <div className={`grid grid-cols-1 items-center gap-8 pb-14 pt-10 lg:grid-cols-[1.05fr_0.95fr] ${sectionWrap}`}>
+        <section className={`pb-14 pt-10 ${sectionWrap}`}>
+        <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-[1.05fr_0.95fr]">
           <div>
-            <div className="mb-[18px] inline-flex items-center gap-2 rounded-full border border-white/70 bg-[linear-gradient(120deg,rgba(86,68,210,.14),rgba(19,184,159,.16))] py-[7px] pl-2 pr-3.5 backdrop-blur-[8px]">
-              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[linear-gradient(135deg,#5644d2,#13b89f)] text-[11px] text-white">✦</span>
-              <span className={`font-jbmono text-[11px] font-semibold uppercase tracking-[.1em] bg-[linear-gradient(110deg,#4a3cc0,#0f8d80)] ${gradClip}`}>Self-serve B2B gifting platform</span>
-            </div>
             <h1 className={`mb-5 text-[36px] font-extrabold leading-[1.07] tracking-[-.03em] lg:text-[60px] lg:leading-[1.02] bg-[linear-gradient(120deg,#2a2b6a_0%,#4143b0_38%,#149b8e_100%)] ${gradClip}`}>Corporate gifting,<br />simplified.</h1>
             <p className="mb-[30px] max-w-[46ch] text-[18px] leading-[1.6] text-slate">Browse a curated catalogue, shortlist in a click, and generate branded quotations &amp; catalogues yourself — no back-and-forth, no waiting on sales.</p>
             <div className="mb-[34px] flex gap-3">
@@ -110,52 +48,12 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* floating cycling cluster */}
-          <div className="relative hidden h-[440px] lg:block">
-            <div className="pointer-events-none absolute left-1/2 top-1/2 h-[340px] w-[340px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(86,68,210,.22),rgba(19,184,159,.16)_55%,transparent_72%)] blur-[20px]" />
-            <div className="absolute right-0 top-3.5 w-[300px] animate-floaty rounded-3xl border border-white/85 bg-white/[.58] p-[18px] shadow-[0_24px_60px_rgba(34,36,90,.2)] backdrop-blur-[20px] backdrop-saturate-[1.6]">
-              <div className={fadeCls}>
-                <DcPhoto seed={f.name} className="mb-3.5 aspect-[4/3] rounded-2xl" />
-                <div className="mb-2 flex items-center justify-between">
-                  <div className="text-[15px] font-bold">{f.name}</div>
-                  <span className="font-jbmono rounded-full bg-[rgba(23,155,142,.12)] px-2 py-[3px] text-[10px] text-accent">{f.moq}</span>
-                </div>
-                <div className="mb-3.5 flex items-end justify-between">
-                  <div className="leading-[1.1]">
-                    <span className="text-[18px] font-extrabold text-ink">{f.price}</span>
-                    <div className="font-jbmono mt-0.5 text-[10px] text-muted">tentative price</div>
-                  </div>
-                </div>
-                <AddButton variant="solid" />
-              </div>
-            </div>
-            <div className="absolute bottom-[34px] left-0 w-[212px] animate-floaty2 rounded-[20px] border border-white/85 bg-white/[.58] p-4 shadow-[0_20px_50px_rgba(34,36,90,.18)] backdrop-blur-[20px] backdrop-saturate-[1.6]">
-              <div className={fadeCls}>
-                <div className="mb-3 flex items-center gap-[11px]">
-                  <DcPhoto seed={f.cat} className="h-[46px] w-[46px] flex-none rounded-[13px]" />
-                  <div>
-                    <div className="font-jbmono mb-[3px] text-[9px] uppercase tracking-[.12em] text-muted">Category</div>
-                    <div className="text-[15px] font-bold leading-[1.1] tracking-[-.01em] text-ink">{f.cat}</div>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-slate">{f.count}</span>
-                  <span className="text-[13px] font-semibold text-accent">Explore →</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <HomeHeroFloats />
         </div>
 
-        {/* client strip */}
-        <div className={`mb-2 flex items-center gap-7 rounded-[18px] border border-white/70 bg-white/[.42] px-6 py-[18px] backdrop-blur-[10px] ${sectionWrap}`}>
-          <span className="font-jbmono whitespace-nowrap text-[11px] uppercase tracking-[.1em] text-muted">Trusted by</span>
-          <div className="flex flex-1 items-center justify-between gap-[34px] opacity-55">
-            {['L&T', 'Reliance', 'Tata', 'INFOSYS', 'HDFC', 'Wipro'].map((c) => (
-              <span key={c} className="text-base font-bold text-indigo">{c}</span>
-            ))}
-          </div>
-        </div>
+        {/* trusted-by — live logos, infinite marquee, part of the hero */}
+        <div className="mt-10"><TrustedBy /></div>
+        </section>
 
         {/* SHOP BY CATEGORY */}
         <div className={`pb-2 pt-12 ${sectionWrap}`}>
@@ -166,15 +64,24 @@ export default function HomePage() {
             </div>
             <Link href="/products" className="text-sm font-semibold text-indigo no-underline">View all →</Link>
           </div>
-          <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 lg:grid-cols-6">
-            {categories.map((c) => (
-              <Link key={c.name} href="/products" className="rounded-[18px] border border-white/80 bg-white/55 p-3.5 no-underline shadow-[0_8px_26px_rgba(34,36,90,.08)] backdrop-blur-[12px]">
-                <DcPhoto seed={c.name} className="mb-3 aspect-square rounded-[13px]" />
-                <div className="text-[13px] font-bold leading-[1.25] text-ink">{c.name}</div>
-                <div className="font-jbmono text-[10px] text-muted">{c.count}</div>
-              </Link>
-            ))}
-          </div>
+          {categories.length > 0 ? (
+            <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 lg:grid-cols-6">
+              {categories.slice(0, 6).map((c) => (
+                <Link key={c._id} href={`/products?category=${c.slug}`} className="group rounded-[18px] border border-white/80 bg-white/55 p-3.5 no-underline shadow-[0_8px_26px_rgba(34,36,90,.08)] backdrop-blur-[12px] transition-shadow hover:shadow-[0_14px_36px_rgba(34,36,90,.16)]">
+                  <div className="relative mb-3 aspect-square overflow-hidden rounded-[13px] bg-[#eef0f8]">
+                    {c.image ? (
+                      <Image src={c.image} alt={c.name} fill className="object-cover transition-transform duration-300 group-hover:scale-105" sizes="(max-width: 640px) 50vw, 16vw" />
+                    ) : (
+                      <DcPhoto seed={c.name} className="absolute inset-0" />
+                    )}
+                  </div>
+                  <div className="text-[13px] font-bold leading-[1.25] text-ink group-hover:text-indigo">{c.name}</div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted">Categories are loading — check back shortly.</p>
+          )}
         </div>
 
         {/* FEATURED PRODUCTS */}
@@ -186,26 +93,15 @@ export default function HomePage() {
             </div>
             <Link href="/products" className="text-sm font-semibold text-indigo no-underline">Full catalogue →</Link>
           </div>
-          <div className="grid grid-cols-1 gap-[18px] sm:grid-cols-2 lg:grid-cols-4">
-            {featured.map((p) => (
-              <div key={p.name} className="rounded-[20px] border border-white/85 bg-white/60 p-3.5 shadow-[0_12px_34px_rgba(34,36,90,.1)] backdrop-blur-[14px]">
-                <DcPhoto seed={p.name} className="mb-3.5 aspect-square rounded-[14px]">
-                  {p.rec && <span className="font-jbmono absolute left-2.5 top-2.5 rounded-full bg-white/80 px-2 py-[3px] text-[10px] text-indigo">Recommended</span>}
-                  <span className="absolute right-2.5 top-2.5 flex h-[30px] w-[30px] items-center justify-center rounded-full bg-white/80 text-[13px] text-slate">♡</span>
-                </DcPhoto>
-                <div className="font-jbmono mb-[5px] text-[10px] uppercase tracking-[.08em] text-accent">{p.cat}</div>
-                <div className="mb-2 text-[15px] font-bold leading-[1.25]">{p.name}</div>
-                <div className="mb-3.5 flex items-end justify-between">
-                  <div className="leading-[1.1]">
-                    <span className="text-base font-extrabold text-ink">{p.price}</span>
-                    <div className="font-jbmono mt-0.5 text-[10px] text-muted">tentative price</div>
-                  </div>
-                  <span className="font-jbmono rounded-full bg-[rgba(23,155,142,.12)] px-2 py-[3px] text-[10px] text-accent">{p.moq}</span>
-                </div>
-                <AddButton variant="soft" />
-              </div>
-            ))}
-          </div>
+          {featured.length > 0 ? (
+            <div className="grid grid-cols-1 gap-[18px] sm:grid-cols-2 lg:grid-cols-4">
+              {featured.slice(0, 4).map((p) => (
+                <ProductCard key={p._id} product={p} />
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted">Featured products are loading — check back shortly.</p>
+          )}
         </div>
 
         {/* ENTERPRISE SOLUTIONS */}

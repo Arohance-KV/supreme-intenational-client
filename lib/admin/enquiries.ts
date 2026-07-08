@@ -44,7 +44,8 @@ export interface Quotation {
   lastDownloadedAt: string | null;
   source: 'b2b';
   followUpStatus: LeadFollowUpStatus;
-  sourceType: 'cart' | 'filters';
+  sourceType: 'cart' | 'filters' | 'company';
+  companyId?: string | null;
   filtersApplied: unknown;
   createdAt: string;
   updatedAt: string;
@@ -174,5 +175,102 @@ export function useUpdateLeadStatus() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin', 'leads'] });
     },
+  });
+}
+
+// ── Enquiries (company merchandising / product-request) ──────────────────────────
+
+export type EnquiryType = 'merchandising' | 'product-request';
+export type EnquiryStatus = 'new' | 'in_progress' | 'resolved';
+
+export interface AdminEnquiryItem {
+  productId: string | null;
+  productName: string;
+  qty: number | null;
+}
+
+export interface AdminEnquiry {
+  _id: string;
+  type: EnquiryType;
+  subject: string;
+  message: string;
+  status: EnquiryStatus;
+  items: AdminEnquiryItem[];
+  companyId: string | null;
+  companyName?: string;
+  companyContact?: { name?: string; email?: string; isdCode?: string; phoneNumber?: string };
+  createdAt: string;
+}
+
+export interface EnquiriesResponse {
+  items: AdminEnquiry[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface EnquiryCounts {
+  merchandising: number;
+  product_request: number;
+  contact: number;
+}
+
+export function useEnquiries(filters: { type?: EnquiryType; status?: EnquiryStatus | ''; page?: number } = {}) {
+  const qs = new URLSearchParams();
+  if (filters.type) qs.set('type', filters.type);
+  if (filters.status) qs.set('status', filters.status);
+  if (filters.page && filters.page > 1) qs.set('page', String(filters.page));
+  const qsStr = qs.toString();
+
+  return useQuery<EnquiriesResponse>({
+    queryKey: ['admin', 'enquiries', filters.type ?? 'all', filters.status ?? 'all', filters.page ?? 1],
+    queryFn: () => adminFetch<EnquiriesResponse>(`/admin/enquiries${qsStr ? `?${qsStr}` : ''}`),
+  });
+}
+
+export function useEnquiryCounts() {
+  return useQuery<EnquiryCounts>({
+    queryKey: ['admin', 'enquiries', 'counts'],
+    queryFn: () => adminFetch<EnquiryCounts>('/admin/enquiries/counts'),
+  });
+}
+
+export function useUpdateEnquiryStatus() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, status }: { id: string; status: EnquiryStatus }) =>
+      adminFetch<AdminEnquiry>(`/admin/enquiries/${id}/status`, { method: 'PATCH', body: { status } }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin', 'enquiries'] });
+    },
+  });
+}
+
+// ── Contact-form leads (public website "Contact Us") ─────────────────────────────
+
+export interface ContactLead {
+  _id: string;
+  fullName: string;
+  email: string;
+  subject: string;
+  message: string;
+  iss: string;
+  isdCode?: string;
+  phoneNumber?: string;
+  createdAt: string;
+}
+
+export interface ContactLeadsResponse {
+  items: ContactLead[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export function useContactLeads(page = 1) {
+  const qs = page > 1 ? `?page=${page}` : '';
+  return useQuery<ContactLeadsResponse>({
+    queryKey: ['admin', 'contact-leads', page],
+    queryFn: () => adminFetch<ContactLeadsResponse>(`/admin/contact-leads${qs}`),
   });
 }

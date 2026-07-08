@@ -11,15 +11,21 @@ import {
 import { StatusChip } from '@/components/admin/StatusChip';
 import { inr, fmtDateTime } from '@/lib/admin/format';
 
-const QUOTATION_STATUSES: QuotationStatus[] = [
-  'generated',
-  'sent',
-  'viewed',
-  'converted',
-  'archived',
-];
+const GLASS = 'border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)]';
+const COLS = 'grid-cols-[140px_1fr_100px_120px_110px_90px_150px]';
 
-// ── Analytics cards ────────────────────────────────────────────────────────────
+const QUOTATION_STATUSES: QuotationStatus[] = ['generated', 'sent', 'viewed', 'converted', 'archived'];
+
+// Where the quotation was raised: company self-service portal vs the B2B cart/filters flow.
+function SourceChip({ t }: { t?: string }) {
+  const map: Record<string, [string, string]> = {
+    company: ['Company', 'text-indigo bg-[rgba(42,43,106,.1)]'],
+    filters: ['Filters', 'text-slate bg-black/[.05]'],
+    cart: ['Cart', 'text-slate bg-black/[.05]'],
+  };
+  const [label, cls] = map[t ?? 'cart'] ?? map.cart;
+  return <span className={`inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${cls}`}>{label}</span>;
+}
 
 function AnalyticsCards() {
   const { data, isLoading } = useQuotationAnalytics();
@@ -28,12 +34,9 @@ function AnalyticsCards() {
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div
-            key={`skeleton-${i}`}
-            className="rounded-xl border border-zinc-200 bg-white p-5 animate-pulse"
-          >
-            <div className="h-3 w-24 rounded bg-zinc-200 mb-3" />
-            <div className="h-8 w-16 rounded bg-zinc-200" />
+          <div key={i} className={`rounded-[18px] p-5 animate-pulse ${GLASS}`}>
+            <div className="h-3 w-24 rounded bg-black/5 mb-3" />
+            <div className="h-8 w-16 rounded bg-black/5" />
           </div>
         ))}
       </div>
@@ -49,18 +52,14 @@ function AnalyticsCards() {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
       {cards.map((c) => (
-        <div key={c.label} className="rounded-xl border border-zinc-200 bg-white p-5">
-          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-1">
-            {c.label}
-          </p>
-          <p className="text-2xl font-bold text-zinc-900">{c.value}</p>
+        <div key={c.label} className={`rounded-[18px] p-5 ${GLASS}`}>
+          <p className="font-jbmono text-[10px] font-semibold uppercase tracking-[.08em] text-muted mb-1">{c.label}</p>
+          <p className="text-3xl font-extrabold tracking-tight text-ink">{c.value}</p>
         </div>
       ))}
     </div>
   );
 }
-
-// ── Table (needs useSearchParams — wrapped in Suspense) ───────────────────────
 
 function QuotationsTable() {
   const searchParams = useSearchParams();
@@ -70,10 +69,7 @@ function QuotationsTable() {
   const pageParam = Number(searchParams.get('page') ?? '1');
   const page = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
 
-  const { data, isLoading, isError } = useQuotations({
-    status: statusParam ?? undefined,
-    page,
-  });
+  const { data, isLoading, isError } = useQuotations({ status: statusParam ?? undefined, page });
 
   const quotations = data?.items ?? [];
   const total = data?.total ?? 0;
@@ -82,11 +78,8 @@ function QuotationsTable() {
 
   function setFilter(key: string, value: string | null) {
     const params = new URLSearchParams(searchParams.toString());
-    if (value === null || value === '') {
-      params.delete(key);
-    } else {
-      params.set(key, value);
-    }
+    if (value === null || value === '') params.delete(key);
+    else params.set(key, value);
     if (key !== 'page') params.delete('page');
     router.push(`/admin/quotations?${params.toString()}`);
   }
@@ -95,16 +88,10 @@ function QuotationsTable() {
     <div className="space-y-4">
       {/* Status filter pills */}
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mr-1">
-          Filter:
-        </span>
+        <span className="font-jbmono text-xs font-semibold text-muted uppercase tracking-wider mr-1">Filter:</span>
         <button
           onClick={() => setFilter('status', null)}
-          className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-            !statusParam
-              ? 'bg-zinc-800 text-white'
-              : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
-          }`}
+          className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${!statusParam ? 'bg-indigo text-white' : 'bg-white/70 border border-line text-slate hover:bg-white'}`}
         >
           All
         </button>
@@ -112,110 +99,68 @@ function QuotationsTable() {
           <button
             key={s}
             onClick={() => setFilter('status', s)}
-            className={`rounded-full px-3 py-1 text-xs font-medium capitalize transition-colors ${
-              statusParam === s
-                ? 'bg-zinc-800 text-white'
-                : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
-            }`}
+            className={`rounded-full px-3 py-1 text-xs font-medium capitalize transition-colors ${statusParam === s ? 'bg-indigo text-white' : 'bg-white/70 border border-line text-slate hover:bg-white'}`}
           >
             {s}
           </button>
         ))}
       </div>
 
-      {/* Table */}
       {isLoading && (
-        <div className="rounded-xl border border-zinc-200 bg-white divide-y divide-zinc-100">
+        <div className={`rounded-[20px] divide-y divide-line ${GLASS}`}>
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={`skeleton-${i}`} className="flex items-center gap-4 px-5 py-3 animate-pulse">
-              <div className="h-4 w-32 rounded bg-zinc-200" />
-              <div className="h-4 w-40 rounded bg-zinc-200 flex-1" />
-              <div className="h-5 w-20 rounded-full bg-zinc-200" />
-              <div className="h-4 w-20 rounded bg-zinc-200" />
-              <div className="h-4 w-28 rounded bg-zinc-200" />
+            <div key={i} className="flex items-center gap-4 px-5 py-3 animate-pulse">
+              <div className="h-4 w-32 rounded bg-black/5" />
+              <div className="h-4 w-40 rounded bg-black/5 flex-1" />
+              <div className="h-5 w-20 rounded-full bg-black/5" />
+              <div className="h-4 w-20 rounded bg-black/5" />
             </div>
           ))}
         </div>
       )}
 
-      {isError && (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          Failed to load quotations. Please try refreshing.
-        </div>
-      )}
+      {isError && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">Failed to load quotations. Please try refreshing.</div>}
 
       {!isLoading && !isError && quotations.length === 0 && (
-        <div className="rounded-xl border border-zinc-200 bg-white p-10 text-center">
-          <p className="text-sm text-zinc-500">No quotations found.</p>
-        </div>
+        <div className={`rounded-[20px] p-10 text-center ${GLASS}`}><p className="text-sm text-muted">No quotations found.</p></div>
       )}
 
       {!isLoading && !isError && quotations.length > 0 && (
-        <div className="rounded-xl border border-zinc-200 bg-white divide-y divide-zinc-100 overflow-hidden">
-          {/* Header */}
-          <div className="grid grid-cols-[160px_1fr_140px_120px_120px_160px] gap-4 px-5 py-2 bg-zinc-50 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
-            <span>Quotation #</span>
-            <span>Contact</span>
-            <span>Status</span>
-            <span>Total</span>
-            <span>Downloads</span>
-            <span>Date</span>
+        <div className={`rounded-[20px] divide-y divide-line overflow-hidden ${GLASS}`}>
+          <div className={`grid ${COLS} gap-4 px-5 py-2.5 bg-white/50 font-jbmono text-[10px] font-semibold text-muted uppercase tracking-wider`}>
+            <span>Quotation #</span><span>Contact</span><span>Source</span><span>Status</span><span>Total</span><span>Downloads</span><span>Date</span>
           </div>
 
           {quotations.map((q) => (
             <Link
               key={q._id}
               href={`/admin/quotations/${q._id}`}
-              className="grid grid-cols-[160px_1fr_140px_120px_120px_160px] gap-4 items-center px-5 py-3 hover:bg-zinc-50 transition-colors"
+              className={`grid ${COLS} gap-4 items-center px-5 py-3 hover:bg-white/50 transition-colors`}
             >
-              <span className="font-mono text-xs text-zinc-700 truncate">
-                {q.quotationNumber}
-              </span>
+              <span className="font-jbmono text-xs text-slate truncate">{q.quotationNumber}</span>
               <div className="min-w-0">
-                <p className="text-sm text-zinc-900 truncate">{q.contact?.name ?? '—'}</p>
-                <p className="text-xs text-zinc-400 truncate">{q.contact?.email ?? ''}</p>
-                {q.contact?.company && (
-                  <p className="text-xs text-zinc-400 truncate">{q.contact.company}</p>
-                )}
+                <p className="text-sm text-ink truncate">{q.contact?.name ?? '—'}</p>
+                <p className="text-xs text-muted truncate">{q.contact?.email ?? ''}</p>
+                {q.contact?.company && <p className="text-xs text-muted truncate">{q.contact.company}</p>}
               </div>
-              <div>
-                <StatusChip status={q.status} />
-              </div>
-              <span className="text-sm font-semibold text-zinc-900">
-                {inr(q.total)}
-              </span>
-              <span className="text-sm text-zinc-600 text-center">
-                {typeof q.downloadCount === 'number' ? q.downloadCount : '—'}
-              </span>
-              <span className="text-xs text-zinc-400">
-                {fmtDateTime(q.createdAt)}
-              </span>
+              <span><SourceChip t={q.sourceType} /></span>
+              <div><StatusChip status={q.status} /></div>
+              <span className="text-sm font-bold text-ink">{inr(q.total)}</span>
+              <span className="text-sm text-slate text-center">{typeof q.downloadCount === 'number' ? q.downloadCount : '—'}</span>
+              <span className="text-xs text-muted">{fmtDateTime(q.createdAt)}</span>
             </Link>
           ))}
         </div>
       )}
 
-      {/* Pagination */}
       {pages > 1 && (
         <div className="flex items-center justify-between pt-2">
-          <p className="text-xs text-zinc-500">
-            Page {page} of {pages} · {total.toLocaleString('en-IN')} quotations
-          </p>
+          <p className="text-xs text-muted">Page {page} of {pages} · {total.toLocaleString('en-IN')} quotations</p>
           <div className="flex gap-2">
-            <button
-              disabled={page <= 1}
-              onClick={() => setFilter('page', String(page - 1))}
-              className="rounded border border-zinc-200 px-3 py-1 text-xs font-medium text-zinc-600 hover:bg-zinc-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >
-              Previous
-            </button>
-            <button
-              disabled={page >= pages}
-              onClick={() => setFilter('page', String(page + 1))}
-              className="rounded border border-zinc-200 px-3 py-1 text-xs font-medium text-zinc-600 hover:bg-zinc-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >
-              Next
-            </button>
+            <button disabled={page <= 1} onClick={() => setFilter('page', String(page - 1))}
+              className="rounded border border-line px-3 py-1 text-xs font-medium text-slate hover:bg-white/60 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">Previous</button>
+            <button disabled={page >= pages} onClick={() => setFilter('page', String(page + 1))}
+              className="rounded border border-line px-3 py-1 text-xs font-medium text-slate hover:bg-white/60 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">Next</button>
           </div>
         </div>
       )}
@@ -223,28 +168,17 @@ function QuotationsTable() {
   );
 }
 
-// ── Page ──────────────────────────────────────────────────────────────────────
-
 export default function AdminQuotationsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Quotations</h1>
-        <p className="mt-1 text-sm text-zinc-500">
-          Manage B2B quotation requests and track status
-        </p>
+        <h1 className="text-2xl font-extrabold tracking-tight text-ink">Quotations</h1>
+        <p className="mt-1 text-sm text-slate">Manage B2B quotation requests — including those raised from company dashboards — and track status.</p>
       </div>
 
-      {/* Analytics summary */}
       <AnalyticsCards />
 
-      <Suspense
-        fallback={
-          <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center text-sm text-zinc-500 animate-pulse">
-            Loading quotations…
-          </div>
-        }
-      >
+      <Suspense fallback={<div className={`rounded-[20px] p-8 text-center text-sm text-muted animate-pulse ${GLASS}`}>Loading quotations…</div>}>
         <QuotationsTable />
       </Suspense>
     </div>

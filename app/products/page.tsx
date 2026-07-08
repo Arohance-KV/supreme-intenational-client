@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { getProducts } from '@/lib/catalog';
 import ProductCard from '@/components/ProductCard';
 import Filters from '@/components/Filters';
+import ProductsToolbar from '@/components/ProductsToolbar';
 import DcFooter from '@/components/DcFooter';
 
 interface PageProps {
@@ -36,15 +37,18 @@ export default async function ProductsPage({ searchParams }: PageProps) {
       <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(55%_45%_at_100%_0%,rgba(20,155,142,.16),transparent_60%),radial-gradient(50%_45%_at_0%_6%,rgba(58,60,152,.16),transparent_60%),linear-gradient(180deg,#eef0f8_0%,#f2f1f7_50%,#eef0f8_100%)]" />
       <div className="pointer-events-none fixed -right-[120px] -top-[160px] z-0 h-[500px] w-[500px] animate-blob1 rounded-full bg-[radial-gradient(circle,rgba(20,155,142,.16),transparent_70%)] blur-[20px]" />
 
-      <div className="relative z-[1] mx-auto max-w-[1280px] px-[18px] py-10 sm:px-10">
-        <div className="mb-6">
-          <div className="font-jbmono mb-2 text-[11px] uppercase tracking-[.22em] text-accent">Catalogue</div>
-          <h1 className="text-[32px] font-extrabold tracking-[-.02em] text-ink">Products</h1>
-          {pagination.total > 0 && (
-            <p className="mt-1 text-sm text-slate">
-              {pagination.total} product{pagination.total !== 1 ? 's' : ''} found
-            </p>
-          )}
+      <div className="relative z-[1] mx-auto max-w-[1600px] px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <div className="font-jbmono mb-2 text-[11px] uppercase tracking-[.22em] text-accent">Catalogue</div>
+            <h1 className="text-[32px] font-extrabold tracking-[-.02em] text-ink">Products</h1>
+            {pagination.total > 0 && (
+              <p className="mt-1 text-sm text-slate">
+                {pagination.total} product{pagination.total !== 1 ? 's' : ''} found
+              </p>
+            )}
+          </div>
+          <ProductsToolbar />
         </div>
 
         <div className="flex flex-col gap-6 lg:flex-row">
@@ -66,7 +70,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {products.map((product) => (
                     <ProductCard key={product._id} product={product} />
                   ))}

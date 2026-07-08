@@ -81,7 +81,7 @@ export default function EmployeeDashboard() {
           ) : (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
               {recentProducts.slice(0, 10).map((product) => (
-                <ProductCard key={product._id} product={product} hrefBase="/employee/products" />
+                <ProductCard key={product._id} product={product} hrefBase="/employee/products" showAddToCart={false} />
               ))}
             </div>
           )}

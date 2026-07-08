@@ -115,3 +115,49 @@ export function useRejectSubmission(id: string) {
     },
   });
 }
+
+// ── Attribute taxonomy review (propose → admin promotes) ───────────────────────
+
+export interface AttributeReviewItem {
+  name: string;
+  value: string;
+  attributeExists: boolean;
+  attributeId?: string;
+  attributeName?: string;
+  valueExists: boolean;
+  valueId?: string;
+}
+export interface AttributeReview {
+  items: AttributeReviewItem[];
+  allResolved: boolean;
+}
+export interface ResolveAttributeBody {
+  action: 'add' | 'map';
+  name: string;
+  value: string;
+  mapAttributeId?: string;
+  mapValueId?: string;
+}
+
+const ATTR_REVIEW_KEY = (id: string) => ['admin', 'submissions', 'attr-review', id] as const;
+
+export function useAttributeReview(id: string, enabled = true) {
+  return useQuery<AttributeReview>({
+    queryKey: ATTR_REVIEW_KEY(id),
+    queryFn: () => adminFetch<AttributeReview>(`/admin/seller-submissions/${id}/attribute-review`),
+    enabled: !!id && enabled,
+  });
+}
+
+export function useResolveAttribute(id: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: ResolveAttributeBody) =>
+      adminFetch<AttributeReview>(`/admin/seller-submissions/${id}/resolve-attribute`, { method: 'POST', body }),
+    onSuccess: (data) => {
+      qc.setQueryData(ATTR_REVIEW_KEY(id), data);
+      qc.invalidateQueries({ queryKey: ['admin', 'attributes'] });
+      qc.invalidateQueries({ queryKey: SUBMISSION_KEY(id) });
+    },
+  });
+}

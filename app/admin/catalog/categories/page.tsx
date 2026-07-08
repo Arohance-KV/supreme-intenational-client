@@ -35,49 +35,49 @@ function CreateCategoryForm({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-      <h3 className="mb-4 text-sm font-semibold text-zinc-900">New category</h3>
+    <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5 shadow-sm">
+      <h3 className="mb-4 text-sm font-semibold text-ink">New category</h3>
       <form onSubmit={handleSubmit} className="space-y-3">
         <div>
-          <label className="mb-1 block text-xs font-medium text-zinc-700">
+          <label className="mb-1 block text-xs font-medium text-slate">
             Name <span className="text-red-500">*</span>
           </label>
           <input
             required
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="w-full rounded border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400"
+            className="w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
             placeholder="e.g. Safety Equipment"
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs font-medium text-zinc-700">
-            Slug <span className="text-zinc-400">(auto-generated if blank)</span>
+          <label className="mb-1 block text-xs font-medium text-slate">
+            Slug <span className="text-muted">(auto-generated if blank)</span>
           </label>
           <input
             value={form.slug ?? ''}
             onChange={(e) => setForm({ ...form, slug: e.target.value })}
-            className="w-full rounded border border-zinc-300 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-zinc-400"
+            className="w-full rounded border border-line px-3 py-2 text-sm font-jbmono focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
             placeholder="e.g. safety-equipment"
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs font-medium text-zinc-700">Description</label>
+          <label className="mb-1 block text-xs font-medium text-slate">Description</label>
           <textarea
             rows={2}
             value={form.description ?? ''}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
-            className="w-full rounded border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400"
+            className="w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs font-medium text-zinc-700">Display order</label>
+          <label className="mb-1 block text-xs font-medium text-slate">Display order</label>
           <input
             type="number"
             min={0}
             value={form.displayOrder ?? 0}
             onChange={(e) => setForm({ ...form, displayOrder: Number(e.target.value) })}
-            className="w-24 rounded border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400"
+            className="w-24 rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
         </div>
 
@@ -93,14 +93,14 @@ function CreateCategoryForm({ onClose }: { onClose: () => void }) {
           <button
             type="submit"
             disabled={createCategory.isPending}
-            className="rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60 hover:bg-zinc-700 transition-colors"
+            className="rounded bg-gradient-to-br from-indigo to-indigo2 text-white px-4 py-2 text-sm font-medium text-white disabled:opacity-60 hover:opacity-90 transition-colors"
           >
             {createCategory.isPending ? 'Creating…' : 'Create'}
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="rounded border border-zinc-200 px-4 py-2 text-sm text-zinc-600 hover:bg-zinc-50"
+            className="rounded border border-line px-4 py-2 text-sm text-slate hover:bg-white/60"
           >
             Cancel
           </button>
@@ -138,25 +138,25 @@ function EditCategoryRow({
   return (
     <form
       onSubmit={handleSubmit}
-      className="grid grid-cols-[1fr_160px_100px_80px_140px] items-start gap-4 border-b border-zinc-100 bg-zinc-50 px-5 py-3"
+      className="grid grid-cols-[1fr_160px_100px_80px_140px] items-start gap-4 border-b border-line bg-white/50 px-5 py-3"
     >
       <div className="space-y-1">
         <input
           required
           value={form.name ?? ''}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
-          className="w-full rounded border border-zinc-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400"
+          className="w-full rounded border border-line px-2 py-1.5 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
           placeholder="Name"
         />
         <input
           value={form.description ?? ''}
           onChange={(e) => setForm({ ...form, description: e.target.value })}
-          className="w-full rounded border border-zinc-300 px-2 py-1.5 text-xs text-zinc-600 focus:outline-none focus:ring-1 focus:ring-zinc-400"
+          className="w-full rounded border border-line px-2 py-1.5 text-xs text-slate focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
           placeholder="Description"
         />
       </div>
 
-      <span className="pt-2 text-xs text-zinc-400 font-mono">{category.slug}</span>
+      <span className="pt-2 text-xs text-muted font-jbmono">{category.slug}</span>
 
       <div className="pt-1">
         <input
@@ -164,17 +164,17 @@ function EditCategoryRow({
           min={0}
           value={form.displayOrder ?? 0}
           onChange={(e) => setForm({ ...form, displayOrder: Number(e.target.value) })}
-          className="w-16 rounded border border-zinc-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400"
+          className="w-16 rounded border border-line px-2 py-1.5 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
         />
       </div>
 
       <div className="pt-2">
-        <label className="flex items-center gap-1.5 text-xs text-zinc-700">
+        <label className="flex items-center gap-1.5 text-xs text-slate">
           <input
             type="checkbox"
             checked={form.isActive ?? true}
             onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
-            className="rounded border-zinc-300"
+            className="rounded border-line"
           />
           Active
         </label>
@@ -192,14 +192,14 @@ function EditCategoryRow({
           <button
             type="submit"
             disabled={updateCategory.isPending}
-            className="rounded bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-60 hover:bg-zinc-700"
+            className="rounded bg-gradient-to-br from-indigo to-indigo2 text-white px-3 py-1.5 text-xs font-medium text-white disabled:opacity-60 hover:opacity-90"
           >
             {updateCategory.isPending ? 'Saving…' : 'Save'}
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="rounded border border-zinc-200 px-3 py-1.5 text-xs text-zinc-600 hover:bg-zinc-50"
+            className="rounded border border-line px-3 py-1.5 text-xs text-slate hover:bg-white/60"
           >
             Cancel
           </button>
@@ -219,17 +219,17 @@ function CategoryRow({ category }: { category: AdminCategory }) {
   }
 
   return (
-    <div className="grid grid-cols-[1fr_160px_100px_80px_140px] items-center gap-4 border-b border-zinc-100 px-5 py-3 hover:bg-zinc-50 transition-colors">
+    <div className="grid grid-cols-[1fr_160px_100px_80px_140px] items-center gap-4 border-b border-line px-5 py-3 hover:bg-white/50 transition-colors">
       <div className="min-w-0">
-        <p className="truncate text-sm font-medium text-zinc-900">{category.name}</p>
+        <p className="truncate text-sm font-medium text-ink">{category.name}</p>
         {category.description ? (
-          <p className="truncate text-xs text-zinc-400">{category.description}</p>
+          <p className="truncate text-xs text-muted">{category.description}</p>
         ) : null}
       </div>
 
-      <span className="truncate text-xs font-mono text-zinc-500">{category.slug}</span>
+      <span className="truncate text-xs font-jbmono text-slate">{category.slug}</span>
 
-      <span className="text-sm text-zinc-700">{category.displayOrder ?? 0}</span>
+      <span className="text-sm text-slate">{category.displayOrder ?? 0}</span>
 
       <StatusChip
         status={category.isActive === false ? 'inactive' : 'active'}
@@ -238,7 +238,7 @@ function CategoryRow({ category }: { category: AdminCategory }) {
 
       <button
         onClick={() => setEditing(true)}
-        className="w-fit rounded border border-zinc-200 px-3 py-1 text-xs text-zinc-700 hover:bg-zinc-50"
+        className="w-fit rounded border border-line px-3 py-1 text-xs text-slate hover:bg-white/60"
       >
         Edit
       </button>
@@ -257,12 +257,12 @@ function CategoriesTable() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-slate">
           {!isLoading && !isError ? `${categories.length} categories` : ''}
         </p>
         <button
           onClick={() => setShowCreate((v) => !v)}
-          className="rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 transition-colors"
+          className="rounded bg-gradient-to-br from-indigo to-indigo2 text-white px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-colors"
         >
           {showCreate ? '✕ Cancel' : '+ New category'}
         </button>
@@ -273,13 +273,13 @@ function CategoriesTable() {
       )}
 
       {isLoading && (
-        <div className="rounded-xl border border-zinc-200 bg-white divide-y divide-zinc-100">
+        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] divide-y divide-line">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="flex items-center gap-4 px-5 py-3 animate-pulse">
-              <div className="h-4 w-40 rounded bg-zinc-200" />
-              <div className="h-4 w-32 rounded bg-zinc-200" />
-              <div className="h-4 w-8 rounded bg-zinc-200" />
-              <div className="h-5 w-16 rounded-full bg-zinc-200" />
+              <div className="h-4 w-40 rounded bg-black/5" />
+              <div className="h-4 w-32 rounded bg-black/5" />
+              <div className="h-4 w-8 rounded bg-black/5" />
+              <div className="h-5 w-16 rounded-full bg-black/5" />
             </div>
           ))}
         </div>
@@ -292,14 +292,14 @@ function CategoriesTable() {
       )}
 
       {!isLoading && !isError && categories.length === 0 && (
-        <div className="rounded-xl border border-zinc-200 bg-white p-10 text-center">
-          <p className="text-sm text-zinc-500">No categories yet. Create one above.</p>
+        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-10 text-center">
+          <p className="text-sm text-slate">No categories yet. Create one above.</p>
         </div>
       )}
 
       {!isLoading && !isError && categories.length > 0 && (
-        <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
-          <div className="grid grid-cols-[1fr_160px_100px_80px_140px] gap-4 bg-zinc-50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] overflow-hidden">
+          <div className="grid grid-cols-[1fr_160px_100px_80px_140px] gap-4 bg-white/50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-slate">
             <span>Name</span>
             <span>Slug</span>
             <span>Order</span>
@@ -321,12 +321,12 @@ export default function AdminCategoriesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Categories</h1>
-        <p className="mt-1 text-sm text-zinc-500">Manage product taxonomy categories</p>
+        <h1 className="text-2xl font-extrabold tracking-tight text-ink">Categories</h1>
+        <p className="mt-1 text-sm text-slate">Manage product taxonomy categories</p>
       </div>
       <Suspense
         fallback={
-          <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center text-sm text-zinc-500 animate-pulse">
+          <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-8 text-center text-sm text-slate animate-pulse">
             Loading categories…
           </div>
         }

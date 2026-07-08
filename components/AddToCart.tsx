@@ -107,20 +107,27 @@ export default function AddToCart({
   const floor = enforceMoq ? selected.moq : 1;
   const outOfStock = selected.stock < floor;
   const effectivePrice = selected.flashSalePrice ?? selected.price;
+  const compareAt = selected.flashSalePrice ? selected.price : selected.originalPrice;
+  const hasDiscount = compareAt > effectivePrice;
+  const savingsPct = hasDiscount ? Math.round(((compareAt - effectivePrice) / compareAt) * 100) : 0;
+  const orderTotal = effectivePrice * (Number.isFinite(qty) ? qty : floor);
 
+  const clamp = (val: number) => Math.min(selected.stock, Math.max(floor, val));
   const handleQtyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = Number(e.target.value);
-    setQty(val >= floor ? val : floor);
+    setQty(val >= floor ? Math.min(val, selected.stock) : floor);
   };
 
+  const showChips = variants.length > 1 && hasAttributes;
+
   return (
-    <div className="font-display flex flex-col gap-4">
-      {/* Variant Selector — one chip group per attribute */}
-      {variants.length > 1 && hasAttributes && (
-        <div className="flex flex-col gap-3">
+    <div className={`font-display grid gap-6 ${showChips ? 'md:grid-cols-[minmax(0,1fr)_300px]' : ''}`}>
+      {/* Variant Selector — one compact chip group per attribute */}
+      {showChips && (
+        <div className="flex flex-col gap-4">
           {groups.map((g) => (
             <div key={g.slug}>
-              <label className="mb-1.5 block text-sm font-semibold text-slate">{g.name}</label>
+              <label className="mb-2 block text-[13px] font-semibold uppercase tracking-[.04em] text-slate">{g.name}</label>
               <div className="flex flex-wrap gap-2">
                 {g.values.map((val) => {
                   const active = selection[g.slug] === val.slug;
@@ -134,10 +141,10 @@ export default function AddToCart({
                       aria-pressed={active}
                       className={
                         active
-                          ? 'rounded-full border border-accent bg-accent px-3.5 py-1.5 text-sm font-semibold text-white'
+                          ? 'rounded-[10px] border border-accent bg-accent px-3.5 py-1.5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(23,155,142,.3)]'
                           : available
-                            ? 'rounded-full border border-line bg-white/80 px-3.5 py-1.5 text-sm text-slate transition-colors hover:border-accent'
-                            : 'cursor-not-allowed rounded-full border border-line bg-white/40 px-3.5 py-1.5 text-sm text-muted line-through opacity-50'
+                            ? 'rounded-[10px] border border-line bg-white/80 px-3.5 py-1.5 text-sm text-slate transition-colors hover:border-accent hover:text-ink'
+                            : 'cursor-not-allowed rounded-[10px] border border-line bg-white/40 px-3.5 py-1.5 text-sm text-muted line-through opacity-50'
                       }
                     >
                       {val.label}
@@ -150,66 +157,105 @@ export default function AddToCart({
         </div>
       )}
 
-      {/* Price */}
-      <div className="flex items-baseline gap-2">
-        <span className="text-[26px] font-extrabold tracking-[-.02em] text-ink">₹{effectivePrice.toFixed(2)}</span>
-        {selected.flashSalePrice && (
-          <span className="text-sm text-muted line-through">₹{selected.price.toFixed(2)}</span>
-        )}
-        {selected.originalPrice > effectivePrice && !selected.flashSalePrice && (
-          <span className="text-sm text-muted line-through">
-            ₹{selected.originalPrice.toFixed(2)}
+      {/* Buy box — price, stock, qty and CTA kept together and always visible */}
+      <div className="flex h-fit flex-col gap-4 rounded-[18px] border border-line bg-white/70 p-5 shadow-[0_8px_26px_rgba(34,36,90,.06)]">
+        {/* Price */}
+        <div className="flex flex-wrap items-baseline gap-2">
+          <span className="text-[30px] font-extrabold tracking-[-.02em] text-ink">₹{effectivePrice.toFixed(2)}</span>
+          {hasDiscount && <span className="text-base text-muted line-through">₹{compareAt.toFixed(2)}</span>}
+          <span className="text-xs text-muted">/ unit</span>
+          {hasDiscount && (
+            <span className="font-jbmono ml-1 rounded-full bg-[rgba(23,155,142,.12)] px-2 py-[3px] text-[11px] font-semibold text-accent">
+              Save {savingsPct}%
+            </span>
+          )}
+        </div>
+
+        {/* Stock / MOQ chips */}
+        <div className="flex flex-wrap items-center gap-2">
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
+              outOfStock ? 'bg-[rgba(224,82,77,.1)] text-[#e0524d]' : 'bg-[rgba(31,170,107,.12)] text-[#1a8f5a]'
+            }`}
+          >
+            <span className={`h-1.5 w-1.5 rounded-full ${outOfStock ? 'bg-[#e0524d]' : 'bg-[#1a8f5a]'}`} />
+            {outOfStock ? 'Out of stock' : `${selected.stock} in stock`}
           </span>
+          {enforceMoq && (
+            <span className="font-jbmono inline-flex items-center rounded-full bg-[rgba(42,43,106,.08)] px-3 py-1 text-[11px] font-medium text-indigo">
+              MOQ {selected.moq}
+            </span>
+          )}
+        </div>
+
+        {/* Quantity stepper */}
+        <div>
+          <label className="mb-1.5 block text-sm font-semibold text-slate">
+            Quantity{enforceMoq ? ` (min ${selected.moq})` : ''}
+          </label>
+          <div className="inline-flex items-center rounded-xl border border-line bg-white/80 focus-within:border-accent">
+            <button
+              type="button"
+              onClick={() => setQty((q) => clamp((Number.isFinite(q) ? q : floor) - 1))}
+              disabled={outOfStock || qty <= floor}
+              aria-label="Decrease quantity"
+              className="px-3.5 py-2 text-lg leading-none text-slate transition-colors hover:text-ink disabled:opacity-30"
+            >
+              −
+            </button>
+            <input
+              type="number"
+              min={floor}
+              max={selected.stock}
+              value={qty}
+              onChange={handleQtyChange}
+              disabled={outOfStock}
+              className="w-16 border-x border-line bg-transparent py-2 text-center text-sm outline-none disabled:opacity-50 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+            />
+            <button
+              type="button"
+              onClick={() => setQty((q) => clamp((Number.isFinite(q) ? q : floor) + 1))}
+              disabled={outOfStock || qty >= selected.stock}
+              aria-label="Increase quantity"
+              className="px-3.5 py-2 text-lg leading-none text-slate transition-colors hover:text-ink disabled:opacity-30"
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        {/* Order total — the real amount for the chosen bulk quantity */}
+        {!outOfStock && (
+          <div className="flex items-baseline justify-between rounded-[14px] bg-[rgba(42,43,106,.05)] px-4 py-3">
+            <span className="text-sm text-slate">
+              Order total <span className="font-jbmono text-xs text-muted">({qty} units)</span>
+            </span>
+            <span className="text-xl font-extrabold tracking-[-.02em] text-ink">
+              ₹{orderTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
+          </div>
         )}
-        <span className="text-xs text-muted">/ unit</span>
+
+        {/* Add to Cart Button */}
+        <button
+          onClick={() => mutation.mutate()}
+          disabled={outOfStock || mutation.isPending}
+          className="inline-flex w-full items-center justify-center gap-2 rounded-[13px] bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)] px-6 py-3.5 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(42,43,106,.3)] transition-all hover:brightness-110 hover:shadow-[0_14px_34px_rgba(42,43,106,.4)] disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <svg className="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.6 8h13.2M7 13L5.4 5M10 21a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
+          </svg>
+          {mutation.isPending ? 'Adding…' : outOfStock ? 'Out of Stock' : 'Add to Cart'}
+        </button>
+
+        {/* Feedback */}
+        {mutation.isSuccess && <p className="text-sm font-semibold text-[#1a8f5a]">Added to cart!</p>}
+        {mutation.isError && (
+          <p className="text-sm font-semibold text-[#e0524d]">
+            {mutation.error instanceof ApiError ? mutation.error.message : 'Failed to add to cart. Please try again.'}
+          </p>
+        )}
       </div>
-
-      {/* Stock / MOQ info */}
-      <div className="flex items-center gap-4 text-sm text-slate">
-        <span>
-          Stock:{' '}
-          <span className={outOfStock ? 'font-semibold text-[#e0524d]' : 'font-semibold text-[#1a8f5a]'}>
-            {outOfStock ? 'Out of stock' : `${selected.stock} units`}
-          </span>
-        </span>
-        {enforceMoq && <span className="font-jbmono text-xs text-muted">MOQ: {selected.moq}</span>}
-      </div>
-
-      {/* Quantity Input */}
-      <div>
-        <label className="mb-1.5 block text-sm font-semibold text-slate">
-          Quantity{enforceMoq ? ` (min ${selected.moq})` : ''}
-        </label>
-        <input
-          type="number"
-          min={floor}
-          value={qty}
-          onChange={handleQtyChange}
-          disabled={outOfStock}
-          className="w-32 rounded-xl border border-line bg-white/80 px-3 py-2 text-sm outline-none transition-colors focus:border-accent focus:bg-white disabled:opacity-50"
-        />
-      </div>
-
-      {/* Add to Cart Button */}
-      <button
-        onClick={() => mutation.mutate()}
-        disabled={outOfStock || mutation.isPending}
-        className="w-full rounded-[13px] bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)] px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(42,43,106,.3)] transition-colors hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {mutation.isPending ? 'Adding...' : outOfStock ? 'Out of Stock' : 'Add to Cart'}
-      </button>
-
-      {/* Feedback */}
-      {mutation.isSuccess && (
-        <p className="text-sm font-semibold text-[#1a8f5a]">Added to cart!</p>
-      )}
-      {mutation.isError && (
-        <p className="text-sm font-semibold text-[#e0524d]">
-          {mutation.error instanceof ApiError
-            ? mutation.error.message
-            : 'Failed to add to cart. Please try again.'}
-        </p>
-      )}
     </div>
   );
 }

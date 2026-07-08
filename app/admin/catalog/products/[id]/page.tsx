@@ -74,7 +74,7 @@ function FlashSaleEditor({
   return (
     <div className="mt-2 space-y-1 rounded border border-violet-200 bg-violet-50 p-2 text-xs">
       <div className="flex items-center gap-2">
-        <label className="w-16 text-zinc-600">Price</label>
+        <label className="w-16 text-slate">Price</label>
         <input
           type="number"
           min={0}
@@ -82,11 +82,11 @@ function FlashSaleEditor({
           onChange={(e) =>
             setFields({ ...fields, flashSalePrice: e.target.value ? Number(e.target.value) : null })
           }
-          className="w-24 rounded border border-zinc-300 px-1.5 py-0.5 text-xs"
+          className="w-24 rounded border border-line px-1.5 py-0.5 text-xs"
         />
       </div>
       <div className="flex items-center gap-2">
-        <label className="w-16 text-zinc-600">Ends at</label>
+        <label className="w-16 text-slate">Ends at</label>
         <input
           type="datetime-local"
           value={fields.flashSaleEndsAt ? fields.flashSaleEndsAt.slice(0, 16) : ''}
@@ -96,7 +96,7 @@ function FlashSaleEditor({
               flashSaleEndsAt: e.target.value ? new Date(e.target.value).toISOString() : null,
             })
           }
-          className="rounded border border-zinc-300 px-1.5 py-0.5 text-xs"
+          className="rounded border border-line px-1.5 py-0.5 text-xs"
         />
       </div>
       {setFlashSale.error && (
@@ -115,13 +115,13 @@ function FlashSaleEditor({
         <button
           onClick={handleClear}
           disabled={setFlashSale.isPending}
-          className="rounded border border-zinc-200 px-2 py-0.5 text-xs text-zinc-700"
+          className="rounded border border-line px-2 py-0.5 text-xs text-slate"
         >
           Clear
         </button>
         <button
           onClick={() => setOpen(false)}
-          className="rounded border border-zinc-200 px-2 py-0.5 text-xs text-zinc-500"
+          className="rounded border border-line px-2 py-0.5 text-xs text-slate"
         >
           Cancel
         </button>
@@ -174,26 +174,26 @@ function VariantRow({
     updateVariant.error ?? adjustStock.error ?? deleteVariant.error;
 
   return (
-    <tr className="border-b border-zinc-100 text-sm align-top">
+    <tr className="border-b border-line text-sm align-top">
       {/* SKU */}
-      <td className="px-3 py-2 text-zinc-700">
+      <td className="px-3 py-2 text-slate">
         {editing ? (
           <input
             aria-label="SKU"
             value={fields.sku ?? ''}
             onChange={(e) => setFields({ ...fields, sku: e.target.value })}
-            className="w-full rounded border border-zinc-300 px-2 py-1 text-sm"
+            className="w-full rounded border border-line px-2 py-1 text-sm"
           />
         ) : (
-          <span className="font-mono text-xs">{variant.sku || '—'}</span>
+          <span className="font-jbmono text-xs">{variant.sku || '—'}</span>
         )}
       </td>
 
       {/* Attributes */}
-      <td className="px-3 py-2 text-xs text-zinc-500">{attrLabel}</td>
+      <td className="px-3 py-2 text-xs text-slate">{attrLabel}</td>
 
       {/* Price */}
-      <td className="px-3 py-2 text-zinc-700">
+      <td className="px-3 py-2 text-slate">
         {editing ? (
           <input
             aria-label="Price"
@@ -201,7 +201,7 @@ function VariantRow({
             min={0}
             value={fields.price ?? 0}
             onChange={(e) => setFields({ ...fields, price: Number(e.target.value) })}
-            className="w-24 rounded border border-zinc-300 px-2 py-1 text-sm"
+            className="w-24 rounded border border-line px-2 py-1 text-sm"
           />
         ) : (
           inr(variant.price)
@@ -209,7 +209,7 @@ function VariantRow({
       </td>
 
       {/* Original price */}
-      <td className="px-3 py-2 text-zinc-700">
+      <td className="px-3 py-2 text-slate">
         {editing ? (
           <input
             aria-label="Original Price"
@@ -217,7 +217,7 @@ function VariantRow({
             min={0}
             value={fields.originalPrice ?? 0}
             onChange={(e) => setFields({ ...fields, originalPrice: Number(e.target.value) })}
-            className="w-24 rounded border border-zinc-300 px-2 py-1 text-sm"
+            className="w-24 rounded border border-line px-2 py-1 text-sm"
           />
         ) : (
           inr(variant.originalPrice)
@@ -225,13 +225,13 @@ function VariantRow({
       </td>
 
       {/* Stock */}
-      <td className="px-3 py-2 text-zinc-700">
+      <td className="px-3 py-2 text-slate">
         <div className="flex items-center gap-1">
           <button
             onClick={() => adjustStock.mutate({ variantId: variant._id, delta: -1 })}
             disabled={adjustStock.isPending}
             aria-label="Decrease stock by 1"
-            className="rounded border border-zinc-200 px-1.5 py-0.5 text-xs hover:bg-zinc-50 disabled:opacity-60"
+            className="rounded border border-line px-1.5 py-0.5 text-xs hover:bg-white/60 disabled:opacity-60"
           >
             −
           </button>
@@ -240,7 +240,7 @@ function VariantRow({
             onClick={() => adjustStock.mutate({ variantId: variant._id, delta: 1 })}
             disabled={adjustStock.isPending}
             aria-label="Increase stock by 1"
-            className="rounded border border-zinc-200 px-1.5 py-0.5 text-xs hover:bg-zinc-50 disabled:opacity-60"
+            className="rounded border border-line px-1.5 py-0.5 text-xs hover:bg-white/60 disabled:opacity-60"
           >
             +
           </button>
@@ -248,7 +248,7 @@ function VariantRow({
       </td>
 
       {/* MOQ */}
-      <td className="px-3 py-2 text-zinc-700">
+      <td className="px-3 py-2 text-slate">
         {editing ? (
           <input
             aria-label="MOQ"
@@ -256,7 +256,7 @@ function VariantRow({
             min={1}
             value={fields.moq ?? 1}
             onChange={(e) => setFields({ ...fields, moq: Number(e.target.value) })}
-            className="w-20 rounded border border-zinc-300 px-2 py-1 text-sm"
+            className="w-20 rounded border border-line px-2 py-1 text-sm"
           />
         ) : (
           variant.moq
@@ -269,7 +269,7 @@ function VariantRow({
           <select
             value={fields.isActive ? 'true' : 'false'}
             onChange={(e) => setFields({ ...fields, isActive: e.target.value === 'true' })}
-            className="rounded border border-zinc-300 px-1.5 py-0.5 text-xs"
+            className="rounded border border-line px-1.5 py-0.5 text-xs"
           >
             <option value="true">Active</option>
             <option value="false">Inactive</option>
@@ -302,7 +302,7 @@ function VariantRow({
                 </button>
                 <button
                   onClick={() => setEditing(false)}
-                  className="rounded border border-zinc-200 px-2 py-1 text-xs text-zinc-700 hover:bg-zinc-50"
+                  className="rounded border border-line px-2 py-1 text-xs text-slate hover:bg-white/60"
                 >
                   Cancel
                 </button>
@@ -310,7 +310,7 @@ function VariantRow({
             ) : (
               <button
                 onClick={() => setEditing(true)}
-                className="rounded border border-zinc-200 px-2 py-1 text-xs text-zinc-700 hover:bg-zinc-50"
+                className="rounded border border-line px-2 py-1 text-xs text-slate hover:bg-white/60"
               >
                 Edit
               </button>
@@ -351,7 +351,7 @@ function AttributeValuePicker({
     <div className="space-y-3">
       {(attributes ?? []).map((attr) => (
         <div key={attr._id}>
-          <p className="mb-1.5 text-xs font-medium text-zinc-600">
+          <p className="mb-1.5 text-xs font-medium text-slate">
             {attr.name}
             {attr.unit ? ` (${attr.unit})` : ''}
           </p>
@@ -367,8 +367,8 @@ function AttributeValuePicker({
                     onClick={() => onToggle(attr._id, val._id)}
                     className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
                       selected
-                        ? 'border-zinc-900 bg-zinc-900 text-white'
-                        : 'border-zinc-200 bg-white text-zinc-600 hover:border-zinc-400'
+                        ? 'border-indigo bg-indigo text-white'
+                        : 'border-line bg-white/70 text-slate hover:bg-white'
                     }`}
                   >
                     {val.label}
@@ -382,7 +382,7 @@ function AttributeValuePicker({
   );
 }
 
-const inputCls = 'w-full rounded border border-zinc-300 px-2 py-1 text-sm';
+const inputCls = 'w-full rounded border border-line px-2 py-1 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20';
 
 function AddVariantForm({ productId, slug }: { productId: string; slug: string }) {
   const { data: allAttributes = [], isLoading: attrLoading } = useAttributes();
@@ -442,13 +442,13 @@ function AddVariantForm({ productId, slug }: { productId: string; slug: string }
       <div className="mt-4 flex items-center gap-2">
         <button
           onClick={() => setMode('single')}
-          className="rounded bg-zinc-800 px-3 py-1.5 text-xs font-medium text-white hover:bg-zinc-700"
+          className="rounded bg-gradient-to-br from-indigo to-indigo2 px-3 py-1.5 text-xs font-medium text-white hover:opacity-90"
         >
           + Add variant
         </button>
         <button
           onClick={() => setMode('bulk')}
-          className="rounded border border-zinc-300 px-3 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
+          className="rounded border border-line px-3 py-1.5 text-xs font-medium text-slate hover:bg-white/60"
         >
           Bulk create
         </button>
@@ -477,21 +477,21 @@ function AddVariantForm({ productId, slug }: { productId: string; slug: string }
   return (
     <form
       onSubmit={mode === 'single' ? handleSingleSubmit : handleBulkSubmit}
-      className="mt-4 space-y-4 rounded-xl border border-dashed border-zinc-300 p-5"
+      className="mt-4 space-y-4 rounded-[20px] border border-dashed border-line p-5"
     >
       <div className="flex items-center justify-between">
-        <p className="text-sm font-semibold text-zinc-800">
+        <p className="text-sm font-semibold text-ink">
           {mode === 'single' ? 'Add single variant' : 'Bulk create variants'}
         </p>
         {mode === 'bulk' && hasBulkSelection && (
-          <span className="rounded-full bg-zinc-900 px-3 py-1 text-xs font-semibold text-white">
+          <span className="rounded-full bg-indigo px-3 py-1 text-xs font-semibold text-white">
             {bulkCombinations} variant{bulkCombinations !== 1 ? 's' : ''}
           </span>
         )}
       </div>
 
       {mode === 'bulk' && (
-        <p className="text-xs text-zinc-400">
+        <p className="text-xs text-muted">
           Select multiple values per attribute — every combination is created automatically.
         </p>
       )}
@@ -523,7 +523,7 @@ function AddVariantForm({ productId, slug }: { productId: string; slug: string }
       {mode === 'single' ? (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
           <div>
-            <label htmlFor="nv-sku" className="mb-1 block text-xs text-zinc-600">SKU</label>
+            <label htmlFor="nv-sku" className="mb-1 block text-xs text-slate">SKU</label>
             <input
               id="nv-sku"
               value={single.sku}
@@ -532,7 +532,7 @@ function AddVariantForm({ productId, slug }: { productId: string; slug: string }
             />
           </div>
           <div>
-            <label htmlFor="nv-price" className="mb-1 block text-xs text-zinc-600">
+            <label htmlFor="nv-price" className="mb-1 block text-xs text-slate">
               Price <span className="text-red-500">*</span>
             </label>
             <input
@@ -546,7 +546,7 @@ function AddVariantForm({ productId, slug }: { productId: string; slug: string }
             />
           </div>
           <div>
-            <label htmlFor="nv-orig" className="mb-1 block text-xs text-zinc-600">
+            <label htmlFor="nv-orig" className="mb-1 block text-xs text-slate">
               Original price <span className="text-red-500">*</span>
             </label>
             <input
@@ -560,7 +560,7 @@ function AddVariantForm({ productId, slug }: { productId: string; slug: string }
             />
           </div>
           <div>
-            <label htmlFor="nv-stock" className="mb-1 block text-xs text-zinc-600">Stock</label>
+            <label htmlFor="nv-stock" className="mb-1 block text-xs text-slate">Stock</label>
             <input
               id="nv-stock"
               type="number"
@@ -571,7 +571,7 @@ function AddVariantForm({ productId, slug }: { productId: string; slug: string }
             />
           </div>
           <div>
-            <label htmlFor="nv-moq" className="mb-1 block text-xs text-zinc-600">MOQ</label>
+            <label htmlFor="nv-moq" className="mb-1 block text-xs text-slate">MOQ</label>
             <input
               id="nv-moq"
               type="number"
@@ -585,7 +585,7 @@ function AddVariantForm({ productId, slug }: { productId: string; slug: string }
       ) : (
         <div className="grid grid-cols-3 gap-3">
           <div>
-            <label htmlFor="bv-price" className="mb-1 block text-xs text-zinc-600">
+            <label htmlFor="bv-price" className="mb-1 block text-xs text-slate">
               Default price <span className="text-red-500">*</span>
             </label>
             <input
@@ -599,7 +599,7 @@ function AddVariantForm({ productId, slug }: { productId: string; slug: string }
             />
           </div>
           <div>
-            <label htmlFor="bv-orig" className="mb-1 block text-xs text-zinc-600">
+            <label htmlFor="bv-orig" className="mb-1 block text-xs text-slate">
               Default original price <span className="text-red-500">*</span>
             </label>
             <input
@@ -613,7 +613,7 @@ function AddVariantForm({ productId, slug }: { productId: string; slug: string }
             />
           </div>
           <div>
-            <label htmlFor="bv-stock" className="mb-1 block text-xs text-zinc-600">Default stock</label>
+            <label htmlFor="bv-stock" className="mb-1 block text-xs text-slate">Default stock</label>
             <input
               id="bv-stock"
               type="number"
@@ -627,7 +627,7 @@ function AddVariantForm({ productId, slug }: { productId: string; slug: string }
       )}
 
       {mode === 'bulk' && (
-        <p className="text-xs text-zinc-400">
+        <p className="text-xs text-muted">
           SKUs are auto-generated. Edit any variant row afterwards to set individual prices.
         </p>
       )}
@@ -642,7 +642,7 @@ function AddVariantForm({ productId, slug }: { productId: string; slug: string }
         <button
           type="submit"
           disabled={submitting || (mode === 'bulk' && !hasBulkSelection)}
-          className="rounded bg-zinc-800 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-60 hover:bg-zinc-700"
+          className="rounded bg-gradient-to-br from-indigo to-indigo2 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-60 hover:opacity-90"
         >
           {submitting
             ? 'Creating…'
@@ -653,7 +653,7 @@ function AddVariantForm({ productId, slug }: { productId: string; slug: string }
         <button
           type="button"
           onClick={reset}
-          className="rounded border border-zinc-200 px-3 py-1.5 text-xs text-zinc-600 hover:bg-zinc-50"
+          className="rounded border border-line px-3 py-1.5 text-xs text-slate hover:bg-white/60"
         >
           Cancel
         </button>
@@ -708,7 +708,7 @@ function ImageManager({
             <img
               src={url}
               alt="product"
-              className="h-20 w-20 rounded border border-zinc-200 object-cover"
+              className="h-20 w-20 rounded border border-line object-cover"
             />
             <button
               onClick={() => removeImage(url)}
@@ -720,7 +720,7 @@ function ImageManager({
           </div>
         ))}
         {images.length === 0 && (
-          <p className="text-xs text-zinc-400">No images yet.</p>
+          <p className="text-xs text-muted">No images yet.</p>
         )}
       </div>
       <div className="flex items-center gap-2">
@@ -730,9 +730,9 @@ function ImageManager({
           accept="image/*"
           onChange={handleUpload}
           disabled={uploading}
-          className="text-xs text-zinc-600 file:mr-2 file:rounded file:border-0 file:bg-zinc-100 file:px-3 file:py-1 file:text-xs file:font-medium file:text-zinc-700 hover:file:bg-zinc-200"
+          className="text-xs text-slate file:mr-2 file:rounded file:border-0 file:bg-black/5 file:px-3 file:py-1 file:text-xs file:font-medium file:text-slate hover:file:bg-black/10"
         />
-        {uploading && <span className="text-xs text-zinc-400">Uploading…</span>}
+        {uploading && <span className="text-xs text-muted">Uploading…</span>}
       </div>
       {uploadError && <p className="mt-1 text-xs text-red-600">{uploadError}</p>}
     </div>
@@ -772,7 +772,7 @@ function ProductEditForm({
     <form onSubmit={handleSave} className="space-y-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="p-name" className="mb-1 block text-sm font-medium text-zinc-700">
+          <label htmlFor="p-name" className="mb-1 block text-sm font-medium text-slate">
             Name
           </label>
           <input
@@ -780,22 +780,22 @@ function ProductEditForm({
             required
             value={fields.name ?? ''}
             onChange={(e) => setFields({ ...fields, name: e.target.value })}
-            className="w-full rounded border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400"
+            className="w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-zinc-700">Slug (immutable)</label>
+          <label className="mb-1 block text-sm font-medium text-slate">Slug (immutable)</label>
           <input
             readOnly
             value={product.slug}
-            className="w-full rounded border border-zinc-100 bg-zinc-50 px-3 py-2 text-sm text-zinc-400"
+            className="w-full rounded border border-line bg-white/50 px-3 py-2 text-sm text-muted"
           />
         </div>
       </div>
 
       <div>
-        <label htmlFor="p-description" className="mb-1 block text-sm font-medium text-zinc-700">
+        <label htmlFor="p-description" className="mb-1 block text-sm font-medium text-slate">
           Description
         </label>
         <textarea
@@ -803,13 +803,13 @@ function ProductEditForm({
           rows={3}
           value={fields.description ?? ''}
           onChange={(e) => setFields({ ...fields, description: e.target.value })}
-          className="w-full rounded border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400"
+          className="w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
         />
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="p-details" className="mb-1 block text-sm font-medium text-zinc-700">
+          <label htmlFor="p-details" className="mb-1 block text-sm font-medium text-slate">
             Details
           </label>
           <textarea
@@ -817,38 +817,38 @@ function ProductEditForm({
             rows={2}
             value={fields.details ?? ''}
             onChange={(e) => setFields({ ...fields, details: e.target.value })}
-            className="w-full rounded border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400"
+            className="w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
         </div>
         <div>
-          <label htmlFor="p-materials" className="mb-1 block text-sm font-medium text-zinc-700">
+          <label htmlFor="p-materials" className="mb-1 block text-sm font-medium text-slate">
             Materials
           </label>
           <input
             id="p-materials"
             value={fields.materials ?? ''}
             onChange={(e) => setFields({ ...fields, materials: e.target.value })}
-            className="w-full rounded border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400"
+            className="w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
         </div>
       </div>
 
       <div>
-        <label htmlFor="p-shipping" className="mb-1 block text-sm font-medium text-zinc-700">
+        <label htmlFor="p-shipping" className="mb-1 block text-sm font-medium text-slate">
           Shipping
         </label>
         <input
           id="p-shipping"
           value={fields.shipping ?? ''}
           onChange={(e) => setFields({ ...fields, shipping: e.target.value })}
-          className="w-full rounded border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400"
+          className="w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
         />
       </div>
 
       {/* Badge */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="p-badge-label" className="mb-1 block text-sm font-medium text-zinc-700">
+          <label htmlFor="p-badge-label" className="mb-1 block text-sm font-medium text-slate">
             Badge label
           </label>
           <input
@@ -863,12 +863,12 @@ function ProductEditForm({
                   : null,
               });
             }}
-            className="w-full rounded border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400"
+            className="w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
             placeholder="e.g. New arrival"
           />
         </div>
         <div>
-          <label htmlFor="p-badge-variant" className="mb-1 block text-sm font-medium text-zinc-700">
+          <label htmlFor="p-badge-variant" className="mb-1 block text-sm font-medium text-slate">
             Badge variant
           </label>
           <select
@@ -882,7 +882,7 @@ function ProductEditForm({
                   : null,
               })
             }
-            className="w-full rounded border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400"
+            className="w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
           >
             <option value="primary">Primary</option>
             <option value="accent">Accent</option>
@@ -892,7 +892,7 @@ function ProductEditForm({
 
       {/* Toggles */}
       <div className="flex items-center gap-6">
-        <label className="flex items-center gap-2 text-sm text-zinc-700">
+        <label className="flex items-center gap-2 text-sm text-slate">
           <input
             type="checkbox"
             checked={!!fields.isFeatured}
@@ -901,7 +901,7 @@ function ProductEditForm({
           />
           Featured
         </label>
-        <label className="flex items-center gap-2 text-sm text-zinc-700">
+        <label className="flex items-center gap-2 text-sm text-slate">
           <input
             type="checkbox"
             checked={!!fields.isActive}
@@ -914,7 +914,7 @@ function ProductEditForm({
 
       {/* Images */}
       <div>
-        <p className="mb-2 text-sm font-medium text-zinc-700">Images</p>
+        <p className="mb-2 text-sm font-medium text-slate">Images</p>
         <ImageManager
           images={fields.images ?? []}
           productId={productId}
@@ -937,7 +937,7 @@ function ProductEditForm({
       <button
         type="submit"
         disabled={updateProduct.isPending}
-        className="rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60 hover:bg-zinc-700 transition-colors"
+        className="rounded bg-gradient-to-br from-indigo to-indigo2 px-4 py-2 text-sm font-medium text-white disabled:opacity-60 hover:opacity-90 transition-colors"
       >
         {updateProduct.isPending ? 'Saving…' : 'Save changes'}
       </button>
@@ -957,8 +957,8 @@ function VariantsSection({
   slug: string;
 }) {
   return (
-    <section className="rounded-xl border border-zinc-200 bg-white p-5">
-      <h2 className="mb-4 text-base font-semibold text-zinc-800">
+    <section className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
+      <h2 className="mb-4 text-base font-semibold text-ink">
         Variants ({variants.length})
       </h2>
 
@@ -966,7 +966,7 @@ function VariantsSection({
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b border-zinc-200 text-xs uppercase text-zinc-500">
+              <tr className="border-b border-line text-xs uppercase text-slate">
                 <th className="px-3 py-2 font-medium">SKU</th>
                 <th className="px-3 py-2 font-medium">Attributes</th>
                 <th className="px-3 py-2 font-medium">Price</th>
@@ -987,7 +987,7 @@ function VariantsSection({
           </table>
         </div>
       ) : (
-        <p className="text-sm text-zinc-500">No variants yet.</p>
+        <p className="text-sm text-slate">No variants yet.</p>
       )}
 
       <AddVariantForm productId={productId} slug={slug} />
@@ -1011,8 +1011,8 @@ export default function AdminProductDetailPage({
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 w-64 animate-pulse rounded bg-zinc-200" />
-        <div className="h-64 animate-pulse rounded-xl bg-zinc-100" />
+        <div className="h-8 w-64 animate-pulse rounded bg-black/5" />
+        <div className="h-64 animate-pulse rounded-[20px] bg-black/5" />
       </div>
     );
   }
@@ -1031,18 +1031,18 @@ export default function AdminProductDetailPage({
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-zinc-500">
+      <div className="flex items-center gap-2 text-sm text-slate">
         <Link href="/admin/catalog/products" className="hover:underline">
           Products
         </Link>
         <span>/</span>
-        <span className="text-zinc-800 font-medium truncate">{product.name}</span>
+        <span className="text-ink font-medium truncate">{product.name}</span>
       </div>
 
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-900">{product.name}</h1>
-          <p className="mt-1 text-xs text-zinc-400 font-mono">{product.slug}</p>
+          <h1 className="text-2xl font-extrabold tracking-tight text-ink">{product.name}</h1>
+          <p className="mt-1 text-xs text-muted font-jbmono">{product.slug}</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <StatusChip
@@ -1054,15 +1054,15 @@ export default function AdminProductDetailPage({
               Featured
             </span>
           )}
-          <span className="inline-flex items-center rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-500 capitalize">
+          <span className="inline-flex items-center rounded-full bg-white/70 border border-line px-2 py-0.5 text-xs text-slate capitalize">
             {product.visibility}
           </span>
         </div>
       </div>
 
       {/* Core fields */}
-      <section className="rounded-xl border border-zinc-200 bg-white p-5">
-        <h2 className="mb-4 text-base font-semibold text-zinc-800">Product details</h2>
+      <section className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
+        <h2 className="mb-4 text-base font-semibold text-ink">Product details</h2>
         <ProductEditForm product={product} productId={productId} slug={slug} />
       </section>
 

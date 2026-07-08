@@ -67,17 +67,17 @@ function CreateCompanyModal({ onClose }: CreateCompanyModalProps) {
   }
 
   const inputCls =
-    'w-full rounded border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400';
-  const labelCls = 'mb-1 block text-sm font-medium text-zinc-700';
+    'w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20';
+  const labelCls = 'mb-1 block text-sm font-medium text-slate';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 overflow-y-auto">
-      <div className="my-8 w-full max-w-lg rounded-xl border border-zinc-200 bg-white p-6 shadow-xl">
+      <div className="my-8 w-full max-w-lg rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-6 shadow-xl">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-base font-semibold text-zinc-900">Create company</h2>
+          <h2 className="text-base font-semibold text-ink">Create company</h2>
           <button
             onClick={onClose}
-            className="rounded p-1 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700"
+            className="rounded p-1 text-muted hover:bg-black/5 hover:text-slate"
             aria-label="Close"
           >
             ✕
@@ -98,7 +98,7 @@ function CreateCompanyModal({ onClose }: CreateCompanyModalProps) {
             />
           </div>
 
-          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate">
             Primary contact (optional)
           </p>
 
@@ -161,14 +161,14 @@ function CreateCompanyModal({ onClose }: CreateCompanyModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="rounded border border-zinc-200 px-4 py-2 text-sm text-zinc-600 hover:bg-zinc-50"
+              className="rounded border border-line px-4 py-2 text-sm text-slate hover:bg-white/60"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={createCompany.isPending}
-              className="rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+              className="rounded bg-gradient-to-br from-indigo to-indigo2 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
             >
               {createCompany.isPending ? 'Creating…' : 'Create'}
             </button>
@@ -183,24 +183,24 @@ function CreateCompanyModal({ onClose }: CreateCompanyModalProps) {
 
 function CompanyRow({ company }: { company: AdminCompany }) {
   return (
-    <div className="grid grid-cols-[1fr_180px_160px_120px_80px] items-center gap-3 border-b border-zinc-100 px-5 py-3 hover:bg-zinc-50 transition-colors">
+    <div className="grid grid-cols-[1fr_180px_160px_120px_80px] items-center gap-3 border-b border-line px-5 py-3 hover:bg-white/50 transition-colors">
       <div className="min-w-0">
         <Link
           href={`/admin/companies/${company._id}`}
-          className="text-sm font-medium text-zinc-900 hover:underline truncate block"
+          className="text-sm font-medium text-ink hover:underline truncate block"
         >
           {company.name}
         </Link>
-        <span className="text-xs text-zinc-400 font-mono truncate block">{company.slug}</span>
+        <span className="text-xs text-muted font-jbmono truncate block">{company.slug}</span>
       </div>
-      <span className="text-xs text-zinc-500 truncate">
+      <span className="text-xs text-slate truncate">
         {company.primaryContact?.email ?? '—'}
       </span>
-      <span className="text-xs text-zinc-500">{fmtDate(company.createdAt)}</span>
+      <span className="text-xs text-slate">{fmtDate(company.createdAt)}</span>
       <StatusChip status={company.status} />
       <Link
         href={`/admin/companies/${company._id}`}
-        className="rounded border border-zinc-200 px-3 py-1 text-xs text-zinc-700 hover:bg-zinc-50 text-center"
+        className="rounded border border-line px-3 py-1 text-xs text-slate hover:bg-white/60 text-center"
       >
         View
       </Link>
@@ -230,12 +230,12 @@ function CompaniesTable() {
           placeholder="Search companies…"
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-          className="rounded border border-zinc-300 px-3 py-2 text-sm w-56 focus:outline-none focus:ring-1 focus:ring-zinc-400"
+          className="rounded border border-line px-3 py-2 text-sm w-56 focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
         />
         <select
           value={statusFilter}
           onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-          className="rounded border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400"
+          className="rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
         >
           <option value="">All statuses</option>
           <option value="active">Active</option>
@@ -244,7 +244,7 @@ function CompaniesTable() {
         <div className="ml-auto">
           <button
             onClick={() => setShowCreate(true)}
-            className="rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 transition-colors"
+            className="rounded bg-gradient-to-br from-indigo to-indigo2 px-4 py-2 text-sm font-medium text-white transition-colors"
           >
             + New company
           </button>
@@ -255,13 +255,13 @@ function CompaniesTable() {
 
       {/* Loading */}
       {isLoading && (
-        <div className="rounded-xl border border-zinc-200 bg-white divide-y divide-zinc-100">
+        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] divide-y divide-line">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={`skeleton-${i}`} className="flex items-center gap-4 px-5 py-3 animate-pulse">
-              <div className="h-4 w-48 rounded bg-zinc-200" />
-              <div className="h-4 w-32 rounded bg-zinc-200" />
-              <div className="h-4 w-24 rounded bg-zinc-200" />
-              <div className="h-5 w-16 rounded-full bg-zinc-200" />
+              <div className="h-4 w-48 rounded bg-black/5" />
+              <div className="h-4 w-32 rounded bg-black/5" />
+              <div className="h-4 w-24 rounded bg-black/5" />
+              <div className="h-5 w-16 rounded-full bg-black/5" />
             </div>
           ))}
         </div>
@@ -269,22 +269,22 @@ function CompaniesTable() {
 
       {/* Error */}
       {isError && (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-[20px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {error instanceof ApiError ? error.message : 'Failed to load companies.'}
         </div>
       )}
 
       {/* Empty */}
       {!isLoading && !isError && items.length === 0 && (
-        <div className="rounded-xl border border-zinc-200 bg-white p-10 text-center">
-          <p className="text-sm text-zinc-500">No companies found.</p>
+        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-10 text-center">
+          <p className="text-sm text-slate">No companies found.</p>
         </div>
       )}
 
       {/* Table */}
       {!isLoading && !isError && items.length > 0 && (
-        <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
-          <div className="grid grid-cols-[1fr_180px_160px_120px_80px] gap-3 bg-zinc-50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] overflow-hidden">
+          <div className="grid grid-cols-[1fr_180px_160px_120px_80px] gap-3 bg-white/50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-slate">
             <span>Company</span>
             <span>Contact Email</span>
             <span>Created</span>
@@ -299,7 +299,7 @@ function CompaniesTable() {
 
       {/* Pagination */}
       {pagination && pagination.pages > 1 && (
-        <div className="flex items-center justify-between text-sm text-zinc-500">
+        <div className="flex items-center justify-between text-sm text-slate">
           <span>
             Page {pagination.page} of {pagination.pages} ({pagination.total.toLocaleString()} total)
           </span>
@@ -307,14 +307,14 @@ function CompaniesTable() {
             <button
               disabled={pagination.page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="rounded border border-zinc-200 px-3 py-1 hover:bg-zinc-50 disabled:opacity-40"
+              className="rounded border border-line px-3 py-1 hover:bg-white/60 disabled:opacity-40"
             >
               Previous
             </button>
             <button
               disabled={pagination.page >= pagination.pages}
               onClick={() => setPage((p) => p + 1)}
-              className="rounded border border-zinc-200 px-3 py-1 hover:bg-zinc-50 disabled:opacity-40"
+              className="rounded border border-line px-3 py-1 hover:bg-white/60 disabled:opacity-40"
             >
               Next
             </button>
@@ -331,15 +331,15 @@ export default function AdminCompaniesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Companies</h1>
-        <p className="mt-1 text-sm text-zinc-500">
+        <h1 className="text-2xl font-extrabold tracking-tight text-ink">Companies</h1>
+        <p className="mt-1 text-sm text-slate">
           Manage B2E companies, employees, wallets, and catalogues
         </p>
       </div>
 
       <Suspense
         fallback={
-          <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center text-sm text-zinc-500 animate-pulse">
+          <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-8 text-center text-sm text-slate animate-pulse">
             Loading companies…
           </div>
         }

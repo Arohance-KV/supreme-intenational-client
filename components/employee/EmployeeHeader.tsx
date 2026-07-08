@@ -54,7 +54,7 @@ export default function EmployeeHeader() {
                   ₹{walletData.balance.toLocaleString('en-IN')}
                 </Link>
               )}
-              <CartBadge count={cartData?.itemCount ?? 0} href="/employee/cart" />
+              <CartBadge count={cartData?.items.length ?? 0} href="/employee/cart" />
               <button
                 onClick={handleLogout}
                 className="rounded-xl px-3 py-[9px] text-sm font-medium text-slate transition-colors hover:bg-[rgba(42,43,106,.07)] hover:text-ink"

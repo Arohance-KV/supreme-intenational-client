@@ -1,14 +1,20 @@
 'use client';
 import { usePathname } from 'next/navigation';
-import SiteHeader from '@/components/SiteHeader';
+import DcNav from '@/components/DcNav';
 
+// Dashboards ship their own headers — no public nav there.
 const HIDE = ['/admin', '/seller', '/employee', '/company'];
-// Public marketing pages ship their own glass nav (DcNav) baked in.
-const OWN_NAV = new Set(['/', '/clients', '/about', '/careers', '/contact']);
+
+// Highlight the matching top-level section for the current path.
+function activeKey(p: string): string | undefined {
+  for (const key of ['products', 'clients', 'about', 'careers', 'contact']) {
+    if (p === '/' + key || p.startsWith('/' + key + '/')) return key;
+  }
+  return undefined;
+}
 
 export default function ConditionalSiteHeader() {
   const p = usePathname();
-  if (OWN_NAV.has(p)) return null;
   if (HIDE.some((h) => p === h || p.startsWith(h + '/'))) return null;
-  return <SiteHeader />;
+  return <DcNav active={activeKey(p)} />;
 }

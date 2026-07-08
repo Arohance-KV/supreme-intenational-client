@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCreateSubmission, type SubmissionInput } from '@/lib/seller/submissions';
 import { SubmissionForm } from '@/components/seller/SubmissionForm';
@@ -12,18 +13,31 @@ export default function NewSubmissionPage() {
   };
 
   return (
-    <main className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="text-xl font-bold text-zinc-900 mb-6">New product submission</h1>
+    <div className="mx-auto max-w-3xl px-6 py-6 sm:px-8 sm:py-7">
+      <div className="mb-6">
+        <Link
+          href="/seller/products"
+          className="mb-2 inline-block text-[13px] font-medium text-slate no-underline hover:text-ink"
+        >
+          ← My Products
+        </Link>
+        <h1 className="mb-0.5 text-[26px] font-extrabold tracking-[-.02em] text-ink">New product submission</h1>
+        <div className="text-[13px] text-slate">
+          Save a draft, then submit it for admin review before it goes live.
+        </div>
+      </div>
+
       {create.isError && (
-        <p className="mb-4 text-sm text-red-600">
+        <div className="mb-4 rounded-[14px] border border-[rgba(216,82,77,.25)] bg-[rgba(216,82,77,.08)] px-4 py-3 text-sm text-[#d8524d]">
           {create.error instanceof Error ? create.error.message : 'Could not create submission'}
-        </p>
+        </div>
       )}
+
       <SubmissionForm
         submitLabel="Save draft"
         submitting={create.isPending}
         onSubmit={handleSubmit}
       />
-    </main>
+    </div>
   );
 }

@@ -2,21 +2,25 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api';
 import { adminFetch } from './api';
 
+import type { Role } from './roles';
+
 export interface AdminProfile {
   _id: string;
   firstName: string;
   lastName?: string;
   email: string;
+  role: Role;
   isActive: boolean;
   lastLoginAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
-export function useAdminProfile() {
+export function useAdminProfile(opts?: { enabled?: boolean }) {
   return useQuery<AdminProfile>({
     queryKey: ['admin', 'profile'],
     queryFn: () => adminFetch<AdminProfile>('/admin/auth/profile'),
+    enabled: opts?.enabled,
   });
 }
 

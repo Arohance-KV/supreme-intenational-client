@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  ::selection { background: rgba(23,155,142,.22); }
+  @keyframes blobshift { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(4%,-3%) scale(1.08); } }
+
+  /* responsive */
+  @media (max-width: 980px){
+    [data-main]{ grid-template-columns:1fr !important; }
+    [data-summary]{ position:static !important; }
+    [data-recgrid]{ grid-template-columns:1fr !important; }
+  }
+  @media (max-width: 880px){
+    [data-navlinks]{ display:none !important; }
+    [data-footgrid]{ grid-template-columns:repeat(2,1fr) !important; }
+    [data-step-label]{ display:none !important; }
+  }
+  @media (max-width: 620px){
+    [data-footgrid]{ grid-template-columns:1fr !important; }
+    [style*="font-size: 34px"]{ font-size:24px !important; }
+    [data-nav]{ flex-wrap:wrap !important; row-gap:10px !important; }
+    [data-hpad]{ padding:14px 2px 6px !important; }
+  }
+</style>
+</helmet>
+
+<div ref="{{ setWrap }}" style="position:relative; min-height:100vh; width:100%; overflow-x:hidden; background:#eef0f8; color:#16173a; --c-ink:#16173a; --c-indigo:#2a2b6a; --c-indigo2:#3a3c98; --c-accent:#149b8e; --c-accent2:#13b89f; --c-slate:#5b5d7a; --c-muted:#9295b6; --c-line:#e6e7f2; --glass-bg:rgba(255,255,255,.52); --glass-brd:rgba(255,255,255,.78); --glass-blur:18px;">
+
+  <div style="position:fixed; inset:0; z-index:0; pointer-events:none; background:
+      radial-gradient(60% 50% at 12% 8%, rgba(74,76,201,.20), transparent 60%),
+      radial-gradient(52% 46% at 92% 12%, rgba(19,184,159,.20), transparent 60%),
+      radial-gradient(50% 48% at 78% 92%, rgba(124,77,210,.14), transparent 62%),
+      linear-gradient(180deg,#eceefb 0%,#f4f1f8 50%,#e9f1f3 100%);"></div>
+  <div style="position:fixed; top:-160px; right:-140px; width:520px; height:520px; z-index:0; pointer-events:none; border-radius:50%; background:radial-gradient(circle,rgba(20,155,142,.16),transparent 70%); filter:blur(20px); animation:blobshift 18s ease-in-out infinite;"></div>
+  <div style="position:fixed; bottom:-180px; left:-120px; width:480px; height:480px; z-index:0; pointer-events:none; border-radius:50%; background:radial-gradient(circle,rgba(74,76,201,.14),transparent 70%); filter:blur(24px); animation:blobshift 22s ease-in-out infinite reverse;"></div>
+
+  <div style="position:relative; z-index:1; max-width:1280px; margin:0 auto; padding:0 24px;">
+
+    <!-- NAV -->
+    <div data-nav style="position:sticky; top:0; z-index:40; margin:16px 0; padding:12px 18px; display:flex; align-items:center; gap:20px; background:rgba(255,255,255,.62); backdrop-filter:blur(20px) saturate(1.6); -webkit-backdrop-filter:blur(20px) saturate(1.6); border:1px solid rgba(255,255,255,.8); border-radius:18px; box-shadow:0 8px 30px rgba(34,36,90,.1);">
+      <a href="Supreme International.dc.html" style="display:flex; align-items:center; gap:10px;"><img src="assets/supreme-logo.png" alt="Supreme International" style="height:26px;"><span style="width:1px; height:22px; background:var(--c-line);"></span><img src="assets/elate-logo.png" alt="Elate" style="height:30px;"></a>
+      <div data-navlinks style="display:flex; gap:4px; margin-left:8px;">
+        <a href="Catalogue.dc.html" style="text-decoration:none; font-size:14px; font-weight:600; color:var(--c-ink); padding:8px 12px; border-radius:10px; background:rgba(42,43,106,.07);">Products</a>
+        <span style="font-size:14px; font-weight:500; color:var(--c-slate); padding:8px 12px; border-radius:10px;">Clients</span>
+        <span style="font-size:14px; font-weight:500; color:var(--c-slate); padding:8px 12px; border-radius:10px;">About</span>
+        <span style="font-size:14px; font-weight:500; color:var(--c-slate); padding:8px 12px; border-radius:10px;">Contact</span>
+      </div>
+      <div style="margin-left:auto; display:flex; align-items:center; gap:10px;">
+        <div style="position:relative; width:42px; height:42px; border-radius:12px; background:var(--c-indigo); display:flex; align-items:center; justify-content:center; font-size:16px;">🛍
+          <span style="position:absolute; top:-6px; right:-6px; min-width:18px; height:18px; padding:0 4px; border-radius:9px; background:var(--c-accent); color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center;">4</span>
+        </div>
+        <button style="cursor:pointer; font-family:inherit; font-weight:600; font-size:13px; color:var(--c-indigo); padding:11px 16px; border-radius:12px; background:transparent; border:1px solid var(--c-line);">Login</button>
+      </div>
+    </div>
+
+    <!-- HEADER -->
+    <div data-hpad style="padding:14px 4px 8px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--c-accent); margin-bottom:10px;">Corporate procurement workspace</div>
+      <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap;">
+        <div>
+          <h1 style="font-size:34px; font-weight:800; letter-spacing:-.02em; margin:0 0 4px; color:var(--c-ink);">Cart &amp; Quotation Builder</h1>
+          <div style="font-size:14px; color:var(--c-slate);">4 line items · ready to generate a priced quotation</div>
+        </div>
+        <a href="Catalogue.dc.html" style="text-decoration:none; font-size:14px; font-weight:600; color:var(--c-indigo); padding:11px 16px; border-radius:12px; background:rgba(255,255,255,.6); border:1px solid var(--c-line);">+ Add more products</a>
+      </div>
+
+      <!-- STEPPER -->
+      <div style="display:flex; align-items:center; gap:12px; margin-top:20px; padding:14px 18px; background:rgba(255,255,255,.5); border:1px solid var(--glass-brd); border-radius:16px; backdrop-filter:blur(12px);">
+        <div style="display:flex; align-items:center; gap:9px;">
+          <span style="width:26px; height:26px; border-radius:50%; background:linear-gradient(135deg,#2a2b6a,#3a3c98); color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(42,43,106,.3);">1</span>
+          <span data-step-label style="font-size:13px; font-weight:700; color:var(--c-ink);">Build quotation</span>
+        </div>
+        <span style="flex:1; height:2px; border-radius:2px; background:linear-gradient(90deg,rgba(42,43,106,.35),var(--c-line));"></span>
+        <div style="display:flex; align-items:center; gap:9px;">
+          <span style="width:26px; height:26px; border-radius:50%; background:rgba(42,43,106,.08); color:var(--c-slate); font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; border:1px solid var(--c-line);">2</span>
+          <span data-step-label style="font-size:13px; font-weight:600; color:var(--c-slate);">Verify number</span>
+        </div>
+        <span style="flex:1; height:2px; border-radius:2px; background:var(--c-line);"></span>
+        <div style="display:flex; align-items:center; gap:9px;">
+          <span style="width:26px; height:26px; border-radius:50%; background:rgba(42,43,106,.08); color:var(--c-slate); font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; border:1px solid var(--c-line);">3</span>
+          <span data-step-label style="font-size:13px; font-weight:600; color:var(--c-slate);">Send / download</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div data-main style="display:grid; grid-template-columns:1fr 372px; gap:22px; align-items:start; padding:22px 0 40px;">
+
+      <!-- LINE ITEMS -->
+      <div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin:2px 4px 14px;">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--c-slate);">Line items</span>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--c-muted);">qty in steps of 50 · MOQ enforced</span>
+        </div>
+        <div data-rows style="display:flex; flex-direction:column; gap:14px;"></div>
+
+        <!-- recommended add-ons -->
+        <div style="margin-top:24px; background:var(--glass-bg); backdrop-filter:blur(var(--glass-blur)); border:1px solid var(--glass-brd); border-radius:20px; padding:20px; box-shadow:inset 0 1px 0 rgba(255,255,255,.6);">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--c-accent);">✦ Smart recommendations</span>
+            <span style="font-size:12px; color:var(--c-muted);">· buyers often add these</span>
+          </div>
+          <div data-recgrid style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+            <div style="display:flex; align-items:center; gap:12px; background:rgba(255,255,255,.6); border:1px solid var(--c-line); border-radius:14px; padding:12px;">
+              <div style="width:54px; height:54px; flex:none; border-radius:11px; background:repeating-linear-gradient(135deg,rgba(23,155,142,.06) 0 8px,rgba(23,155,142,.02) 8px 16px),linear-gradient(135deg,#e3efed,#daece9);"></div>
+              <div style="flex:1;"><div style="font-weight:700; font-size:14px;">Wireless Charging Pad</div><div style="font-size:12px; color:var(--c-slate);">₹ 890 · MOQ 100</div></div>
+              <button data-addrec onClick="{{ addRec }}" style="cursor:pointer; font-family:inherit; font-weight:600; font-size:12px; color:var(--c-indigo); padding:8px 12px; border-radius:10px; background:rgba(42,43,106,.07); border:1px solid rgba(42,43,106,.14);">+ Add</button>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px; background:rgba(255,255,255,.6); border:1px solid var(--c-line); border-radius:14px; padding:12px;">
+              <div style="width:54px; height:54px; flex:none; border-radius:11px; background:repeating-linear-gradient(135deg,rgba(42,43,106,.06) 0 8px,rgba(42,43,106,.02) 8px 16px),linear-gradient(135deg,#e6eaf6,#dde2f1);"></div>
+              <div style="flex:1;"><div style="font-weight:700; font-size:14px;">Gift Box Packaging</div><div style="font-size:12px; color:var(--c-slate);">₹ 120 · MOQ 100</div></div>
+              <button data-addrec onClick="{{ addRec }}" style="cursor:pointer; font-family:inherit; font-weight:600; font-size:12px; color:var(--c-indigo); padding:8px 12px; border-radius:10px; background:rgba(42,43,106,.07); border:1px solid rgba(42,43,106,.14);">+ Add</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- notes -->
+        <div style="margin-top:14px; background:var(--glass-bg); backdrop-filter:blur(var(--glass-blur)); border:1px solid var(--glass-brd); border-radius:20px; padding:20px; box-shadow:inset 0 1px 0 rgba(255,255,255,.6);">
+          <div style="font-size:13px; font-weight:700; margin-bottom:10px;">Notes &amp; branding requirements</div>
+          <div style="font-size:13px; color:var(--c-slate); line-height:1.6; background:rgba(255,255,255,.5); border:1px dashed var(--c-line); border-radius:12px; padding:14px; min-height:72px;">Logo in white on navy · delivery to Mumbai &amp; Pune offices by 15 Dec · need digital proof before production…</div>
+        </div>
+      </div>
+
+      <!-- SUMMARY / QUOTATION PREVIEW -->
+      <div data-summary style="position:sticky; top:90px; background:var(--glass-bg); backdrop-filter:blur(var(--glass-blur)) saturate(1.5); -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(1.5); border:1px solid var(--glass-brd); border-radius:22px; overflow:hidden; box-shadow:0 14px 44px rgba(34,36,90,.1), inset 0 1px 0 rgba(255,255,255,.6);">
+        <div style="padding:18px 24px; background:linear-gradient(135deg,#1c1d44,#23254f); color:#fff; display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:#9fe7dc; margin-bottom:4px;">Quotation preview</div>
+            <div style="font-size:17px; font-weight:800; letter-spacing:-.01em;">Estimate summary</div>
+          </div>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:rgba(255,255,255,.55);">DRAFT</span>
+        </div>
+
+        <div style="padding:20px 24px 24px;">
+          <div style="display:flex; justify-content:space-between; font-size:14px; color:var(--c-slate); margin-bottom:12px;"><span>Items</span><span data-count style="font-weight:600; color:var(--c-ink);">4</span></div>
+          <div style="display:flex; justify-content:space-between; font-size:14px; color:var(--c-slate); margin-bottom:12px;"><span>Total units</span><span data-units style="font-weight:600; color:var(--c-ink);">650</span></div>
+          <div style="display:flex; justify-content:space-between; font-size:14px; color:var(--c-slate); margin-bottom:4px;"><span>Est. branding</span><span style="font-weight:600; color:var(--c-accent);">Included</span></div>
+
+          <div style="margin:16px 0; border-top:1px dashed var(--c-line);"></div>
+
+          <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:12px; padding:14px 16px; border-radius:14px; background:linear-gradient(135deg,rgba(42,43,106,.06),rgba(20,155,142,.06)); border:1px solid var(--glass-brd);">
+            <div>
+              <div style="font-size:12px; color:var(--c-slate); margin-bottom:2px;">Estimated total</div>
+              <div data-total style="font-size:28px; font-weight:800; letter-spacing:-.02em; color:var(--c-ink); white-space:nowrap;">₹ 3,39,000</div>
+            </div>
+            <div style="font-size:10px; color:var(--c-muted); font-family:'JetBrains Mono',monospace; text-align:right; line-height:1.5;">tentative ·<br>confirmed in quote</div>
+          </div>
+
+          <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--c-muted); margin:20px 0 12px;">Generate output</div>
+          <button data-out onClick="{{ flash }}" data-label="Download Quotation PDF" style="cursor:pointer; width:100%; display:flex; align-items:center; justify-content:center; gap:8px; font-family:inherit; font-weight:700; font-size:14px; color:#fff; padding:14px; border-radius:13px; background:linear-gradient(135deg,#2a2b6a,#3a3c98); border:none; box-shadow:0 12px 28px rgba(42,43,106,.3); margin-bottom:10px;">↓ Download Quotation PDF</button>
+          <button data-out onClick="{{ flash }}" data-label="Send to WhatsApp" style="cursor:pointer; width:100%; display:flex; align-items:center; justify-content:center; gap:8px; font-family:inherit; font-weight:700; font-size:14px; color:#fff; padding:14px; border-radius:13px; background:#1fa463; border:none; box-shadow:0 12px 28px rgba(31,164,99,.28); margin-bottom:10px;">↗ Send to WhatsApp</button>
+          <button data-out onClick="{{ flash }}" data-label="Email Quotation" style="cursor:pointer; width:100%; display:flex; align-items:center; justify-content:center; gap:8px; font-family:inherit; font-weight:600; font-size:14px; color:var(--c-indigo); padding:14px; border-radius:13px; background:rgba(255,255,255,.7); border:1px solid var(--c-line);">✉ Email Quotation</button>
+
+          <div style="margin-top:16px; display:flex; gap:10px; align-items:flex-start; padding:12px 14px; border-radius:12px; background:rgba(23,155,142,.08); border:1px solid rgba(23,155,142,.2);">
+            <span style="font-size:14px;">🔒</span>
+            <div style="font-size:12px; line-height:1.5; color:#127d72;">A one-time OTP verifies your number at this step — so every quotation reaches Supreme's team as a qualified lead.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div style="position:relative; z-index:1; background:linear-gradient(135deg,#1c1d44,#23254f);">
+    <div style="max-width:1280px; margin:0 auto; padding:44px 24px 30px;">
+      <div data-footgrid style="display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:24px; margin-bottom:34px;">
+        <div>
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;"><img src="assets/supreme-logo.png" alt="Supreme" style="height:30px; filter:brightness(0) invert(1); opacity:.92;"><span style="width:1px; height:24px; background:rgba(255,255,255,.2);"></span><img src="assets/elate-logo.png" alt="Elate" style="height:34px; filter:brightness(0) invert(1); opacity:.92;"></div>
+          <div style="font-size:13px; line-height:1.6; color:rgba(255,255,255,.55); max-width:32ch;">Corporate gifting &amp; promotional merchandise, engineered for enterprise procurement teams.</div>
+        </div>
+        <div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:#9fe7dc; margin-bottom:14px;">Company</div><div style="display:flex; flex-direction:column; gap:10px; font-size:13px; color:rgba(255,255,255,.7);"><span>About Us</span><span>Clients</span><span>Careers</span><span>Contact</span></div></div>
+        <div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:#9fe7dc; margin-bottom:14px;">Products</div><div style="display:flex; flex-direction:column; gap:10px; font-size:13px; color:rgba(255,255,255,.7);"><a href="Catalogue.dc.html" style="text-decoration:none; color:inherit;">Catalogue</a><a href="Quotation Builder.dc.html" style="text-decoration:none; color:inherit;">Quotation builder</a><a href="Merchandise Portal.dc.html" style="text-decoration:none; color:inherit;">Merchandise portal</a><a href="Admin Dashboard.dc.html" style="text-decoration:none; color:inherit;">Admin</a></div></div>
+        <div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:#9fe7dc; margin-bottom:14px;">Connect</div><div style="display:flex; flex-direction:column; gap:10px; font-size:13px; color:rgba(255,255,255,.7);"><span>WhatsApp</span><span>hello@supremeinternational.com</span><span>+91 ·· ···· ····</span></div></div>
+      </div>
+      <div style="border-top:1px solid rgba(255,255,255,.12); padding-top:18px; display:flex; justify-content:space-between; font-size:12px; color:rgba(255,255,255,.45);"><span>© Supreme International</span><span style="font-family:'JetBrains Mono',monospace;">Privacy · Terms</span></div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280},&quot;accentTheme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Teal&quot;,&quot;Gold&quot;,&quot;Indigo&quot;],&quot;default&quot;:&quot;Teal&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  rows = [
+    { name: 'Canvas Laptop Backpack', brand: 'Screen Print · Navy', unit: 1250, qty: 100, moq: 100, img: 'backpack', tint: 'i' },
+    { name: 'Insulated Steel Bottle', brand: 'Laser Engrave · Steel', unit: 540, qty: 200, moq: 50, img: 'bottle', tint: 't' },
+    { name: 'Premium Roller Pen Set', brand: 'Embossed · Black', unit: 320, qty: 200, moq: 200, img: 'pen-set', tint: 'i' },
+    { name: 'Hardbound Notebook', brand: 'Foil Stamp · Teal', unit: 280, qty: 150, moq: 150, img: 'notebook', tint: 't' },
+  ];
+
+  componentDidMount() { this.applyTheme(); this.renderRows(); }
+  componentDidUpdate() { this.applyTheme(); }
+
+  applyTheme() {
+    const w = this.wrap; if (!w) return;
+    const a = this.props.accentTheme || 'Teal';
+    const map = { Teal: ['#149b8e', '#13b89f'], Gold: ['#b0823a', '#d2a043'], Indigo: ['#4143b0', '#5a5cd0'] };
+    const [c1, c2] = map[a] || map.Teal;
+    w.style.setProperty('--c-accent', c1); w.style.setProperty('--c-accent2', c2);
+  }
+
+  setWrap = (el) => { this.wrap = el; if (el) this.applyTheme(); };
+
+  inr = (n) => {
+    const s = String(n);
+    let last3 = s.slice(-3); let rest = s.slice(0, -3);
+    if (rest) last3 = ',' + last3;
+    rest = rest.replace(/\B(?=(\d{2})+(?!\d))/g, ',');
+    return '₹ ' + rest + last3;
+  };
+
+  renderRows() {
+    const host = this.wrap && this.wrap.querySelector('[data-rows]');
+    if (!host) return;
+    host.innerHTML = this.rows.map((r, i) => {
+      const fb = r.tint === 't' ? '#e3efed' : '#e6eaf6';
+      return `<div data-row="${i}" style="display:grid; grid-template-columns:84px 1fr auto; gap:18px; align-items:center; background:rgba(255,255,255,.62); border:1px solid rgba(255,255,255,.85); border-radius:20px; padding:16px; backdrop-filter:blur(14px); box-shadow:0 10px 28px rgba(34,36,90,.07), inset 0 1px 0 rgba(255,255,255,.6);">
+        <div style="width:84px; height:84px; border-radius:15px; background-image:url('assets/img/${r.img}.png'); background-size:cover; background-position:center; background-color:${fb}; box-shadow:inset 0 1px 0 rgba(255,255,255,.6);"></div>
+        <div style="min-width:0;">
+          <div style="font-weight:700; font-size:15px; letter-spacing:-.01em; margin-bottom:7px;">${r.name}</div>
+          <div style="display:flex; flex-wrap:wrap; gap:7px; align-items:center;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--c-slate); background:rgba(42,43,106,.06); padding:4px 9px; border-radius:999px;">${r.brand}</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--c-accent); background:rgba(23,155,142,.12); border:1px solid rgba(23,155,142,.22); padding:3px 9px; border-radius:999px;">MOQ ${r.moq}</span>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:12px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="display:flex; align-items:center; gap:2px; background:rgba(255,255,255,.75); border:1px solid var(--c-line); border-radius:12px; padding:3px;">
+              <span data-dec="${i}" style="cursor:pointer; width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:18px; color:var(--c-slate);">−</span>
+              <span data-qty="${i}" style="min-width:46px; text-align:center; font-weight:700; font-size:14px;">${r.qty}</span>
+              <span data-inc="${i}" style="cursor:pointer; width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:16px; color:var(--c-slate);">+</span>
+            </div>
+            <span data-rm="${i}" style="cursor:pointer; width:32px; height:32px; border-radius:9px; background:rgba(224,82,77,.08); color:#d8524d; display:flex; align-items:center; justify-content:center; font-size:14px;">✕</span>
+          </div>
+          <div style="text-align:right;">
+            <div data-line="${i}" style="font-weight:800; font-size:16px; color:var(--c-ink);">${this.inr(r.unit * r.qty)}</div>
+            <div style="font-size:11px; color:var(--c-muted); font-family:'JetBrains Mono',monospace;">@ ₹${r.unit} / unit</div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    host.querySelectorAll('[data-inc]').forEach((b) => b.addEventListener('click', () => this.step(+b.getAttribute('data-inc'), 50)));
+    host.querySelectorAll('[data-dec]').forEach((b) => b.addEventListener('click', () => this.step(+b.getAttribute('data-dec'), -50)));
+    host.querySelectorAll('[data-rm]').forEach((b) => b.addEventListener('click', () => this.remove(+b.getAttribute('data-rm'))));
+    this.recompute();
+  }
+
+  step(i, d) {
+    const r = this.rows[i];
+    r.qty = Math.max(r.moq, r.qty + d);
+    const q = this.wrap.querySelector(`[data-qty="${i}"]`);
+    const l = this.wrap.querySelector(`[data-line="${i}"]`);
+    if (q) q.textContent = r.qty;
+    if (l) l.textContent = this.inr(r.unit * r.qty);
+    this.recompute();
+  }
+
+  remove(i) {
+    const row = this.wrap.querySelector(`[data-row="${i}"]`);
+    if (row) { row.style.transition = 'opacity .25s, transform .25s'; row.style.opacity = '0'; row.style.transform = 'translateX(12px)'; }
+    this.rows[i].removed = true;
+    setTimeout(() => { if (row) row.style.display = 'none'; this.recompute(); }, 250);
+  }
+
+  recompute() {
+    const active = this.rows.filter((r) => !r.removed);
+    const total = active.reduce((s, r) => s + r.unit * r.qty, 0);
+    const units = active.reduce((s, r) => s + r.qty, 0);
+    const t = this.wrap.querySelector('[data-total]');
+    const c = this.wrap.querySelector('[data-count]');
+    const u = this.wrap.querySelector('[data-units]');
+    if (t) t.textContent = this.inr(total);
+    if (c) c.textContent = active.length;
+    if (u) u.textContent = units;
+  }
+
+  addRec = (e) => {
+    const b = e.currentTarget;
+    b.textContent = 'Added ✓'; b.style.background = 'var(--c-accent)'; b.style.color = '#fff'; b.style.borderColor = 'var(--c-accent)';
+    setTimeout(() => { b.textContent = '+ Add'; b.style.background = 'rgba(42,43,106,.07)'; b.style.color = 'var(--c-indigo)'; b.style.borderColor = 'rgba(42,43,106,.14)'; }, 1100);
+  };
+
+  flash = (e) => {
+    const b = e.currentTarget;
+    if (!b.getAttribute('data-orig')) b.setAttribute('data-orig', b.textContent);
+    b.textContent = '✓ Quotation ready';
+    setTimeout(() => { b.textContent = b.getAttribute('data-orig'); }, 1400);
+  };
+
+  renderVals() {
+    return { setWrap: this.setWrap, addRec: this.addRec, flash: this.flash };
+  }
+}
+</script>
+</body>
+</html>

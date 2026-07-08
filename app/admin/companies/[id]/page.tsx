@@ -1,9 +1,12 @@
 'use client';
 
-import { use, useState, Suspense } from 'react';
+import { use, useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { ApiError } from '@/lib/api';
 import { StatusChip } from '@/components/admin/StatusChip';
+import { useAdminProducts } from '@/lib/admin/products';
+import { useCategories } from '@/lib/admin/taxonomy';
+import CreateProductModal from '@/components/admin/CreateProductModal';
 import {
   useCompany,
   useUpdateCompany,
@@ -29,9 +32,55 @@ import {
 import { inr, fmtDate, fmtDateTime } from '@/lib/admin/format';
 
 const inputCls =
-  'w-full rounded border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400';
-const labelCls = 'mb-1 block text-sm font-medium text-zinc-700';
-const sectionCls = 'rounded-xl border border-zinc-200 bg-white p-5';
+  'w-full rounded-lg border border-line bg-white/70 px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20';
+const labelCls = 'mb-1 block text-xs font-medium text-slate';
+const sectionCls = 'rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5 sm:p-6';
+const primaryBtn =
+  'rounded-lg bg-gradient-to-br from-indigo to-indigo2 px-3 py-1.5 text-xs font-medium text-white shadow-sm transition hover:opacity-90 disabled:opacity-60';
+
+// ── Shared section primitives ─────────────────────────────────────────────────
+
+function CardHeader({
+  title,
+  count,
+  description,
+  action,
+}: {
+  title: string;
+  count?: number;
+  description?: React.ReactNode;
+  action?: React.ReactNode;
+}) {
+  return (
+    <div className="mb-5">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-base font-semibold text-ink">
+          {title}
+          {typeof count === 'number' && (
+            <span className="ml-1.5 text-sm font-normal text-muted">({count})</span>
+          )}
+        </h2>
+        {action}
+      </div>
+      {description && <p className="mt-1 max-w-2xl text-xs text-slate">{description}</p>}
+    </div>
+  );
+}
+
+function Avatar({ name }: { name: string }) {
+  const initials =
+    name
+      .trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((w) => w[0]?.toUpperCase() ?? '')
+      .join('') || '?';
+  return (
+    <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-indigo/10 text-xs font-semibold text-indigo">
+      {initials}
+    </div>
+  );
+}
 
 // ── CompanyEditForm ───────────────────────────────────────────────────────────
 
@@ -102,10 +151,10 @@ function CompanyEditForm({ company }: { company: AdminCompany }) {
         </div>
       </div>
 
-      <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 pt-1">
+      <p className="border-t border-line/70 pt-4 text-[11px] font-semibold uppercase tracking-wider text-muted">
         Primary contact
       </p>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className={labelCls}>Name</label>
           <input
@@ -157,17 +206,17 @@ function CompanyEditForm({ company }: { company: AdminCompany }) {
           {update.error instanceof ApiError ? update.error.message : 'Save failed.'}
         </p>
       )}
-      {update.isSuccess && (
-        <p className="text-sm text-green-600">Saved successfully.</p>
-      )}
 
-      <button
-        type="submit"
-        disabled={update.isPending}
-        className="rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60 hover:bg-zinc-700 transition-colors"
-      >
-        {update.isPending ? 'Saving…' : 'Save changes'}
-      </button>
+      <div className="flex items-center gap-3 border-t border-line/70 pt-4">
+        <button
+          type="submit"
+          disabled={update.isPending}
+          className="rounded-lg bg-gradient-to-br from-indigo to-indigo2 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90 disabled:opacity-60"
+        >
+          {update.isPending ? 'Saving…' : 'Save changes'}
+        </button>
+        {update.isSuccess && <span className="text-sm text-green-600">Saved.</span>}
+      </div>
     </form>
   );
 }
@@ -200,49 +249,46 @@ function CompanyLoginSection({ companyId }: { companyId: string }) {
 
   return (
     <section className={sectionCls}>
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-base font-semibold text-zinc-800">Company login</h2>
-        <button
-          onClick={() => { setShowForm(!showForm); setCreatedEmail(null); }}
-          className="rounded bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-zinc-700"
-        >
-          {showForm ? 'Cancel' : '+ Create login'}
-        </button>
-      </div>
-
-      <p className="mb-3 text-xs text-zinc-500">
-        Mint a self-service login this company can use to sign in directly.
-      </p>
+      <CardHeader
+        title="Company login"
+        description="Mint a self-service login this company can use to sign in directly. The password is stored hashed — it can't be viewed later, only re-created."
+        action={
+          <button
+            onClick={() => { setShowForm(!showForm); setCreatedEmail(null); }}
+            className={primaryBtn}
+          >
+            {showForm ? 'Cancel' : '+ Create login'}
+          </button>
+        }
+      />
 
       {showForm && (
-        <form onSubmit={handleCreate} className="rounded border border-dashed border-zinc-300 p-4 space-y-3">
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <div>
-              <label className={labelCls}>
-                Email <span className="text-red-500">*</span>
-              </label>
-              <input
-                required
-                type="email"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className={inputCls}
-              />
-            </div>
-            <div>
-              <label className={labelCls}>
-                Password <span className="text-red-500">*</span>
-              </label>
-              <input
-                required
-                type="password"
-                minLength={8}
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className={inputCls}
-                placeholder="Min 8 characters"
-              />
-            </div>
+        <form onSubmit={handleCreate} className="rounded-lg border border-dashed border-line bg-white/40 p-4 space-y-3">
+          <div>
+            <label className={labelCls}>
+              Email <span className="text-red-500">*</span>
+            </label>
+            <input
+              required
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              className={inputCls}
+            />
+          </div>
+          <div>
+            <label className={labelCls}>
+              Password <span className="text-red-500">*</span>
+            </label>
+            <input
+              required
+              type="password"
+              minLength={8}
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              className={inputCls}
+              placeholder="Min 8 characters"
+            />
           </div>
 
           {createLogin.error && (
@@ -254,17 +300,13 @@ function CompanyLoginSection({ companyId }: { companyId: string }) {
           )}
 
           <div className="flex gap-2">
-            <button
-              type="submit"
-              disabled={createLogin.isPending}
-              className="rounded bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-60"
-            >
+            <button type="submit" disabled={createLogin.isPending} className={primaryBtn}>
               {createLogin.isPending ? 'Creating…' : 'Create login'}
             </button>
             <button
               type="button"
               onClick={() => setShowForm(false)}
-              className="rounded border border-zinc-200 px-3 py-1.5 text-xs text-zinc-700 hover:bg-zinc-50"
+              className="rounded-lg border border-line px-3 py-1.5 text-xs text-slate hover:bg-white/60"
             >
               Cancel
             </button>
@@ -273,7 +315,10 @@ function CompanyLoginSection({ companyId }: { companyId: string }) {
       )}
 
       {!showForm && createdEmail && (
-        <p className="text-sm text-green-600">Login created for {createdEmail}.</p>
+        <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">
+          <span aria-hidden>✓</span>
+          <span className="truncate">Login active for {createdEmail}</span>
+        </div>
       )}
     </section>
   );
@@ -318,18 +363,18 @@ function EmployeeWalletPanel({ employee }: { employee: AdminEmployee }) {
   const ledgerPagination = ledgerData?.pagination;
 
   return (
-    <div className="border-t border-zinc-100 pt-4 mt-4">
+    <div className="pt-4">
       {/* Balance */}
-      <div className="flex items-center gap-4 mb-4">
-        <div className="rounded-lg bg-zinc-50 border border-zinc-200 px-4 py-3">
-          <p className="text-xs text-zinc-500 mb-0.5">Wallet balance</p>
+      <div className="mb-4 flex items-center gap-4">
+        <div className="rounded-xl border border-line bg-white/60 px-4 py-3">
+          <p className="mb-0.5 text-[11px] font-medium uppercase tracking-wide text-muted">Wallet balance</p>
           {walletLoading ? (
-            <div className="h-6 w-24 animate-pulse rounded bg-zinc-200" />
+            <div className="h-6 w-24 animate-pulse rounded bg-black/5" />
           ) : (
-            <p className="text-xl font-bold text-zinc-900">
+            <p className="text-2xl font-bold text-ink">
               {typeof wallet?.balance === 'number' ? `₹${wallet.balance.toLocaleString('en-IN')}` : '—'}
               {wallet?.currency && wallet.currency !== 'INR' && (
-                <span className="ml-1 text-xs font-normal text-zinc-500">{wallet.currency}</span>
+                <span className="ml-1 text-xs font-normal text-slate">{wallet.currency}</span>
               )}
             </p>
           )}
@@ -341,9 +386,12 @@ function EmployeeWalletPanel({ employee }: { employee: AdminEmployee }) {
         {/* Credit form */}
         <form
           onSubmit={handleCredit}
-          className="rounded border border-green-200 bg-green-50 p-3 space-y-2"
+          className="space-y-2 rounded-xl border border-line bg-white/60 p-3"
         >
-          <p className="text-xs font-semibold text-green-800 uppercase tracking-wide">Credit</p>
+          <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-green-700">
+            <span className="inline-block h-2 w-2 rounded-full bg-green-500" />
+            Credit
+          </p>
           <div className="flex gap-2">
             <input
               type="number"
@@ -352,14 +400,14 @@ function EmployeeWalletPanel({ employee }: { employee: AdminEmployee }) {
               placeholder="Amount (₹)"
               value={creditForm.amount}
               onChange={(e) => setCreditForm({ ...creditForm, amount: e.target.value })}
-              className="w-28 rounded border border-zinc-300 px-2 py-1 text-sm"
+              className="w-28 rounded-lg border border-line px-2.5 py-1.5 text-sm"
             />
             <input
               type="text"
               placeholder="Reason"
               value={creditForm.reason}
               onChange={(e) => setCreditForm({ ...creditForm, reason: e.target.value })}
-              className="flex-1 rounded border border-zinc-300 px-2 py-1 text-sm"
+              className="flex-1 rounded-lg border border-line px-2.5 py-1.5 text-sm"
             />
           </div>
           {credit.error && (
@@ -371,7 +419,7 @@ function EmployeeWalletPanel({ employee }: { employee: AdminEmployee }) {
           <button
             type="submit"
             disabled={credit.isPending}
-            className="rounded bg-green-700 px-3 py-1 text-xs font-medium text-white disabled:opacity-60"
+            className="rounded-lg bg-green-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-green-700 disabled:opacity-60"
           >
             {credit.isPending ? 'Crediting…' : 'Credit wallet'}
           </button>
@@ -380,9 +428,12 @@ function EmployeeWalletPanel({ employee }: { employee: AdminEmployee }) {
         {/* Debit form */}
         <form
           onSubmit={handleDebit}
-          className="rounded border border-red-200 bg-red-50 p-3 space-y-2"
+          className="space-y-2 rounded-xl border border-line bg-white/60 p-3"
         >
-          <p className="text-xs font-semibold text-red-800 uppercase tracking-wide">Debit</p>
+          <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-red-700">
+            <span className="inline-block h-2 w-2 rounded-full bg-red-500" />
+            Debit
+          </p>
           <div className="flex gap-2">
             <input
               type="number"
@@ -391,14 +442,14 @@ function EmployeeWalletPanel({ employee }: { employee: AdminEmployee }) {
               placeholder="Amount (₹)"
               value={debitForm.amount}
               onChange={(e) => setDebitForm({ ...debitForm, amount: e.target.value })}
-              className="w-28 rounded border border-zinc-300 px-2 py-1 text-sm"
+              className="w-28 rounded-lg border border-line px-2.5 py-1.5 text-sm"
             />
             <input
               type="text"
               placeholder="Reason"
               value={debitForm.reason}
               onChange={(e) => setDebitForm({ ...debitForm, reason: e.target.value })}
-              className="flex-1 rounded border border-zinc-300 px-2 py-1 text-sm"
+              className="flex-1 rounded-lg border border-line px-2.5 py-1.5 text-sm"
             />
           </div>
           {debit.error && (
@@ -410,7 +461,7 @@ function EmployeeWalletPanel({ employee }: { employee: AdminEmployee }) {
           <button
             type="submit"
             disabled={debit.isPending}
-            className="rounded bg-red-700 px-3 py-1 text-xs font-medium text-white disabled:opacity-60"
+            className="rounded-lg bg-red-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-red-700 disabled:opacity-60"
           >
             {debit.isPending ? 'Debiting…' : 'Debit wallet'}
           </button>
@@ -419,24 +470,24 @@ function EmployeeWalletPanel({ employee }: { employee: AdminEmployee }) {
 
       {/* Ledger */}
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-2">
+        <p className="text-xs font-semibold uppercase tracking-wider text-slate mb-2">
           Ledger history
         </p>
         {ledgerLoading && (
           <div className="space-y-1">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={`skeleton-${i}`} className="h-8 animate-pulse rounded bg-zinc-100" />
+              <div key={`skeleton-${i}`} className="h-8 animate-pulse rounded bg-black/5" />
             ))}
           </div>
         )}
         {!ledgerLoading && ledgerItems.length === 0 && (
-          <p className="text-xs text-zinc-400">No transactions yet.</p>
+          <p className="text-xs text-muted">No transactions yet.</p>
         )}
         {!ledgerLoading && ledgerItems.length > 0 && (
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left">
               <thead>
-                <tr className="border-b border-zinc-200 text-zinc-500 uppercase">
+                <tr className="border-b border-line text-slate uppercase">
                   <th className="px-2 py-1 font-medium">Date</th>
                   <th className="px-2 py-1 font-medium">Type</th>
                   <th className="px-2 py-1 font-medium">Amount</th>
@@ -447,8 +498,8 @@ function EmployeeWalletPanel({ employee }: { employee: AdminEmployee }) {
               </thead>
               <tbody>
                 {ledgerItems.map((entry: LedgerEntry) => (
-                  <tr key={entry._id} className="border-b border-zinc-100">
-                    <td className="px-2 py-1 text-zinc-500">{fmtDateTime(entry.createdAt)}</td>
+                  <tr key={entry._id} className="border-b border-line">
+                    <td className="px-2 py-1 text-slate">{fmtDateTime(entry.createdAt)}</td>
                     <td className="px-2 py-1">
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
@@ -460,17 +511,17 @@ function EmployeeWalletPanel({ employee }: { employee: AdminEmployee }) {
                         {entry.type}
                       </span>
                     </td>
-                    <td className="px-2 py-1 font-medium text-zinc-800">
+                    <td className="px-2 py-1 font-medium text-ink">
                       {entry.type === 'credit' ? '+' : '-'}
                       {typeof entry.amount === 'number' ? `₹${entry.amount.toLocaleString('en-IN')}` : '—'}
                     </td>
-                    <td className="px-2 py-1 text-zinc-600">
+                    <td className="px-2 py-1 text-slate">
                       {typeof entry.balanceAfter === 'number' ? `₹${entry.balanceAfter.toLocaleString('en-IN')}` : '—'}
                     </td>
-                    <td className="px-2 py-1 text-zinc-500 capitalize">
+                    <td className="px-2 py-1 text-slate capitalize">
                       {entry.source?.replace(/_/g, ' ') ?? '—'}
                     </td>
-                    <td className="px-2 py-1 text-zinc-500 max-w-xs truncate">{entry.reason ?? '—'}</td>
+                    <td className="px-2 py-1 text-slate max-w-xs truncate">{entry.reason ?? '—'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -478,7 +529,7 @@ function EmployeeWalletPanel({ employee }: { employee: AdminEmployee }) {
           </div>
         )}
         {ledgerPagination && ledgerPagination.pages > 1 && (
-          <div className="flex items-center justify-between mt-2 text-xs text-zinc-500">
+          <div className="flex items-center justify-between mt-2 text-xs text-slate">
             <span>
               Page {ledgerPagination.page} of {ledgerPagination.pages}
             </span>
@@ -486,14 +537,14 @@ function EmployeeWalletPanel({ employee }: { employee: AdminEmployee }) {
               <button
                 disabled={ledgerPagination.page <= 1}
                 onClick={() => setLedgerPage((p) => Math.max(1, p - 1))}
-                className="rounded border border-zinc-200 px-2 py-0.5 hover:bg-zinc-50 disabled:opacity-40"
+                className="rounded border border-line px-2 py-0.5 hover:bg-white/60 disabled:opacity-40"
               >
                 Prev
               </button>
               <button
                 disabled={ledgerPagination.page >= ledgerPagination.pages}
                 onClick={() => setLedgerPage((p) => p + 1)}
-                className="rounded border border-zinc-200 px-2 py-0.5 hover:bg-zinc-50 disabled:opacity-40"
+                className="rounded border border-line px-2 py-0.5 hover:bg-white/60 disabled:opacity-40"
               >
                 Next
               </button>
@@ -558,28 +609,25 @@ function EmployeesSection({ companyId, companyStatus }: { companyId: string; com
 
   return (
     <section className={sectionCls}>
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-base font-semibold text-zinc-800">
-          Employees ({list.length})
-        </h2>
-        {companyStatus === 'active' && (
-          <button
-            onClick={() => setShowInvite(!showInvite)}
-            className="rounded bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-zinc-700"
-          >
-            {showInvite ? 'Cancel' : '+ Invite employee'}
-          </button>
-        )}
-        {companyStatus === 'inactive' && (
-          <span className="text-xs text-zinc-400 italic">Activate company to invite</span>
-        )}
-      </div>
+      <CardHeader
+        title="Employees"
+        count={list.length}
+        action={
+          companyStatus === 'active' ? (
+            <button onClick={() => setShowInvite(!showInvite)} className={primaryBtn}>
+              {showInvite ? 'Cancel' : '+ Invite employee'}
+            </button>
+          ) : (
+            <span className="text-xs italic text-muted">Activate company to invite</span>
+          )
+        }
+      />
 
       {/* Invite form */}
       {showInvite && (
-        <form onSubmit={handleInvite} className="mb-4 rounded border border-dashed border-zinc-300 p-4 space-y-3">
-          <p className="text-sm font-medium text-zinc-700">Invite new employee</p>
-          <div className="grid grid-cols-2 gap-3">
+        <form onSubmit={handleInvite} className="mb-4 rounded-lg border border-dashed border-line bg-white/40 p-4 space-y-3">
+          <p className="text-sm font-medium text-slate">Invite new employee</p>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label className={labelCls}>
                 First name <span className="text-red-500">*</span>
@@ -635,17 +683,13 @@ function EmployeesSection({ companyId, companyStatus }: { companyId: string; com
             </p>
           )}
           <div className="flex gap-2">
-            <button
-              type="submit"
-              disabled={invite.isPending}
-              className="rounded bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-60"
-            >
+            <button type="submit" disabled={invite.isPending} className={primaryBtn}>
               {invite.isPending ? 'Inviting…' : 'Send invite'}
             </button>
             <button
               type="button"
               onClick={() => setShowInvite(false)}
-              className="rounded border border-zinc-200 px-3 py-1.5 text-xs text-zinc-700 hover:bg-zinc-50"
+              className="rounded-lg border border-line px-3 py-1.5 text-xs text-slate hover:bg-white/60"
             >
               Cancel
             </button>
@@ -657,7 +701,7 @@ function EmployeesSection({ companyId, companyStatus }: { companyId: string; com
       {isLoading && (
         <div className="space-y-2">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={`skeleton-${i}`} className="h-10 animate-pulse rounded bg-zinc-100" />
+            <div key={`skeleton-${i}`} className="h-10 animate-pulse rounded bg-black/5" />
           ))}
         </div>
       )}
@@ -671,39 +715,44 @@ function EmployeesSection({ companyId, companyStatus }: { companyId: string; com
 
       {/* Empty */}
       {!isLoading && !isError && list.length === 0 && (
-        <p className="text-sm text-zinc-500">No employees yet.</p>
+        <div className="rounded-lg border border-dashed border-line py-8 text-center text-sm text-muted">
+          No employees yet.
+        </div>
       )}
 
       {/* Employee list */}
       {!isLoading && !isError && list.length > 0 && (
-        <div className="divide-y divide-zinc-100">
+        <div className="space-y-2">
           {list.map((emp) => (
-            <div key={emp._id}>
-              <div className="flex items-center justify-between gap-3 py-3 flex-wrap">
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-zinc-900 truncate">
-                    {emp.firstName} {emp.lastName ?? ''}
-                  </p>
-                  <p className="text-xs text-zinc-500">{emp.email}</p>
-                  {emp.phoneNumber && (
-                    <p className="text-xs text-zinc-400">
-                      {emp.isdCode ? `${emp.isdCode} ` : ''}{emp.phoneNumber}
+            <div key={emp._id} className="rounded-xl border border-line/70 bg-white/40">
+              <div className="flex flex-wrap items-center justify-between gap-3 p-3">
+                <div className="flex min-w-0 items-center gap-3">
+                  <Avatar name={`${emp.firstName} ${emp.lastName ?? ''}`} />
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-ink">
+                      {emp.firstName} {emp.lastName ?? ''}
                     </p>
-                  )}
+                    <p className="truncate text-xs text-slate">{emp.email}</p>
+                    {emp.phoneNumber && (
+                      <p className="text-xs text-muted">
+                        {emp.isdCode ? `${emp.isdCode} ` : ''}{emp.phoneNumber}
+                      </p>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                <div className="flex shrink-0 flex-wrap items-center gap-2">
                   <StatusChip
                     status={emp.employeeStatus ?? 'invited'}
                     label={emp.employeeStatus ?? 'invited'}
                   />
-                  <span className="text-xs text-zinc-400">{fmtDate(emp.createdAt)}</span>
+                  <span className="hidden text-xs text-muted sm:inline">{fmtDate(emp.createdAt)}</span>
 
                   {/* Wallet toggle */}
                   <button
                     onClick={() =>
                       setExpandedWallet(expandedWallet === emp._id ? null : emp._id)
                     }
-                    className="rounded border border-zinc-200 px-2 py-1 text-xs text-zinc-700 hover:bg-zinc-50"
+                    className="rounded-lg border border-line px-2.5 py-1 text-xs text-slate hover:bg-white/60"
                   >
                     {expandedWallet === emp._id ? 'Hide wallet' : 'Wallet'}
                   </button>
@@ -713,7 +762,7 @@ function EmployeesSection({ companyId, companyStatus }: { companyId: string; com
                     <button
                       onClick={() => handleResend(emp)}
                       disabled={resend.isPending}
-                      className="rounded border border-blue-200 px-2 py-1 text-xs text-blue-700 hover:bg-blue-50 disabled:opacity-60"
+                      className="rounded-lg border border-blue-200 px-2.5 py-1 text-xs text-blue-700 hover:bg-blue-50 disabled:opacity-60"
                     >
                       Resend invite
                     </button>
@@ -724,7 +773,7 @@ function EmployeesSection({ companyId, companyStatus }: { companyId: string; com
                     <button
                       onClick={() => handleStatusToggle(emp)}
                       disabled={updateStatus.isPending}
-                      className={`rounded border px-2 py-1 text-xs disabled:opacity-60 ${
+                      className={`rounded-lg border px-2.5 py-1 text-xs disabled:opacity-60 ${
                         emp.employeeStatus === 'active'
                           ? 'border-red-200 text-red-600 hover:bg-red-50'
                           : 'border-green-200 text-green-700 hover:bg-green-50'
@@ -738,7 +787,7 @@ function EmployeesSection({ companyId, companyStatus }: { companyId: string; com
 
               {/* Inline wallet panel */}
               {expandedWallet === emp._id && (
-                <div className="pb-3">
+                <div className="border-t border-line/70 px-3 pb-3">
                   <EmployeeWalletPanel employee={emp} />
                 </div>
               )}
@@ -758,74 +807,133 @@ function EmployeesSection({ companyId, companyStatus }: { companyId: string; com
   );
 }
 
+// ── Searchable add picker ─────────────────────────────────────────────────────
+
+function useDebounced<T>(value: T, ms = 300): T {
+  const [v, setV] = useState(value);
+  useEffect(() => {
+    const t = setTimeout(() => setV(value), ms);
+    return () => clearTimeout(t);
+  }, [value, ms]);
+  return v;
+}
+
+interface PickerOption {
+  id: string;
+  label: string;
+  meta?: string;
+  image?: string;
+}
+
+function ComboAdd({
+  placeholder,
+  query,
+  setQuery,
+  options,
+  loading,
+  disabled,
+  alreadyAdded,
+  onAdd,
+}: {
+  placeholder: string;
+  query: string;
+  setQuery: (v: string) => void;
+  options: PickerOption[];
+  loading?: boolean;
+  disabled?: boolean;
+  alreadyAdded: Set<string>;
+  onAdd: (id: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const showMenu = open && query.trim().length > 0;
+
+  return (
+    <div className="relative">
+      <input
+        type="text"
+        value={query}
+        placeholder={placeholder}
+        onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
+        onFocus={() => setOpen(true)}
+        onBlur={() => setTimeout(() => setOpen(false), 150)}
+        className={inputCls}
+      />
+      {showMenu && (
+        <div className="absolute z-20 mt-1 max-h-56 w-full overflow-y-auto rounded-lg border border-line bg-white shadow-lg">
+          {loading && <p className="px-3 py-2 text-xs text-muted">Searching…</p>}
+          {!loading && options.length === 0 && (
+            <p className="px-3 py-2 text-xs text-muted">No matches.</p>
+          )}
+          {options.map((o) => {
+            const added = alreadyAdded.has(o.id);
+            return (
+              <button
+                key={o.id}
+                type="button"
+                disabled={added || disabled}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => { onAdd(o.id); setQuery(''); setOpen(false); }}
+                className="flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {o.image && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={o.image} alt="" className="h-8 w-8 shrink-0 rounded-md border border-line object-cover" />
+                )}
+                <span className="min-w-0 flex-1 truncate">
+                  <span className="text-ink">{o.label}</span>
+                  {o.meta && <span className="ml-2 text-xs text-muted">{o.meta}</span>}
+                </span>
+                <span className={`shrink-0 text-xs font-medium ${added ? 'text-muted' : 'text-indigo'}`}>
+                  {added ? 'Added' : '+ Add'}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── CompanyCatalogSection ─────────────────────────────────────────────────────
 
 function CompanyCatalogSection({ companyId }: { companyId: string }) {
   const { data: catalog, isLoading, isError, error } = useCompanyCatalog(companyId);
   const updateCatalog = useUpdateCompanyCatalog(companyId);
 
-  const [addProductId, setAddProductId] = useState('');
-  const [removeProductId, setRemoveProductId] = useState('');
-  const [addCategoryId, setAddCategoryId] = useState('');
-  const [removeCategoryId, setRemoveCategoryId] = useState('');
+  const [productQuery, setProductQuery] = useState('');
+  const [categoryQuery, setCategoryQuery] = useState('');
+  const debouncedProductQuery = useDebounced(productQuery);
 
-  function handleAddProduct(e: React.FormEvent) {
-    e.preventDefault();
-    const id = addProductId.trim();
-    if (!id) return;
-    updateCatalog.mutate(
-      { addProductIds: [id] },
-      { onSuccess: () => setAddProductId('') },
-    );
-  }
+  // Product options come from admin product search; category options from the
+  // full category list (small, filtered client-side).
+  const { data: productSearch, isFetching: productsFetching } = useAdminProducts(1, debouncedProductQuery.trim() || undefined);
+  const { data: categories } = useCategories();
 
-  function handleRemoveProduct(e: React.FormEvent) {
-    e.preventDefault();
-    const id = removeProductId.trim();
-    if (!id) return;
-    if (!confirm(`Remove product ${id} from catalog?`)) return;
-    updateCatalog.mutate(
-      { removeProductIds: [id] },
-      { onSuccess: () => setRemoveProductId('') },
-    );
-  }
+  const productOptions: PickerOption[] = (productSearch?.products ?? [])
+    .filter((p) => p.isActive !== false)
+    .map((p) => ({ id: p._id, label: p.name, image: p.images?.[0] }));
 
-  function handleAddCategory(e: React.FormEvent) {
-    e.preventDefault();
-    const id = addCategoryId.trim();
-    if (!id) return;
-    updateCatalog.mutate(
-      { addCategoryIds: [id] },
-      { onSuccess: () => setAddCategoryId('') },
-    );
-  }
+  const categoryNameById = new Map((categories ?? []).map((c) => [c._id, c.name]));
+  const categoryOptions: PickerOption[] = (categories ?? [])
+    .filter((c) => c.name.toLowerCase().includes(categoryQuery.trim().toLowerCase()))
+    .map((c) => ({ id: c._id, label: c.name }));
 
-  function handleRemoveCategory(e: React.FormEvent) {
-    e.preventDefault();
-    const id = removeCategoryId.trim();
-    if (!id) return;
-    if (!confirm(`Remove category ${id} from catalog?`)) return;
-    updateCatalog.mutate(
-      { removeCategoryIds: [id] },
-      { onSuccess: () => setRemoveCategoryId('') },
-    );
-  }
-
-  function handleRemoveProductById(id: string) {
-    if (!confirm(`Remove product ${id} from catalog?`)) return;
+  function handleRemoveProductById(id: string, label: string) {
+    if (!confirm(`Remove "${label}" from catalog?`)) return;
     updateCatalog.mutate({ removeProductIds: [id] });
   }
 
-  function handleRemoveCategoryById(id: string) {
-    if (!confirm(`Remove category ${id} from catalog?`)) return;
+  function handleRemoveCategoryById(id: string, label: string) {
+    if (!confirm(`Remove "${label}" from catalog?`)) return;
     updateCatalog.mutate({ removeCategoryIds: [id] });
   }
 
   if (isLoading) {
     return (
       <section className={sectionCls}>
-        <h2 className="mb-4 text-base font-semibold text-zinc-800">Company Catalog</h2>
-        <div className="h-16 animate-pulse rounded bg-zinc-100" />
+        <CardHeader title="Company Catalog" />
+        <div className="h-16 animate-pulse rounded bg-black/5" />
       </section>
     );
   }
@@ -833,7 +941,7 @@ function CompanyCatalogSection({ companyId }: { companyId: string }) {
   if (isError) {
     return (
       <section className={sectionCls}>
-        <h2 className="mb-4 text-base font-semibold text-zinc-800">Company Catalog</h2>
+        <CardHeader title="Company Catalog" />
         <p className="text-sm text-red-600">
           {error instanceof ApiError ? error.message : 'Failed to load catalog.'}
         </p>
@@ -843,14 +951,17 @@ function CompanyCatalogSection({ companyId }: { companyId: string }) {
 
   const products = catalog?.products ?? [];
   const categoryIds = catalog?.categoryIds ?? [];
+  const addedProductIds = new Set(products.map((p) => p.productId));
+  const addedCategoryIds = new Set(categoryIds);
 
   return (
-    <section className={sectionCls}>
-      <h2 className="mb-4 text-base font-semibold text-zinc-800">Company Catalog</h2>
-      <p className="mb-4 text-xs text-zinc-500">
-        Control which public products and categories are visible to this company&apos;s employees.
-        Only active, public products can be whitelisted.
-      </p>
+    // relative z-30: each card is its own backdrop-blur stacking context, so
+    // without this the later Company Products card paints over the search dropdown.
+    <section className={`${sectionCls} relative z-30`}>
+      <CardHeader
+        title="Company Catalog"
+        description="Control which public products and categories are visible to this company's employees. Search by name to add. Only active, public products can be whitelisted."
+      />
 
       {updateCatalog.error && (
         <p className="mb-3 text-sm text-red-600">
@@ -861,22 +972,22 @@ function CompanyCatalogSection({ companyId }: { companyId: string }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Products */}
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-2">
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate mb-2">
             Whitelisted Products ({products.length})
           </p>
           {products.length > 0 ? (
             <ul className="space-y-1 mb-3 max-h-48 overflow-y-auto">
               {products.map((p) => (
-                <li key={p.productId} className="flex items-center justify-between gap-2 rounded bg-zinc-50 px-3 py-1.5 text-xs">
-                  <span className="font-mono text-zinc-700 truncate">
-                    {p.productId}
-                    {p.hidden && <span className="ml-2 rounded bg-zinc-200 px-1.5 py-0.5 text-[10px] font-sans text-zinc-500">hidden</span>}
+                <li key={p.productId} className="flex items-center justify-between gap-2 rounded bg-white/50 px-3 py-1.5 text-sm">
+                  <span className="min-w-0 truncate text-ink">
+                    {p.name ?? p.productId}
+                    {p.hidden && <span className="ml-2 rounded bg-black/5 px-1.5 py-0.5 text-[10px] text-slate">hidden</span>}
                   </span>
                   <button
-                    onClick={() => handleRemoveProductById(p.productId)}
+                    onClick={() => handleRemoveProductById(p.productId, p.name ?? p.productId)}
                     disabled={updateCatalog.isPending}
-                    className="text-red-500 hover:text-red-700 disabled:opacity-40 shrink-0"
-                    aria-label={`Remove product ${p.productId}`}
+                    className="shrink-0 text-red-500 hover:text-red-700 disabled:opacity-40"
+                    aria-label={`Remove ${p.name ?? p.productId}`}
                   >
                     ✕
                   </button>
@@ -884,106 +995,58 @@ function CompanyCatalogSection({ companyId }: { companyId: string }) {
               ))}
             </ul>
           ) : (
-            <p className="text-xs text-zinc-400 mb-3">No products whitelisted.</p>
+            <p className="text-xs text-muted mb-3">No products whitelisted.</p>
           )}
 
-          {/* Add product */}
-          <form onSubmit={handleAddProduct} className="flex gap-2">
-            <input
-              type="text"
-              placeholder="Product ObjectId"
-              value={addProductId}
-              onChange={(e) => setAddProductId(e.target.value)}
-              className="flex-1 rounded border border-zinc-300 px-2 py-1 text-xs font-mono"
-            />
-            <button
-              type="submit"
-              disabled={updateCatalog.isPending || !addProductId.trim()}
-              className="rounded bg-zinc-900 px-3 py-1 text-xs font-medium text-white disabled:opacity-60"
-            >
-              Add
-            </button>
-          </form>
-
-          {/* Remove product */}
-          <form onSubmit={handleRemoveProduct} className="flex gap-2 mt-2">
-            <input
-              type="text"
-              placeholder="Product ObjectId to remove"
-              value={removeProductId}
-              onChange={(e) => setRemoveProductId(e.target.value)}
-              className="flex-1 rounded border border-zinc-300 px-2 py-1 text-xs font-mono"
-            />
-            <button
-              type="submit"
-              disabled={updateCatalog.isPending || !removeProductId.trim()}
-              className="rounded border border-red-200 px-3 py-1 text-xs font-medium text-red-600 disabled:opacity-60 hover:bg-red-50"
-            >
-              Remove
-            </button>
-          </form>
+          <ComboAdd
+            placeholder="Search products by name…"
+            query={productQuery}
+            setQuery={setProductQuery}
+            options={productOptions}
+            loading={productsFetching}
+            disabled={updateCatalog.isPending}
+            alreadyAdded={addedProductIds}
+            onAdd={(id) => updateCatalog.mutate({ addProductIds: [id] })}
+          />
         </div>
 
         {/* Categories */}
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-2">
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate mb-2">
             Whitelisted Categories ({categoryIds.length})
           </p>
           {categoryIds.length > 0 ? (
             <ul className="space-y-1 mb-3 max-h-48 overflow-y-auto">
-              {categoryIds.map((cid) => (
-                <li key={cid} className="flex items-center justify-between gap-2 rounded bg-zinc-50 px-3 py-1.5 text-xs">
-                  <span className="font-mono text-zinc-700 truncate">{cid}</span>
-                  <button
-                    onClick={() => handleRemoveCategoryById(cid)}
-                    disabled={updateCatalog.isPending}
-                    className="text-red-500 hover:text-red-700 disabled:opacity-40 shrink-0"
-                    aria-label={`Remove category ${cid}`}
-                  >
-                    ✕
-                  </button>
-                </li>
-              ))}
+              {categoryIds.map((cid) => {
+                const label = categoryNameById.get(cid) ?? cid;
+                return (
+                  <li key={cid} className="flex items-center justify-between gap-2 rounded bg-white/50 px-3 py-1.5 text-sm">
+                    <span className="min-w-0 truncate text-ink">{label}</span>
+                    <button
+                      onClick={() => handleRemoveCategoryById(cid, label)}
+                      disabled={updateCatalog.isPending}
+                      className="shrink-0 text-red-500 hover:text-red-700 disabled:opacity-40"
+                      aria-label={`Remove ${label}`}
+                    >
+                      ✕
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           ) : (
-            <p className="text-xs text-zinc-400 mb-3">No categories whitelisted.</p>
+            <p className="text-xs text-muted mb-3">No categories whitelisted.</p>
           )}
 
-          {/* Add category */}
-          <form onSubmit={handleAddCategory} className="flex gap-2">
-            <input
-              type="text"
-              placeholder="Category ObjectId"
-              value={addCategoryId}
-              onChange={(e) => setAddCategoryId(e.target.value)}
-              className="flex-1 rounded border border-zinc-300 px-2 py-1 text-xs font-mono"
-            />
-            <button
-              type="submit"
-              disabled={updateCatalog.isPending || !addCategoryId.trim()}
-              className="rounded bg-zinc-900 px-3 py-1 text-xs font-medium text-white disabled:opacity-60"
-            >
-              Add
-            </button>
-          </form>
-
-          {/* Remove category */}
-          <form onSubmit={handleRemoveCategory} className="flex gap-2 mt-2">
-            <input
-              type="text"
-              placeholder="Category ObjectId to remove"
-              value={removeCategoryId}
-              onChange={(e) => setRemoveCategoryId(e.target.value)}
-              className="flex-1 rounded border border-zinc-300 px-2 py-1 text-xs font-mono"
-            />
-            <button
-              type="submit"
-              disabled={updateCatalog.isPending || !removeCategoryId.trim()}
-              className="rounded border border-red-200 px-3 py-1 text-xs font-medium text-red-600 disabled:opacity-60 hover:bg-red-50"
-            >
-              Remove
-            </button>
-          </form>
+          <ComboAdd
+            placeholder="Search categories by name…"
+            query={categoryQuery}
+            setQuery={setCategoryQuery}
+            options={categoryOptions}
+            disabled={updateCatalog.isPending}
+            alreadyAdded={addedCategoryIds}
+            onAdd={(id) => updateCatalog.mutate({ addCategoryIds: [id] })}
+          />
         </div>
       </div>
     </section>
@@ -992,24 +1055,36 @@ function CompanyCatalogSection({ companyId }: { companyId: string }) {
 
 // ── CompanyProductsSection ────────────────────────────────────────────────────
 
-function CompanyProductsSection({ companyId }: { companyId: string }) {
+function CompanyProductsSection({ companyId, companyName }: { companyId: string; companyName: string }) {
   const { data, isLoading, isError, error } = useCompanyProducts(companyId);
+  const [showCreate, setShowCreate] = useState(false);
 
   const products = data?.products ?? [];
 
   return (
     <section className={sectionCls}>
-      <h2 className="mb-4 text-base font-semibold text-zinc-800">
-        Company Products ({products.length})
-      </h2>
-      <p className="mb-3 text-xs text-zinc-500">
-        Products with visibility=&quot;company&quot; owned by this company.
-      </p>
+      <CardHeader
+        title="Company Products"
+        count={products.length}
+        description={'Products with visibility="company" owned by this company. New products are created for this company and open in the full product editor to add images, variants and pricing.'}
+        action={
+          <button onClick={() => setShowCreate(true)} className={primaryBtn}>
+            + Add product
+          </button>
+        }
+      />
+
+      {showCreate && (
+        <CreateProductModal
+          onClose={() => setShowCreate(false)}
+          lockedCompany={{ id: companyId, name: companyName }}
+        />
+      )}
 
       {isLoading && (
         <div className="space-y-2">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={`skeleton-${i}`} className="h-10 animate-pulse rounded bg-zinc-100" />
+            <div key={`skeleton-${i}`} className="h-10 animate-pulse rounded bg-black/5" />
           ))}
         </div>
       )}
@@ -1021,26 +1096,39 @@ function CompanyProductsSection({ companyId }: { companyId: string }) {
       )}
 
       {!isLoading && !isError && products.length === 0 && (
-        <p className="text-sm text-zinc-500">No company-specific products.</p>
+        <div className="rounded-lg border border-dashed border-line py-8 text-center text-sm text-muted">
+          No company-specific products yet.
+        </div>
       )}
 
       {!isLoading && !isError && products.length > 0 && (
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
+          <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b border-zinc-200 text-xs uppercase text-zinc-500">
-                <th className="px-3 py-2 font-medium">Name</th>
-                <th className="px-3 py-2 font-medium">Slug</th>
+              <tr className="border-b border-line text-xs uppercase tracking-wide text-muted">
+                <th className="px-3 py-2 font-medium">Product</th>
                 <th className="px-3 py-2 font-medium">Min price</th>
                 <th className="px-3 py-2 font-medium">Status</th>
-                <th className="px-3 py-2 font-medium">Link</th>
+                <th className="px-3 py-2 font-medium text-right">Link</th>
               </tr>
             </thead>
             <tbody>
               {products.map((p) => (
-                <tr key={p._id} className="border-b border-zinc-100 hover:bg-zinc-50">
-                  <td className="px-3 py-2 text-zinc-800 truncate max-w-xs">{p.name}</td>
-                  <td className="px-3 py-2 text-zinc-500 font-mono text-xs">{p.slug}</td>
+                <tr key={p._id} className="border-b border-line/70 hover:bg-white/50">
+                  <td className="px-3 py-2">
+                    <div className="flex items-center gap-3">
+                      {p.images?.[0] ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={p.images[0]} alt="" className="h-9 w-9 shrink-0 rounded-md border border-line object-cover" />
+                      ) : (
+                        <span className="h-9 w-9 shrink-0 rounded-md border border-line bg-black/5" />
+                      )}
+                      <div className="min-w-0">
+                        <p className="truncate text-ink">{p.name}</p>
+                        <p className="truncate font-jbmono text-xs text-muted">{p.slug}</p>
+                      </div>
+                    </div>
+                  </td>
                   <td className="px-3 py-2">{inr(p.minPrice)}</td>
                   <td className="px-3 py-2">
                     <StatusChip
@@ -1048,10 +1136,10 @@ function CompanyProductsSection({ companyId }: { companyId: string }) {
                       label={p.isActive ? 'Active' : 'Inactive'}
                     />
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-3 py-2 text-right">
                     <Link
                       href={`/admin/catalog/products/${p.slug}`}
-                      className="text-xs text-blue-600 hover:underline"
+                      className="rounded-lg border border-line px-2.5 py-1 text-xs text-slate hover:bg-white/60"
                     >
                       Edit
                     </Link>
@@ -1074,15 +1162,15 @@ function CompanyDetailInner({ id }: { id: string }) {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 w-64 animate-pulse rounded bg-zinc-200" />
-        <div className="h-48 animate-pulse rounded-xl bg-zinc-100" />
+        <div className="h-8 w-64 animate-pulse rounded bg-black/5" />
+        <div className="h-48 animate-pulse rounded-[20px] bg-black/5" />
       </div>
     );
   }
 
   if (error || !company) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">
+      <div className="rounded-[20px] border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">
         {error instanceof ApiError ? error.message : 'Failed to load company.'}
       </div>
     );
@@ -1091,33 +1179,33 @@ function CompanyDetailInner({ id }: { id: string }) {
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-zinc-500">
+      <div className="flex items-center gap-2 text-sm text-slate">
         <Link href="/admin/companies" className="hover:underline">
           Companies
         </Link>
         <span>/</span>
-        <span className="text-zinc-800 font-medium truncate">{company.name}</span>
+        <span className="text-ink font-medium truncate">{company.name}</span>
       </div>
 
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-900">{company.name}</h1>
-          <p className="mt-1 text-xs text-zinc-400 font-mono">{company.slug}</p>
+          <h1 className="text-2xl font-extrabold tracking-tight text-ink">{company.name}</h1>
+          <p className="mt-1 text-xs text-muted font-jbmono">{company.slug}</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <StatusChip status={company.status} />
         </div>
       </div>
 
-      {/* Company edit form */}
-      <section className={sectionCls}>
-        <h2 className="mb-4 text-base font-semibold text-zinc-800">Company details</h2>
-        <CompanyEditForm company={company} />
-      </section>
-
-      {/* Company login */}
-      <CompanyLoginSection companyId={id} />
+      {/* Details + login: two shorter config sections share a row on wide screens */}
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+        <section className={`${sectionCls} xl:col-span-2`}>
+          <CardHeader title="Company details" />
+          <CompanyEditForm company={company} />
+        </section>
+        <CompanyLoginSection companyId={id} />
+      </div>
 
       {/* Employees section */}
       <EmployeesSection companyId={id} companyStatus={company.status} />
@@ -1126,7 +1214,7 @@ function CompanyDetailInner({ id }: { id: string }) {
       <CompanyCatalogSection companyId={id} />
 
       {/* Company products */}
-      <CompanyProductsSection companyId={id} />
+      <CompanyProductsSection companyId={id} companyName={company.name} />
     </div>
   );
 }
@@ -1142,8 +1230,8 @@ export default function AdminCompanyDetailPage({
     <Suspense
       fallback={
         <div className="space-y-6">
-          <div className="h-8 w-64 animate-pulse rounded bg-zinc-200" />
-          <div className="h-48 animate-pulse rounded-xl bg-zinc-100" />
+          <div className="h-8 w-64 animate-pulse rounded bg-black/5" />
+          <div className="h-48 animate-pulse rounded-[20px] bg-black/5" />
         </div>
       }
     >

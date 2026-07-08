@@ -8,28 +8,32 @@ import {
   useSubmission,
   useApproveSubmission,
   useRejectSubmission,
+  useAttributeReview,
+  useResolveAttribute,
   type AdminSubmission,
   type DraftVariant,
+  type AttributeReviewItem,
 } from '@/lib/admin/submissions';
+import { useAttributes, type AdminAttribute } from '@/lib/admin/taxonomy';
 import { inr, fmtDate, fmtDateTime } from '@/lib/admin/format';
 
-const sectionCls = 'rounded-xl border border-zinc-200 bg-white p-5';
-const labelCls = 'mb-1 block text-sm font-medium text-zinc-700';
+const sectionCls = 'rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] p-5';
+const labelCls = 'mb-1 block text-sm font-medium text-slate';
 const inputCls =
-  'w-full rounded border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-400';
+  'w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-line';
 
 // ── VariantsTable ─────────────────────────────────────────────────────────────
 
 function VariantsTable({ variants }: { variants: DraftVariant[] }) {
   if (!Array.isArray(variants) || variants.length === 0) {
-    return <p className="text-sm text-zinc-500">No variants.</p>;
+    return <p className="text-sm text-slate">No variants.</p>;
   }
 
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm text-left">
         <thead>
-          <tr className="border-b border-zinc-200 text-xs uppercase text-zinc-500">
+          <tr className="border-b border-line text-xs uppercase text-slate">
             <th className="px-3 py-2 font-medium">SKU</th>
             <th className="px-3 py-2 font-medium text-right">Price</th>
             <th className="px-3 py-2 font-medium text-right">Orig. price</th>
@@ -41,10 +45,10 @@ function VariantsTable({ variants }: { variants: DraftVariant[] }) {
         </thead>
         <tbody>
           {variants.map((v, i) => (
-            <tr key={v.sku || `variant-${i}`} className="border-b border-zinc-100 hover:bg-zinc-50">
-              <td className="px-3 py-2 font-mono text-xs text-zinc-700">{v.sku ?? '—'}</td>
+            <tr key={v.sku || `variant-${i}`} className="border-b border-line hover:bg-white/50">
+              <td className="px-3 py-2 font-mono text-xs text-slate">{v.sku ?? '—'}</td>
               <td className="px-3 py-2 text-right">{inr(v.price)}</td>
-              <td className="px-3 py-2 text-right text-zinc-500">{inr(v.originalPrice)}</td>
+              <td className="px-3 py-2 text-right text-slate">{inr(v.originalPrice)}</td>
               <td className="px-3 py-2 text-right">
                 {typeof v.stock === 'number' ? v.stock.toLocaleString('en-IN') : '—'}
               </td>
@@ -57,14 +61,14 @@ function VariantsTable({ variants }: { variants: DraftVariant[] }) {
                     {v.attributes.map((a, ai) => (
                       <span
                         key={ai}
-                        className="rounded bg-zinc-100 px-1.5 py-0.5 text-xs text-zinc-600"
+                        className="rounded bg-black/5 px-1.5 py-0.5 text-xs text-slate"
                       >
                         {a.name}: {a.value}
                       </span>
                     ))}
                   </div>
                 ) : (
-                  <span className="text-zinc-400 text-xs">—</span>
+                  <span className="text-muted text-xs">—</span>
                 )}
               </td>
               <td className="px-3 py-2">
@@ -76,7 +80,7 @@ function VariantsTable({ variants }: { variants: DraftVariant[] }) {
                         href={src}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="block h-8 w-8 overflow-hidden rounded border border-zinc-200 bg-zinc-100 hover:opacity-80"
+                        className="block h-8 w-8 overflow-hidden rounded border border-line bg-black/5 hover:opacity-80"
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
@@ -87,13 +91,13 @@ function VariantsTable({ variants }: { variants: DraftVariant[] }) {
                       </a>
                     ))}
                     {v.images.length > 3 && (
-                      <span className="text-xs text-zinc-400 self-center">
+                      <span className="text-xs text-muted self-center">
                         +{v.images.length - 3}
                       </span>
                     )}
                   </div>
                 ) : (
-                  <span className="text-zinc-400 text-xs">—</span>
+                  <span className="text-muted text-xs">—</span>
                 )}
               </td>
             </tr>
@@ -104,11 +108,99 @@ function VariantsTable({ variants }: { variants: DraftVariant[] }) {
   );
 }
 
+// ── Attribute taxonomy review (propose → admin promotes) ──────────────────────
+
+const selectCls = 'rounded-[9px] border border-line bg-white/80 px-2 py-1.5 text-xs text-ink outline-none focus:border-accent';
+
+function ResolveRow({
+  id,
+  item,
+  attributes,
+}: {
+  id: string;
+  item: AttributeReviewItem;
+  attributes: AdminAttribute[];
+}) {
+  const resolve = useResolveAttribute(id);
+  const [attrId, setAttrId] = useState('');
+  const [valId, setValId] = useState('');
+  const attr = attributes.find((a) => a._id === attrId);
+  const resolved = item.attributeExists && item.valueExists;
+
+  return (
+    <div className="flex flex-wrap items-center gap-2 rounded-xl border border-line bg-white/60 px-3 py-2.5 text-sm">
+      <span className="font-semibold text-ink">{item.name}: {item.value}</span>
+      {resolved ? (
+        <span className="text-xs font-semibold text-[#1a8f5a]">✓ In catalog</span>
+      ) : (
+        <>
+          <span className="text-xs font-semibold text-[#b5801e]">⚠ Not in catalog</span>
+          <span className="ml-auto flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => resolve.mutate({ action: 'add', name: item.name, value: item.value })}
+              disabled={resolve.isPending}
+              className="rounded-[9px] bg-[rgba(42,43,106,.07)] px-3 py-1.5 text-[11px] font-semibold text-indigo hover:bg-[rgba(42,43,106,.12)] disabled:opacity-50"
+            >
+              + Add to catalog
+            </button>
+            <span className="text-[11px] text-muted">or map to</span>
+            <select value={attrId} onChange={(e) => { setAttrId(e.target.value); setValId(''); }} className={selectCls}>
+              <option value="">Attribute…</option>
+              {attributes.map((a) => <option key={a._id} value={a._id}>{a.name}</option>)}
+            </select>
+            <select value={valId} onChange={(e) => setValId(e.target.value)} disabled={!attr} className={selectCls}>
+              <option value="">Value…</option>
+              {attr?.values.map((v) => <option key={v._id} value={v._id}>{v.label}</option>)}
+            </select>
+            <button
+              disabled={!attrId || !valId || resolve.isPending}
+              onClick={() => resolve.mutate({ action: 'map', name: item.name, value: item.value, mapAttributeId: attrId, mapValueId: valId })}
+              className="rounded-[9px] bg-accent px-3 py-1.5 text-[11px] font-semibold text-white disabled:opacity-50"
+            >
+              Map
+            </button>
+          </span>
+        </>
+      )}
+    </div>
+  );
+}
+
+function AttributeReviewPanel({ id }: { id: string }) {
+  const { data, isLoading } = useAttributeReview(id);
+  const { data: attributes } = useAttributes();
+
+  const items = data?.items ?? [];
+  if (isLoading) {
+    return <section className={sectionCls}><div className="h-6 w-56 animate-pulse rounded bg-black/5" /></section>;
+  }
+  if (!items.length) return null;
+
+  return (
+    <section className={sectionCls}>
+      <div className="mb-3 flex items-center justify-between">
+        <h2 className="text-base font-semibold text-ink">Attribute taxonomy review</h2>
+        {data?.allResolved
+          ? <span className="rounded-full bg-[rgba(31,170,107,.12)] px-2.5 py-0.5 text-[11px] font-semibold text-[#1a8f5a]">All resolved</span>
+          : <span className="rounded-full bg-[rgba(224,163,59,.16)] px-2.5 py-0.5 text-[11px] font-semibold text-[#b5801e]">Needs review</span>}
+      </div>
+      <p className="mb-3 text-xs text-slate">
+        Every attribute must map to the global catalog before approval. <strong>Add to catalog</strong> promotes the seller&apos;s exact name/value; <strong>Map</strong> points it at an existing attribute (fixes typos/synonyms).
+      </p>
+      <div className="space-y-2">
+        {items.map((it, i) => <ResolveRow key={`${it.name}:${it.value}:${i}`} id={id} item={it} attributes={attributes ?? []} />)}
+      </div>
+    </section>
+  );
+}
+
 // ── ModeratePanel ─────────────────────────────────────────────────────────────
 
 function ModeratePanel({ submission }: { submission: AdminSubmission }) {
   const approve = useApproveSubmission(submission._id);
   const reject = useRejectSubmission(submission._id);
+  const review = useAttributeReview(submission._id, submission.status === 'submitted');
+  const attrsBlocked = submission.status === 'submitted' && review.data ? !review.data.allResolved : false;
 
   const [reason, setReason] = useState('');
   const [reasonError, setReasonError] = useState('');
@@ -131,16 +223,16 @@ function ModeratePanel({ submission }: { submission: AdminSubmission }) {
   if (submission.status !== 'submitted') {
     return (
       <section className={sectionCls}>
-        <h2 className="mb-3 text-base font-semibold text-zinc-800">Moderation</h2>
+        <h2 className="mb-3 text-base font-semibold text-ink">Moderation</h2>
         <div className="flex flex-wrap items-center gap-3">
           <StatusChip status={submission.status} label={submission.status} />
           {submission.status === 'rejected' && submission.rejectionReason && (
-            <span className="text-sm text-zinc-600 italic">
+            <span className="text-sm text-slate italic">
               Reason: {submission.rejectionReason}
             </span>
           )}
           {submission.status === 'approved' && submission.createdProductId && (
-            <div className="mt-1 text-sm text-zinc-600">
+            <div className="mt-1 text-sm text-slate">
               Product created (ID:{' '}
               <span className="font-mono text-xs">{submission.createdProductId}</span>
               ).{' '}
@@ -153,7 +245,7 @@ function ModeratePanel({ submission }: { submission: AdminSubmission }) {
             </div>
           )}
           {submission.reviewedAt && (
-            <span className="text-xs text-zinc-400">
+            <span className="text-xs text-muted">
               Reviewed {fmtDateTime(submission.reviewedAt)}
             </span>
           )}
@@ -181,20 +273,24 @@ function ModeratePanel({ submission }: { submission: AdminSubmission }) {
 
   return (
     <section className={sectionCls}>
-      <h2 className="mb-4 text-base font-semibold text-zinc-800">Moderation</h2>
+      <h2 className="mb-4 text-base font-semibold text-ink">Moderation</h2>
 
       {/* Approve */}
       <div className="mb-6">
-        <p className="text-sm text-zinc-600 mb-3">
+        <p className="text-sm text-slate mb-3">
           Approving will create the product in the public catalogue from this submission.
         </p>
         <button
           onClick={handleApprove}
-          disabled={isPending}
+          disabled={isPending || attrsBlocked}
+          title={attrsBlocked ? 'Resolve all attributes in the taxonomy review above first' : undefined}
           className="rounded bg-green-700 px-4 py-2 text-sm font-medium text-white disabled:opacity-60 hover:bg-green-800 transition-colors"
         >
           {approve.isPending ? 'Approving…' : 'Approve submission'}
         </button>
+        {attrsBlocked && (
+          <p className="mt-2 text-sm text-[#b5801e]">Resolve every attribute in the taxonomy review above before approving.</p>
+        )}
 
         {approve.isSuccess && (
           <p className="mt-2 text-sm text-green-700">
@@ -224,7 +320,7 @@ function ModeratePanel({ submission }: { submission: AdminSubmission }) {
         )}
       </div>
 
-      <hr className="border-zinc-200 mb-6" />
+      <hr className="border-line mb-6" />
 
       {/* Reject */}
       <form onSubmit={handleReject} className="space-y-3">
@@ -279,9 +375,9 @@ function SubmissionDetailInner({ id }: { id: string }) {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 w-64 animate-pulse rounded bg-zinc-200" />
-        <div className="h-48 animate-pulse rounded-xl bg-zinc-100" />
-        <div className="h-32 animate-pulse rounded-xl bg-zinc-100" />
+        <div className="h-8 w-64 animate-pulse rounded bg-black/5" />
+        <div className="h-48 animate-pulse rounded-xl bg-black/5" />
+        <div className="h-32 animate-pulse rounded-xl bg-black/5" />
       </div>
     );
   }
@@ -297,20 +393,20 @@ function SubmissionDetailInner({ id }: { id: string }) {
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-zinc-500">
+      <div className="flex items-center gap-2 text-sm text-slate">
         <Link href="/admin/submissions" className="hover:underline">
           Submissions
         </Link>
         <span>/</span>
-        <span className="text-zinc-800 font-medium truncate">{submission.name}</span>
+        <span className="text-ink font-medium truncate">{submission.name}</span>
       </div>
 
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-900">{submission.name}</h1>
-          <p className="mt-1 text-xs text-zinc-400 font-mono">{submission._id}</p>
-          <p className="mt-1 text-xs text-zinc-500">
+          <h1 className="text-2xl font-bold text-ink">{submission.name}</h1>
+          <p className="mt-1 text-xs text-muted font-mono">{submission._id}</p>
+          <p className="mt-1 text-xs text-slate">
             Submitted {fmtDate(submission.createdAt)}
           </p>
         </div>
@@ -319,31 +415,34 @@ function SubmissionDetailInner({ id }: { id: string }) {
         </div>
       </div>
 
+      {/* Attribute taxonomy review (only while awaiting moderation) */}
+      {submission.status === 'submitted' && <AttributeReviewPanel id={submission._id} />}
+
       {/* Moderation panel */}
       <ModeratePanel submission={submission} />
 
       {/* Product details */}
       <section className={sectionCls}>
-        <h2 className="mb-4 text-base font-semibold text-zinc-800">Product details</h2>
+        <h2 className="mb-4 text-base font-semibold text-ink">Product details</h2>
         <dl className="grid grid-cols-1 gap-y-3 sm:grid-cols-2 gap-x-6">
           <div>
-            <dt className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Category ID</dt>
-            <dd className="mt-0.5 text-sm text-zinc-800 font-mono">
+            <dt className="text-xs font-medium text-slate uppercase tracking-wider">Category ID</dt>
+            <dd className="mt-0.5 text-sm text-ink font-mono">
               {submission.categoryId ?? '—'}
             </dd>
           </div>
           <div>
-            <dt className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Seller ID</dt>
-            <dd className="mt-0.5 text-sm text-zinc-800 font-mono">
+            <dt className="text-xs font-medium text-slate uppercase tracking-wider">Seller ID</dt>
+            <dd className="mt-0.5 text-sm text-ink font-mono">
               {submission.sellerId ?? '—'}
             </dd>
           </div>
           {submission.badge && (
             <div>
-              <dt className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Badge</dt>
-              <dd className="mt-0.5 text-sm text-zinc-800">
+              <dt className="text-xs font-medium text-slate uppercase tracking-wider">Badge</dt>
+              <dd className="mt-0.5 text-sm text-ink">
                 {submission.badge.label}{' '}
-                <span className="text-xs text-zinc-400">({submission.badge.variant})</span>
+                <span className="text-xs text-muted">({submission.badge.variant})</span>
               </dd>
             </div>
           )}
@@ -351,26 +450,26 @@ function SubmissionDetailInner({ id }: { id: string }) {
 
         {submission.description && (
           <div className="mt-4">
-            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Description</p>
-            <p className="text-sm text-zinc-700 whitespace-pre-wrap">{submission.description}</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-slate mb-1">Description</p>
+            <p className="text-sm text-slate whitespace-pre-wrap">{submission.description}</p>
           </div>
         )}
         {submission.details && (
           <div className="mt-4">
-            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Details</p>
-            <p className="text-sm text-zinc-700 whitespace-pre-wrap">{submission.details}</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-slate mb-1">Details</p>
+            <p className="text-sm text-slate whitespace-pre-wrap">{submission.details}</p>
           </div>
         )}
         {submission.materials && (
           <div className="mt-4">
-            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Materials</p>
-            <p className="text-sm text-zinc-700 whitespace-pre-wrap">{submission.materials}</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-slate mb-1">Materials</p>
+            <p className="text-sm text-slate whitespace-pre-wrap">{submission.materials}</p>
           </div>
         )}
         {submission.shipping && (
           <div className="mt-4">
-            <p className="text-xs font-medium uppercase tracking-wider text-zinc-500 mb-1">Shipping</p>
-            <p className="text-sm text-zinc-700 whitespace-pre-wrap">{submission.shipping}</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-slate mb-1">Shipping</p>
+            <p className="text-sm text-slate whitespace-pre-wrap">{submission.shipping}</p>
           </div>
         )}
       </section>
@@ -378,7 +477,7 @@ function SubmissionDetailInner({ id }: { id: string }) {
       {/* Images */}
       {Array.isArray(submission.images) && submission.images.length > 0 && (
         <section className={sectionCls}>
-          <h2 className="mb-4 text-base font-semibold text-zinc-800">
+          <h2 className="mb-4 text-base font-semibold text-ink">
             Product images ({submission.images.length})
           </h2>
           <div className="flex flex-wrap gap-3">
@@ -388,7 +487,7 @@ function SubmissionDetailInner({ id }: { id: string }) {
                 href={src}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block h-24 w-24 overflow-hidden rounded-lg border border-zinc-200 bg-zinc-100 hover:opacity-80 transition-opacity"
+                className="block h-24 w-24 overflow-hidden rounded-lg border border-line bg-black/5 hover:opacity-80 transition-opacity"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -404,7 +503,7 @@ function SubmissionDetailInner({ id }: { id: string }) {
 
       {/* Variants */}
       <section className={sectionCls}>
-        <h2 className="mb-4 text-base font-semibold text-zinc-800">
+        <h2 className="mb-4 text-base font-semibold text-ink">
           Variants ({Array.isArray(submission.variants) ? submission.variants.length : 0})
         </h2>
         <VariantsTable variants={submission.variants} />
@@ -439,9 +538,9 @@ export default function AdminSubmissionDetailPage({
     <Suspense
       fallback={
         <div className="space-y-6">
-          <div className="h-8 w-64 animate-pulse rounded bg-zinc-200" />
-          <div className="h-48 animate-pulse rounded-xl bg-zinc-100" />
-          <div className="h-32 animate-pulse rounded-xl bg-zinc-100" />
+          <div className="h-8 w-64 animate-pulse rounded bg-black/5" />
+          <div className="h-48 animate-pulse rounded-xl bg-black/5" />
+          <div className="h-32 animate-pulse rounded-xl bg-black/5" />
         </div>
       }
     >

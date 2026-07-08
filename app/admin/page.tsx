@@ -1,276 +1,194 @@
 'use client';
 
-import Link from 'next/link';
-import { useRevenue, useTopProducts, useOrdersByStatus, useLowStock } from '@/lib/admin/dashboard';
+import {
+  useRevenue,
+  useDashboardSummary,
+  useGeneratedTimeseries,
+  useRecentActivity,
+} from '@/lib/admin/dashboard';
 
-// ── Money helper ──────────────────────────────────────────────────────────────
+// ── Shared surface class (design-system glass) ──────────────────────────────────
+const GLASS = 'border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)]';
+
 function inr(n: unknown): string {
   return typeof n === 'number' ? `₹${n.toLocaleString('en-IN')}` : '—';
 }
 
-// ── Status chip colours ────────────────────────────────────────────────────────
-const STATUS_CHIP: Record<string, string> = {
-  pending:    'bg-amber-100 text-amber-700',
-  confirmed:  'bg-blue-100 text-blue-700',
-  processing: 'bg-indigo-100 text-indigo-700',
-  shipped:    'bg-violet-100 text-violet-700',
-  delivered:  'bg-green-100 text-green-700',
-  cancelled:  'bg-red-100 text-red-700',
-  refunded:   'bg-zinc-100 text-zinc-600',
+function ago(iso: string): string {
+  const s = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000);
+  if (s < 60) return 'just now';
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m} min ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h} hr ago`;
+  const d = Math.floor(h / 24);
+  return `${d} day${d > 1 ? 's' : ''} ago`;
+}
+
+const ACTIVITY_ICON: Record<string, { icon: string; c: string; bg: string }> = {
+  quotation: { icon: '📄', c: '#2a2b6a', bg: 'rgba(42,43,106,.1)' },
+  catalogue: { icon: '🖼', c: '#127d72', bg: 'rgba(23,155,142,.12)' },
+  order: { icon: '🛒', c: '#1a8f5a', bg: 'rgba(31,170,107,.12)' },
 };
 
-// ── Loading skeleton ──────────────────────────────────────────────────────────
 function Skeleton({ className = '' }: { className?: string }) {
+  return <div className={`animate-pulse rounded bg-black/5 ${className}`} />;
+}
+
+function Kpi({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className={`animate-pulse rounded bg-zinc-200 ${className}`} />
+    <div className={`rounded-[18px] p-5 ${GLASS}`}>
+      <p className="font-jbmono text-[10px] uppercase tracking-[.08em] text-muted mb-3">{label}</p>
+      {children}
+    </div>
   );
 }
 
-// ── Section wrapper ────────────────────────────────────────────────────────────
+function Value({ children }: { children: React.ReactNode }) {
+  return <p className="text-3xl font-extrabold tracking-tight text-ink">{children}</p>;
+}
+
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-zinc-500">
-        {title}
-      </h2>
+      <h2 className="mb-3 font-jbmono text-[11px] font-semibold uppercase tracking-[.14em] text-accent">{title}</h2>
       {children}
     </section>
   );
 }
 
-// ── Error banner ──────────────────────────────────────────────────────────────
 function ErrorBanner({ message }: { message: string }) {
   return (
-    <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-      {message}
-    </div>
+    <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{message}</div>
   );
 }
 
 export default function AdminDashboardPage() {
   const revenue = useRevenue();
-  const topProducts = useTopProducts();
-  const ordersByStatus = useOrdersByStatus();
-  const lowStock = useLowStock();
+  const summary = useDashboardSummary();
+  const series = useGeneratedTimeseries(10);
+  const activity = useRecentActivity(8);
+
+  const points = series.data ?? [];
+  const maxTotal = Math.max(1, ...points.map(p => p.quotations + p.catalogues));
 
   return (
-    <main className="max-w-5xl mx-auto px-4 py-8 space-y-10">
-      {/* Page header */}
+    <main className="max-w-5xl mx-auto space-y-10">
       <div>
-        <h1 className="text-2xl font-bold text-zinc-900">Dashboard</h1>
-        <p className="mt-1 text-sm text-zinc-500">Last 30 days overview</p>
+        <h1 className="text-2xl font-extrabold tracking-tight text-ink">Dashboard</h1>
+        <p className="mt-1 text-sm text-slate">Last 30 days overview</p>
       </div>
 
-      {/* ── KPI cards ── */}
+      {/* ── Revenue KPIs (last 30 days) ── */}
       <Section title="Revenue (last 30 days)">
         {revenue.isError ? (
           <ErrorBanner message="Could not load revenue data." />
         ) : (
           <div className="grid grid-cols-3 gap-4">
-            {/* Total Revenue */}
-            <div className="rounded-xl border border-zinc-200 bg-white p-5">
-              <p className="text-xs text-zinc-500 mb-1">Total Revenue</p>
-              {revenue.isPending ? (
-                <Skeleton className="h-7 w-28 mt-1" />
-              ) : (
-                <p className="text-xl font-semibold text-zinc-900">
-                  {inr(revenue.data?.totalRevenue)}
-                </p>
+            <Kpi label="Total Revenue">
+              {revenue.isPending ? <Skeleton className="h-8 w-28 mt-1" /> : <Value>{inr(revenue.data?.totalRevenue)}</Value>}
+            </Kpi>
+            <Kpi label="Orders (revenue-bearing)">
+              {revenue.isPending ? <Skeleton className="h-8 w-16 mt-1" /> : (
+                <Value>{typeof revenue.data?.orderCount === 'number' ? revenue.data.orderCount.toLocaleString('en-IN') : '—'}</Value>
               )}
-            </div>
-
-            {/* Order Count */}
-            <div className="rounded-xl border border-zinc-200 bg-white p-5">
-              <p className="text-xs text-zinc-500 mb-1">Orders (revenue-bearing)</p>
-              {revenue.isPending ? (
-                <Skeleton className="h-7 w-16 mt-1" />
-              ) : (
-                <p className="text-xl font-semibold text-zinc-900">
-                  {typeof revenue.data?.orderCount === 'number'
-                    ? revenue.data.orderCount.toLocaleString('en-IN')
-                    : '—'}
-                </p>
-              )}
-            </div>
-
-            {/* Avg Order Value */}
-            <div className="rounded-xl border border-zinc-200 bg-white p-5">
-              <p className="text-xs text-zinc-500 mb-1">Avg Order Value</p>
-              {revenue.isPending ? (
-                <Skeleton className="h-7 w-24 mt-1" />
-              ) : (
-                <p className="text-xl font-semibold text-zinc-900">
-                  {inr(revenue.data?.avgOrderValue)}
-                </p>
-              )}
-            </div>
+            </Kpi>
+            <Kpi label="Avg Order Value">
+              {revenue.isPending ? <Skeleton className="h-8 w-24 mt-1" /> : <Value>{inr(revenue.data?.avgOrderValue)}</Value>}
+            </Kpi>
           </div>
         )}
       </Section>
 
-      {/* ── Orders by Status ── */}
-      <Section title="Orders by Status">
-        {ordersByStatus.isError ? (
-          <ErrorBanner message="Could not load order status data." />
+      {/* ── Lead & document counts (all-time) ── */}
+      <Section title="Quotations, catalogues & enquiries">
+        {summary.isError ? (
+          <ErrorBanner message="Could not load counts." />
         ) : (
-          <div className="rounded-xl border border-zinc-200 bg-white divide-y divide-zinc-100">
-            {ordersByStatus.isPending ? (
-              Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="flex items-center justify-between px-5 py-3">
-                  <Skeleton className="h-5 w-24" />
-                  <Skeleton className="h-5 w-8" />
-                </div>
-              ))
-            ) : !ordersByStatus.data?.length ? (
-              <p className="px-5 py-4 text-sm text-zinc-400">No orders yet.</p>
-            ) : (
-              ordersByStatus.data.map(row => (
-                <Link
-                  key={row.status}
-                  href={`/admin/orders?status=${row.status}`}
-                  className="flex items-center justify-between px-5 py-3 hover:bg-zinc-50 transition-colors"
-                >
-                  <span
-                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize ${STATUS_CHIP[row.status] ?? 'bg-zinc-100 text-zinc-600'}`}
-                  >
-                    {row.status}
-                  </span>
-                  <span className="text-sm font-semibold text-zinc-900">
-                    {typeof row.count === 'number' ? row.count.toLocaleString('en-IN') : '—'}
-                  </span>
-                </Link>
-              ))
-            )}
+          <div className="grid grid-cols-3 gap-4">
+            <Kpi label="Quotations">
+              {summary.isPending ? <Skeleton className="h-8 w-20 mt-1" /> : <Value>{summary.data?.quotations.toLocaleString('en-IN')}</Value>}
+            </Kpi>
+            <Kpi label="Catalogues">
+              {summary.isPending ? <Skeleton className="h-8 w-20 mt-1" /> : <Value>{summary.data?.catalogues.toLocaleString('en-IN')}</Value>}
+            </Kpi>
+            <Kpi label="Enquiries made">
+              {summary.isPending ? <Skeleton className="h-8 w-16 mt-1" /> : <Value>{summary.data?.enquiries.toLocaleString('en-IN')}</Value>}
+            </Kpi>
           </div>
         )}
       </Section>
 
-      {/* ── Quick-action links ── */}
-      <Section title="Quick Actions">
-        <div className="grid grid-cols-3 gap-4">
-          <Link
-            href="/admin/orders"
-            className="rounded-xl border border-zinc-200 bg-white p-5 hover:bg-zinc-50 transition-colors"
-          >
-            <p className="font-semibold text-zinc-900">Orders</p>
-            <p className="mt-1 text-xs text-zinc-500">View and manage all customer orders</p>
-          </Link>
-          <Link
-            href="/admin/seller-submissions"
-            className="rounded-xl border border-zinc-200 bg-white p-5 hover:bg-zinc-50 transition-colors"
-          >
-            <p className="font-semibold text-zinc-900">Submissions</p>
-            <p className="mt-1 text-xs text-zinc-500">Review pending seller product submissions</p>
-          </Link>
-          <Link
-            href="/admin/seller-payouts"
-            className="rounded-xl border border-zinc-200 bg-white p-5 hover:bg-zinc-50 transition-colors"
-          >
-            <p className="font-semibold text-zinc-900">Payouts</p>
-            <p className="mt-1 text-xs text-zinc-500">Settle outstanding seller earnings</p>
-          </Link>
+      {/* ── Downloads over time + Recent activity ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-4">
+        {/* Chart */}
+        <div className={`rounded-[20px] p-6 ${GLASS}`}>
+          <div className="flex items-center justify-between mb-5">
+            <div>
+              <div className="text-[15px] font-extrabold text-ink">Downloads over time</div>
+              <div className="text-xs text-muted">Quotations &amp; catalogues generated per month</div>
+            </div>
+            <div className="flex gap-3.5 text-[11px] text-slate">
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-[3px] bg-indigo inline-block" />Quotations</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-[3px] bg-accent inline-block" />Catalogues</span>
+            </div>
+          </div>
+          {series.isError ? (
+            <ErrorBanner message="Could not load the chart." />
+          ) : series.isPending ? (
+            <Skeleton className="h-[180px] w-full" />
+          ) : (
+            <div className="flex items-end gap-2.5 h-[180px]">
+              {points.map((p, i) => {
+                const total = p.quotations + p.catalogues;
+                const hPct = (total / maxTotal) * 100;
+                const qFrac = total ? p.quotations / total : 0;
+                return (
+                  <div key={i} className="flex-1 flex flex-col justify-end h-full" title={`${p.month}: ${p.quotations} quotations, ${p.catalogues} catalogues`}>
+                    <div style={{ height: `${hPct}%` }} className="flex flex-col overflow-hidden rounded-t-md">
+                      <div style={{ flexGrow: qFrac }} className="bg-gradient-to-b from-indigo2 to-indigo" />
+                      <div style={{ flexGrow: 1 - qFrac }} className="bg-gradient-to-b from-accent2 to-accent" />
+                    </div>
+                    <div className="mt-1.5 text-center font-jbmono text-[9px] text-muted">{p.month}</div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
-      </Section>
 
-      {/* ── Top Products ── */}
-      <Section title="Top Products (all time)">
-        {topProducts.isError ? (
-          <ErrorBanner message="Could not load top products." />
-        ) : (
-          <div className="rounded-xl border border-zinc-200 bg-white divide-y divide-zinc-100">
-            {topProducts.isPending ? (
-              Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="flex items-center justify-between px-5 py-3">
-                  <Skeleton className="h-5 w-48" />
-                  <div className="flex items-center gap-6">
-                    <Skeleton className="h-5 w-16" />
-                    <Skeleton className="h-5 w-20" />
+        {/* Recent activity */}
+        <div className={`rounded-[20px] p-6 ${GLASS}`}>
+          <div className="text-[15px] font-extrabold text-ink mb-[18px]">Recent activity</div>
+          {activity.isError ? (
+            <ErrorBanner message="Could not load activity." />
+          ) : activity.isPending ? (
+            <div className="space-y-4">
+              {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}
+            </div>
+          ) : !activity.data?.length ? (
+            <p className="text-sm text-muted">No recent activity.</p>
+          ) : (
+            activity.data.map((a, i) => {
+              const cfg = ACTIVITY_ICON[a.type] ?? ACTIVITY_ICON.quotation;
+              return (
+                <div key={i} className="flex gap-3 mb-4">
+                  <span
+                    className="w-[30px] h-[30px] shrink-0 rounded-[9px] flex items-center justify-center text-[13px]"
+                    style={{ background: cfg.bg, color: cfg.c }}
+                  >
+                    {cfg.icon}
+                  </span>
+                  <div>
+                    <div className="text-[13px] leading-snug text-ink"><strong>{a.who}</strong> {a.what}</div>
+                    <div className="font-jbmono text-[11px] text-muted">{ago(a.when)}</div>
                   </div>
                 </div>
-              ))
-            ) : !topProducts.data?.length ? (
-              <p className="px-5 py-4 text-sm text-zinc-400">No sales data yet.</p>
-            ) : (
-              topProducts.data.map((product, idx) => (
-                <div
-                  key={product._id ?? idx}
-                  className="flex items-center gap-4 px-5 py-3"
-                >
-                  <span className="w-6 shrink-0 text-center text-xs font-semibold text-zinc-400">
-                    {idx + 1}
-                  </span>
-                  <span className="flex-1 truncate text-sm text-zinc-800">
-                    {product.productName ?? '—'}
-                  </span>
-                  <span className="shrink-0 text-sm text-zinc-500">
-                    {typeof product.totalQtySold === 'number'
-                      ? `${product.totalQtySold.toLocaleString('en-IN')} units`
-                      : '—'}
-                  </span>
-                  <span className="shrink-0 w-28 text-right text-sm font-semibold text-zinc-900">
-                    {inr(product.totalRevenue)}
-                  </span>
-                </div>
-              ))
-            )}
-          </div>
-        )}
-      </Section>
-
-      {/* ── Low Stock Variants ── */}
-      <Section title="Low Stock Alerts">
-        {lowStock.isError ? (
-          <ErrorBanner message="Could not load low-stock data." />
-        ) : (
-          <div className="rounded-xl border border-zinc-200 bg-white divide-y divide-zinc-100">
-            {lowStock.isPending ? (
-              Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="flex items-center justify-between px-5 py-3">
-                  <Skeleton className="h-5 w-40" />
-                  <Skeleton className="h-5 w-16" />
-                </div>
-              ))
-            ) : !lowStock.data?.length ? (
-              <p className="px-5 py-4 text-sm text-zinc-400">All variants are sufficiently stocked.</p>
-            ) : (
-              lowStock.data.map(variant => {
-                const attrLabel = Array.isArray(variant.attributes) && variant.attributes.length
-                  ? variant.attributes.map(a => a.valueLabel ?? '').filter(Boolean).join(' / ')
-                  : null;
-
-                return (
-                  <Link
-                    key={variant._id}
-                    href={`/admin/catalog/products?variantId=${variant._id}`}
-                    className="flex items-center gap-4 px-5 py-3 hover:bg-zinc-50 transition-colors"
-                  >
-                    <div className="flex-1 min-w-0 flex items-baseline gap-2">
-                      <span className="text-sm text-zinc-800 truncate">
-                        {variant.sku ?? '—'}
-                      </span>
-                      {attrLabel ? (
-                        <span className="shrink-0 text-xs text-zinc-400">({attrLabel})</span>
-                      ) : null}
-                    </div>
-                    <span
-                      className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${
-                        (typeof variant.stock === 'number' ? variant.stock : 1) === 0
-                          ? 'bg-red-100 text-red-700'
-                          : 'bg-amber-100 text-amber-700'
-                      }`}
-                    >
-                      {typeof variant.stock === 'number' ? `${variant.stock} left` : '—'}
-                    </span>
-                    <span className="shrink-0 w-24 text-right text-sm text-zinc-500">
-                      {inr(variant.price)}
-                    </span>
-                  </Link>
-                );
-              })
-            )}
-          </div>
-        )}
-      </Section>
+              );
+            })
+          )}
+        </div>
+      </div>
     </main>
   );
 }
