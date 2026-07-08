@@ -32,13 +32,15 @@ export default function EmployeeCheckoutPage() {
   const [couponCode, setCouponCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [orderPlaced, setOrderPlaced] = useState(false);
 
   // Redirect if cart is empty (after data loads)
   useEffect(() => {
+    if (orderPlaced) return;
     if (!cartLoading && (!cart || cart.items.length === 0)) {
       router.replace('/employee/products');
     }
-  }, [cartLoading, cart, router]);
+  }, [cartLoading, cart, router, orderPlaced]);
 
   if (cartLoading) {
     return (
@@ -70,6 +72,7 @@ export default function EmployeeCheckoutPage() {
       });
 
       if (result.fullyPaidByWallet) {
+        setOrderPlaced(true);
         setSubmitting(false);
         router.push('/employee/orders/' + result.orderId);
         return;
@@ -91,6 +94,7 @@ export default function EmployeeCheckoutPage() {
         currency: result.currency,
         name: 'Supreme International',
         onSuccess: async (r) => {
+          setOrderPlaced(true);
           // Confirm immediately from the browser; the webhook is the backstop if this fails.
           try {
             await verifyPayment.mutateAsync({ orderId: result.orderId, payment: r });
@@ -99,7 +103,10 @@ export default function EmployeeCheckoutPage() {
           }
           router.push('/employee/orders/' + result.orderId);
         },
-        onDismiss: () => router.push('/employee/orders/' + result.orderId),
+        onDismiss: () => {
+          setOrderPlaced(true);
+          router.push('/employee/orders/' + result.orderId);
+        },
       });
     } catch (err) {
       if (err instanceof ApiError) {
