@@ -423,37 +423,41 @@ function EmployeeWalletPanel({
   const ledgerPagination = ledgerData?.pagination;
 
   return (
-    <div className="pt-4">
-      {/* Balance */}
-      <div className="mb-4 flex items-center gap-4">
-        <div className="rounded-xl border border-line bg-white/60 px-4 py-3">
-          <p className="mb-0.5 text-[11px] font-medium uppercase tracking-wide text-muted">
-            {walletMode === 'coupon' ? 'Active coupon' : 'Wallet balance'}
+    <div className="space-y-5">
+      {/* Balance / coupon hero */}
+      <div className={`rounded-2xl p-5 text-white ${walletMode === 'coupon' ? 'bg-gradient-to-br from-accent to-[#127d72]' : 'bg-gradient-to-br from-indigo to-indigo2'}`}>
+        <p className="text-[11px] font-semibold uppercase tracking-[.1em] text-white/70">
+          {walletMode === 'coupon' ? 'Active coupon' : 'Wallet balance'}
+        </p>
+        {walletLoading ? (
+          <div className="mt-1 h-8 w-28 animate-pulse rounded bg-white/20" />
+        ) : (
+          <p className="mt-1 text-3xl font-extrabold tracking-[-.02em]">
+            {typeof wallet?.balance === 'number' ? `₹${wallet.balance.toLocaleString('en-IN')}` : '—'}
+            {wallet?.currency && wallet.currency !== 'INR' && (
+              <span className="ml-1 text-sm font-normal text-white/70">{wallet.currency}</span>
+            )}
           </p>
-          {walletLoading ? (
-            <div className="h-6 w-24 animate-pulse rounded bg-black/5" />
-          ) : (
-            <p className="text-2xl font-bold text-ink">
-              {typeof wallet?.balance === 'number' ? `₹${wallet.balance.toLocaleString('en-IN')}` : '—'}
-              {wallet?.currency && wallet.currency !== 'INR' && (
-                <span className="ml-1 text-xs font-normal text-slate">{wallet.currency}</span>
-              )}
-            </p>
-          )}
-        </div>
+        )}
       </div>
 
       {/* Issue coupon (coupon mode) */}
       {walletMode === 'coupon' && (
-        <form onSubmit={handleIssueCoupon} className="space-y-2 rounded-xl border border-line bg-white/60 p-3 mb-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-indigo">Issue coupon</p>
+        <form onSubmit={handleIssueCoupon} className="rounded-xl border border-line bg-white/60 p-4 space-y-3">
+          <div>
+            <p className="text-sm font-semibold text-ink">Issue / replace coupon</p>
+            <p className="text-xs text-muted">Sets the employee&apos;s coupon to this value, replacing any existing one.</p>
+          </div>
           <div className="flex gap-2">
-            <input
-              type="number" min="0.01" step="0.01" placeholder="Coupon value (₹)"
-              value={couponValue} onChange={(e) => setCouponValue(e.target.value)}
-              className="w-40 rounded-lg border border-line px-2.5 py-1.5 text-sm"
-            />
-            <button type="submit" disabled={issueCoupon.isPending} className="rounded-lg bg-gradient-to-br from-indigo to-indigo2 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-60">
+            <div className="relative flex-1">
+              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted">₹</span>
+              <input
+                type="number" min="0.01" step="0.01" placeholder="Coupon value"
+                value={couponValue} onChange={(e) => setCouponValue(e.target.value)}
+                className="w-full rounded-lg border border-line bg-white pl-7 pr-3 py-2.5 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+              />
+            </div>
+            <button type="submit" disabled={issueCoupon.isPending} className="shrink-0 rounded-lg bg-gradient-to-br from-indigo to-indigo2 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 disabled:opacity-60">
               {issueCoupon.isPending ? 'Issuing…' : 'Issue coupon'}
             </button>
           </div>
@@ -466,7 +470,7 @@ function EmployeeWalletPanel({
 
       {/* Credit & Debit forms (points mode) */}
       {walletMode === 'points' && (
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Credit form */}
         <form
           onSubmit={handleCredit}
@@ -555,9 +559,7 @@ function EmployeeWalletPanel({
 
       {/* Ledger */}
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wider text-slate mb-2">
-          Ledger history
-        </p>
+        <p className={`mb-2 ${colHeadCls}`}>Ledger history</p>
         {ledgerLoading && (
           <div className="space-y-1">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -566,12 +568,12 @@ function EmployeeWalletPanel({
           </div>
         )}
         {!ledgerLoading && ledgerItems.length === 0 && (
-          <p className="text-xs text-muted">No transactions yet.</p>
+          <p className="rounded-lg border border-dashed border-line py-6 text-center text-xs text-muted">No transactions yet.</p>
         )}
         {!ledgerLoading && ledgerItems.length > 0 && (
-          <div className="overflow-x-auto">
+          <div className="max-h-72 overflow-auto rounded-lg border border-line">
             <table className="w-full text-xs text-left">
-              <thead>
+              <thead className="sticky top-0 bg-white/95 backdrop-blur">
                 <tr className="border-b border-line text-slate uppercase">
                   <th className="px-2 py-1 font-medium">Date</th>
                   <th className="px-2 py-1 font-medium">Type</th>
@@ -666,7 +668,7 @@ function EmployeesSection({
     phoneNumber: '',
   });
 
-  const [expandedWallet, setExpandedWallet] = useState<string | null>(null);
+  const [walletModalEmp, setWalletModalEmp] = useState<AdminEmployee | null>(null);
 
   function handleInvite(e: React.FormEvent) {
     e.preventDefault();
@@ -840,14 +842,12 @@ function EmployeesSection({
                   />
                   <span className="hidden text-xs text-muted sm:inline">{fmtDate(emp.createdAt)}</span>
 
-                  {/* Wallet toggle */}
+                  {/* Manage wallet / coupon */}
                   <button
-                    onClick={() =>
-                      setExpandedWallet(expandedWallet === emp._id ? null : emp._id)
-                    }
-                    className="rounded-lg border border-line px-2.5 py-1 text-xs text-slate hover:bg-white/60"
+                    onClick={() => setWalletModalEmp(emp)}
+                    className="rounded-lg bg-indigo/[.07] px-2.5 py-1 text-xs font-medium text-indigo hover:bg-indigo/10"
                   >
-                    {expandedWallet === emp._id ? 'Hide wallet' : 'Wallet'}
+                    {walletMode === 'coupon' ? 'Manage coupon' : 'Manage wallet'}
                   </button>
 
                   {/* Resend invite */}
@@ -877,13 +877,6 @@ function EmployeesSection({
                   )}
                 </div>
               </div>
-
-              {/* Inline wallet panel */}
-              {expandedWallet === emp._id && (
-                <div className="border-t border-line/70 px-3 pb-3">
-                  <EmployeeWalletPanel employee={emp} walletMode={walletMode} />
-                </div>
-              )}
             </div>
           ))}
         </div>
@@ -895,6 +888,38 @@ function EmployeesSection({
             ? updateStatus.error.message
             : 'Status update failed'}
         </p>
+      )}
+
+      {/* Wallet / coupon management modal */}
+      {walletModalEmp && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-[rgba(22,23,58,.42)] p-4 backdrop-blur-sm"
+          onClick={(e) => { if (e.target === e.currentTarget) setWalletModalEmp(null); }}
+        >
+          <div className="flex max-h-[88vh] w-full max-w-2xl flex-col overflow-hidden rounded-[22px] border border-white/80 bg-white shadow-[0_40px_100px_rgba(22,23,58,.35)]">
+            <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
+              <div className="flex min-w-0 items-center gap-3">
+                <Avatar name={`${walletModalEmp.firstName} ${walletModalEmp.lastName ?? ''}`} />
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-ink">
+                    {walletModalEmp.firstName} {walletModalEmp.lastName ?? ''}
+                  </p>
+                  <p className="truncate text-xs text-muted">{walletModalEmp.email}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setWalletModalEmp(null)}
+                className="rounded-lg p-1.5 text-muted hover:bg-black/5 hover:text-slate"
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="overflow-y-auto p-5">
+              <EmployeeWalletPanel employee={walletModalEmp} walletMode={walletMode} />
+            </div>
+          </div>
+        </div>
       )}
     </section>
   );
@@ -1062,37 +1087,16 @@ function CompanyCatalogSection({ companyId }: { companyId: string }) {
         </p>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Products */}
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-slate mb-2">
-            Whitelisted Products ({products.length})
-          </p>
-          {products.length > 0 ? (
-            <ul className="space-y-1 mb-3 max-h-48 overflow-y-auto">
-              {products.map((p) => (
-                <li key={p.productId} className="flex items-center justify-between gap-2 rounded bg-white/50 px-3 py-1.5 text-sm">
-                  <span className="min-w-0 truncate text-ink">
-                    {p.name ?? p.productId}
-                    {p.hidden && <span className="ml-2 rounded bg-black/5 px-1.5 py-0.5 text-[10px] text-slate">hidden</span>}
-                  </span>
-                  <button
-                    onClick={() => handleRemoveProductById(p.productId, p.name ?? p.productId)}
-                    disabled={updateCatalog.isPending}
-                    className="shrink-0 text-red-500 hover:text-red-700 disabled:opacity-40"
-                    aria-label={`Remove ${p.name ?? p.productId}`}
-                  >
-                    ✕
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-xs text-muted mb-3">No products whitelisted.</p>
-          )}
+        <div className="rounded-xl border border-line bg-white/40 p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <p className={colHeadCls}>Whitelisted products</p>
+            <span className="rounded-full bg-indigo/10 px-2 py-0.5 text-[11px] font-semibold text-indigo">{products.length}</span>
+          </div>
 
           <ComboAdd
-            placeholder="Search products by name…"
+            placeholder="Search products by name to add…"
             query={productQuery}
             setQuery={setProductQuery}
             options={productOptions}
@@ -1101,24 +1105,61 @@ function CompanyCatalogSection({ companyId }: { companyId: string }) {
             alreadyAdded={addedProductIds}
             onAdd={(id) => updateCatalog.mutate({ addProductIds: [id] })}
           />
+
+          {products.length > 0 ? (
+            <ul className="mt-3 max-h-64 space-y-1.5 overflow-y-auto pr-1">
+              {products.map((p) => (
+                <li key={p.productId} className="group flex items-center justify-between gap-2 rounded-lg border border-line/60 bg-white/70 px-3 py-2 text-sm">
+                  <span className="min-w-0 truncate text-ink">
+                    {p.name ?? p.productId}
+                    {p.hidden && <span className="ml-2 rounded bg-black/5 px-1.5 py-0.5 text-[10px] text-slate">hidden</span>}
+                  </span>
+                  <button
+                    onClick={() => handleRemoveProductById(p.productId, p.name ?? p.productId)}
+                    disabled={updateCatalog.isPending}
+                    className="shrink-0 rounded-md p-1 text-muted transition hover:bg-red-50 hover:text-red-600 disabled:opacity-40"
+                    aria-label={`Remove ${p.name ?? p.productId}`}
+                  >
+                    ✕
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-3 rounded-lg border border-dashed border-line py-6 text-center text-xs text-muted">
+              No products whitelisted — search above to add.
+            </p>
+          )}
         </div>
 
         {/* Categories */}
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-slate mb-2">
-            Whitelisted Categories ({categoryIds.length})
-          </p>
+        <div className="rounded-xl border border-line bg-white/40 p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <p className={colHeadCls}>Whitelisted categories</p>
+            <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[11px] font-semibold text-accent">{categoryIds.length}</span>
+          </div>
+
+          <ComboAdd
+            placeholder="Search categories by name to add…"
+            query={categoryQuery}
+            setQuery={setCategoryQuery}
+            options={categoryOptions}
+            disabled={updateCatalog.isPending}
+            alreadyAdded={addedCategoryIds}
+            onAdd={(id) => updateCatalog.mutate({ addCategoryIds: [id] })}
+          />
+
           {categoryIds.length > 0 ? (
-            <ul className="space-y-1 mb-3 max-h-48 overflow-y-auto">
+            <ul className="mt-3 max-h-64 space-y-1.5 overflow-y-auto pr-1">
               {categoryIds.map((cid) => {
                 const label = categoryNameById.get(cid) ?? cid;
                 return (
-                  <li key={cid} className="flex items-center justify-between gap-2 rounded bg-white/50 px-3 py-1.5 text-sm">
+                  <li key={cid} className="group flex items-center justify-between gap-2 rounded-lg border border-line/60 bg-white/70 px-3 py-2 text-sm">
                     <span className="min-w-0 truncate text-ink">{label}</span>
                     <button
                       onClick={() => handleRemoveCategoryById(cid, label)}
                       disabled={updateCatalog.isPending}
-                      className="shrink-0 text-red-500 hover:text-red-700 disabled:opacity-40"
+                      className="shrink-0 rounded-md p-1 text-muted transition hover:bg-red-50 hover:text-red-600 disabled:opacity-40"
                       aria-label={`Remove ${label}`}
                     >
                       ✕
@@ -1128,18 +1169,10 @@ function CompanyCatalogSection({ companyId }: { companyId: string }) {
               })}
             </ul>
           ) : (
-            <p className="text-xs text-muted mb-3">No categories whitelisted.</p>
+            <p className="mt-3 rounded-lg border border-dashed border-line py-6 text-center text-xs text-muted">
+              No categories whitelisted — search above to add.
+            </p>
           )}
-
-          <ComboAdd
-            placeholder="Search categories by name…"
-            query={categoryQuery}
-            setQuery={setCategoryQuery}
-            options={categoryOptions}
-            disabled={updateCatalog.isPending}
-            alreadyAdded={addedCategoryIds}
-            onAdd={(id) => updateCatalog.mutate({ addCategoryIds: [id] })}
-          />
         </div>
       </div>
     </section>
