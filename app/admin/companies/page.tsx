@@ -11,21 +11,6 @@ import {
 } from '@/lib/admin/companies';
 import { StatusChip } from '@/components/admin/StatusChip';
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function fmtDate(iso: string | null | undefined): string {
-  if (!iso) return '—';
-  try {
-    return new Date(iso).toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
-  } catch {
-    return '—';
-  }
-}
-
 // ── Create company modal ──────────────────────────────────────────────────────
 
 function blankForm(): CreateCompanyBody {
@@ -181,28 +166,49 @@ function CreateCompanyModal({ onClose }: CreateCompanyModalProps) {
 
 // ── Company row ───────────────────────────────────────────────────────────────
 
+// Gradient square avatar with initials — matches the Companies mockup.
+function CompanyAvatar({ name }: { name: string }) {
+  const initials =
+    name.trim().split(/\s+/).slice(0, 2).map((w) => w[0]?.toUpperCase() ?? '').join('') || '?';
+  return (
+    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-gradient-to-br from-indigo to-accent text-xs font-extrabold text-white">
+      {initials}
+    </span>
+  );
+}
+
+function ModelPill({ mode }: { mode: 'points' | 'coupon' }) {
+  const coupon = mode === 'coupon';
+  return (
+    <span
+      className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize ${
+        coupon ? 'bg-accent/10 text-accent' : 'bg-indigo/10 text-indigo'
+      }`}
+    >
+      {mode}
+    </span>
+  );
+}
+
+const LIST_COLS = 'grid-cols-[1fr_130px_120px_140px]';
+
 function CompanyRow({ company }: { company: AdminCompany }) {
   return (
-    <div className="grid grid-cols-[1fr_180px_160px_120px_80px] items-center gap-3 border-b border-line px-5 py-3 hover:bg-white/50 transition-colors">
-      <div className="min-w-0">
-        <Link
-          href={`/admin/companies/${company._id}`}
-          className="text-sm font-medium text-ink hover:underline truncate block"
-        >
-          {company.name}
-        </Link>
-        <span className="text-xs text-muted font-jbmono truncate block">{company.slug}</span>
-      </div>
-      <span className="text-xs text-slate truncate">
-        {company.primaryContact?.email ?? '—'}
-      </span>
-      <span className="text-xs text-slate">{fmtDate(company.createdAt)}</span>
+    <div className={`grid ${LIST_COLS} items-center gap-4 border-b border-line px-5 py-3.5 hover:bg-white/50 transition-colors`}>
+      <Link href={`/admin/companies/${company._id}`} className="flex items-center gap-3 min-w-0 group">
+        <CompanyAvatar name={company.name} />
+        <span className="min-w-0">
+          <span className="block truncate text-sm font-bold text-ink group-hover:underline">{company.name}</span>
+          <span className="block truncate font-jbmono text-xs text-muted">{company.slug}</span>
+        </span>
+      </Link>
+      <ModelPill mode={company.walletMode ?? 'points'} />
       <StatusChip status={company.status} />
       <Link
         href={`/admin/companies/${company._id}`}
-        className="rounded border border-line px-3 py-1 text-xs text-slate hover:bg-white/60 text-center"
+        className="justify-self-end rounded-lg bg-indigo/[.07] px-3.5 py-2 text-xs font-medium text-indigo hover:bg-indigo/10"
       >
-        View
+        Manage portal
       </Link>
     </div>
   );
@@ -230,12 +236,12 @@ function CompaniesTable() {
           placeholder="Search companies…"
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-          className="rounded border border-line px-3 py-2 text-sm w-56 focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+          className="w-64 rounded-xl border border-line bg-white/60 px-3.5 py-2.5 text-sm backdrop-blur focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
         />
         <select
           value={statusFilter}
           onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-          className="rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+          className="rounded-xl border border-line bg-white/60 px-3.5 py-2.5 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
         >
           <option value="">All statuses</option>
           <option value="active">Active</option>
@@ -244,9 +250,9 @@ function CompaniesTable() {
         <div className="ml-auto">
           <button
             onClick={() => setShowCreate(true)}
-            className="rounded bg-gradient-to-br from-indigo to-indigo2 px-4 py-2 text-sm font-medium text-white transition-colors"
+            className="rounded-xl bg-gradient-to-br from-indigo to-indigo2 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90"
           >
-            + New company
+            + Add Company
           </button>
         </div>
       </div>
@@ -284,10 +290,9 @@ function CompaniesTable() {
       {/* Table */}
       {!isLoading && !isError && items.length > 0 && (
         <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] overflow-hidden">
-          <div className="grid grid-cols-[1fr_180px_160px_120px_80px] gap-3 bg-white/50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-slate">
+          <div className={`grid ${LIST_COLS} gap-4 border-b border-line px-5 py-3 font-jbmono text-[10px] uppercase tracking-[.05em] text-muted`}>
             <span>Company</span>
-            <span>Contact Email</span>
-            <span>Created</span>
+            <span>Model</span>
             <span>Status</span>
             <span></span>
           </div>
@@ -333,7 +338,7 @@ export default function AdminCompaniesPage() {
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight text-ink">Companies</h1>
         <p className="mt-1 text-sm text-slate">
-          Manage B2E companies, employees, wallets, and catalogues
+          Manage client companies, employees, points and merchandise.
         </p>
       </div>
 

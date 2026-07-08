@@ -68,7 +68,9 @@ function CardHeader({
   );
 }
 
-function Avatar({ name }: { name: string }) {
+// Gradient square with initials — matches the Merch Portal Builder mockup's
+// company/employee avatars (indigo→teal, rounded-[10px]).
+function Avatar({ name, size = 36 }: { name: string; size?: number }) {
   const initials =
     name
       .trim()
@@ -77,11 +79,17 @@ function Avatar({ name }: { name: string }) {
       .map((w) => w[0]?.toUpperCase() ?? '')
       .join('') || '?';
   return (
-    <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-indigo/10 text-xs font-semibold text-indigo">
+    <div
+      className="grid shrink-0 place-items-center rounded-[10px] bg-gradient-to-br from-indigo to-accent font-extrabold text-white"
+      style={{ width: size, height: size, fontSize: size <= 32 ? 11 : 12 }}
+    >
       {initials}
     </div>
   );
 }
+
+// JetBrains-Mono uppercase column-header style shared by the mockup's tables.
+const colHeadCls = 'font-jbmono text-[10px] uppercase tracking-[.05em] text-muted';
 
 // ── CompanyEditForm ───────────────────────────────────────────────────────────
 
@@ -152,22 +160,39 @@ function CompanyEditForm({ company }: { company: AdminCompany }) {
             <option value="inactive">Inactive</option>
           </select>
         </div>
-        <div>
-          <label className={labelCls}>Wallet mode</label>
-          <select
-            value={fields.walletMode ?? 'points'}
-            onChange={(e) => setFields({ ...fields, walletMode: e.target.value as 'points' | 'coupon' })}
-            className={inputCls}
-          >
-            <option value="points">Points (accumulate, leftover retained)</option>
-            <option value="coupon">Coupon (spend-once, remainder forfeited)</option>
-          </select>
-          {fields.walletMode !== company.walletMode && (
-            <p className="mt-1 text-xs text-amber-600">
-              Existing employee balances will now behave under the new mode on their next order.
-            </p>
-          )}
+      </div>
+
+      {/* Wallet model — segmented toggle (Merch Portal Builder mockup) */}
+      <div>
+        <label className={labelCls}>Wallet model</label>
+        <div className="grid grid-cols-2 gap-1.5 rounded-xl border border-line bg-white/50 p-1.5">
+          {([
+            ['points', 'Points', 'accumulate · leftover retained'],
+            ['coupon', 'Coupon', 'spend-once · remainder forfeited'],
+          ] as const).map(([val, label, sub]) => {
+            const on = (fields.walletMode ?? 'points') === val;
+            return (
+              <button
+                key={val}
+                type="button"
+                onClick={() => setFields({ ...fields, walletMode: val })}
+                className={`rounded-lg px-4 py-2.5 text-center transition ${
+                  on
+                    ? 'bg-gradient-to-br from-indigo to-indigo2 text-white shadow-sm'
+                    : 'text-slate hover:bg-white/70'
+                }`}
+              >
+                <span className="block text-sm font-semibold">{label}</span>
+                <span className={`mt-0.5 block text-[10px] ${on ? 'text-white/70' : 'text-muted'}`}>{sub}</span>
+              </button>
+            );
+          })}
         </div>
+        {fields.walletMode !== company.walletMode && (
+          <p className="mt-1.5 text-xs text-amber-600">
+            Existing employee balances will now behave under the new mode on their next order.
+          </p>
+        )}
       </div>
 
       <p className="border-t border-line/70 pt-4 text-[11px] font-semibold uppercase tracking-wider text-muted">
@@ -1173,7 +1198,7 @@ function CompanyProductsSection({ companyId, companyName }: { companyId: string;
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b border-line text-xs uppercase tracking-wide text-muted">
+              <tr className={`border-b border-line ${colHeadCls}`}>
                 <th className="px-3 py-2 font-medium">Product</th>
                 <th className="px-3 py-2 font-medium">Min price</th>
                 <th className="px-3 py-2 font-medium">Status</th>
@@ -1257,11 +1282,17 @@ function CompanyDetailInner({ id }: { id: string }) {
 
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink">{company.name}</h1>
-          <p className="mt-1 text-xs text-muted font-jbmono">{company.slug}</p>
+        <div className="flex items-center gap-3.5 min-w-0">
+          <Avatar name={company.name} size={48} />
+          <div className="min-w-0">
+            <h1 className="text-2xl font-extrabold tracking-tight text-ink truncate">{company.name}</h1>
+            <p className="mt-1 text-xs text-muted font-jbmono">{company.slug}</p>
+          </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          <span className="rounded-full bg-indigo/10 px-2.5 py-1 text-[11px] font-semibold text-indigo capitalize">
+            {(company.walletMode ?? 'points')} model
+          </span>
           <StatusChip status={company.status} />
         </div>
       </div>
