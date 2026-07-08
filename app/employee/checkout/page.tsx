@@ -33,6 +33,9 @@ export default function EmployeeCheckoutPage() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
+  // When the company runs on coupons, an order below the coupon value forfeits the
+  // remainder — hold that amount to confirm before placing the order.
+  const [couponForfeit, setCouponForfeit] = useState<number | null>(null);
 
   // Redirect if cart is empty (after data loads)
   useEffect(() => {
@@ -54,8 +57,21 @@ export default function EmployeeCheckoutPage() {
     setAddress((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    // Coupon mode: if the order is below the coupon value, warn about forfeiture first.
+    const forfeit =
+      wallet?.walletMode === 'coupon' && cart && wallet.balance > cart.total
+        ? wallet.balance - cart.total
+        : 0;
+    if (forfeit > 0) {
+      setCouponForfeit(forfeit);
+      return;
+    }
+    void runCheckout();
+  }
+
+  async function runCheckout() {
     setError(null);
     setSubmitting(true);
 
@@ -284,6 +300,37 @@ export default function EmployeeCheckoutPage() {
           </div>
         </div>
       </div>
+
+      {/* Coupon forfeiture warning */}
+      {couponForfeit !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(22,23,58,.42)] p-4 backdrop-blur-sm">
+          <div className={`${glass} w-full max-w-md rounded-[22px] p-6`}>
+            <h2 className="text-lg font-extrabold tracking-[-.01em] text-ink">Use your full coupon?</h2>
+            <p className="mt-3 text-sm leading-relaxed text-slate">
+              Your allocation is a <strong>coupon</strong> worth ₹{(wallet?.balance ?? 0).toLocaleString('en-IN')}.
+              This order is ₹{(cart?.total ?? 0).toLocaleString('en-IN')}, so the remaining{' '}
+              <strong className="text-[#e0524d]">₹{couponForfeit.toLocaleString('en-IN')}</strong> will be
+              forfeited — it cannot be reused on a later order.
+            </p>
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setCouponForfeit(null)}
+                className="rounded-xl border border-line px-4 py-2.5 text-sm font-medium text-slate hover:bg-white/60"
+              >
+                Keep shopping
+              </button>
+              <button
+                type="button"
+                onClick={() => { setCouponForfeit(null); void runCheckout(); }}
+                className="rounded-xl bg-gradient-to-br from-indigo to-indigo2 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:opacity-90"
+              >
+                Place order anyway
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

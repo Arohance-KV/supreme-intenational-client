@@ -5,6 +5,7 @@ import { apiFetch } from '@/lib/api';
 export interface WalletBalance {
   balance: number;
   currency: string;
+  walletMode?: 'points' | 'coupon';
 }
 
 export type LedgerEntry = Record<string, unknown>;
@@ -14,7 +15,8 @@ function normaliseLedger(raw: unknown): LedgerEntry[] {
   if (Array.isArray(raw)) return raw as LedgerEntry[];
   if (raw && typeof raw === 'object') {
     const obj = raw as Record<string, unknown>;
-    for (const key of ['entries', 'ledger', 'data']) {
+    // The wallet ledger endpoint returns { items, pagination } — `items` first.
+    for (const key of ['items', 'entries', 'ledger', 'data']) {
       if (Array.isArray(obj[key])) return obj[key] as LedgerEntry[];
     }
   }

@@ -10,18 +10,22 @@ function formatDate(value: unknown): string {
   return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
+// Ledger `amount` is always positive; the sign comes from `type` (credit/debit).
+function isCredit(entry: LedgerEntry): boolean {
+  return entry.type !== 'debit';
+}
+
 function formatAmount(entry: LedgerEntry): string {
   const raw = entry.amount;
   if (raw === undefined || raw === null) return '—';
   const num = Number(raw);
   if (isNaN(num)) return String(raw);
-  return (num >= 0 ? '+' : '') + `₹${Math.abs(num).toLocaleString('en-IN')}`;
+  return (isCredit(entry) ? '+' : '−') + `₹${Math.abs(num).toLocaleString('en-IN')}`;
 }
 
 function amountClass(entry: LedgerEntry): string {
-  const num = Number(entry.amount);
-  if (isNaN(num)) return 'text-slate';
-  return num >= 0 ? 'text-[#1a8f5a] font-semibold' : 'text-[#e0524d] font-semibold';
+  if (isNaN(Number(entry.amount))) return 'text-slate';
+  return isCredit(entry) ? 'text-[#1a8f5a] font-semibold' : 'text-[#e0524d] font-semibold';
 }
 
 export default function WalletPage() {
@@ -81,7 +85,7 @@ export default function WalletPage() {
                       {formatDate(entry.createdAt ?? entry.date)}
                     </td>
                     <td className="px-4 py-3 text-slate">
-                      {entry.description ? String(entry.description) : '—'}
+                      {entry.reason ? String(entry.reason) : entry.description ? String(entry.description) : '—'}
                     </td>
                     <td className={`px-4 py-3 text-right whitespace-nowrap ${amountClass(entry)}`}>
                       {formatAmount(entry)}
