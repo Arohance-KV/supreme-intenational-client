@@ -15,6 +15,7 @@ export interface AdminCompany {
   name: string;
   slug: string;
   status: 'active' | 'inactive';
+  walletMode: 'points' | 'coupon';
   primaryContact?: CompanyPrimaryContact;
   notes?: string;
   createdBy: string;
@@ -36,6 +37,7 @@ export interface CreateCompanyBody {
 export interface UpdateCompanyBody {
   name?: string;
   status?: 'active' | 'inactive';
+  walletMode?: 'points' | 'coupon';
   primaryContact?: CompanyPrimaryContact;
   notes?: string;
 }
@@ -307,6 +309,18 @@ export function useDebitWallet(employeeId: string) {
         method: 'POST',
         body,
       }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: EMPLOYEE_WALLET_KEY(employeeId) });
+      qc.invalidateQueries({ queryKey: ['admin', 'employee-wallet', employeeId, 'ledger'] });
+    },
+  });
+}
+
+export function useIssueCoupon(employeeId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: { value: number; reason?: string }) =>
+      adminFetch<EmployeeWallet>(`/admin/employees/${employeeId}/wallet/coupon`, { method: 'POST', body }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: EMPLOYEE_WALLET_KEY(employeeId) });
       qc.invalidateQueries({ queryKey: ['admin', 'employee-wallet', employeeId, 'ledger'] });

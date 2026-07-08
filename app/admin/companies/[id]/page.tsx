@@ -18,6 +18,7 @@ import {
   useEmployeeLedger,
   useCreditWallet,
   useDebitWallet,
+  useIssueCoupon,
   useCompanyCatalog,
   useUpdateCompanyCatalog,
   useCompanyProducts,
@@ -90,6 +91,7 @@ function CompanyEditForm({ company }: { company: AdminCompany }) {
   const [fields, setFields] = useState<UpdateCompanyBody>({
     name: company.name,
     status: company.status,
+    walletMode: company.walletMode ?? 'points',
     notes: company.notes ?? '',
     primaryContact: {
       name: company.primaryContact?.name ?? '',
@@ -111,6 +113,7 @@ function CompanyEditForm({ company }: { company: AdminCompany }) {
     const payload: UpdateCompanyBody = {
       name: fields.name?.trim() || undefined,
       status: fields.status,
+      walletMode: fields.walletMode,
       notes: fields.notes?.trim() || undefined,
       primaryContact: {
         name: fields.primaryContact?.name?.trim() || undefined,
@@ -148,6 +151,22 @@ function CompanyEditForm({ company }: { company: AdminCompany }) {
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
+        </div>
+        <div>
+          <label className={labelCls}>Wallet mode</label>
+          <select
+            value={fields.walletMode ?? 'points'}
+            onChange={(e) => setFields({ ...fields, walletMode: e.target.value as 'points' | 'coupon' })}
+            className={inputCls}
+          >
+            <option value="points">Points (accumulate, leftover retained)</option>
+            <option value="coupon">Coupon (spend-once, remainder forfeited)</option>
+          </select>
+          {fields.walletMode !== company.walletMode && (
+            <p className="mt-1 text-xs text-amber-600">
+              Existing employee balances will now behave under the new mode on their next order.
+            </p>
+          )}
         </div>
       </div>
 
@@ -326,15 +345,31 @@ function CompanyLoginSection({ companyId }: { companyId: string }) {
 
 // ── EmployeeWalletPanel ───────────────────────────────────────────────────────
 
-function EmployeeWalletPanel({ employee }: { employee: AdminEmployee }) {
+function EmployeeWalletPanel({
+  employee,
+  walletMode,
+}: {
+  employee: AdminEmployee;
+  walletMode: 'points' | 'coupon';
+}) {
   const [ledgerPage, setLedgerPage] = useState(1);
   const { data: wallet, isLoading: walletLoading } = useEmployeeWallet(employee._id);
   const { data: ledgerData, isLoading: ledgerLoading } = useEmployeeLedger(employee._id, ledgerPage);
   const credit = useCreditWallet(employee._id);
   const debit = useDebitWallet(employee._id);
+  const issueCoupon = useIssueCoupon(employee._id);
 
   const [creditForm, setCreditForm] = useState({ amount: '', reason: '' });
   const [debitForm, setDebitForm] = useState({ amount: '', reason: '' });
+  const [couponValue, setCouponValue] = useState('');
+
+  function handleIssueCoupon(e: React.FormEvent) {
+    e.preventDefault();
+    const val = parseFloat(couponValue);
+    if (!val || val <= 0) { alert('Coupon value must be greater than 0'); return; }
+    if (!confirm(`Issue a ₹${val.toLocaleString('en-IN')} coupon to ${employee.firstName}? This replaces any existing coupon.`)) return;
+    issueCoupon.mutate({ value: val, reason: 'Coupon issued' }, { onSuccess: () => setCouponValue('') });
+  }
 
   function handleCredit(e: React.FormEvent) {
     e.preventDefault();
@@ -367,7 +402,9 @@ function EmployeeWalletPanel({ employee }: { employee: AdminEmployee }) {
       {/* Balance */}
       <div className="mb-4 flex items-center gap-4">
         <div className="rounded-xl border border-line bg-white/60 px-4 py-3">
-          <p className="mb-0.5 text-[11px] font-medium uppercase tracking-wide text-muted">Wallet balance</p>
+          <p className="mb-0.5 text-[11px] font-medium uppercase tracking-wide text-muted">
+            {walletMode === 'coupon' ? 'Active coupon' : 'Wallet balance'}
+          </p>
           {walletLoading ? (
             <div className="h-6 w-24 animate-pulse rounded bg-black/5" />
           ) : (
@@ -381,7 +418,29 @@ function EmployeeWalletPanel({ employee }: { employee: AdminEmployee }) {
         </div>
       </div>
 
-      {/* Credit & Debit forms */}
+      {/* Issue coupon (coupon mode) */}
+      {walletMode === 'coupon' && (
+        <form onSubmit={handleIssueCoupon} className="space-y-2 rounded-xl border border-line bg-white/60 p-3 mb-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-indigo">Issue coupon</p>
+          <div className="flex gap-2">
+            <input
+              type="number" min="0.01" step="0.01" placeholder="Coupon value (₹)"
+              value={couponValue} onChange={(e) => setCouponValue(e.target.value)}
+              className="w-40 rounded-lg border border-line px-2.5 py-1.5 text-sm"
+            />
+            <button type="submit" disabled={issueCoupon.isPending} className="rounded-lg bg-gradient-to-br from-indigo to-indigo2 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-60">
+              {issueCoupon.isPending ? 'Issuing…' : 'Issue coupon'}
+            </button>
+          </div>
+          {issueCoupon.error && (
+            <p className="text-xs text-red-600">{issueCoupon.error instanceof ApiError ? issueCoupon.error.message : 'Error'}</p>
+          )}
+          {issueCoupon.isSuccess && <p className="text-xs text-green-700">Coupon issued.</p>}
+        </form>
+      )}
+
+      {/* Credit & Debit forms (points mode) */}
+      {walletMode === 'points' && (
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
         {/* Credit form */}
         <form
@@ -467,6 +526,7 @@ function EmployeeWalletPanel({ employee }: { employee: AdminEmployee }) {
           </button>
         </form>
       </div>
+      )}
 
       {/* Ledger */}
       <div>
@@ -558,7 +618,15 @@ function EmployeeWalletPanel({ employee }: { employee: AdminEmployee }) {
 
 // ── EmployeesSection ──────────────────────────────────────────────────────────
 
-function EmployeesSection({ companyId, companyStatus }: { companyId: string; companyStatus: 'active' | 'inactive' }) {
+function EmployeesSection({
+  companyId,
+  companyStatus,
+  walletMode,
+}: {
+  companyId: string;
+  companyStatus: 'active' | 'inactive';
+  walletMode: 'points' | 'coupon';
+}) {
   const { data: employees, isLoading, isError, error } = useCompanyEmployees(companyId);
   const invite = useInviteEmployee(companyId);
   const resend = useResendInvite();
@@ -788,7 +856,7 @@ function EmployeesSection({ companyId, companyStatus }: { companyId: string; com
               {/* Inline wallet panel */}
               {expandedWallet === emp._id && (
                 <div className="border-t border-line/70 px-3 pb-3">
-                  <EmployeeWalletPanel employee={emp} />
+                  <EmployeeWalletPanel employee={emp} walletMode={walletMode} />
                 </div>
               )}
             </div>
@@ -1208,7 +1276,7 @@ function CompanyDetailInner({ id }: { id: string }) {
       </div>
 
       {/* Employees section */}
-      <EmployeesSection companyId={id} companyStatus={company.status} />
+      <EmployeesSection companyId={id} companyStatus={company.status} walletMode={company.walletMode} />
 
       {/* Catalog editor */}
       <CompanyCatalogSection companyId={id} />
