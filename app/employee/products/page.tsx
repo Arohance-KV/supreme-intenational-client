@@ -3,7 +3,10 @@
 import { useState } from 'react';
 import ProductCard from '@/components/ProductCard';
 import { useEmployeeProducts, useEmployeeSearch, useEmployeeFilters } from '@/lib/employee/catalog';
-import { glass, primaryBtn, secondaryBtn, input, eyebrow, pageWrap } from '@/components/employee/ui';
+import { glass, primaryBtn, secondaryBtn, input, eyebrow } from '@/components/employee/ui';
+
+// Full-bleed wrapper matching the B2B /products page (wider than the shared pageWrap).
+const wideWrap = 'mx-auto max-w-[1600px] px-4 py-8 font-display sm:px-6 lg:px-8';
 
 const SORT_OPTIONS = [
   { value: 'rating', label: 'Top Rated' },
@@ -154,7 +157,7 @@ export default function EmployeeProductsPage() {
   function clearFilters() { setSelCats(new Set()); setLoRaw(null); setHiRaw(null); setPage(1); }
 
   const grid = (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {products.map((product) => (
         <ProductCard key={product._id} product={product} hrefBase="/employee/products" showAddToCart={false} />
       ))}
@@ -163,7 +166,7 @@ export default function EmployeeProductsPage() {
 
   return (
     <div className="min-h-screen bg-[#eef0f8]">
-      <div className={pageWrap}>
+      <div className={wideWrap}>
         {/* Header */}
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -224,9 +227,9 @@ export default function EmployeeProductsPage() {
           {/* Results */}
           <div className="flex-1">
             {activeQuery.isLoading ? (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {Array.from({ length: 8 }).map((_, i) => (
-                  <div key={i} className={`h-64 animate-pulse rounded-[20px] ${glass}`} />
+                  <div key={i} className={`h-72 animate-pulse rounded-[20px] ${glass}`} />
                 ))}
               </div>
             ) : activeQuery.isError ? (
