@@ -19,6 +19,7 @@ export interface AdminCompany {
   primaryContact?: CompanyPrimaryContact;
   notes?: string;
   createdBy: string;
+  assignedAdminIds?: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -40,6 +41,7 @@ export interface UpdateCompanyBody {
   walletMode?: 'points' | 'coupon';
   primaryContact?: CompanyPrimaryContact;
   notes?: string;
+  assignedAdminIds?: string[];
 }
 
 // Employee status enum from user.model.ts: 'invited' | 'active' | 'deactivated'
