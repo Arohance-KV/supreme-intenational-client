@@ -101,10 +101,14 @@ export interface DashboardSummary {
   enquiries: number;
 }
 
-export function useDashboardSummary() {
+export function useDashboardSummary(dateFrom?: string, dateTo?: string) {
+  const qs = new URLSearchParams();
+  if (dateFrom) qs.set('dateFrom', dateFrom);
+  if (dateTo) qs.set('dateTo', dateTo);
+  const q = qs.toString();
   return useQuery<DashboardSummary>({
-    queryKey: ['admin', 'dashboard-summary'],
-    queryFn: () => adminFetch<DashboardSummary>('/admin/analytics/dashboard-summary'),
+    queryKey: ['admin', 'dashboard-summary', dateFrom ?? '', dateTo ?? ''],
+    queryFn: () => adminFetch<DashboardSummary>(`/admin/analytics/dashboard-summary${q ? `?${q}` : ''}`),
   });
 }
 

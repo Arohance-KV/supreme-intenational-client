@@ -1,11 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import {
   useEnquiriesSummary,
   useEnquiriesVsQuotations,
   useTopProducts,
   useSellerPerformance,
 } from '@/lib/admin/dashboard';
+import SeriesBarChart, { MonthsFilter } from '@/components/admin/SeriesBarChart';
 
 const GLASS = 'border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)]';
 
@@ -44,16 +46,16 @@ function ErrorBanner({ message }: { message: string }) {
 }
 
 export default function AdminAnalyticsPage() {
+  const [months, setMonths] = useState(6);
   const summary = useEnquiriesSummary();
-  const series = useEnquiriesVsQuotations(6);
+  const series = useEnquiriesVsQuotations(months);
   const top = useTopProducts(10);
   const sellers = useSellerPerformance(10);
 
   const points = series.data ?? [];
-  const maxEnq = Math.max(1, ...points.map(p => Math.max(p.enquiries, p.quotations)));
 
   return (
-    <main className="max-w-5xl mx-auto space-y-10">
+    <main className="space-y-10">
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight text-ink">Analytics</h1>
         <p className="mt-1 text-sm text-slate">Sales, enquiries and seller performance at a glance.</p>
@@ -82,30 +84,24 @@ export default function AdminAnalyticsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-[1.35fr_1fr] gap-4">
         {/* Chart */}
         <div className={`rounded-[20px] p-6 ${GLASS}`}>
-          <div className="text-[15px] font-extrabold text-ink mb-1">Enquiries vs Quotations sent</div>
-          <div className="text-xs text-muted mb-[18px]">Last 6 months</div>
+          <div className="mb-[18px] flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <div className="text-[15px] font-extrabold text-ink">Enquiries vs Quotations sent</div>
+              <div className="text-xs text-muted">Last {months} months</div>
+            </div>
+            <MonthsFilter months={months} onChange={setMonths} />
+          </div>
           {series.isError ? (
             <ErrorBanner message="Could not load the chart." />
           ) : series.isPending ? (
-            <Skeleton className="h-[160px] w-full" />
+            <Skeleton className="h-[210px] w-full" />
           ) : (
-            <>
-              <div className="flex items-end gap-4 h-[160px]">
-                {points.map((p, i) => (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-2 h-full justify-end">
-                    <div className="w-full flex items-end gap-[3px] h-full" title={`${p.month}: ${p.enquiries} enquiries, ${p.quotations} quotations`}>
-                      <div className="w-[48%] rounded-t-[5px] bg-gradient-to-b from-indigo2 to-indigo" style={{ height: `${Math.round((p.enquiries / maxEnq) * 100)}%` }} />
-                      <div className="w-[48%] rounded-t-[5px] bg-gradient-to-b from-accent2 to-accent" style={{ height: `${Math.round((p.quotations / maxEnq) * 100)}%` }} />
-                    </div>
-                    <span className="font-jbmono text-[10px] text-muted">{p.month}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="flex gap-4 mt-3.5 text-[11.5px] text-slate">
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-[3px] bg-indigo inline-block" />Enquiries</span>
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-[3px] bg-accent inline-block" />Quotations sent</span>
-              </div>
-            </>
+            <SeriesBarChart
+              mode="grouped"
+              points={points.map((p) => ({ label: p.month, a: p.enquiries, b: p.quotations }))}
+              a={{ label: 'Enquiries', gradient: 'linear-gradient(180deg,#4a4cae,#2a2b6a)', swatch: '#3a3c98' }}
+              b={{ label: 'Quotations sent', gradient: 'linear-gradient(180deg,#17b8a6,#127d72)', swatch: '#149b8e' }}
+            />
           )}
         </div>
 

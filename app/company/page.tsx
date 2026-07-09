@@ -47,36 +47,122 @@ function RangeFilter({ range, onChange }: { range: Range; onChange: (r: Range) =
   );
 }
 
+// Round a max up to a "nice" ceiling so gridline ticks read cleanly (7 → 10, 6128 → 7000).
+function niceCeil(v: number): number {
+  if (v <= 0) return 1;
+  const pow = Math.pow(10, Math.floor(Math.log10(v)));
+  const n = v / pow;
+  const step = n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10;
+  return step * pow;
+}
+
+// Compact point value for axes/bar labels: 21497 → "21k", 6128 → "6.1k", 199 → "199".
+function compact(n: number): string {
+  if (n >= 1000) return `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k`;
+  return `${Math.round(n)}`;
+}
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+// "2026-02" → "Feb", "2026-07-07" → "Jul 7". Falls back to the raw bucket.
+function fmtBucket(bucket: string): string {
+  const p = bucket.split('-');
+  const m = Number(p[1]);
+  if (!m || m < 1 || m > 12) return bucket;
+  return p.length >= 3 ? `${MONTHS[m - 1]} ${Number(p[2])}` : MONTHS[m - 1];
+}
+
 function RedeemedChart({ series }: { series: DashboardSeriesPoint[] }) {
   if (series.length === 0) {
     return (
-      <div className="flex h-[150px] items-center justify-center text-[13px] text-muted">
-        No redemption activity yet.
+      <div className="flex h-[220px] flex-col items-center justify-center gap-1 text-center">
+        <span className="text-[26px]">📊</span>
+        <p className="text-[13px] font-medium text-slate">No redemption activity yet</p>
+        <p className="text-[11px] text-muted">Points redeemed by your team will appear here.</p>
       </div>
     );
   }
-  const maxPoints = Math.max(...series.map((s) => s.points), 1);
+
+  const total = series.reduce((s, p) => s + p.points, 0);
+  const peak = Math.max(...series.map((s) => s.points));
+  // Ceiling with ≥20% headroom so the tallest bar's value label never overflows the plot.
+  const top = niceCeil(peak / 0.8);
+  const ticks = [0, 0.25, 0.5, 0.75, 1].map((f) => f * top); // baseline → peak
+
   return (
-    <div className="flex h-[150px] items-end gap-2">
-      {series.map((s) => (
-        <div key={s.bucket} className="flex h-full flex-1 flex-col items-center justify-end gap-2">
-          <div
-            className="w-full max-w-[32px]"
-            style={{
-              height: `${Math.max((s.points / maxPoints) * 100, 2)}%`,
-              background: 'linear-gradient(180deg,#3a3c98,#2a2b6a)',
-              borderRadius: '7px 7px 0 0',
-            }}
-            title={`${s.bucket}: ${formatIN(s.points)} pts`}
-          />
-          <span
-            className="truncate text-[10px] text-muted"
-            style={{ fontFamily: 'var(--font-jbmono)' }}
-          >
-            {s.bucket}
-          </span>
+    <div>
+      {/* summary strip — gives the chart a headline instead of bare bars */}
+      <div className="mb-4 flex items-end gap-6">
+        <div>
+          <p className="text-[22px] font-extrabold leading-none text-ink">{formatIN(total)}</p>
+          <p className="mt-1 text-[11px] text-muted">points redeemed this period</p>
         </div>
-      ))}
+        <div className="ml-auto flex items-center gap-1.5 text-[11px] text-muted">
+          <span className="inline-block h-2.5 w-2.5 rounded-[3px]" style={{ background: 'linear-gradient(180deg,#3a3c98,#2a2b6a)' }} />
+          Points redeemed
+        </div>
+      </div>
+
+      {/* plot: y-axis ticks + recessive gridlines behind baseline-anchored bars */}
+      <div className="relative h-[210px] pl-9">
+        {ticks.map((t) => (
+          <div
+            key={t}
+            className="absolute left-9 right-0"
+            style={{ bottom: `${(t / top) * 100}%`, transform: 'translateY(50%)' }}
+          >
+            <span
+              className="absolute -left-9 -translate-y-1/2 text-[10px] text-muted"
+              style={{ fontFamily: 'var(--font-jbmono)' }}
+            >
+              {compact(t)}
+            </span>
+            <div
+              className="w-full"
+              style={{ borderTop: t === 0 ? '1px solid var(--color-line)' : '1px dashed rgba(42,43,106,.10)' }}
+            />
+          </div>
+        ))}
+
+        {/* bars */}
+        <div className="absolute inset-0 left-9 flex items-end justify-around gap-3">
+          {series.map((s) => {
+            const h = (s.points / top) * 100;
+            return (
+              <div key={s.bucket} className="group relative flex h-full flex-1 flex-col items-center justify-end">
+                {/* hover tooltip */}
+                <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 -translate-x-1/2 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-center opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100"
+                  style={{ background: '#1c1d44' }}>
+                  <span className="block text-[12px] font-bold text-white">{formatIN(s.points)} pts</span>
+                  <span className="block text-[10px] text-white/60" style={{ fontFamily: 'var(--font-jbmono)' }}>{fmtBucket(s.bucket)}</span>
+                </div>
+                {/* value label above the bar */}
+                <span className="mb-1.5 text-[11px] font-bold text-ink opacity-80 transition-opacity group-hover:opacity-100">
+                  {compact(s.points)}
+                </span>
+                {/* bar */}
+                <div
+                  className="w-full max-w-[46px] cursor-pointer shadow-[0_4px_14px_rgba(42,43,106,.18)] transition-all duration-150 group-hover:brightness-110 group-hover:shadow-[0_8px_22px_rgba(42,43,106,.30)]"
+                  style={{
+                    height: `${Math.max(h, 1.5)}%`,
+                    background: 'linear-gradient(180deg,#4a4cae,#2a2b6a)',
+                    borderRadius: '8px 8px 2px 2px',
+                  }}
+                />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* x-axis labels, aligned under the bars */}
+      <div className="mt-2 flex justify-around gap-3 pl-9">
+        {series.map((s) => (
+          <span key={s.bucket} className="flex-1 truncate text-center text-[11px] font-medium text-slate">
+            {fmtBucket(s.bucket)}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }

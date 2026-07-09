@@ -13,7 +13,7 @@ export default function NewSubmissionPage() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-6 sm:px-8 sm:py-7">
+    <div className="mx-auto max-w-7xl px-6 py-6 sm:px-8 sm:py-7">
       <div className="mb-6">
         <Link
           href="/seller/products"

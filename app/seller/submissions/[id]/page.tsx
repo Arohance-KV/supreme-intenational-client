@@ -24,7 +24,7 @@ export default function SubmissionDetailPage({ params }: { params: Promise<{ id:
 
   if (isLoading || !s) {
     return (
-      <div className="mx-auto max-w-3xl px-6 py-6 sm:px-8 sm:py-7">
+      <div className="mx-auto max-w-7xl px-6 py-6 sm:px-8 sm:py-7">
         <div className="h-64 animate-pulse rounded-[18px] bg-white/55" />
       </div>
     );
@@ -40,7 +40,7 @@ export default function SubmissionDetailPage({ params }: { params: Promise<{ id:
       : null;
 
   return (
-    <div className="mx-auto max-w-3xl space-y-5 px-6 py-6 sm:px-8 sm:py-7">
+    <div className="mx-auto max-w-7xl space-y-5 px-6 py-6 sm:px-8 sm:py-7">
       <div>
         <Link
           href="/seller/submissions"

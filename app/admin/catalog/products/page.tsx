@@ -1,16 +1,19 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ApiError } from '@/lib/api';
 import {
   useAdminProducts,
   useDeleteProduct,
+  useImportProducts,
+  CSV_TEMPLATE,
   type AdminProduct,
 } from '@/lib/admin/products';
 import { StatusChip } from '@/components/admin/StatusChip';
 import CreateProductModal from '@/components/admin/CreateProductModal';
+import CsvImportButton from '@/components/CsvImportButton';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -19,6 +22,8 @@ function inr(n: unknown): string {
 }
 
 // ── Product row ───────────────────────────────────────────────────────────────
+
+const ROW = 'grid grid-cols-[1fr_140px_120px_100px_100px_120px] items-center gap-4';
 
 function ProductRow({ product }: { product: AdminProduct }) {
   const deleteProduct = useDeleteProduct();
@@ -29,16 +34,32 @@ function ProductRow({ product }: { product: AdminProduct }) {
   };
 
   return (
-    <div className="grid grid-cols-[1fr_120px_120px_100px_120px] items-center gap-4 border-b border-line px-5 py-3 hover:bg-white/50 transition-colors">
-      <div className="min-w-0">
-        <Link
-          href={`/admin/catalog/products/${product.slug}`}
-          className="text-sm font-medium text-ink hover:underline truncate block"
-        >
-          {product.name}
-        </Link>
-        <p className="text-xs text-muted truncate font-jbmono">{product.slug}</p>
+    <div className={`${ROW} border-b border-line px-5 py-3 hover:bg-white/50 transition-colors`}>
+      <div className="flex min-w-0 items-center gap-3">
+        {product.images?.[0] ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={product.images[0]}
+            alt=""
+            className="h-11 w-11 flex-none rounded-[10px] border border-line object-cover"
+          />
+        ) : (
+          <div className="flex h-11 w-11 flex-none items-center justify-center rounded-[10px] border border-line bg-black/5 text-[10px] text-muted">
+            No img
+          </div>
+        )}
+        <div className="min-w-0">
+          <Link
+            href={`/admin/catalog/products/${product.slug}`}
+            className="text-sm font-medium text-ink hover:underline truncate block"
+          >
+            {product.name}
+          </Link>
+          <p className="text-xs text-muted truncate font-jbmono">{product.slug}</p>
+        </div>
       </div>
+
+      <span className="text-sm text-slate truncate">{product.category || '—'}</span>
 
       <span className="text-sm text-slate">{inr(product.minPrice)}</span>
 
@@ -89,14 +110,31 @@ function ProductsTable() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [showCreate, setShowCreate] = useState(false);
+  const importProducts = useImportProducts();
 
   const pageParam = Number(searchParams.get('page') ?? '1');
   const page = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
+  const search = searchParams.get('search') ?? '';
 
-  const { data, isLoading, isError, error } = useAdminProducts(page);
+  const { data, isLoading, isError, error } = useAdminProducts(page, search || undefined);
 
   const products = data?.products ?? [];
   const pagination = data?.pagination;
+
+  // Local input mirrors the URL; debounce writes back so we don't re-query per keystroke.
+  const [term, setTerm] = useState(search);
+  useEffect(() => {
+    const id = setTimeout(() => {
+      if (term === search) return;
+      const params = new URLSearchParams(searchParams.toString());
+      if (term.trim()) params.set('search', term.trim());
+      else params.delete('search');
+      params.delete('page'); // new search resets to page 1
+      router.push(`/admin/catalog/products?${params.toString()}`);
+    }, 300);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [term]);
 
   function setPage(p: number) {
     const params = new URLSearchParams(searchParams.toString());
@@ -106,18 +144,34 @@ function ProductsTable() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-slate">
-          {typeof pagination?.total === 'number'
-            ? `${pagination.total.toLocaleString('en-IN')} products`
-            : ''}
-        </p>
-        <button
-          onClick={() => setShowCreate(true)}
-          className="rounded bg-gradient-to-br from-indigo to-indigo2 px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-colors"
-        >
-          + New product
-        </button>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="relative w-full max-w-xs">
+          <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted">⌕</span>
+          <input
+            value={term}
+            onChange={(e) => setTerm(e.target.value)}
+            placeholder="Search products…"
+            className="w-full rounded-full border border-line bg-white/70 py-2 pl-9 pr-3 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+          />
+        </div>
+        <div className="flex items-center gap-3">
+          <p className="text-sm text-slate">
+            {typeof pagination?.total === 'number'
+              ? `${pagination.total.toLocaleString('en-IN')} products`
+              : ''}
+          </p>
+          <CsvImportButton
+            importFn={(f) => importProducts.mutateAsync(f)}
+            templateCsv={CSV_TEMPLATE}
+            templateName="products-template.csv"
+          />
+          <button
+            onClick={() => setShowCreate(true)}
+            className="rounded bg-gradient-to-br from-indigo to-indigo2 px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-colors"
+          >
+            + New product
+          </button>
+        </div>
       </div>
 
       {showCreate && <CreateProductModal onClose={() => setShowCreate(false)} />}
@@ -154,8 +208,9 @@ function ProductsTable() {
       {!isLoading && !isError && products.length > 0 && (
         <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] overflow-hidden">
           {/* Header */}
-          <div className="grid grid-cols-[1fr_120px_120px_100px_120px] gap-4 bg-white/50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-slate">
+          <div className={`${ROW} bg-white/50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-slate`}>
             <span>Product</span>
+            <span>Category</span>
             <span>Min Price</span>
             <span>Status</span>
             <span>Featured</span>

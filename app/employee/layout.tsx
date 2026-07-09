@@ -4,6 +4,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useEmployeeAuth } from '@/lib/employee/auth';
 import EmployeeHeader from '@/components/employee/EmployeeHeader';
+import EmployeeFooter from '@/components/employee/EmployeeFooter';
 
 const PUBLIC = [
   '/employee/login',
@@ -37,10 +38,18 @@ export default function EmployeeLayout({ children }: { children: React.ReactNode
   const pathname = usePathname();
   const isPublic = PUBLIC.includes(pathname);
 
+  if (isPublic) {
+    return <EmployeeGuard>{children}</EmployeeGuard>;
+  }
+
   return (
     <EmployeeGuard>
-      {!isPublic && <EmployeeHeader />}
-      {children}
+      {/* Shared portal background so the area around the floating header isn't bare white. */}
+      <div className="flex min-h-screen flex-col bg-[#eef0f8]">
+        <EmployeeHeader />
+        {children}
+        <EmployeeFooter />
+      </div>
     </EmployeeGuard>
   );
 }

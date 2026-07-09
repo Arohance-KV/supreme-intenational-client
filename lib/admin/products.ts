@@ -292,6 +292,53 @@ export async function uploadAdminImage(
   return (json.data as { url: string }).url;
 }
 
+// ── CSV import ─────────────────────────────────────────────────────────────────
+
+export interface ImportResult {
+  imported: number;
+  variants: number;
+  failed: { row: number; reason: string }[];
+}
+
+// Multipart upload — mirrors uploadAdminImage (raw fetch, admin token + session).
+export async function importProductsCsv(file: File): Promise<ImportResult> {
+  const fd = new FormData();
+  fd.append('file', file);
+
+  const base = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4010';
+  const token =
+    typeof window !== 'undefined' ? localStorage.getItem('adminToken') : null;
+
+  const res = await fetch(`${base}/admin/products/import`, {
+    method: 'POST',
+    headers: {
+      'x-session-id': getSessionId(),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: fd,
+  });
+
+  const json = await res.json();
+  if (!res.ok || json?.success === false) {
+    throw new ApiError(json?.message ?? 'Import failed', res.status);
+  }
+  return json.data as ImportResult;
+}
+
+export function useImportProducts() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (file: File) => importProductsCsv(file),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'products', 'list'] }),
+  });
+}
+
+// Header row + one example, downloaded client-side (no backend needed).
+export const CSV_TEMPLATE =
+  'Handle,Name,Category,Description,Material,Color,Size,Capacity,SKU,Price,OriginalPrice,Stock,MOQ,ImageUrl\n' +
+  'metal-pen,Classic Metal Pen,Pens,Branded metal pen,Stainless Steel,Black,,,PEN-BLK,89,119,5000,100,\n' +
+  'metal-pen,,Pens,,Stainless Steel,Blue,,,PEN-BLU,89,119,4000,100,\n';
+
 // Hook wrapper for useUploadImage (integrates with React state but keeps upload async)
 export function useUploadImage() {
   const [isPending, setIsPending] = useState(false);

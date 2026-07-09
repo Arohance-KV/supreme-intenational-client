@@ -491,7 +491,12 @@ export function SubmissionForm({ initial, submitting, submitLabel, onSubmit }: P
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form
+      onSubmit={handleSubmit}
+      className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_320px]"
+    >
+      {/* ── Main column: all the editable sections ───────────────────────── */}
+      <div className="min-w-0 space-y-5">
       {/* ── Product basics ───────────────────────────────────────────────── */}
       <section className={card}>
         <h2 className={`${sectionTitle} mb-4`}>Product details</h2>
@@ -759,14 +764,27 @@ export function SubmissionForm({ initial, submitting, submitLabel, onSubmit }: P
           ))}
         </div>
       </section>
+      </div>
 
-      <button
-        type="submit"
-        disabled={submitting}
-        className="flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#176054,#179b8e)] px-[18px] py-3 text-sm font-bold text-white shadow-[0_10px_24px_rgba(23,155,142,.3)] disabled:opacity-60"
-      >
-        {submitting ? 'Saving…' : submitLabel}
-      </button>
+      {/* ── Sidebar: guidance + always-visible submit (sticky on desktop) ─── */}
+      <aside className="space-y-4 lg:sticky lg:top-6">
+        <section className={card}>
+          <h2 className={`${sectionTitle} mb-3`}>Before you submit</h2>
+          <ul className="space-y-2 text-[13px] leading-relaxed text-slate">
+            <li className="flex gap-2"><span className="text-accent">•</span> Name and category are required.</li>
+            <li className="flex gap-2"><span className="text-accent">•</span> Add clear photos — the first is used as the cover.</li>
+            <li className="flex gap-2"><span className="text-accent">•</span> Each variant needs a price and at least one attribute.</li>
+            <li className="flex gap-2"><span className="text-accent">•</span> Custom attributes are flagged for admin review.</li>
+          </ul>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#176054,#179b8e)] px-[18px] py-3 text-sm font-bold text-white shadow-[0_10px_24px_rgba(23,155,142,.3)] disabled:opacity-60"
+          >
+            {submitting ? 'Saving…' : submitLabel}
+          </button>
+        </section>
+      </aside>
     </form>
   );
 }

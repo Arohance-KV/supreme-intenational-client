@@ -82,6 +82,33 @@ export function useReviseSubmission(id: string) {
   });
 }
 
+// CSV import → creates draft submissions. Multipart, so use fetch directly (like image upload).
+import type { ImportResult } from '@/lib/admin/products';
+
+export async function importSubmissionsCsv(file: File): Promise<ImportResult> {
+  const fd = new FormData();
+  fd.append('file', file);
+  const base = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4010';
+  const token = typeof window !== 'undefined' ? localStorage.getItem('sellerToken') : null;
+  const res = await fetch(`${base}/seller/submissions/import`, {
+    method: 'POST',
+    headers: { 'x-session-id': getSessionId(), ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    credentials: 'include',
+    body: fd,
+  });
+  const json = await res.json();
+  if (!res.ok || json?.success === false) throw new ApiError(json?.message ?? 'Import failed', res.status);
+  return json.data as ImportResult;
+}
+
+export function useImportSubmissions() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (file: File) => importSubmissionsCsv(file),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['seller', 'submissions'] }),
+  });
+}
+
 // Image upload is multipart — apiFetch is JSON-only, so use fetch directly here.
 export async function uploadSubmissionImage(file: File): Promise<string> {
   const fd = new FormData();

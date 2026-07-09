@@ -1,11 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import {
   useRevenue,
   useDashboardSummary,
   useGeneratedTimeseries,
   useRecentActivity,
 } from '@/lib/admin/dashboard';
+import SeriesBarChart, { MonthsFilter } from '@/components/admin/SeriesBarChart';
 
 // ── Shared surface class (design-system glass) ──────────────────────────────────
 const GLASS = 'border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)]';
@@ -63,24 +65,72 @@ function ErrorBanner({ message }: { message: string }) {
   );
 }
 
+const DAY_OPTS: { label: string; days: number | null }[] = [
+  { label: '7D', days: 7 },
+  { label: '30D', days: 30 },
+  { label: '90D', days: 90 },
+  { label: 'All', days: null },
+];
+
+function DayRangeFilter({ days, onChange }: { days: number | null; onChange: (d: number | null) => void }) {
+  return (
+    <div className="flex items-center gap-1.5">
+      {DAY_OPTS.map((o) => {
+        const active = days === o.days;
+        return (
+          <button
+            key={o.label}
+            onClick={() => onChange(o.days)}
+            className="rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors"
+            style={
+              active
+                ? { color: '#fff', background: 'linear-gradient(135deg,#2a2b6a,#3a3c98)' }
+                : { color: 'var(--color-slate)', background: 'rgba(255,255,255,.7)', border: '1px solid var(--color-line)' }
+            }
+          >
+            {o.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// ISO yyyy-mm-dd `days` ago (or a far-past date for the "All" window).
+function isoDaysAgo(days: number | null): string {
+  if (days == null) return '2000-01-01';
+  const d = new Date();
+  d.setDate(d.getDate() - days);
+  return d.toISOString().slice(0, 10);
+}
+
 export default function AdminDashboardPage() {
-  const revenue = useRevenue();
-  const summary = useDashboardSummary();
-  const series = useGeneratedTimeseries(10);
+  const [months, setMonths] = useState(6);
+  const [days, setDays] = useState<number | null>(30);
+
+  const dateTo = new Date().toISOString().slice(0, 10);
+  const dateFrom = isoDaysAgo(days);
+  const rangeLabel = days == null ? 'all time' : `last ${days} days`;
+
+  const revenue = useRevenue(dateFrom, dateTo);
+  const summary = useDashboardSummary(dateFrom, dateTo);
+  const series = useGeneratedTimeseries(months);
   const activity = useRecentActivity(8);
 
   const points = series.data ?? [];
-  const maxTotal = Math.max(1, ...points.map(p => p.quotations + p.catalogues));
 
   return (
-    <main className="max-w-5xl mx-auto space-y-10">
-      <div>
-        <h1 className="text-2xl font-extrabold tracking-tight text-ink">Dashboard</h1>
-        <p className="mt-1 text-sm text-slate">Last 30 days overview</p>
+    <main className="space-y-10">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-extrabold tracking-tight text-ink">Dashboard</h1>
+          <p className="mt-1 text-sm text-slate capitalize">{rangeLabel} overview</p>
+        </div>
+        <DayRangeFilter days={days} onChange={setDays} />
       </div>
 
-      {/* ── Revenue KPIs (last 30 days) ── */}
-      <Section title="Revenue (last 30 days)">
+      {/* ── Revenue KPIs ── */}
+      <Section title={`Revenue (${rangeLabel})`}>
         {revenue.isError ? (
           <ErrorBanner message="Could not load revenue data." />
         ) : (
@@ -123,37 +173,24 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-4">
         {/* Chart */}
         <div className={`rounded-[20px] p-6 ${GLASS}`}>
-          <div className="flex items-center justify-between mb-5">
+          <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
             <div>
               <div className="text-[15px] font-extrabold text-ink">Downloads over time</div>
-              <div className="text-xs text-muted">Quotations &amp; catalogues generated per month</div>
+              <div className="text-xs text-muted">Quotations &amp; catalogues generated · last {months} months</div>
             </div>
-            <div className="flex gap-3.5 text-[11px] text-slate">
-              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-[3px] bg-indigo inline-block" />Quotations</span>
-              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-[3px] bg-accent inline-block" />Catalogues</span>
-            </div>
+            <MonthsFilter months={months} onChange={setMonths} />
           </div>
           {series.isError ? (
             <ErrorBanner message="Could not load the chart." />
           ) : series.isPending ? (
-            <Skeleton className="h-[180px] w-full" />
+            <Skeleton className="h-[210px] w-full" />
           ) : (
-            <div className="flex items-end gap-2.5 h-[180px]">
-              {points.map((p, i) => {
-                const total = p.quotations + p.catalogues;
-                const hPct = (total / maxTotal) * 100;
-                const qFrac = total ? p.quotations / total : 0;
-                return (
-                  <div key={i} className="flex-1 flex flex-col justify-end h-full" title={`${p.month}: ${p.quotations} quotations, ${p.catalogues} catalogues`}>
-                    <div style={{ height: `${hPct}%` }} className="flex flex-col overflow-hidden rounded-t-md">
-                      <div style={{ flexGrow: qFrac }} className="bg-gradient-to-b from-indigo2 to-indigo" />
-                      <div style={{ flexGrow: 1 - qFrac }} className="bg-gradient-to-b from-accent2 to-accent" />
-                    </div>
-                    <div className="mt-1.5 text-center font-jbmono text-[9px] text-muted">{p.month}</div>
-                  </div>
-                );
-              })}
-            </div>
+            <SeriesBarChart
+              mode="stacked"
+              points={points.map((p) => ({ label: p.month, a: p.quotations, b: p.catalogues }))}
+              a={{ label: 'Quotations', gradient: 'linear-gradient(180deg,#4a4cae,#2a2b6a)', swatch: '#3a3c98' }}
+              b={{ label: 'Catalogues', gradient: 'linear-gradient(180deg,#17b8a6,#127d72)', swatch: '#149b8e' }}
+            />
           )}
         </div>
 

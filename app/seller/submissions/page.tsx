@@ -1,7 +1,9 @@
 'use client';
 import Link from 'next/link';
-import { useMySubmissions } from '@/lib/seller/submissions';
+import { useMySubmissions, useImportSubmissions } from '@/lib/seller/submissions';
+import { CSV_TEMPLATE } from '@/lib/admin/products';
 import { SubmissionStatusChip } from '@/components/seller/SubmissionStatusChip';
+import CsvImportButton from '@/components/CsvImportButton';
 import DcPhoto from '@/components/DcPhoto';
 
 function Kpi({ label, value, sub }: { label: string; value: number; sub: string }) {
@@ -16,6 +18,7 @@ function Kpi({ label, value, sub }: { label: string; value: number; sub: string 
 
 export default function SubmissionsPage() {
   const { data, isLoading } = useMySubmissions();
+  const importSubmissions = useImportSubmissions();
   const items = data?.items ?? [];
 
   const count = (s: string) => items.filter((i) => i.status === s).length;
@@ -27,12 +30,19 @@ export default function SubmissionsPage() {
           <h1 className="mb-0.5 text-[26px] font-extrabold tracking-[-.02em] text-ink">Approval Status</h1>
           <div className="text-[13px] text-slate">Every product is reviewed by Supreme before going live.</div>
         </div>
-        <Link
-          href="/seller/submissions/new"
-          className="flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#176054,#179b8e)] px-[18px] py-3 text-sm font-bold text-white no-underline shadow-[0_10px_24px_rgba(23,155,142,.3)]"
-        >
-          ＋ Add Product
-        </Link>
+        <div className="flex items-center gap-3">
+          <CsvImportButton
+            importFn={(f) => importSubmissions.mutateAsync(f)}
+            templateCsv={CSV_TEMPLATE}
+            templateName="products-template.csv"
+          />
+          <Link
+            href="/seller/submissions/new"
+            className="flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#176054,#179b8e)] px-[18px] py-3 text-sm font-bold text-white no-underline shadow-[0_10px_24px_rgba(23,155,142,.3)]"
+          >
+            ＋ Add Product
+          </Link>
+        </div>
       </div>
 
       {/* KPIs from real submission counts */}

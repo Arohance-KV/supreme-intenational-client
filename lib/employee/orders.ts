@@ -83,7 +83,7 @@ export function useOrders(page = 1) {
   return useQuery<OrdersPage>({
     queryKey: ['employee', 'orders', page],
     queryFn: async () => {
-      const raw = await apiFetch<unknown>(`/orders?page=${page}&limit=10`, {
+      const raw = await apiFetch<unknown>(`/employee/orders?page=${page}&limit=10`, {
         tokenKey: 'employeeToken',
       });
       return {
@@ -101,7 +101,7 @@ export function useOrder(orderId: string) {
   return useQuery<OrderDetail>({
     queryKey: ['employee', 'order', orderId],
     queryFn: () =>
-      apiFetch<OrderDetail>(`/orders/${orderId}`, { tokenKey: 'employeeToken' }),
+      apiFetch<OrderDetail>(`/employee/orders/${orderId}`, { tokenKey: 'employeeToken' }),
     refetchInterval: (q) => (q.state.data?.status === 'pending' ? 4000 : false),
   });
 }
@@ -110,7 +110,7 @@ export function useRetryPayment() {
   const queryClient = useQueryClient();
   return useMutation<RetryPaymentResponse, Error, { orderId: string }>({
     mutationFn: ({ orderId }) =>
-      apiFetch<RetryPaymentResponse>(`/orders/${orderId}/retry-payment`, {
+      apiFetch<RetryPaymentResponse>(`/employee/orders/${orderId}/retry-payment`, {
         method: 'POST',
         tokenKey: 'employeeToken',
       }),
@@ -132,7 +132,7 @@ export function useVerifyPayment() {
   const queryClient = useQueryClient();
   return useMutation<OrderDetail, Error, { orderId: string; payment: RazorpayHandlerResponse }>({
     mutationFn: ({ orderId, payment }) =>
-      apiFetch<OrderDetail>(`/orders/${orderId}/verify-payment`, {
+      apiFetch<OrderDetail>(`/employee/orders/${orderId}/verify-payment`, {
         method: 'POST',
         body: payment,
         tokenKey: 'employeeToken',
