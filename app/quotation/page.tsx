@@ -6,18 +6,6 @@ import { useAuth } from '@/lib/auth';
 import { useCart } from '@/lib/cart';
 import { useGenerateQuotation, type GenerateQuotationResult } from '@/lib/quotation';
 import { ApiError } from '@/lib/api';
-import OtpModal from '@/components/OtpModal';
-import { apiFetch } from '@/lib/api';
-import { useQuery } from '@tanstack/react-query';
-
-interface UserProfile {
-  _id: string;
-  firstName: string;
-  lastName?: string;
-  email: string;
-  phoneNumber?: string;
-  isdCode?: string;
-}
 
 function formatPrice(value: number): string {
   return `₹${value.toFixed(2)}`;
@@ -27,15 +15,8 @@ export default function QuotationPage() {
   const { isLoggedIn } = useAuth();
   const { data: cart, isLoading: cartLoading } = useCart();
   const generateMutation = useGenerateQuotation();
-  const [otpOpen, setOtpOpen] = useState(false);
   const [result, setResult] = useState<GenerateQuotationResult | null>(null);
   const [generateError, setGenerateError] = useState<string | null>(null);
-
-  const { data: profile } = useQuery<UserProfile>({
-    queryKey: ['profile'],
-    queryFn: () => apiFetch<UserProfile>('/auth/profile'),
-    enabled: isLoggedIn,
-  });
 
   if (!isLoggedIn) {
     return (
@@ -63,7 +44,7 @@ export default function QuotationPage() {
     );
   }
 
-  const handleVerified = async () => {
+  const handleGenerate = async () => {
     setGenerateError(null);
     try {
       const data = await generateMutation.mutateAsync({ source: 'cart' });
@@ -166,22 +147,12 @@ export default function QuotationPage() {
       {/* Generate button */}
       {!result && cart && cart.items.length > 0 && (
         <button
-          onClick={() => setOtpOpen(true)}
+          onClick={handleGenerate}
           disabled={generateMutation.isPending}
           className="w-full py-3 px-6 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {generateMutation.isPending ? 'Generating…' : 'Generate Quotation'}
         </button>
-      )}
-
-      {/* OTP Modal */}
-      {otpOpen && profile && (
-        <OtpModal
-          open={otpOpen}
-          onClose={() => setOtpOpen(false)}
-          onVerified={handleVerified}
-          email={profile.email}
-        />
       )}
     </main>
   );

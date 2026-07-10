@@ -4,7 +4,6 @@ import { useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api';
-import OtpModal from '@/components/OtpModal';
 
 interface CatalogueOptions {
   productCodes: boolean;
@@ -39,7 +38,6 @@ export default function GenerateCatalogueModal({ open, onClose }: { open: boolea
     showMrp: false,
     showTentativePrice: false,
   });
-  const [otpOpen, setOtpOpen] = useState(false);
   const [pending, setPending] = useState<'download' | 'email' | null>(null);
   const [emailSent, setEmailSent] = useState(false);
 
@@ -69,12 +67,6 @@ export default function GenerateCatalogueModal({ open, onClose }: { open: boolea
     return f;
   }, [searchParams]);
 
-  const { data: profile } = useQuery<{ email: string }>({
-    queryKey: ['profile'],
-    queryFn: () => apiFetch('/auth/profile'),
-    enabled: open,
-  });
-
   const countQs = useMemo(() => {
     const p = new URLSearchParams(searchParams.toString());
     p.delete('page');
@@ -95,10 +87,11 @@ export default function GenerateCatalogueModal({ open, onClose }: { open: boolea
       apiFetch<GenerateResult>('/catalogues', { method: 'POST', body: { source: 'filters', filters, options } }),
   });
 
-  const run = async () => {
+  const run = async (mode: 'download' | 'email') => {
+    setPending(mode);
     setEmailSent(false);
     const res = await generate.mutateAsync();
-    if (pending === 'email') {
+    if (mode === 'email') {
       await apiFetch(`/catalogues/${res.catalogueId}/email`, { method: 'POST' });
       setEmailSent(true);
     } else if (res.pdfUrl) {
@@ -203,14 +196,14 @@ export default function GenerateCatalogueModal({ open, onClose }: { open: boolea
           {generate.isError && <span className="mr-auto text-sm text-[#e0524d]">Could not generate. Try again.</span>}
           {emailSent && <span className="mr-auto text-sm font-semibold text-[#1a8f5a]">Catalogue emailed ✓</span>}
           <button
-            onClick={() => { setPending('email'); setOtpOpen(true); }}
+            onClick={() => run('email')}
             disabled={busy || overLimit}
             className="rounded-xl border border-line bg-white/80 px-5 py-2.5 text-sm font-semibold text-indigo transition-colors hover:bg-white disabled:opacity-50"
           >
             {busy && pending === 'email' ? 'Sending…' : 'Email Catalogue'}
           </button>
           <button
-            onClick={() => { setPending('download'); setOtpOpen(true); }}
+            onClick={() => run('download')}
             disabled={busy || overLimit}
             className="rounded-xl bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_22px_rgba(42,43,106,.3)] transition-shadow hover:shadow-[0_10px_28px_rgba(42,43,106,.4)] disabled:opacity-50"
           >
@@ -218,15 +211,6 @@ export default function GenerateCatalogueModal({ open, onClose }: { open: boolea
           </button>
         </div>
       </div>
-
-      {otpOpen && profile && (
-        <OtpModal
-          open={otpOpen}
-          onClose={() => setOtpOpen(false)}
-          onVerified={() => { setOtpOpen(false); run(); }}
-          email={profile.email}
-        />
-      )}
     </div>
   );
 }

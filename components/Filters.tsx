@@ -29,7 +29,10 @@ interface Attribute {
 // Keys we manage explicitly — everything else in the URL is an attribute filter.
 const KNOWN_KEYS = new Set(['category', 'sort', 'page', 'limit', 'minPrice', 'maxPrice']);
 
-export default function Filters() {
+// basePath lets the same filter sidebar drive a different route (e.g. the admin
+// Generate Docs page) — it only changes where the querystring is pushed, not the
+// public /catalog metadata the options are built from.
+export default function Filters({ basePath = '/products' }: { basePath?: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -84,7 +87,7 @@ export default function Filters() {
     p.delete('page');
     mutate(p);
     const qs = p.toString();
-    router.push(qs ? '/products?' + qs : '/products');
+    router.push(qs ? basePath + '?' + qs : basePath);
   }
 
   function toggleMulti(key: string, value: string) {
@@ -115,7 +118,7 @@ export default function Filters() {
   function onClear() {
     setMinPrice('');
     setMaxPrice('');
-    router.push('/products');
+    router.push(basePath);
   }
 
   return (

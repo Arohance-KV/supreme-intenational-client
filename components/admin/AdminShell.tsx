@@ -21,6 +21,7 @@ const NAV: NavEntry[] = [
       { label: 'Attributes', href: '/admin/catalog/attributes' },
     ],
   },
+  { label: 'Generate Docs', href: '/admin/generate' },
   { label: 'Coupons', href: '/admin/coupons' },
   { label: 'Reviews', href: '/admin/reviews' },
   {
@@ -65,6 +66,7 @@ const ICON: Record<string, string> = {
   '/admin/catalog/products': '📦',
   '/admin/catalog/categories': '🗂️',
   '/admin/catalog/attributes': '🔧',
+  '/admin/generate': '🧾',
   '/admin/coupons': '🎟️',
   '/admin/reviews': '⭐',
   '/admin/clients': '🤝',

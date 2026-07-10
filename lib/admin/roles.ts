@@ -18,6 +18,7 @@ const ACCESS: { prefix: string; roles: Role[] }[] = [
   { prefix: '/admin/users', roles: [] }, // superAdmin only
   { prefix: '/admin/assignments', roles: [] }, // superAdmin only — Q&E assignment
   { prefix: '/admin/careers', roles: [] }, // superAdmin only
+  { prefix: '/admin/generate', roles: [] }, // superAdmin only — catalogue/quotation generator
   { prefix: '/admin/settings', roles: ['sales', 'marketing', 'finance'] }, // own profile — everyone
 ];
 

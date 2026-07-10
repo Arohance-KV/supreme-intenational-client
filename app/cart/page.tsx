@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useCart, useCartMutations } from '@/lib/cart';
-import CartView from '@/components/CartView';
+import QuotationCartView from '@/components/QuotationCartView';
 
 export default function CartPage() {
   const { data: cart, isLoading, error } = useCart();
@@ -39,5 +39,5 @@ export default function CartPage() {
     );
   }
 
-  return <CartView cart={cart} mutations={mutations} checkoutHref="/quotation" />;
+  return <QuotationCartView cart={cart} mutations={mutations} />;
 }
