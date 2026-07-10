@@ -12,6 +12,7 @@ import { useCart } from '@/lib/cart';
 const items = [
   { label: 'Products', href: '/products', key: 'products' },
   { label: 'Clients', href: '/clients', key: 'clients' },
+  { label: 'Blog', href: '/blog', key: 'blog' },
   { label: 'About', href: '/about', key: 'about' },
   { label: 'Careers', href: '/careers', key: 'careers' },
   { label: 'Contact', href: '/contact', key: 'contact' },

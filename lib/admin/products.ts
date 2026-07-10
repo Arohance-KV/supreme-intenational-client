@@ -265,7 +265,7 @@ export function useSetFlashSale(productId: string, slug: string) {
 
 export async function uploadAdminImage(
   file: File,
-  folder: 'products' | 'categories' | 'variants' | 'reviews' = 'products',
+  folder: 'products' | 'categories' | 'variants' | 'reviews' | 'logos' | 'case-studies' | 'blogs' | 'popups' = 'products',
 ): Promise<string> {
   const fd = new FormData();
   fd.append('file', file);
@@ -346,7 +346,7 @@ export function useUploadImage() {
 
   const upload = async (
     file: File,
-    folder: 'products' | 'categories' | 'variants' | 'reviews' = 'products',
+    folder: 'products' | 'categories' | 'variants' | 'reviews' | 'logos' | 'case-studies' | 'blogs' | 'popups' = 'products',
   ): Promise<string | null> => {
     setIsPending(true);
     setError(null);

@@ -19,8 +19,17 @@ export default async function ProductsPage({ searchParams }: PageProps) {
     if (Array.isArray(value)) value.forEach((v) => params.append(key, v));
     else if (typeof value === 'string') params.append(key, value);
   }
+  // Default to 20 per page (API default is 12) — overridable via the URL.
+  if (!params.has('limit')) params.set('limit', '20');
 
   const qs = params.toString();
+
+  // Build a /products href for a given page, preserving all active filters + limit.
+  const pageHref = (p: number) => {
+    const q = new URLSearchParams(params);
+    q.set('page', String(p));
+    return `/products?${q.toString()}`;
+  };
 
   let result: Awaited<ReturnType<typeof getProducts>>;
   try {
@@ -76,13 +85,20 @@ export default async function ProductsPage({ searchParams }: PageProps) {
                   ))}
                 </div>
 
-                {/* Pagination info */}
+                {/* Pagination */}
                 {pagination.pages > 1 && (
-                  <div className="mt-6 flex items-center justify-between text-sm text-slate">
-                    <span>
-                      Page {pagination.page} of {pagination.pages}
-                    </span>
-                    <span>{pagination.total} total products</span>
+                  <div className="mt-6 flex items-center justify-between gap-4 text-sm text-slate">
+                    {pagination.page > 1 ? (
+                      <a href={pageHref(pagination.page - 1)} className="rounded-xl border border-line bg-white/70 px-4 py-2 font-semibold text-indigo transition-colors hover:bg-white">← Prev</a>
+                    ) : (
+                      <span className="rounded-xl border border-line/60 px-4 py-2 text-muted opacity-50">← Prev</span>
+                    )}
+                    <span>Page {pagination.page} of {pagination.pages} · {pagination.total} products</span>
+                    {pagination.page < pagination.pages ? (
+                      <a href={pageHref(pagination.page + 1)} className="rounded-xl border border-line bg-white/70 px-4 py-2 font-semibold text-indigo transition-colors hover:bg-white">Next →</a>
+                    ) : (
+                      <span className="rounded-xl border border-line/60 px-4 py-2 text-muted opacity-50">Next →</span>
+                    )}
                   </div>
                 )}
               </>

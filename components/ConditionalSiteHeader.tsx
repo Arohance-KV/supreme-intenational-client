@@ -7,7 +7,7 @@ const HIDE = ['/admin', '/seller', '/employee', '/company'];
 
 // Highlight the matching top-level section for the current path.
 function activeKey(p: string): string | undefined {
-  for (const key of ['products', 'clients', 'about', 'careers', 'contact']) {
+  for (const key of ['products', 'clients', 'blog', 'about', 'careers', 'contact']) {
     if (p === '/' + key || p.startsWith('/' + key + '/')) return key;
   }
   return undefined;

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/
 import "./globals.css";
 import Providers from "./providers";
 import ConditionalSiteHeader from "@/components/ConditionalSiteHeader";
+import SitePopupHost from "@/components/SitePopupHost";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,6 +48,7 @@ export default function RootLayout({
         <Providers>
           <ConditionalSiteHeader />
           {children}
+          <SitePopupHost />
         </Providers>
       </body>
     </html>

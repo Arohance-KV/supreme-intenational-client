@@ -9,6 +9,7 @@ import {
   type PopupTrigger,
 } from '@/lib/admin/content';
 import { AdminModal, Field, inputCls } from '@/components/admin/AdminModal';
+import ImageUploadField from '@/components/admin/ImageUploadField';
 import { fmtDate } from '@/lib/admin/format';
 
 const GLASS = 'border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)]';
@@ -106,7 +107,7 @@ export default function AdminMarketingPage() {
           <>
             <Field label="Title"><input className={inputCls} value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} placeholder="e.g. Diwali 2026 — 15% off" /></Field>
             <Field label="Message"><textarea className={`${inputCls} h-20 resize-none`} value={draft.message} onChange={(e) => setDraft({ ...draft, message: e.target.value })} placeholder="Offer details shown in the pop-up…" /></Field>
-            <Field label="Image URL (optional)"><input className={inputCls} value={draft.imageUrl} onChange={(e) => setDraft({ ...draft, imageUrl: e.target.value })} placeholder="https://…" /></Field>
+            <Field label="Image (optional)"><ImageUploadField folder="popups" value={draft.imageUrl} onChange={(url) => setDraft({ ...draft, imageUrl: url })} /></Field>
             <div className="flex gap-4">
               <Field label="Button label"><input className={inputCls} value={draft.ctaLabel} onChange={(e) => setDraft({ ...draft, ctaLabel: e.target.value })} placeholder="Shop now" /></Field>
               <Field label="Button link"><input className={inputCls} value={draft.ctaUrl} onChange={(e) => setDraft({ ...draft, ctaUrl: e.target.value })} placeholder="/catalogue" /></Field>

@@ -8,6 +8,7 @@ import {
   type CaseStudy,
 } from '@/lib/admin/content';
 import { AdminModal, Field, inputCls } from '@/components/admin/AdminModal';
+import ImageUploadField from '@/components/admin/ImageUploadField';
 
 const GLASS = 'border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)]';
 
@@ -87,7 +88,7 @@ export default function AdminCaseStudiesPage() {
               <Field label="Order"><input type="number" className={inputCls} value={draft.order} onChange={(e) => setDraft({ ...draft, order: Number(e.target.value) || 0 })} /></Field>
             </div>
             <Field label="Headline result"><input className={inputCls} value={draft.result} onChange={(e) => setDraft({ ...draft, result: e.target.value })} placeholder="e.g. Delivered nationwide in 3 weeks" /></Field>
-            <Field label="Cover image URL"><input className={inputCls} value={draft.coverImage} onChange={(e) => setDraft({ ...draft, coverImage: e.target.value })} placeholder="https://…" /></Field>
+            <Field label="Cover image"><ImageUploadField folder="case-studies" value={draft.coverImage} onChange={(url) => setDraft({ ...draft, coverImage: url })} /></Field>
             <Field label="Summary"><textarea className={`${inputCls} h-24 resize-none`} value={draft.summary} onChange={(e) => setDraft({ ...draft, summary: e.target.value })} placeholder="Short description of the engagement and outcome…" /></Field>
             <label className="flex items-center gap-2 text-sm text-slate"><input type="checkbox" checked={draft.isPublished} onChange={(e) => setDraft({ ...draft, isPublished: e.target.checked })} /> Published on site</label>
           </>

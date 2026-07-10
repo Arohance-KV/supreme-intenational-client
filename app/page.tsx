@@ -6,6 +6,7 @@ import ProductCard from '@/components/ProductCard';
 import HomeHeroFloats from '@/components/HomeHeroFloats';
 import TrustedBy from '@/components/TrustedBy';
 import { getCategories, getFeatured, type Category, type Product } from '@/lib/catalog';
+import { getClientLogos } from '@/lib/content';
 
 // Shared class fragments
 const gradClip = 'bg-clip-text text-transparent';
@@ -18,6 +19,7 @@ export default async function HomePage() {
   let featured: Product[] = [];
   try { [categories, featured] = await Promise.all([getCategories(), getFeatured()]); }
   catch { /* leave empty; sections render their headers only */ }
+  const logos = await getClientLogos(); // safe(): [] if API unreachable → TrustedBy falls back
 
   return (
     <main className="font-display relative min-h-screen w-full overflow-x-hidden bg-[#eef0f8] text-ink selection:bg-[rgba(23,155,142,0.22)]">
@@ -52,7 +54,7 @@ export default async function HomePage() {
         </div>
 
         {/* trusted-by — live logos, infinite marquee, part of the hero */}
-        <div className="mt-10"><TrustedBy /></div>
+        <div className="mt-10"><TrustedBy logos={logos.map((l) => ({ name: l.name, logoUrl: l.logoUrl }))} /></div>
         </section>
 
         {/* SHOP BY CATEGORY */}

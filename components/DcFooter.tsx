@@ -3,7 +3,7 @@ import DcWordmark from './DcWordmark';
 // Shared site footer (the design system imports this as "Site Footer" on every page).
 export default function DcFooter() {
   return (
-    <div className="bg-[linear-gradient(135deg,#1c1d44,#23254f)] px-10 pb-[30px] pt-11">
+    <div className="relative z-[1] bg-[linear-gradient(135deg,#1c1d44,#23254f)] px-10 pb-[30px] pt-11">
       <div className="mx-auto max-w-[1280px]">
         <div className="mb-[34px] grid grid-cols-1 gap-6 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>

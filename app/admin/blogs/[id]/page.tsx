@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState, useRef, useEffect } from 'react';
+import { use, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ApiError } from '@/lib/api';
@@ -11,7 +11,7 @@ import {
   type CreateBlogBody,
   type UpdateBlogBody,
 } from '@/lib/admin/blogs';
-import { uploadAdminImage } from '@/lib/admin/products';
+import ImageUploadField from '@/components/admin/ImageUploadField';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -37,88 +37,6 @@ function parseTags(raw: string): string[] {
 /** Serialise string[] tags to comma-separated display value */
 function joinTags(tags: string[]): string {
   return tags.join(', ');
-}
-
-// ── Cover image uploader ──────────────────────────────────────────────────────
-
-function CoverImageField({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (url: string) => void;
-}) {
-  const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
-
-  const inputCls =
-    'w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-line';
-
-  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-    setUploadError(null);
-    try {
-      // Reuse the shared uploadAdminImage helper (field: 'file', folder: 'products')
-      // There is no 'blogs' folder configured on the server upload handler, so
-      // we use 'products' as the closest available folder — this is a known
-      // limitation; the server upload endpoint would need a 'blogs' folder added
-      // to accept it explicitly. For now 'products' is accepted and works fine.
-      const url = await uploadAdminImage(file, 'products');
-      onChange(url);
-    } catch (err) {
-      setUploadError(err instanceof ApiError ? err.message : 'Upload failed');
-    } finally {
-      setUploading(false);
-      if (fileRef.current) fileRef.current.value = '';
-    }
-  };
-
-  return (
-    <div className="space-y-2">
-      {value && (
-        <div className="relative inline-block">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={value}
-            alt="Cover"
-            className="h-28 w-auto max-w-xs rounded border border-line object-cover"
-          />
-          <button
-            type="button"
-            onClick={() => onChange('')}
-            className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white"
-            aria-label="Remove cover image"
-          >
-            ✕
-          </button>
-        </div>
-      )}
-      <div className="flex items-center gap-3">
-        <input
-          ref={fileRef}
-          type="file"
-          accept="image/*"
-          onChange={handleFile}
-          disabled={uploading}
-          className="text-xs text-slate file:mr-2 file:rounded file:border-0 file:bg-black/5 file:px-3 file:py-1 file:text-xs file:font-medium file:text-slate hover:file:bg-black/10"
-        />
-        {uploading && <span className="text-xs text-muted">Uploading…</span>}
-      </div>
-      <div>
-        <input
-          type="url"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder="or paste image URL"
-          className={inputCls}
-        />
-      </div>
-      {uploadError && <p className="text-xs text-red-600">{uploadError}</p>}
-    </div>
-  );
 }
 
 // ── Create form ───────────────────────────────────────────────────────────────
@@ -204,7 +122,8 @@ function CreateBlogForm() {
       {/* Cover image */}
       <div>
         <p className={labelCls}>Cover image</p>
-        <CoverImageField
+        <ImageUploadField
+          folder="blogs"
           value={form.coverImage ?? ''}
           onChange={(url) => setForm({ ...form, coverImage: url })}
         />
@@ -388,7 +307,8 @@ function EditBlogForm({ blogId }: { blogId: string }) {
       {/* Cover image */}
       <div>
         <p className={labelCls}>Cover image</p>
-        <CoverImageField
+        <ImageUploadField
+          folder="blogs"
           value={form.coverImage ?? ''}
           onChange={(url) => setForm({ ...form, coverImage: url })}
         />

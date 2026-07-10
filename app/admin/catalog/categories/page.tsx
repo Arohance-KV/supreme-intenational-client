@@ -11,6 +11,7 @@ import {
   type UpdateCategoryBody,
 } from '@/lib/admin/taxonomy';
 import { StatusChip } from '@/components/admin/StatusChip';
+import ImageUploadField from '@/components/admin/ImageUploadField';
 
 // ── Create form ───────────────────────────────────────────────────────────────
 
@@ -20,6 +21,7 @@ function CreateCategoryForm({ onClose }: { onClose: () => void }) {
     name: '',
     slug: '',
     description: '',
+    image: '',
     displayOrder: 0,
   });
 
@@ -29,6 +31,7 @@ function CreateCategoryForm({ onClose }: { onClose: () => void }) {
       name: form.name,
       ...(form.slug?.trim() ? { slug: form.slug.trim() } : {}),
       ...(form.description?.trim() ? { description: form.description.trim() } : {}),
+      ...(form.image?.trim() ? { image: form.image.trim() } : {}),
       ...(typeof form.displayOrder === 'number' ? { displayOrder: form.displayOrder } : {}),
     };
     createCategory.mutate(payload, { onSuccess: onClose });
@@ -69,6 +72,10 @@ function CreateCategoryForm({ onClose }: { onClose: () => void }) {
             onChange={(e) => setForm({ ...form, description: e.target.value })}
             className="w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-medium text-slate">Category image</label>
+          <ImageUploadField folder="categories" value={form.image ?? ''} onChange={(url) => setForm({ ...form, image: url })} />
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-slate">Display order</label>
@@ -123,6 +130,7 @@ function EditCategoryRow({
   const [form, setForm] = useState<UpdateCategoryBody>({
     name: category.name,
     description: category.description ?? '',
+    image: category.image ?? '',
     displayOrder: category.displayOrder ?? 0,
     isActive: category.isActive,
   });
@@ -154,6 +162,7 @@ function EditCategoryRow({
           className="w-full rounded border border-line px-2 py-1.5 text-xs text-slate focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
           placeholder="Description"
         />
+        <ImageUploadField folder="categories" value={form.image ?? ''} onChange={(url) => setForm({ ...form, image: url })} />
       </div>
 
       <span className="pt-2 text-xs text-muted font-jbmono">{category.slug}</span>
@@ -220,11 +229,19 @@ function CategoryRow({ category }: { category: AdminCategory }) {
 
   return (
     <div className="grid grid-cols-[1fr_160px_100px_80px_140px] items-center gap-4 border-b border-line px-5 py-3 hover:bg-white/50 transition-colors">
-      <div className="min-w-0">
-        <p className="truncate text-sm font-medium text-ink">{category.name}</p>
-        {category.description ? (
-          <p className="truncate text-xs text-muted">{category.description}</p>
-        ) : null}
+      <div className="flex min-w-0 items-center gap-3">
+        {category.image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={category.image} alt={category.name} className="h-10 w-10 shrink-0 rounded-lg border border-line object-cover" />
+        ) : (
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-black/[.04] text-sm font-bold text-muted">{category.name.charAt(0)}</span>
+        )}
+        <div className="min-w-0">
+          <p className="truncate text-sm font-medium text-ink">{category.name}</p>
+          {category.description ? (
+            <p className="truncate text-xs text-muted">{category.description}</p>
+          ) : null}
+        </div>
       </div>
 
       <span className="truncate text-xs font-jbmono text-slate">{category.slug}</span>

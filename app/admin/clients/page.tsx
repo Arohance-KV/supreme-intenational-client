@@ -8,6 +8,7 @@ import {
   type ClientLogo,
 } from '@/lib/admin/content';
 import { AdminModal, Field, inputCls } from '@/components/admin/AdminModal';
+import ImageUploadField from '@/components/admin/ImageUploadField';
 
 const GLASS = 'border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)]';
 
@@ -81,7 +82,7 @@ export default function AdminClientsPage() {
         {draft && (
           <>
             <Field label="Client name"><input className={inputCls} value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} placeholder="e.g. L&T Construction" /></Field>
-            <Field label="Logo image URL"><input className={inputCls} value={draft.logoUrl} onChange={(e) => setDraft({ ...draft, logoUrl: e.target.value })} placeholder="https://…" /></Field>
+            <Field label="Logo image"><ImageUploadField folder="logos" value={draft.logoUrl} onChange={(url) => setDraft({ ...draft, logoUrl: url })} /></Field>
             <Field label="Website (optional)"><input className={inputCls} value={draft.website} onChange={(e) => setDraft({ ...draft, website: e.target.value })} placeholder="https://…" /></Field>
             <div className="flex gap-4">
               <Field label="Order"><input type="number" className={inputCls} value={draft.order} onChange={(e) => setDraft({ ...draft, order: Number(e.target.value) || 0 })} /></Field>

@@ -2,31 +2,31 @@
 
 import { useState } from 'react';
 
-// Live brand marks via Google's favicon service (Clearbit is unreachable here).
-// Plain <img> on purpose — the Next image optimizer is locked to our own CDN hosts.
-const brands = [
-  { name: 'Tata', domain: 'tata.com' },
-  { name: 'Reliance', domain: 'ril.com' },
-  { name: 'Infosys', domain: 'infosys.com' },
-  { name: 'HDFC Bank', domain: 'hdfcbank.com' },
-  { name: 'Wipro', domain: 'wipro.com' },
-  { name: 'L&T', domain: 'larsentoubro.com' },
-  { name: 'Mahindra', domain: 'mahindra.com' },
-  { name: 'Asian Paints', domain: 'asianpaints.com' },
+// Fallback brand marks via Google's favicon service — used only when the admin
+// Clients/Logos CMS has no active logos yet (keeps the home strip from looking empty).
+const fallbackBrands = [
+  { name: 'Tata', logoUrl: 'https://www.google.com/s2/favicons?domain=tata.com&sz=128' },
+  { name: 'Reliance', logoUrl: 'https://www.google.com/s2/favicons?domain=ril.com&sz=128' },
+  { name: 'Infosys', logoUrl: 'https://www.google.com/s2/favicons?domain=infosys.com&sz=128' },
+  { name: 'HDFC Bank', logoUrl: 'https://www.google.com/s2/favicons?domain=hdfcbank.com&sz=128' },
+  { name: 'Wipro', logoUrl: 'https://www.google.com/s2/favicons?domain=wipro.com&sz=128' },
+  { name: 'L&T', logoUrl: 'https://www.google.com/s2/favicons?domain=larsentoubro.com&sz=128' },
+  { name: 'Mahindra', logoUrl: 'https://www.google.com/s2/favicons?domain=mahindra.com&sz=128' },
+  { name: 'Asian Paints', logoUrl: 'https://www.google.com/s2/favicons?domain=asianpaints.com&sz=128' },
 ];
 
-function Brand({ name, domain }: { name: string; domain: string }) {
-  const [noLogo, setNoLogo] = useState(false);
+function Brand({ name, logoUrl }: { name: string; logoUrl: string }) {
+  const [noLogo, setNoLogo] = useState(!logoUrl);
   return (
     <div className="flex shrink-0 items-center gap-2.5 opacity-70 grayscale transition hover:opacity-100 hover:grayscale-0">
       {!noLogo && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={`https://www.google.com/s2/favicons?domain=${domain}&sz=128`}
+          src={logoUrl}
           alt={name}
           loading="lazy"
           onError={() => setNoLogo(true)}
-          className="h-7 w-7 rounded-[6px] object-contain"
+          className="h-7 w-auto max-w-[120px] rounded-[6px] object-contain"
         />
       )}
       <span className="whitespace-nowrap text-base font-bold text-indigo">{name}</span>
@@ -34,7 +34,10 @@ function Brand({ name, domain }: { name: string; domain: string }) {
   );
 }
 
-export default function TrustedBy() {
+// `logos` comes from the Clients/Logos admin CMS (home passes it in). Falls back
+// to the built-in brand set when the CMS is empty.
+export default function TrustedBy({ logos }: { logos?: { name: string; logoUrl: string }[] }) {
+  const brands = logos && logos.length ? logos : fallbackBrands;
   // Duplicate the list so the -50% marquee loops seamlessly (infinite scroll).
   const row = [...brands, ...brands];
   return (
@@ -43,7 +46,7 @@ export default function TrustedBy() {
       <div className="relative flex-1 overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]">
         <div className="flex w-max items-center gap-[52px] animate-marquee hover:[animation-play-state:paused]">
           {row.map((b, i) => (
-            <Brand key={`${b.domain}-${i}`} name={b.name} domain={b.domain} />
+            <Brand key={`${b.name}-${i}`} name={b.name} logoUrl={b.logoUrl} />
           ))}
         </div>
       </div>
