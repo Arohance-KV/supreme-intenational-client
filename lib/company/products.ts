@@ -10,6 +10,7 @@ const T = { tokenKey: 'companyToken' as const };
 export interface CompanyProduct {
   productId: string;
   name: string;
+  image: string | null;
   category: string | null;
   points: number;
   stock: number;

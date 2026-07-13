@@ -9,6 +9,7 @@ import {
   useAddEmployee,
   useSetEmployeeStatus,
   useAdjustPoints,
+  useBulkCreditPoints,
   type Employee,
 } from '@/lib/company/employees';
 import { formatLakh, formatIN } from '@/lib/company/format';
@@ -237,10 +238,157 @@ function AddEmployeeModal({ onClose }: { onClose: () => void }) {
   );
 }
 
+function BulkPointsModal({ employees, onClose }: { employees: Employee[]; onClose: () => void }) {
+  const bulk = useBulkCreditPoints();
+  const [search, setSearch] = useState('');
+  const [checked, setChecked] = useState<Set<string>>(new Set());
+  const [amount, setAmount] = useState('');
+  const [done, setDone] = useState<{ ok: number; failed: number } | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  const filtered = employees.filter((e) => {
+    const q = search.trim().toLowerCase();
+    if (!q) return true;
+    return employeeName(e).toLowerCase().includes(q) || e.email.toLowerCase().includes(q);
+  });
+  const allShownChecked = filtered.length > 0 && filtered.every((e) => checked.has(e._id));
+
+  const toggle = (id: string) => {
+    setDone(null);
+    setChecked((prev) => {
+      const n = new Set(prev);
+      if (n.has(id)) n.delete(id);
+      else n.add(id);
+      return n;
+    });
+  };
+  const toggleAllShown = () => {
+    setDone(null);
+    setChecked((prev) => {
+      const n = new Set(prev);
+      if (allShownChecked) filtered.forEach((e) => n.delete(e._id));
+      else filtered.forEach((e) => n.add(e._id));
+      return n;
+    });
+  };
+
+  const value = Number(amount);
+  const canApply = checked.size > 0 && value > 0 && !bulk.isPending;
+
+  const handleApply = async () => {
+    const res = await bulk.mutateAsync({ ids: [...checked], amount: value });
+    setDone(res);
+    if (res.failed === 0) {
+      setChecked(new Set());
+      setAmount('');
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="bulk-points-title"
+        className="flex max-h-[88vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-xl"
+      >
+        <div className="flex items-center justify-between border-b border-line px-6 py-4">
+          <h2 id="bulk-points-title" className="text-[17px] font-bold text-ink">Bulk points top-up</h2>
+          <button type="button" onClick={onClose} aria-label="Close" className="rounded-lg p-1.5 text-muted hover:bg-black/5 hover:text-slate">✕</button>
+        </div>
+
+        <div className="flex-1 space-y-3 overflow-y-auto p-6">
+          <p className="text-[12px] text-muted">Credit the same number of points to every selected employee.</p>
+          <input
+            type="search"
+            placeholder="Search employees…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full rounded-lg border border-line px-3 py-2 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-indigo"
+          />
+          <div className="overflow-hidden rounded-xl border border-line">
+            <label className="flex cursor-pointer items-center gap-2 border-b border-line bg-black/[.02] px-3 py-2 text-[12px] font-medium text-slate">
+              <input type="checkbox" checked={allShownChecked} onChange={toggleAllShown} className="accent-indigo" />
+              Select all{search ? ' shown' : ''} ({filtered.length})
+            </label>
+            <ul className="max-h-56 overflow-y-auto">
+              {filtered.map((e) => (
+                <li key={e._id}>
+                  <label className="flex cursor-pointer items-center gap-3 px-3 py-2 text-[13px] hover:bg-black/[.03]">
+                    <input type="checkbox" checked={checked.has(e._id)} onChange={() => toggle(e._id)} className="accent-indigo" />
+                    <span className="min-w-0">
+                      <span className="block truncate text-ink">{employeeName(e)}</span>
+                      <span className="block truncate text-[11px] text-muted">{e.email}</span>
+                    </span>
+                  </label>
+                </li>
+              ))}
+              {filtered.length === 0 && <li className="px-3 py-6 text-center text-[12px] text-muted">No employees match.</li>}
+            </ul>
+          </div>
+          <div className="flex items-end gap-2">
+            <div className="flex-1">
+              <label htmlFor="bp-amount" className="mb-1 block text-[12px] font-semibold text-slate">Points per employee</label>
+              <input
+                id="bp-amount"
+                type="number"
+                min={1}
+                step={1}
+                placeholder="0"
+                value={amount}
+                onChange={(e) => { setAmount(e.target.value); setDone(null); }}
+                className="w-full rounded-lg border border-line px-3 py-2 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-indigo"
+              />
+            </div>
+            <button
+              type="button"
+              disabled={!canApply}
+              onClick={handleApply}
+              className="rounded-lg px-4 py-2.5 text-[13px] font-bold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+              style={{ background: 'linear-gradient(135deg,#2a2b6a,#3a3c98)' }}
+            >
+              {bulk.isPending ? 'Applying…' : `Credit (${checked.size})`}
+            </button>
+          </div>
+
+          {done && (
+            done.failed === 0 ? (
+              <div className="rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-[13px] text-green-700">
+                ✓ Credited {done.ok} employee{done.ok === 1 ? '' : 's'}.
+              </div>
+            ) : (
+              <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-[13px] text-[#d8524d]">
+                Credited {done.ok}, but {done.failed} failed. Try the failed ones again.
+              </div>
+            )
+          )}
+        </div>
+
+        <div className="flex justify-end border-t border-line px-6 py-4">
+          <button type="button" onClick={onClose} className="rounded-lg border border-line px-4 py-2 text-[13px] font-semibold text-slate hover:bg-[#f6f7fb]">
+            {done && done.failed === 0 ? 'Done' : 'Close'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function CompanyEmployeesPage() {
   const { data, isLoading, isError } = useCompanyEmployees();
   const [search, setSearch] = useState('');
   const [showAdd, setShowAdd] = useState(false);
+  const [showBulk, setShowBulk] = useState(false);
 
   const employees = useMemo(() => data ?? [], [data]);
   const filtered = useMemo(() => {
@@ -273,6 +421,14 @@ export default function CompanyEmployeesPage() {
                 className="w-48 bg-transparent text-[13px] text-ink placeholder:text-muted focus:outline-none"
               />
             </div>
+            <button
+              type="button"
+              onClick={() => setShowBulk(true)}
+              disabled={employees.length === 0}
+              className="whitespace-nowrap rounded-xl border border-line px-4 py-[11px] text-[13.5px] font-semibold text-slate transition-colors hover:bg-white/70 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Bulk points
+            </button>
             <button
               type="button"
               onClick={() => setShowAdd(true)}
@@ -324,6 +480,7 @@ export default function CompanyEmployeesPage() {
       )}
 
       {showAdd && <AddEmployeeModal onClose={() => setShowAdd(false)} />}
+      {showBulk && <BulkPointsModal employees={employees} onClose={() => setShowBulk(false)} />}
     </div>
   );
 }

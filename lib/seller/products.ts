@@ -26,6 +26,10 @@ export function useMyProducts(isActive?: boolean, page = 1) {
   return useQuery({
     queryKey: ['seller', 'products', String(isActive ?? 'all'), page],
     queryFn: () => apiFetch<Paginated<SellerProduct>>(`/seller/products?${qs.toString()}`, T),
+    // Products can be removed out-of-band (e.g. deleted directly in the DB); the global
+    // 60s staleTime would keep showing them, so always refetch this list on mount.
+    staleTime: 0,
+    refetchOnMount: 'always',
   });
 }
 

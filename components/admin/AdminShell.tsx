@@ -10,20 +10,47 @@ type NavGroup = { group: string; items: NavItem[] };
 type NavEntry = NavItem | NavGroup;
 
 const NAV: NavEntry[] = [
-  { label: 'Dashboard', href: '/admin' },
-  { label: 'Analytics', href: '/admin/analytics' },
-  { label: 'Orders', href: '/admin/orders' },
   {
-    group: 'Catalog',
+    group: 'Overview',
+    items: [
+      { label: 'Dashboard', href: '/admin' },
+      { label: 'Analytics', href: '/admin/analytics' },
+      { label: 'Orders', href: '/admin/orders' },
+    ],
+  },
+  {
+    group: 'Sales & Leads',
+    items: [
+      { label: 'Quotations', href: '/admin/quotations' },
+      { label: 'Leads', href: '/admin/leads' },
+      { label: 'Enquiries', href: '/admin/enquiries' },
+      { label: 'Q&E Assignments', href: '/admin/assignments' },
+      { label: 'Customers', href: '/admin/customers' },
+    ],
+  },
+  {
+    group: 'Companies',
+    items: [{ label: 'Companies', href: '/admin/companies' }],
+  },
+  {
+    group: 'Sellers',
+    items: [
+      { label: 'Submissions', href: '/admin/submissions' },
+      { label: 'Sellers', href: '/admin/sellers' },
+      { label: 'Payouts', href: '/admin/payouts' },
+    ],
+  },
+  {
+    group: 'Catalogue',
     items: [
       { label: 'Products', href: '/admin/catalog/products' },
       { label: 'Categories', href: '/admin/catalog/categories' },
       { label: 'Attributes', href: '/admin/catalog/attributes' },
+      { label: 'Generate Docs', href: '/admin/generate' },
+      { label: 'Coupons', href: '/admin/coupons' },
+      { label: 'Reviews', href: '/admin/reviews' },
     ],
   },
-  { label: 'Generate Docs', href: '/admin/generate' },
-  { label: 'Coupons', href: '/admin/coupons' },
-  { label: 'Reviews', href: '/admin/reviews' },
   {
     group: 'Website Content',
     items: [
@@ -31,20 +58,16 @@ const NAV: NavEntry[] = [
       { label: 'Case Studies', href: '/admin/case-studies' },
       { label: 'Blogs', href: '/admin/blogs' },
       { label: 'Marketing', href: '/admin/marketing' },
+      { label: 'Careers', href: '/admin/careers' },
     ],
   },
-  { label: 'Companies', href: '/admin/companies' },
-  { label: 'Q&E Assignments', href: '/admin/assignments' },
-  { label: 'Customers', href: '/admin/customers' },
-  { label: 'Sellers', href: '/admin/sellers' },
-  { label: 'Submissions', href: '/admin/submissions' },
-  { label: 'Payouts', href: '/admin/payouts' },
-  { label: 'Quotations', href: '/admin/quotations' },
-  { label: 'Leads', href: '/admin/leads' },
-  { label: 'Enquiries', href: '/admin/enquiries' },
-  { label: 'Careers', href: '/admin/careers' },
-  { label: 'User Management', href: '/admin/users' },
-  { label: 'Settings', href: '/admin/settings' },
+  {
+    group: 'Settings',
+    items: [
+      { label: 'Settings', href: '/admin/settings' },
+      { label: 'User Management', href: '/admin/users' },
+    ],
+  },
 ];
 
 // Drop nav entries the role can't reach; drop groups that end up empty.

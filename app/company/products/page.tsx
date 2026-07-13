@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import Image from 'next/image';
 import { PageHeader } from '@/components/company/PageHeader';
 import { Card } from '@/components/company/Card';
 import { StatusPill } from '@/components/company/StatusPill';
@@ -33,7 +34,18 @@ function PencilIcon() {
   );
 }
 
-function ProductThumbnail() {
+function ProductThumbnail({ src, alt }: { src: string | null; alt: string }) {
+  if (src) {
+    return (
+      <Image
+        src={src}
+        alt={alt}
+        width={38}
+        height={38}
+        className="h-[38px] w-[38px] flex-none rounded-[10px] object-cover"
+      />
+    );
+  }
   return (
     <span
       className="h-[38px] w-[38px] flex-none rounded-[10px]"
@@ -97,7 +109,7 @@ function ProductRow({ product }: { product: CompanyProduct }) {
   return (
     <div className={`${GRID} border-b border-line px-5 py-4 text-[13px] last:border-0`}>
       <span className="flex min-w-0 items-center gap-3">
-        <ProductThumbnail />
+        <ProductThumbnail src={product.image} alt={product.name} />
         <span className="truncate font-bold text-ink">{product.name}</span>
       </span>
 

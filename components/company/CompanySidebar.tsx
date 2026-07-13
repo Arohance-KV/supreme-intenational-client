@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCompanyAuth } from '@/lib/company/auth';
@@ -36,7 +37,7 @@ export default function CompanySidebar() {
       }}
     >
       <div className="flex items-center gap-2.5 max-[900px]:flex-none">
-        <span className="text-[17px] font-extrabold tracking-[-.02em] text-white">Supreme</span>
+        <Image src="/supreme-logo.png" alt="Supreme International" width={300} height={87} className="h-6 w-auto brightness-0 invert" priority />
         <span
           className="rounded-[5px] border px-1.5 py-0.5 font-jbmono text-[9px] tracking-[.1em] uppercase"
           style={{ color: '#9fb0e7', borderColor: 'rgba(159,176,231,.4)' }}

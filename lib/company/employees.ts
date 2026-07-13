@@ -83,6 +83,32 @@ export function buildWalletAdjustment(
       };
 }
 
+// Bulk top-up: credit the same amount to each selected employee. ponytail: fans out over
+// the existing per-employee credit endpoint (no new server route) via allSettled, so one
+// failure doesn't sink the batch — the caller reports ok/failed counts.
+export function useBulkCreditPoints() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ ids, amount }: { ids: string[]; amount: number }) => {
+      const results = await Promise.allSettled(
+        ids.map((id) =>
+          apiFetch(`/company/employees/${id}/wallet/credit`, {
+            method: 'POST',
+            body: { amount, reason: 'Company bulk top-up' },
+            ...T,
+          }),
+        ),
+      );
+      const failed = results.filter((r) => r.status === 'rejected').length;
+      return { ok: ids.length - failed, failed };
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: EMPLOYEES_KEY });
+      qc.invalidateQueries({ queryKey: ['company', 'dashboard'] });
+    },
+  });
+}
+
 export function useAdjustPoints() {
   const qc = useQueryClient();
   return useMutation({

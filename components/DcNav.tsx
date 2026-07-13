@@ -4,13 +4,14 @@ import Link from 'next/link';
 import { useQueryClient } from '@tanstack/react-query';
 import CartBadge from './CartBadge';
 import DcWordmark from './DcWordmark';
+import NavProductsMenu from './NavProductsMenu';
 import { useAuth } from '@/lib/auth';
 import { useCart } from '@/lib/cart';
 
 // Single unified public-site nav — rendered once from the layout, so it looks
 // identical on the home page, /products, and every other public page.
+// 'Products' is rendered separately as a category mega-menu (NavProductsMenu).
 const items = [
-  { label: 'Products', href: '/products', key: 'products' },
   { label: 'Clients', href: '/clients', key: 'clients' },
   { label: 'Blog', href: '/blog', key: 'blog' },
   { label: 'About', href: '/about', key: 'about' },
@@ -38,7 +39,8 @@ export default function DcNav({ active }: { active?: string }) {
     <header className="font-display sticky top-0 z-50 px-4 pt-3 sm:px-6 lg:px-8">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2.5 rounded-[18px] border border-white/80 bg-white/[.62] px-[18px] py-3 shadow-[0_8px_30px_rgba(34,36,90,.1)] backdrop-blur-[20px] backdrop-saturate-[1.6]">
         <Link href="/" className="no-underline"><DcWordmark /></Link>
-        <div className="ml-2 hidden gap-1 md:flex">
+        <div className="ml-2 hidden items-center gap-1 md:flex">
+          <NavProductsMenu active={active === 'products'} />
           {items.map((it) => (
             <Link
               key={it.key}
