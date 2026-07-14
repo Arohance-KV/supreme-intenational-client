@@ -1,12 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { PageHeader } from '@/components/company/PageHeader';
 import { Card } from '@/components/company/Card';
 import { StatCard } from '@/components/company/StatCard';
 import { StatusPill } from '@/components/company/StatusPill';
 import { useCompanyDashboard, type Range, type DashboardSeriesPoint } from '@/lib/company/dashboard';
+import { useCompanyProfile, useUploadCompanyLogo } from '@/lib/company/profile';
 import { formatLakh, formatIN, initials } from '@/lib/company/format';
+import { ApiError } from '@/lib/api';
 
 const RANGE_LABEL: Record<Range, string> = { week: 'week', month: 'month', all: 'all' };
 const CHART_SUBTITLE: Record<Range, string> = {
@@ -167,6 +169,54 @@ function RedeemedChart({ series }: { series: DashboardSeriesPoint[] }) {
   );
 }
 
+function BrandLogoCard() {
+  const { data: profile } = useCompanyProfile();
+  const uploadLogo = useUploadCompanyLogo();
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) uploadLogo.mutate(file);
+    if (fileRef.current) fileRef.current.value = '';
+  };
+
+  return (
+    <Card className="mb-6 p-6">
+      <div className="flex flex-wrap items-center gap-5">
+        <div className="flex h-16 w-40 flex-none items-center justify-center overflow-hidden rounded-[12px] border border-line bg-white">
+          {profile?.logo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={profile.logo} alt={profile.name || 'Company logo'} className="max-h-14 w-auto max-w-[152px] object-contain" />
+          ) : (
+            <span className="text-[12px] text-muted">No logo yet</span>
+          )}
+        </div>
+        <div className="min-w-0 flex-1">
+          <h2 className="text-[15px] font-bold text-ink">Brand logo</h2>
+          <p className="mt-0.5 text-[12.5px] text-muted">
+            Shown in your employees&rsquo; store header. PNG or SVG with transparent background works best.
+          </p>
+          {uploadLogo.isError && (
+            <p className="mt-1 text-[12px] text-[#d8524d]">
+              {uploadLogo.error instanceof ApiError ? uploadLogo.error.message : 'Upload failed.'}
+            </p>
+          )}
+        </div>
+        <div className="flex-none">
+          <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} className="hidden" id="company-logo-input" />
+          <label
+            htmlFor="company-logo-input"
+            className={`inline-flex cursor-pointer items-center rounded-xl px-4 py-[11px] text-[13.5px] font-bold text-white transition-opacity hover:opacity-90 ${uploadLogo.isPending ? 'pointer-events-none opacity-60' : ''}`}
+            style={{ background: 'linear-gradient(135deg,#2a2b6a,#3a3c98)' }}
+          >
+            {uploadLogo.isPending ? 'Uploading…' : profile?.logo ? 'Replace logo' : 'Upload logo'}
+          </label>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
 export default function CompanyOverviewPage() {
   const [range, setRange] = useState<Range>('month');
   const { data, isLoading, isError } = useCompanyDashboard(range);
@@ -183,6 +233,8 @@ export default function CompanyOverviewPage() {
         title="Overview"
         subtitle="Your team's merchandise activity at a glance."
       />
+
+      <BrandLogoCard />
 
       {isError && (
         <Card className="mb-6 p-6 text-[13px] text-muted">Could not load dashboard data.</Card>

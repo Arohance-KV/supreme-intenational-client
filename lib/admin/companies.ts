@@ -14,6 +14,7 @@ export interface AdminCompany {
   _id: string;
   name: string;
   slug: string;
+  logo?: string;
   status: 'active' | 'inactive';
   walletMode: 'points' | 'coupon';
   primaryContact?: CompanyPrimaryContact;
@@ -37,6 +38,7 @@ export interface CreateCompanyBody {
 
 export interface UpdateCompanyBody {
   name?: string;
+  logo?: string;
   status?: 'active' | 'inactive';
   walletMode?: 'points' | 'coupon';
   primaryContact?: CompanyPrimaryContact;
@@ -150,6 +152,12 @@ export interface CreateCompanyLoginResponse {
   email: string;
 }
 
+export interface CompanyLogin {
+  id: string;
+  email: string;
+  createdAt: string;
+}
+
 // ── Query key helpers ─────────────────────────────────────────────────────────
 
 const COMPANIES_LIST_KEY = (page: number, search?: string, status?: string) =>
@@ -157,6 +165,9 @@ const COMPANIES_LIST_KEY = (page: number, search?: string, status?: string) =>
 
 const COMPANY_KEY = (id: string) =>
   ['admin', 'companies', 'detail', id] as const;
+
+const COMPANY_LOGINS_KEY = (id: string) =>
+  ['admin', 'companies', 'logins', id] as const;
 
 const EMPLOYEES_KEY = (companyId: string) =>
   ['admin', 'companies', 'employees', companyId] as const;
@@ -397,8 +408,18 @@ export function useCreateCompanyLogin(companyId: string) {
         method: 'POST',
         body,
       }),
-    onSuccess: () =>
-      qc.invalidateQueries({ queryKey: COMPANY_KEY(companyId) }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: COMPANY_KEY(companyId) });
+      qc.invalidateQueries({ queryKey: COMPANY_LOGINS_KEY(companyId) });
+    },
+  });
+}
+
+export function useCompanyLogins(companyId: string) {
+  return useQuery<CompanyLogin[]>({
+    queryKey: COMPANY_LOGINS_KEY(companyId),
+    queryFn: () => adminFetch<CompanyLogin[]>(`/admin/companies/${companyId}/logins`),
+    enabled: !!companyId,
   });
 }
 

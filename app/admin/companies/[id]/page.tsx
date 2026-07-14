@@ -8,6 +8,7 @@ import { StatusChip } from '@/components/admin/StatusChip';
 import { useAdminProducts } from '@/lib/admin/products';
 import { useCategories } from '@/lib/admin/taxonomy';
 import CreateProductModal from '@/components/admin/CreateProductModal';
+import ImageUploadField from '@/components/admin/ImageUploadField';
 import {
   useCompany,
   useUpdateCompany,
@@ -27,6 +28,7 @@ import {
   useUpdateCompanyCatalog,
   useCompanyProducts,
   useCreateCompanyLogin,
+  useCompanyLogins,
   type AdminCompany,
   type AdminEmployee,
   type LedgerEntry,
@@ -120,6 +122,7 @@ function CompanyEditForm({ company }: { company: AdminCompany }) {
 
   const [fields, setFields] = useState<UpdateCompanyBody>({
     name: company.name,
+    logo: company.logo ?? '',
     status: company.status,
     walletMode: company.walletMode ?? 'points',
     notes: company.notes ?? '',
@@ -142,6 +145,7 @@ function CompanyEditForm({ company }: { company: AdminCompany }) {
     e.preventDefault();
     const payload: UpdateCompanyBody = {
       name: fields.name?.trim() || undefined,
+      logo: fields.logo ?? '',
       status: fields.status,
       walletMode: fields.walletMode,
       notes: fields.notes?.trim() || undefined,
@@ -182,6 +186,16 @@ function CompanyEditForm({ company }: { company: AdminCompany }) {
             <option value="inactive">Inactive</option>
           </select>
         </div>
+      </div>
+
+      <div>
+        <label className={labelCls}>Company logo</label>
+        <ImageUploadField
+          value={fields.logo ?? ''}
+          onChange={(url) => setFields((prev) => ({ ...prev, logo: url }))}
+          folder="logos"
+        />
+        <p className="mt-1 text-xs text-muted">Shown in this company&apos;s employee portal header.</p>
       </div>
 
       {/* Wallet model — segmented toggle (Merch Portal Builder mockup) */}
@@ -291,6 +305,7 @@ function CompanyEditForm({ company }: { company: AdminCompany }) {
 
 function CompanyLoginSection({ companyId }: { companyId: string }) {
   const createLogin = useCreateCompanyLogin(companyId);
+  const { data: logins, isLoading: loginsLoading } = useCompanyLogins(companyId);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<CreateCompanyLoginBody>({ email: '', password: '' });
   const [createdEmail, setCreatedEmail] = useState<string | null>(null);
@@ -386,6 +401,32 @@ function CompanyLoginSection({ companyId }: { companyId: string }) {
           <span className="truncate">Login active for {createdEmail}</span>
         </div>
       )}
+
+      {/* Existing login accounts for this company */}
+      <div className="mt-4">
+        <p className="mb-2 text-xs font-medium text-slate">Login accounts</p>
+        {loginsLoading ? (
+          <p className="text-sm text-muted">Loading…</p>
+        ) : !logins || logins.length === 0 ? (
+          <p className="rounded-lg border border-dashed border-line bg-white/40 px-3 py-3 text-sm text-muted">
+            No login accounts yet. Create one above.
+          </p>
+        ) : (
+          <ul className="divide-y divide-line overflow-hidden rounded-lg border border-line bg-white/50">
+            {logins.map((l) => (
+              <li key={l.id} className="flex items-center justify-between gap-3 px-3 py-2.5">
+                <span className="flex min-w-0 items-center gap-2">
+                  <span className="flex h-7 w-7 flex-none items-center justify-center rounded-full bg-indigo/10 text-[11px] font-bold text-indigo" aria-hidden>
+                    {l.email.slice(0, 1).toUpperCase()}
+                  </span>
+                  <span className="truncate text-sm text-ink">{l.email}</span>
+                </span>
+                <span className="flex-none text-xs text-muted">Added {fmtDate(l.createdAt)}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </section>
   );
 }
