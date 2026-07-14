@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ApiError } from '@/lib/api';
 import { AdminModal, Field, inputCls } from '@/components/admin/AdminModal';
+import { useConfirm } from '@/components/ConfirmDialog';
 import {
   useOpenings, useSaveOpening, useDeleteOpening, type JobOpening, type JobOpeningInput,
   useApplications, useUpdateApplicationStatus, useCreateApplication,
@@ -27,6 +28,7 @@ type OpeningDraft = JobOpeningInput & { id?: string };
 const EMPTY_OPENING: OpeningDraft = { title: '', department: '', location: '', employmentType: 'Full-time', description: '', isActive: true };
 
 function OpeningsTab() {
+  const { confirm } = useConfirm();
   const { data, isPending, isError } = useOpenings();
   const save = useSaveOpening();
   const del = useDeleteOpening();
@@ -54,7 +56,7 @@ function OpeningsTab() {
   };
 
   const remove = async (o: JobOpening) => {
-    if (!window.confirm(`Delete opening "${o.title}"?`)) return;
+    if (!(await confirm({ title: 'Delete', message: `Delete opening "${o.title}"?`, confirmLabel: 'Delete', tone: 'danger' }))) return;
     setRowError(null);
     try { await del.mutateAsync(o._id); } catch (e) { setRowError(errMsg(e)); }
   };

@@ -38,9 +38,9 @@ export default function EmployeeHeader() {
           ) : (
             <span className="text-lg font-extrabold tracking-[-.01em] text-ink">{company?.name || 'Merchandise Portal'}</span>
           )}
-          <span className="hidden rounded-full bg-[rgba(19,184,159,.12)] px-2.5 py-1 font-jbmono text-[10px] uppercase tracking-[.12em] text-accent sm:inline-flex">
+          {/* <span className="hidden rounded-full bg-[rgba(19,184,159,.12)] px-2.5 py-1 font-jbmono text-[10px] uppercase tracking-[.12em] text-accent sm:inline-flex">
             Merchandise Portal
-          </span>
+          </span> */}
         </Link>
 
         <nav className="ml-auto flex items-center gap-2">

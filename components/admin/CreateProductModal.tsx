@@ -9,8 +9,8 @@ import { useCategories } from '@/lib/admin/taxonomy';
 import { useCompanies } from '@/lib/admin/companies';
 
 const fieldCls =
-  'w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20';
-const labelCls = 'mb-1 block text-sm font-medium text-slate';
+  'w-full rounded-xl border border-line bg-white/70 px-3.5 py-2.5 text-sm text-ink transition-colors placeholder:text-muted focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20';
+const labelCls = 'mb-1.5 block text-xs font-semibold uppercase tracking-[.08em] text-slate';
 
 // Shared "Create product" modal. When `lockedCompany` is passed (from a company
 // page), visibility is forced to "company" for that company and the
@@ -57,22 +57,27 @@ export default function CreateProductModal({
   if (!mounted || typeof document === 'undefined') return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-[rgba(22,23,58,.5)] p-4 backdrop-blur-md">
-      <div className="w-full max-w-lg rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-6">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-base font-semibold text-ink">
-            {lockedCompany ? `New product for ${lockedCompany.name}` : 'Create product'}
-          </h2>
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 font-display">
+      <div className="absolute inset-0 bg-[rgba(23,24,58,.45)] backdrop-blur-[3px]" onClick={onClose} />
+      <div className="relative z-10 w-full max-w-lg overflow-hidden rounded-[22px] border border-white/80 bg-white/80 shadow-[0_30px_80px_rgba(23,24,58,.35)] backdrop-blur-[24px]">
+        {/* Header */}
+        <div className="flex items-start justify-between border-b border-line/70 px-6 py-5">
+          <div>
+            <p className="font-jbmono text-[11px] uppercase tracking-[.14em] text-accent">
+              {lockedCompany ? `Company · ${lockedCompany.name}` : 'Catalogue'}
+            </p>
+            <h2 className="mt-1 text-[22px] font-extrabold tracking-[-.02em] text-ink">New product</h2>
+          </div>
           <button
             onClick={onClose}
-            className="rounded p-1 text-muted hover:bg-black/5 hover:text-slate"
             aria-label="Close"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(42,43,106,.06)] text-slate transition-colors hover:bg-[rgba(42,43,106,.12)] hover:text-ink"
           >
             ✕
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5 px-6 py-6">
           <div>
             <label htmlFor="cp-name" className={labelCls}>
               Name <span className="text-red-500">*</span>
@@ -124,20 +129,26 @@ export default function CreateProductModal({
           {!lockedCompany && (
             <>
               <div>
-                <label htmlFor="cp-visibility" className={labelCls}>
-                  Visibility
-                </label>
-                <select
-                  id="cp-visibility"
-                  value={form.visibility ?? 'public'}
-                  onChange={(e) =>
-                    setForm({ ...form, visibility: e.target.value as 'public' | 'company' })
-                  }
-                  className={fieldCls}
-                >
-                  <option value="public">Public</option>
-                  <option value="company">Company</option>
-                </select>
+                <span className={labelCls}>Visibility</span>
+                <div className="grid grid-cols-2 gap-1 rounded-xl border border-line bg-white/50 p-1">
+                  {(['public', 'company'] as const).map((v) => {
+                    const active = (form.visibility ?? 'public') === v;
+                    return (
+                      <button
+                        key={v}
+                        type="button"
+                        onClick={() => setForm({ ...form, visibility: v })}
+                        className={`rounded-lg py-2 text-sm font-semibold capitalize transition-colors ${
+                          active
+                            ? 'bg-gradient-to-br from-indigo to-indigo2 text-white shadow-[0_6px_16px_rgba(42,43,106,.25)]'
+                            : 'text-slate hover:bg-white/70'
+                        }`}
+                      >
+                        {v === 'public' ? 'Public' : 'Company only'}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               {form.visibility === 'company' && (
@@ -167,27 +178,31 @@ export default function CreateProductModal({
           )}
 
           {createProduct.error && (
-            <p className="text-sm text-red-600">
+            <p className="rounded-xl border border-[rgba(224,82,77,.25)] bg-[rgba(224,82,77,.08)] px-4 py-2.5 text-sm text-[#e0524d]">
               {createProduct.error instanceof ApiError
                 ? createProduct.error.message
                 : 'Failed to create product'}
             </p>
           )}
 
-          <div className="flex items-center justify-end gap-3 pt-2">
+          <p className="text-[13px] leading-relaxed text-muted">
+            Add pricing, variants and images on the next step after the product is created.
+          </p>
+
+          <div className="flex items-center justify-end gap-3 border-t border-line/70 pt-5">
             <button
               type="button"
               onClick={onClose}
-              className="rounded border border-line px-4 py-2 text-sm text-slate hover:bg-white/60"
+              className="rounded-xl border border-line bg-white/80 px-5 py-2.5 text-sm font-semibold text-indigo transition-colors hover:bg-white"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={createProduct.isPending}
-              className="rounded bg-gradient-to-br from-indigo to-indigo2 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+              className="rounded-xl bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_22px_rgba(42,43,106,.3)] transition-shadow hover:shadow-[0_10px_28px_rgba(42,43,106,.4)] disabled:opacity-50"
             >
-              {createProduct.isPending ? 'Creating…' : 'Create'}
+              {createProduct.isPending ? 'Creating…' : 'Create product'}
             </button>
           </div>
         </form>

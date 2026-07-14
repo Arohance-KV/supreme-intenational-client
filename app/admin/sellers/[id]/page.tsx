@@ -16,6 +16,7 @@ import {
   type SellerTopProduct,
 } from '@/lib/admin/sellers';
 import { inr, fmtDate, fmtDateTime } from '@/lib/admin/format';
+import { useConfirm } from '@/components/ConfirmDialog';
 
 const inputCls =
   'w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20';
@@ -37,6 +38,7 @@ function allowedTransitions(current: SellerStatus): SellerStatus[] {
 // ── SellerStatusPanel ─────────────────────────────────────────────────────────
 
 function SellerStatusPanel({ seller }: { seller: AdminSeller }) {
+  const { confirm, alert } = useConfirm();
   const updateStatus = useUpdateSellerStatus(seller._id);
   const transitions = allowedTransitions(seller.status);
 
@@ -54,15 +56,24 @@ function SellerStatusPanel({ seller }: { seller: AdminSeller }) {
     }
   }, [updateStatus.isSuccess]);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!selectedStatus) return;
     if (selectedStatus === 'rejected' && !reason.trim()) {
-      alert('A reason is required when rejecting a seller.');
+      await alert({
+        title: 'Reason required',
+        message: 'A reason is required when rejecting a seller.',
+      });
       return;
     }
     const label = selectedStatus.charAt(0).toUpperCase() + selectedStatus.slice(1);
-    if (!confirm(`Change seller status to "${label}"?`)) return;
+    const confirmed = await confirm({
+      title: 'Change status',
+      message: `Change seller status to "${label}"?`,
+      confirmLabel: label,
+      tone: selectedStatus === 'rejected' || selectedStatus === 'suspended' ? 'danger' : 'default',
+    });
+    if (!confirmed) return;
     updateStatus.mutate(
       {
         status: selectedStatus,

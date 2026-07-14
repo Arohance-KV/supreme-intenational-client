@@ -10,6 +10,7 @@ import {
 } from '@/lib/admin/enquiries';
 import { StatusChip } from '@/components/admin/StatusChip';
 import { inr, fmtDateTime } from '@/lib/admin/format';
+import { useConfirm } from '@/components/ConfirmDialog';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -37,6 +38,7 @@ export default function AdminQuotationDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const { confirm } = useConfirm();
   const { data: quotation, isLoading, isError } = useQuotation(id);
   const updateStatus = useUpdateQuotationStatus(id);
 
@@ -73,9 +75,10 @@ export default function AdminQuotationDetailPage({
 
   async function handleStatusChange() {
     if (!pendingStatus) return;
-    const confirmed = window.confirm(
-      `Change quotation status from "${quotation!.status}" to "${pendingStatus}"?`,
-    );
+    const confirmed = await confirm({
+      title: 'Update status',
+      message: `Change quotation status from "${quotation!.status}" to "${pendingStatus}"?`,
+    });
     if (!confirmed) return;
     setActionError(null);
     try {

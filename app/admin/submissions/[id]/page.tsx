@@ -16,6 +16,7 @@ import {
 } from '@/lib/admin/submissions';
 import { useAttributes, type AdminAttribute } from '@/lib/admin/taxonomy';
 import { inr, fmtDate, fmtDateTime } from '@/lib/admin/format';
+import { useConfirm } from '@/components/ConfirmDialog';
 
 const sectionCls = 'rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] p-5';
 const labelCls = 'mb-1 block text-sm font-medium text-slate';
@@ -197,6 +198,7 @@ function AttributeReviewPanel({ id }: { id: string }) {
 // ── ModeratePanel ─────────────────────────────────────────────────────────────
 
 function ModeratePanel({ submission }: { submission: AdminSubmission }) {
+  const { confirm } = useConfirm();
   const approve = useApproveSubmission(submission._id);
   const reject = useRejectSubmission(submission._id);
   const review = useAttributeReview(submission._id, submission.status === 'submitted');
@@ -254,8 +256,8 @@ function ModeratePanel({ submission }: { submission: AdminSubmission }) {
     );
   }
 
-  function handleApprove() {
-    if (!confirm('Approve this submission and create the product in the catalogue?')) return;
+  async function handleApprove() {
+    if (!(await confirm({ message: 'Approve this submission and create the product in the catalogue?' }))) return;
     approve.mutate();
   }
 

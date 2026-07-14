@@ -102,6 +102,7 @@ export interface BulkCreateVariantsBody {
   defaultPrice: number;
   defaultOriginalPrice: number;
   defaultStock: number;
+  defaultMoq?: number;
 }
 
 // Update variant — matches updateVariantValidator + controller

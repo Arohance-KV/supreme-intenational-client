@@ -11,6 +11,7 @@ import {
 } from '@/lib/admin/payouts';
 import { StatusChip } from '@/components/admin/StatusChip';
 import { inr, fmtDate, fmtDateTime } from '@/lib/admin/format';
+import { useConfirm } from '@/components/ConfirmDialog';
 
 const PAYOUT_STATUSES: SellerPayoutStatus[] = ['pending', 'settled', 'voided'];
 
@@ -22,20 +23,25 @@ interface DetailDrawerProps {
 }
 
 function DetailDrawer({ id, onClose }: DetailDrawerProps) {
+  const { confirm } = useConfirm();
   const { data: payout, isLoading, isError } = useAdminPayout(id);
   const settle = useSettlePayout(id);
 
-  function handleSettle() {
+  async function handleSettle() {
     if (!payout) return;
     const earning = typeof payout.earningAmount === 'number'
       ? `₹${payout.earningAmount.toLocaleString('en-IN')}`
       : 'this amount';
-    const confirmed = window.confirm(
-      `Settle payout for quotation ${payout.quotationNumber}?\n\n` +
-      `Seller earning: ${earning}\n` +
-      `Gross: ${inr(payout.grossAmount)}  |  Commission: ${inr(payout.commissionAmount)}\n\n` +
-      `This action cannot be undone.`,
-    );
+    const confirmed = await confirm({
+      title: 'Settle payout',
+      message:
+        `Settle payout for quotation ${payout.quotationNumber}?\n\n` +
+        `Seller earning: ${earning}\n` +
+        `Gross: ${inr(payout.grossAmount)}  |  Commission: ${inr(payout.commissionAmount)}\n\n` +
+        `This action cannot be undone.`,
+      confirmLabel: 'Settle',
+      tone: 'danger',
+    });
     if (!confirmed) return;
     settle.mutate();
   }
@@ -214,19 +220,24 @@ interface RowSettleButtonProps {
 }
 
 function RowSettleButton({ payout }: RowSettleButtonProps) {
+  const { confirm } = useConfirm();
   const settle = useSettlePayout(payout._id);
 
-  function handleSettle(e: React.MouseEvent) {
+  async function handleSettle(e: React.MouseEvent) {
     e.stopPropagation();
     const earning = typeof payout.earningAmount === 'number'
       ? `₹${payout.earningAmount.toLocaleString('en-IN')}`
       : 'this amount';
-    const confirmed = window.confirm(
-      `Settle payout for quotation ${payout.quotationNumber}?\n\n` +
-      `Seller earning: ${earning}\n` +
-      `Gross: ${inr(payout.grossAmount)}  |  Commission: ${inr(payout.commissionAmount)}\n\n` +
-      `This action cannot be undone.`,
-    );
+    const confirmed = await confirm({
+      title: 'Settle payout',
+      message:
+        `Settle payout for quotation ${payout.quotationNumber}?\n\n` +
+        `Seller earning: ${earning}\n` +
+        `Gross: ${inr(payout.grossAmount)}  |  Commission: ${inr(payout.commissionAmount)}\n\n` +
+        `This action cannot be undone.`,
+      confirmLabel: 'Settle',
+      tone: 'danger',
+    });
     if (!confirmed) return;
     settle.mutate();
   }

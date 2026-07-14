@@ -27,6 +27,8 @@ interface EmployeeProductsParams {
   sort?: string;
   page?: number;
   limit?: number;
+  // attribute slug → selected value slugs (e.g. { colour: ['red','blue'] })
+  attributeFilters?: Record<string, string[]>;
 }
 
 export function useEmployeeProducts(params: EmployeeProductsParams = {}) {
@@ -40,6 +42,9 @@ export function useEmployeeProducts(params: EmployeeProductsParams = {}) {
       if (params.sort) qs.set('sort', params.sort);
       if (params.page != null) qs.set('page', String(params.page));
       if (params.limit != null) qs.set('limit', String(params.limit));
+      Object.entries(params.attributeFilters ?? {}).forEach(([slug, vals]) =>
+        vals.forEach((v) => qs.append(slug, v)),
+      );
       const search = qs.toString();
       return apiFetch<{ products: Product[]; pagination: Pagination }>(
         `/employee/catalog/products${search ? '?' + search : ''}`,
@@ -49,9 +54,25 @@ export function useEmployeeProducts(params: EmployeeProductsParams = {}) {
   });
 }
 
+export interface EmployeeAttributeValue {
+  _id: string;
+  slug: string;
+  label: string;
+  isActive: boolean;
+}
+
+export interface EmployeeAttribute {
+  _id: string;
+  name: string;
+  slug: string;
+  unit?: string;
+  values: EmployeeAttributeValue[];
+}
+
 export interface EmployeeCatalogFilters {
   categories: { _id: string; name: string }[];
   priceRange: { min: number; max: number };
+  attributes: EmployeeAttribute[];
 }
 
 // Filter options scoped to what this employee can see (whitelisted categories + price bounds).

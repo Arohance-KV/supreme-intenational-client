@@ -1,6 +1,7 @@
 'use client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
+import { ConfirmProvider } from '@/components/ConfirmDialog';
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const [client] = useState(() => new QueryClient({
@@ -13,5 +14,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       },
     },
   }));
-  return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+  return (
+    <QueryClientProvider client={client}>
+      <ConfirmProvider>{children}</ConfirmProvider>
+    </QueryClientProvider>
+  );
 }

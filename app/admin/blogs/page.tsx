@@ -10,14 +10,16 @@ import {
 } from '@/lib/admin/blogs';
 import { StatusChip } from '@/components/admin/StatusChip';
 import { fmtDate } from '@/lib/admin/format';
+import { useConfirm } from '@/components/ConfirmDialog';
 
 // ── Blog row ──────────────────────────────────────────────────────────────────
 
 function BlogRow({ blog }: { blog: AdminBlog }) {
   const deleteBlog = useDeleteBlog();
+  const { confirm } = useConfirm();
 
-  function handleDelete() {
-    if (!confirm(`Delete blog "${blog.title}"? This cannot be undone.`)) return;
+  async function handleDelete() {
+    if (!(await confirm({ title: 'Delete blog', message: `Delete blog "${blog.title}"? This cannot be undone.`, confirmLabel: 'Delete', tone: 'danger' }))) return;
     deleteBlog.mutate(blog._id);
   }
 

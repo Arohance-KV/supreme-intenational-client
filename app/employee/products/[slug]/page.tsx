@@ -1,5 +1,5 @@
 'use client';
-import { use, useEffect } from 'react';
+import { use, useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useEmployeeProduct, useEmployeeRelated } from '@/lib/employee/catalog';
 import { apiFetch } from '@/lib/api';
@@ -16,6 +16,7 @@ export default function EmployeeProductPage({ params }: PageProps) {
 
   const { data, isLoading, isError } = useEmployeeProduct(slug);
   const { data: relatedData } = useEmployeeRelated(slug);
+  const [activeImage, setActiveImage] = useState(0);
 
   // Fire-and-forget view tracking
   useEffect(() => {
@@ -50,7 +51,10 @@ export default function EmployeeProductPage({ params }: PageProps) {
   }
 
   const { product, variants } = data;
-  const mainImage = product.images[0] ?? null;
+  const imageCount = product.images.length;
+  const safeIndex = activeImage < imageCount ? activeImage : 0;
+  const mainImage = product.images[safeIndex] ?? null;
+  const moveImage = (dir: 1 | -1) => setActiveImage((i) => (i + dir + imageCount) % imageCount);
   const related = relatedData ?? [];
 
   return (
@@ -63,6 +67,7 @@ export default function EmployeeProductPage({ params }: PageProps) {
             {mainImage ? (
               <div className="relative aspect-square w-full overflow-hidden rounded-[14px] bg-[#eef0f8]">
                 <Image
+                  key={mainImage}
                   src={mainImage}
                   alt={product.name}
                   fill
@@ -70,27 +75,56 @@ export default function EmployeeProductPage({ params }: PageProps) {
                   sizes="(max-width: 768px) 100vw, 50vw"
                   priority
                 />
+                {imageCount > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => moveImage(-1)}
+                      aria-label="Previous image"
+                      className="absolute left-2.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-line bg-white/85 text-lg text-ink shadow-[0_6px_18px_rgba(34,36,90,.18)] backdrop-blur-sm transition hover:bg-white"
+                    >
+                      ‹
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => moveImage(1)}
+                      aria-label="Next image"
+                      className="absolute right-2.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-line bg-white/85 text-lg text-ink shadow-[0_6px_18px_rgba(34,36,90,.18)] backdrop-blur-sm transition hover:bg-white"
+                    >
+                      ›
+                    </button>
+                    <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 rounded-full bg-black/45 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-sm">
+                      {safeIndex + 1} / {imageCount}
+                    </div>
+                  </>
+                )}
               </div>
             ) : (
               <div className="flex aspect-square w-full items-center justify-center rounded-[14px] bg-[#eef0f8] text-muted">
                 No image
               </div>
             )}
-            {product.images.length > 1 && (
+            {imageCount > 1 && (
               <div className="mt-3 flex gap-2 overflow-x-auto">
-                {product.images.slice(1).map((img, i) => (
-                  <div
-                    key={i}
-                    className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-line bg-[#eef0f8]"
+                {product.images.map((img, i) => (
+                  <button
+                    type="button"
+                    key={`${img}-${i}`}
+                    onClick={() => setActiveImage(i)}
+                    aria-label={`View image ${i + 1}`}
+                    aria-current={safeIndex === i}
+                    className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border bg-[#eef0f8] transition ${
+                      safeIndex === i ? 'border-accent ring-2 ring-accent/50' : 'border-line hover:border-accent/50'
+                    }`}
                   >
                     <Image
                       src={img}
-                      alt={`${product.name} image ${i + 2}`}
+                      alt={`${product.name} image ${i + 1}`}
                       fill
                       className="object-cover"
                       sizes="80px"
                     />
-                  </div>
+                  </button>
                 ))}
               </div>
             )}

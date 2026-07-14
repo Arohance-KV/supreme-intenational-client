@@ -13,6 +13,7 @@ import {
 } from '@/lib/admin/coupons';
 import { StatusChip } from '@/components/admin/StatusChip';
 import { inr, fmtDate } from '@/lib/admin/format';
+import { useConfirm } from '@/components/ConfirmDialog';
 
 /** Convert an ISO string (or Date) to the value expected by <input type="datetime-local"> */
 function toDatetimeLocal(iso: string | null | undefined): string {
@@ -336,9 +337,10 @@ function CouponFormModal({ mode, initial, couponId, onClose }: CouponFormModalPr
 function CouponRow({ coupon }: { coupon: AdminCoupon }) {
   const [showEdit, setShowEdit] = useState(false);
   const deactivate = useDeactivateCoupon();
+  const { confirm } = useConfirm();
 
-  function handleDeactivate() {
-    if (!confirm(`Deactivate coupon "${coupon.code}"? It will no longer be usable.`)) return;
+  async function handleDeactivate() {
+    if (!(await confirm({ title: 'Deactivate coupon', message: `Deactivate coupon "${coupon.code}"? It will no longer be usable.`, confirmLabel: 'Deactivate', tone: 'danger' }))) return;
     deactivate.mutate(coupon._id);
   }
 

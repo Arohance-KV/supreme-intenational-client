@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useOrder, useRetryPayment, useVerifyPayment } from '@/lib/employee/orders';
 import { loadRazorpay, openRazorpay } from '@/lib/employee/razorpay';
 import { glass, eyebrow, pageWrap, statusPill, primaryBtn } from '@/components/employee/ui';
+import { useConfirm } from '@/components/ConfirmDialog';
 
 function fmt(n: number | undefined | null) {
   if (n === undefined || n === null) return '—';
@@ -122,6 +123,7 @@ function isRetriable(status: string, paymentStatus?: string) {
 
 export default function OrderDetailPage({ params }: { params: Promise<{ orderId: string }> }) {
   const { orderId } = use(params);
+  const { alert } = useConfirm();
   const queryClient = useQueryClient();
   const { data: order, isLoading, isError } = useOrder(orderId);
   const retry = useRetryPayment();
@@ -132,7 +134,10 @@ export default function OrderDetailPage({ params }: { params: Promise<{ orderId:
       const result = await retry.mutateAsync({ orderId });
       const loaded = await loadRazorpay();
       if (!loaded) {
-        alert('Failed to load payment gateway. Please check your internet connection.');
+        await alert({
+          title: 'Payment gateway error',
+          message: 'Failed to load payment gateway. Please check your internet connection.',
+        });
         return;
       }
       // Read response defensively — server may use different field names
@@ -160,7 +165,10 @@ export default function OrderDetailPage({ params }: { params: Promise<{ orderId:
         },
       });
     } catch {
-      alert('Could not initiate retry. Please try again.');
+      await alert({
+        title: 'Retry failed',
+        message: 'Could not initiate retry. Please try again.',
+      });
     }
   }
 

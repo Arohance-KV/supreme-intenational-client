@@ -31,6 +31,7 @@ export default function CartItemRow({ item, setQty, remove, enforceMoq, productH
             src={item.image}
             alt={item.productName}
             fill
+            sizes="96px"
             className="object-cover"
           />
         ) : (

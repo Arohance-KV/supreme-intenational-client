@@ -14,6 +14,7 @@ import {
 import { StatusChip } from '@/components/admin/StatusChip';
 import CreateProductModal from '@/components/admin/CreateProductModal';
 import CsvImportButton from '@/components/CsvImportButton';
+import { useConfirm } from '@/components/ConfirmDialog';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -27,9 +28,10 @@ const ROW = 'grid grid-cols-[1fr_140px_120px_100px_100px_120px] items-center gap
 
 function ProductRow({ product }: { product: AdminProduct }) {
   const deleteProduct = useDeleteProduct();
+  const { confirm } = useConfirm();
 
-  const handleDelete = () => {
-    if (!confirm(`Delete "${product.name}"? This action cannot be undone.`)) return;
+  const handleDelete = async () => {
+    if (!(await confirm({ title: 'Delete product', message: `Delete "${product.name}"? This action cannot be undone.`, confirmLabel: 'Delete', tone: 'danger' }))) return;
     deleteProduct.mutate(product._id);
   };
 

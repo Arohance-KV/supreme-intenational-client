@@ -9,6 +9,7 @@ import {
 import { useAdminProfile } from '@/lib/admin/userAuth';
 import { ROLE_LABEL, type Role } from '@/lib/admin/roles';
 import { AdminModal, Field, inputCls } from '@/components/admin/AdminModal';
+import { useConfirm } from '@/components/ConfirmDialog';
 
 const GLASS = 'border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)]';
 const ROLES: Role[] = ['sales', 'marketing', 'finance', 'admin', 'superAdmin'];
@@ -40,6 +41,7 @@ export default function AdminUsersPage() {
   const updateUser = useUpdateUser();
   const setActive = useSetUserActive();
   const del = useDeleteUser();
+  const { confirm } = useConfirm();
 
   const [draft, setDraft] = useState<Draft | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
@@ -156,7 +158,7 @@ export default function AdminUsersPage() {
                           {u.isActive ? 'Deactivate' : 'Reactivate'}
                         </button>
                         <button
-                          onClick={() => { if (confirm(`Delete ${u.firstName}? This cannot be undone.`)) del.mutate(u._id, { onError: onRowError }); }}
+                          onClick={async () => { if (await confirm({ title: 'Delete user', message: `Delete ${u.firstName}? This cannot be undone.`, confirmLabel: 'Delete', tone: 'danger' })) del.mutate(u._id, { onError: onRowError }); }}
                           disabled={isSelf || del.isPending}
                           className="text-[#d8524d] hover:underline disabled:opacity-40 disabled:no-underline"
                         >

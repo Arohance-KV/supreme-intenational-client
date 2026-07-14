@@ -16,6 +16,7 @@ import {
   type AddAttributeValueBody,
   type UpdateAttributeValueBody,
 } from '@/lib/admin/taxonomy';
+import { useConfirm } from '@/components/ConfirmDialog';
 
 // ── Create attribute form ─────────────────────────────────────────────────────
 
@@ -307,16 +308,17 @@ function ValueChip({
   attributeId: string;
   value: AttributeValue;
 }) {
+  const { confirm, alert } = useConfirm();
   const [editing, setEditing] = useState(false);
   const removeValue = useRemoveAttributeValue();
 
-  const handleRemove = () => {
-    if (!confirm(`Remove value "${value.label}"? This cannot be undone.`)) return;
+  const handleRemove = async () => {
+    if (!(await confirm({ title: 'Remove value', message: `Remove value "${value.label}"? This cannot be undone.`, confirmLabel: 'Remove', tone: 'danger' }))) return;
     removeValue.mutate(
       { id: attributeId, valueId: value._id },
       {
-        onError: (err) => {
-          alert(err instanceof ApiError ? err.message : 'Failed to remove value');
+        onError: async (err) => {
+          await alert({ message: err instanceof ApiError ? err.message : 'Failed to remove value' });
         },
       },
     );

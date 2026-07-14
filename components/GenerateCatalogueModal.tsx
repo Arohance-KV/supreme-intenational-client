@@ -90,12 +90,22 @@ export default function GenerateCatalogueModal({ open, onClose }: { open: boolea
   const run = async (mode: 'download' | 'email') => {
     setPending(mode);
     setEmailSent(false);
-    const res = await generate.mutateAsync();
-    if (mode === 'email') {
-      await apiFetch(`/catalogues/${res.catalogueId}/email`, { method: 'POST' });
-      setEmailSent(true);
-    } else if (res.pdfUrl) {
-      window.open(res.pdfUrl, '_blank', 'noopener');
+    // Open the tab synchronously within the click gesture, then fill it once the PDF
+    // URL arrives. Opening after `await` puts window.open outside the user gesture, so
+    // the popup blocker (strict in incognito) eats the first click — the double-press bug.
+    const tab = mode === 'download' ? window.open('about:blank', '_blank') : null;
+    try {
+      const res = await generate.mutateAsync();
+      if (mode === 'email') {
+        await apiFetch(`/catalogues/${res.catalogueId}/email`, { method: 'POST' });
+        setEmailSent(true);
+      } else if (res.pdfUrl && tab) {
+        tab.opener = null; // sever opener now that we kept the handle (was noopener before)
+        tab.location.href = res.pdfUrl;
+      }
+    } catch (e) {
+      tab?.close();
+      throw e; // let react-query flag isError for the footer message
     }
   };
 

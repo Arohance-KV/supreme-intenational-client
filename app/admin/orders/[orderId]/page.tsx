@@ -10,6 +10,7 @@ import {
   type OrderStatus,
 } from '@/lib/admin/orders';
 import { StatusChip } from '@/components/admin/StatusChip';
+import { useConfirm } from '@/components/ConfirmDialog';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -53,6 +54,7 @@ export default function AdminOrderDetailPage({
   params: Promise<{ orderId: string }>;
 }) {
   const { orderId } = use(params);
+  const { confirm } = useConfirm();
   const { data: order, isLoading, isError } = useAdminOrder(orderId);
   const updateStatus = useUpdateOrderStatus(orderId);
   const refundOrder = useRefundOrder(orderId);
@@ -93,9 +95,12 @@ export default function AdminOrderDetailPage({
 
   async function handleStatusChange() {
     if (!pendingStatus) return;
-    const confirmed = window.confirm(
-      `Change order status from "${order!.status}" to "${pendingStatus}"?`,
-    );
+    const confirmed = await confirm({
+      title: 'Update order status',
+      message: `Change order status from "${order!.status}" to "${pendingStatus}"?`,
+      confirmLabel: 'Change status',
+      tone: pendingStatus === 'cancelled' || pendingStatus === 'refunded' ? 'danger' : 'default',
+    });
     if (!confirmed) return;
     setActionError(null);
     try {
@@ -111,9 +116,12 @@ export default function AdminOrderDetailPage({
   }
 
   async function handleRefund() {
-    const confirmed = window.confirm(
-      `Initiate refund for order ${order!.orderId}? This action cannot be undone.`,
-    );
+    const confirmed = await confirm({
+      title: 'Initiate refund',
+      message: `Initiate refund for order ${order!.orderId}? This action cannot be undone.`,
+      confirmLabel: 'Initiate refund',
+      tone: 'danger',
+    });
     if (!confirmed) return;
     setActionError(null);
     try {

@@ -9,6 +9,7 @@ import { useAdminProducts } from '@/lib/admin/products';
 import { useCategories } from '@/lib/admin/taxonomy';
 import CreateProductModal from '@/components/admin/CreateProductModal';
 import ImageUploadField from '@/components/admin/ImageUploadField';
+import { useConfirm } from '@/components/ConfirmDialog';
 import {
   useCompany,
   useUpdateCompany,
@@ -306,16 +307,17 @@ function CompanyEditForm({ company }: { company: AdminCompany }) {
 function CompanyLoginSection({ companyId }: { companyId: string }) {
   const createLogin = useCreateCompanyLogin(companyId);
   const { data: logins, isLoading: loginsLoading } = useCompanyLogins(companyId);
+  const { alert } = useConfirm();
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<CreateCompanyLoginBody>({ email: '', password: '' });
   const [createdEmail, setCreatedEmail] = useState<string | null>(null);
 
-  function handleCreate(e: React.FormEvent) {
+  async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
     const email = form.email.trim();
     const password = form.password;
-    if (!email) { alert('Email is required'); return; }
-    if (password.length < 8) { alert('Password must be at least 8 characters'); return; }
+    if (!email) { await alert({ message: 'Email is required' }); return; }
+    if (password.length < 8) { await alert({ message: 'Password must be at least 8 characters' }); return; }
     createLogin.mutate(
       { email, password },
       {
@@ -446,36 +448,37 @@ function EmployeeWalletPanel({
   const credit = useCreditWallet(employee._id);
   const debit = useDebitWallet(employee._id);
   const issueCoupon = useIssueCoupon(employee._id);
+  const { confirm, alert } = useConfirm();
 
   const [creditForm, setCreditForm] = useState({ amount: '', reason: '' });
   const [debitForm, setDebitForm] = useState({ amount: '', reason: '' });
   const [couponValue, setCouponValue] = useState('');
 
-  function handleIssueCoupon(e: React.FormEvent) {
+  async function handleIssueCoupon(e: React.FormEvent) {
     e.preventDefault();
     const val = parseFloat(couponValue);
-    if (!val || val <= 0) { alert('Coupon value must be greater than 0'); return; }
-    if (!confirm(`Issue a ₹${val.toLocaleString('en-IN')} coupon to ${employee.firstName}? This replaces any existing coupon.`)) return;
+    if (!val || val <= 0) { await alert({ message: 'Coupon value must be greater than 0' }); return; }
+    if (!(await confirm({ title: 'Issue coupon', message: `Issue a ₹${val.toLocaleString('en-IN')} coupon to ${employee.firstName}? This replaces any existing coupon.`, confirmLabel: 'Issue coupon' }))) return;
     issueCoupon.mutate({ value: val, reason: 'Coupon issued' }, { onSuccess: () => setCouponValue('') });
   }
 
-  function handleCredit(e: React.FormEvent) {
+  async function handleCredit(e: React.FormEvent) {
     e.preventDefault();
     const amt = parseFloat(creditForm.amount);
-    if (!amt || amt <= 0) { alert('Amount must be greater than 0'); return; }
-    if (!creditForm.reason.trim()) { alert('Reason is required'); return; }
+    if (!amt || amt <= 0) { await alert({ message: 'Amount must be greater than 0' }); return; }
+    if (!creditForm.reason.trim()) { await alert({ message: 'Reason is required' }); return; }
     credit.mutate(
       { amount: amt, reason: creditForm.reason.trim() },
       { onSuccess: () => setCreditForm({ amount: '', reason: '' }) },
     );
   }
 
-  function handleDebit(e: React.FormEvent) {
+  async function handleDebit(e: React.FormEvent) {
     e.preventDefault();
     const amt = parseFloat(debitForm.amount);
-    if (!amt || amt <= 0) { alert('Amount must be greater than 0'); return; }
-    if (!debitForm.reason.trim()) { alert('Reason is required'); return; }
-    if (!confirm(`Debit ₹${amt.toLocaleString('en-IN')} from ${employee.firstName}'s wallet?\nReason: ${debitForm.reason}\n\nThis cannot be undone.`)) return;
+    if (!amt || amt <= 0) { await alert({ message: 'Amount must be greater than 0' }); return; }
+    if (!debitForm.reason.trim()) { await alert({ message: 'Reason is required' }); return; }
+    if (!(await confirm({ title: 'Debit wallet', message: `Debit ₹${amt.toLocaleString('en-IN')} from ${employee.firstName}'s wallet?\nReason: ${debitForm.reason}\n\nThis cannot be undone.`, confirmLabel: 'Debit', tone: 'danger' }))) return;
     debit.mutate(
       { amount: amt, reason: debitForm.reason.trim() },
       { onSuccess: () => setDebitForm({ amount: '', reason: '' }) },
@@ -929,6 +932,7 @@ function EmployeesSection({
   const bulkAllocate = useBulkAllocateSelected(companyId);
   const resend = useResendInvite();
   const updateStatus = useUpdateEmployeeStatus(companyId);
+  const { confirm } = useConfirm();
 
   const [showInvite, setShowInvite] = useState(false);
   const [bulkMode, setBulkMode] = useState<'invite' | 'coupon' | null>(null);
@@ -959,16 +963,22 @@ function EmployeesSection({
     });
   }
 
-  function handleStatusToggle(emp: AdminEmployee) {
+  async function handleStatusToggle(emp: AdminEmployee) {
     const newStatus: 'active' | 'deactivated' =
       emp.employeeStatus === 'active' ? 'deactivated' : 'active';
     const label = newStatus === 'deactivated' ? 'deactivate' : 'activate';
-    if (!confirm(`${label.charAt(0).toUpperCase() + label.slice(1)} employee ${emp.firstName} ${emp.lastName ?? ''}?`)) return;
+    const ok = await confirm({
+      title: `${label.charAt(0).toUpperCase() + label.slice(1)} employee`,
+      message: `${label.charAt(0).toUpperCase() + label.slice(1)} employee ${emp.firstName} ${emp.lastName ?? ''}?`,
+      confirmLabel: label.charAt(0).toUpperCase() + label.slice(1),
+      tone: newStatus === 'deactivated' ? 'danger' : 'default',
+    });
+    if (!ok) return;
     updateStatus.mutate({ employeeId: emp._id, status: newStatus });
   }
 
-  function handleResend(emp: AdminEmployee) {
-    if (!confirm(`Resend invite to ${emp.email}?`)) return;
+  async function handleResend(emp: AdminEmployee) {
+    if (!(await confirm({ title: 'Resend invite', message: `Resend invite to ${emp.email}?`, confirmLabel: 'Resend' }))) return;
     resend.mutate(emp._id);
   }
 
@@ -1335,6 +1345,7 @@ function ComboAdd({
 function CompanyCatalogSection({ companyId }: { companyId: string }) {
   const { data: catalog, isLoading, isError, error } = useCompanyCatalog(companyId);
   const updateCatalog = useUpdateCompanyCatalog(companyId);
+  const { confirm } = useConfirm();
 
   const [productQuery, setProductQuery] = useState('');
   const [categoryQuery, setCategoryQuery] = useState('');
@@ -1354,13 +1365,13 @@ function CompanyCatalogSection({ companyId }: { companyId: string }) {
     .filter((c) => c.name.toLowerCase().includes(categoryQuery.trim().toLowerCase()))
     .map((c) => ({ id: c._id, label: c.name }));
 
-  function handleRemoveProductById(id: string, label: string) {
-    if (!confirm(`Remove "${label}" from catalog?`)) return;
+  async function handleRemoveProductById(id: string, label: string) {
+    if (!(await confirm({ title: 'Remove from catalog', message: `Remove "${label}" from catalog?`, confirmLabel: 'Remove', tone: 'danger' }))) return;
     updateCatalog.mutate({ removeProductIds: [id] });
   }
 
-  function handleRemoveCategoryById(id: string, label: string) {
-    if (!confirm(`Remove "${label}" from catalog?`)) return;
+  async function handleRemoveCategoryById(id: string, label: string) {
+    if (!(await confirm({ title: 'Remove from catalog', message: `Remove "${label}" from catalog?`, confirmLabel: 'Remove', tone: 'danger' }))) return;
     updateCatalog.mutate({ removeCategoryIds: [id] });
   }
 

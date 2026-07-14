@@ -1,14 +1,13 @@
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
 import Link from 'next/link';
 import { getProductBySlug, getRelated } from '@/lib/catalog';
 import ProductCard from '@/components/ProductCard';
+import ProductGallery from '@/components/ProductGallery';
 import AddToCart from '@/components/AddToCart';
 import WishlistButton from '@/components/WishlistButton';
 import Reviews from '@/components/Reviews';
 import TrackView from '@/components/TrackView';
 import DcFooter from '@/components/DcFooter';
-import DcPhoto from '@/components/DcPhoto';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -46,8 +45,6 @@ export default async function ProductPage({ params }: PageProps) {
     // best-effort
   }
 
-  const mainImage = product.images[0] ?? null;
-
   return (
     <main className="font-display relative min-h-screen w-full overflow-x-hidden bg-[#eef0f8] text-ink selection:bg-[rgba(23,155,142,0.22)]">
       <TrackView slug={slug} />
@@ -69,43 +66,9 @@ export default async function ProductPage({ params }: PageProps) {
         {/* Product Hero */}
         <div className="flex flex-col gap-8 lg:flex-row">
           {/* Image Gallery */}
-          <div className="w-full shrink-0 lg:sticky lg:top-24 lg:w-[42%] lg:self-start">
-            <div className="relative">
-              {mainImage ? (
-                <div className="relative aspect-square w-full overflow-hidden rounded-[22px] border border-white/70 bg-white/55 shadow-[0_14px_44px_rgba(34,36,90,.12)]">
-                  <Image
-                    src={mainImage}
-                    alt={product.name}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    priority
-                  />
-                </div>
-              ) : (
-                <DcPhoto seed={product.slug} className="aspect-square w-full rounded-[22px] border border-white/70 shadow-[0_14px_44px_rgba(34,36,90,.12)]" />
-              )}
-              <WishlistButton productId={product._id} />
-            </div>
-            {product.images.length > 1 && (
-              <div className="mt-3 flex gap-2 overflow-x-auto">
-                {product.images.slice(1).map((img, i) => (
-                  <div
-                    key={i}
-                    className="relative h-20 w-20 shrink-0 overflow-hidden rounded-[14px] border border-white/70 bg-white/55"
-                  >
-                    <Image
-                      src={img}
-                      alt={`${product.name} image ${i + 2}`}
-                      fill
-                      className="object-cover"
-                      sizes="80px"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <ProductGallery images={product.images} name={product.name} slug={product.slug}>
+            <WishlistButton productId={product._id} />
+          </ProductGallery>
 
           {/* Product Info */}
           <div className="flex flex-1 flex-col gap-5 rounded-[22px] border border-white/80 bg-white/55 p-7 shadow-[0_14px_44px_rgba(34,36,90,.1)] backdrop-blur-[16px]">

@@ -20,6 +20,7 @@ import {
 } from '@/lib/admin/products';
 import { useAttributes } from '@/lib/admin/taxonomy';
 import { StatusChip } from '@/components/admin/StatusChip';
+import { useConfirm } from '@/components/ConfirmDialog';
 import type { ProductVariant } from '@/lib/catalog';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -147,12 +148,14 @@ function VariantRow({
     price: variant.price,
     originalPrice: variant.originalPrice,
     moq: variant.moq,
+    images: variant.images,
     isActive: variant.isActive,
   });
 
   const updateVariant = useUpdateVariant(productId, slug);
   const adjustStock = useAdjustStock(productId, slug);
   const deleteVariant = useDeleteVariant(productId, slug);
+  const { confirm } = useConfirm();
 
   const handleSave = () => {
     updateVariant.mutate(
@@ -161,8 +164,8 @@ function VariantRow({
     );
   };
 
-  const handleDelete = () => {
-    if (!confirm(`Delete variant ${variant.sku || variant._id}?`)) return;
+  const handleDelete = async () => {
+    if (!(await confirm({ title: 'Delete variant', message: `Delete variant ${variant.sku || variant._id}?`, confirmLabel: 'Delete', tone: 'danger' }))) return;
     deleteVariant.mutate(variant._id);
   };
 
@@ -174,7 +177,8 @@ function VariantRow({
     updateVariant.error ?? adjustStock.error ?? deleteVariant.error;
 
   return (
-    <tr className="border-b border-line text-sm align-top">
+    <>
+    <tr className={`text-sm align-top ${editing ? '' : 'border-b border-line'}`}>
       {/* SKU */}
       <td className="px-3 py-2 text-slate">
         {editing ? (
@@ -185,7 +189,15 @@ function VariantRow({
             className="w-full rounded border border-line px-2 py-1 text-sm"
           />
         ) : (
-          <span className="font-jbmono text-xs">{variant.sku || '—'}</span>
+          <div className="flex items-center gap-2">
+            {variant.images?.[0] ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={variant.images[0]} alt="" className="h-8 w-8 flex-none rounded border border-line object-cover" />
+            ) : (
+              <span className="flex h-8 w-8 flex-none items-center justify-center rounded border border-dashed border-line text-[9px] text-muted">img</span>
+            )}
+            <span className="font-jbmono text-xs">{variant.sku || '—'}</span>
+          </div>
         )}
       </td>
 
@@ -331,6 +343,19 @@ function VariantRow({
         </div>
       </td>
     </tr>
+    {editing && (
+      <tr className="border-b border-line">
+        <td colSpan={9} className="px-3 pb-3">
+          <p className="mb-2 text-xs font-medium text-slate">Variant images</p>
+          <ImageManager
+            images={fields.images ?? []}
+            folder="variants"
+            onUpdate={(imgs) => setFields({ ...fields, images: imgs })}
+          />
+        </td>
+      </tr>
+    )}
+    </>
   );
 }
 
@@ -399,17 +424,19 @@ function AddVariantForm({ productId, slug }: { productId: string; slug: string }
   // Single mode: one value per attribute, plus pricing.
   const [singleValues, setSingleValues] = useState<Record<string, string>>({});
   const [single, setSingle] = useState({ sku: '', price: 0, originalPrice: 0, stock: 0, moq: 1 });
+  const [singleImages, setSingleImages] = useState<string[]>([]);
 
   // Bulk mode: a set of values per attribute → server creates all combinations.
   const [bulkValues, setBulkValues] = useState<Record<string, Set<string>>>({});
-  const [bulk, setBulk] = useState({ defaultPrice: 0, defaultOriginalPrice: 0, defaultStock: 0 });
+  const [bulk, setBulk] = useState({ defaultPrice: 0, defaultOriginalPrice: 0, defaultStock: 0, defaultMoq: 1 });
 
   const reset = () => {
     setMode(null);
     setSingleValues({});
     setSingle({ sku: '', price: 0, originalPrice: 0, stock: 0, moq: 1 });
+    setSingleImages([]);
     setBulkValues({});
-    setBulk({ defaultPrice: 0, defaultOriginalPrice: 0, defaultStock: 0 });
+    setBulk({ defaultPrice: 0, defaultOriginalPrice: 0, defaultStock: 0, defaultMoq: 1 });
   };
 
   // Number of variants bulk mode will create = product of selected counts per attribute.
@@ -424,7 +451,7 @@ function AddVariantForm({ productId, slug }: { productId: string; slug: string }
       .filter(([, valueId]) => !!valueId)
       .map(([attributeId, valueId]) => ({ attributeId, valueId }));
     if (attrs.length === 0) return;
-    createVariant.mutate({ ...single, attributes: attrs }, { onSuccess: reset });
+    createVariant.mutate({ ...single, images: singleImages, attributes: attrs }, { onSuccess: reset });
   };
 
   const handleBulkSubmit = (e: React.FormEvent) => {
@@ -583,7 +610,7 @@ function AddVariantForm({ productId, slug }: { productId: string; slug: string }
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <div>
             <label htmlFor="bv-price" className="mb-1 block text-xs text-slate">
               Default price <span className="text-red-500">*</span>
@@ -623,12 +650,30 @@ function AddVariantForm({ productId, slug }: { productId: string; slug: string }
               className={inputCls}
             />
           </div>
+          <div>
+            <label htmlFor="bv-moq" className="mb-1 block text-xs text-slate">Default MOQ</label>
+            <input
+              id="bv-moq"
+              type="number"
+              min={1}
+              value={bulk.defaultMoq}
+              onChange={(e) => setBulk({ ...bulk, defaultMoq: Number(e.target.value) })}
+              className={inputCls}
+            />
+          </div>
+        </div>
+      )}
+
+      {mode === 'single' && (
+        <div>
+          <label className="mb-1 block text-xs text-slate">Images (optional)</label>
+          <ImageManager images={singleImages} folder="variants" onUpdate={setSingleImages} />
         </div>
       )}
 
       {mode === 'bulk' && (
         <p className="text-xs text-muted">
-          SKUs are auto-generated. Edit any variant row afterwards to set individual prices.
+          SKUs are auto-generated. Default MOQ applies to every variant — edit any row afterwards to set individual prices or images.
         </p>
       )}
 
@@ -666,14 +711,12 @@ function AddVariantForm({ productId, slug }: { productId: string; slug: string }
 
 function ImageManager({
   images,
-  productId,
-  slug,
   onUpdate,
+  folder = 'products',
 }: {
   images: string[];
-  productId: string;
-  slug: string;
   onUpdate: (imgs: string[]) => void;
+  folder?: 'products' | 'variants';
 }) {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -685,7 +728,7 @@ function ImageManager({
     setUploading(true);
     setUploadError(null);
     try {
-      const url = await uploadAdminImage(file, 'products');
+      const url = await uploadAdminImage(file, folder);
       onUpdate([...images, url]);
     } catch (err) {
       setUploadError(err instanceof ApiError ? err.message : 'Upload failed');
@@ -761,6 +804,8 @@ function ProductEditForm({
     badge: product.badge,
     isFeatured: product.isFeatured,
     isActive: product.isActive,
+    rating: product.rating,
+    totalReviews: product.totalReviews,
   });
 
   const handleSave = (e: React.FormEvent) => {
@@ -912,13 +957,49 @@ function ProductEditForm({
         </label>
       </div>
 
+      {/* Ratings (manual override) */}
+      <div className="rounded-xl border border-line bg-white/40 p-4">
+        <p className="text-sm font-medium text-ink">Ratings (manual override)</p>
+        <p className="mb-3 mt-0.5 text-xs text-muted">
+          Seed or adjust the displayed rating. Writing actual reviews in the Reviews tab recomputes these automatically.
+        </p>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label htmlFor="p-rating" className="mb-1 block text-xs text-slate">
+              Rating (0–5)
+            </label>
+            <input
+              id="p-rating"
+              type="number"
+              min={0}
+              max={5}
+              step={0.1}
+              value={fields.rating ?? 0}
+              onChange={(e) => setFields({ ...fields, rating: Math.min(5, Math.max(0, Number(e.target.value))) })}
+              className="w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+            />
+          </div>
+          <div>
+            <label htmlFor="p-total-reviews" className="mb-1 block text-xs text-slate">
+              Review count
+            </label>
+            <input
+              id="p-total-reviews"
+              type="number"
+              min={0}
+              value={fields.totalReviews ?? 0}
+              onChange={(e) => setFields({ ...fields, totalReviews: Math.max(0, Math.floor(Number(e.target.value))) })}
+              className="w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+            />
+          </div>
+        </div>
+      </div>
+
       {/* Images */}
       <div>
         <p className="mb-2 text-sm font-medium text-slate">Images</p>
         <ImageManager
           images={fields.images ?? []}
-          productId={productId}
-          slug={slug}
           onUpdate={(imgs) => setFields({ ...fields, images: imgs })}
         />
       </div>

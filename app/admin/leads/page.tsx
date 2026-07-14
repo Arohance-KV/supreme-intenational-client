@@ -10,6 +10,7 @@ import {
 } from '@/lib/admin/enquiries';
 import { StatusChip } from '@/components/admin/StatusChip';
 import { ApiError } from '@/lib/api';
+import { useConfirm } from '@/components/ConfirmDialog';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -48,6 +49,7 @@ function LeadStatusCell({
   refId: string;
   currentStatus: LeadFollowUpStatus;
 }) {
+  const { confirm } = useConfirm();
   const updateLead = useUpdateLeadStatus();
   const [error, setError] = useState<string | null>(null);
   const guardedStatus = FOLLOW_UP_STATUSES.includes(currentStatus as LeadFollowUpStatus)
@@ -56,9 +58,10 @@ function LeadStatusCell({
 
   async function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const next = e.target.value as LeadFollowUpStatus;
-    const confirmed = window.confirm(
-      `Change follow-up status from "${guardedStatus}" to "${next}"?`,
-    );
+    const confirmed = await confirm({
+      title: 'Change follow-up status',
+      message: `Change follow-up status from "${guardedStatus}" to "${next}"?`,
+    });
     if (!confirmed) return;
     setError(null);
     try {

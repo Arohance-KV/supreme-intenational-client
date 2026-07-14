@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { ApiError } from '@/lib/api';
 import {
   useReviews,
@@ -11,7 +11,21 @@ import {
   type ReviewUser,
   type CreateReviewBody,
 } from '@/lib/admin/reviews';
+import { useAdminProducts } from '@/lib/admin/products';
+import { useCustomers } from '@/lib/admin/customers';
 import { fmtDate } from '@/lib/admin/format';
+import { useConfirm } from '@/components/ConfirmDialog';
+import SearchSelect, { type SearchOption } from '@/components/admin/SearchSelect';
+
+// Debounce a fast-changing value (search box) so we don't fire a query per keystroke.
+function useDebounced<T>(value: T, ms = 300): T {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(value), ms);
+    return () => clearTimeout(id);
+  }, [value, ms]);
+  return debounced;
+}
 
 /** Safely extract product name from populated or raw productId */
 function getProductName(productId: AdminReview['productId']): string {
@@ -69,85 +83,87 @@ function CreateReviewModal({ onClose }: CreateReviewModalProps) {
   const [form, setForm] = useState<CreateReviewBody>(blankCreateForm());
   const createReview = useCreateReview();
 
+  // Product picker (required) — search products by name, store the picked _id.
+  const [product, setProduct] = useState<SearchOption | null>(null);
+  const [productQuery, setProductQuery] = useState('');
+  const productSearch = useDebounced(productQuery);
+  const productsQ = useAdminProducts(1, productSearch || undefined);
+  const productOptions: SearchOption[] = (productsQ.data?.products ?? []).map((p) => ({
+    id: p._id,
+    label: p.name,
+    sub: `₹${p.minPrice?.toLocaleString('en-IN') ?? '—'}`,
+    image: p.images?.[0] ?? null,
+  }));
+
+  // Customer picker (optional) — link the review to a real account by name/email.
+  const [customer, setCustomer] = useState<SearchOption | null>(null);
+  const [customerQuery, setCustomerQuery] = useState('');
+  const customerSearch = useDebounced(customerQuery);
+  const customersQ = useCustomers({ search: customerSearch || undefined });
+  const customerOptions: SearchOption[] = (customersQ.data?.items ?? []).map((c) => ({
+    id: c._id,
+    label: `${c.firstName ?? ''} ${c.lastName ?? ''}`.trim() || c.email,
+    sub: c.email,
+  }));
+
   function set<K extends keyof CreateReviewBody>(key: K, val: CreateReviewBody[K]) {
     setForm((prev) => ({ ...prev, [key]: val }));
   }
 
+  const formValid = !!product && form.reviewerName.trim() && form.title.trim();
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!product) return;
     const payload: CreateReviewBody = {
-      productId: form.productId.trim(),
+      productId: product.id,
       reviewerName: form.reviewerName.trim(),
       rating: Number(form.rating),
       title: form.title.trim(),
       body: form.body?.trim() || undefined,
-      userId: form.userId?.trim() || undefined,
+      userId: customer?.id || undefined,
     };
     createReview.mutate(payload, { onSuccess: onClose });
   }
 
   const inputCls =
-    'w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent';
-  const labelCls = 'mb-1 block text-sm font-medium text-slate';
+    'w-full rounded-[11px] border border-line bg-white/70 px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent';
+  const labelCls = 'mb-1.5 block text-sm font-medium text-slate';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 overflow-y-auto">
-      <div className="my-8 w-full max-w-lg rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] p-6 shadow-xl">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-base font-semibold text-ink">Create admin review</h2>
+    <div
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[rgba(22,23,58,.45)] p-4 backdrop-blur-[3px] animate-overlay-in"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div className="my-8 w-full max-w-lg animate-dialog-in rounded-[20px] border border-white/80 bg-white p-6 shadow-[0_40px_100px_rgba(22,23,58,.35)]">
+        <div className="mb-1 flex items-center justify-between">
+          <h2 className="text-[17px] font-extrabold tracking-[-.01em] text-ink">Create review</h2>
           <button
             onClick={onClose}
-            className="rounded p-1 text-muted hover:bg-white/50 hover:text-slate"
+            className="rounded-lg p-1.5 text-muted hover:bg-black/5 hover:text-slate"
             aria-label="Close"
           >
             ✕
           </button>
         </div>
+        <p className="mb-5 text-[13px] text-muted">Publish an admin-authored review on a product.</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Product ID */}
+          {/* Product — searchable */}
           <div>
             <label className={labelCls}>
-              Product ID <span className="text-red-500">*</span>
+              Product <span className="text-red-500">*</span>
             </label>
-            <input
-              required
-              type="text"
-              placeholder="MongoDB ObjectId of product"
-              value={form.productId}
-              onChange={(e) => set('productId', e.target.value)}
-              className={`${inputCls} font-mono`}
-            />
-          </div>
-
-          {/* Reviewer name */}
-          <div>
-            <label className={labelCls}>
-              Reviewer name <span className="text-red-500">*</span>
-            </label>
-            <input
-              required
-              type="text"
-              placeholder="e.g. Rahul S."
-              maxLength={100}
-              value={form.reviewerName}
-              onChange={(e) => set('reviewerName', e.target.value)}
-              className={inputCls}
-            />
-          </div>
-
-          {/* User ID (optional) */}
-          <div>
-            <label className={labelCls}>
-              User ID
-              <span className="ml-1 font-normal text-muted">(optional — links to an account)</span>
-            </label>
-            <input
-              type="text"
-              placeholder="MongoDB ObjectId of user"
-              value={form.userId ?? ''}
-              onChange={(e) => set('userId', e.target.value)}
-              className={`${inputCls} font-mono`}
+            <SearchSelect
+              query={productQuery}
+              onQueryChange={setProductQuery}
+              options={productOptions}
+              selected={product}
+              onSelect={setProduct}
+              onClear={() => setProduct(null)}
+              loading={productsQ.isFetching}
+              placeholder="Search products by name…"
+              emptyText="No products match"
             />
           </div>
 
@@ -185,6 +201,46 @@ function CreateReviewModal({ onClose }: CreateReviewModalProps) {
             </div>
           </div>
 
+          {/* Reviewer name */}
+          <div>
+            <label className={labelCls}>
+              Reviewer name <span className="text-red-500">*</span>
+            </label>
+            <input
+              required
+              type="text"
+              placeholder="e.g. Rahul S."
+              maxLength={100}
+              value={form.reviewerName}
+              onChange={(e) => set('reviewerName', e.target.value)}
+              className={inputCls}
+            />
+            <p className="mt-1 text-xs text-muted">Shown as the review author on the storefront.</p>
+          </div>
+
+          {/* Customer link — optional searchable */}
+          <div>
+            <label className={labelCls}>
+              Link to a customer account
+              <span className="ml-1 font-normal text-muted">(optional)</span>
+            </label>
+            <SearchSelect
+              query={customerQuery}
+              onQueryChange={setCustomerQuery}
+              options={customerOptions}
+              selected={customer}
+              onSelect={(opt) => {
+                setCustomer(opt);
+                // Pre-fill the author name from the account if it's still empty.
+                if (!form.reviewerName.trim()) set('reviewerName', opt.label);
+              }}
+              onClear={() => setCustomer(null)}
+              loading={customersQ.isFetching}
+              placeholder="Search customers by name or email…"
+              emptyText="No customers match"
+            />
+          </div>
+
           {/* Body */}
           <div>
             <label className={labelCls}>
@@ -215,14 +271,14 @@ function CreateReviewModal({ onClose }: CreateReviewModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="rounded border border-line px-4 py-2 text-sm text-slate hover:bg-white/60"
+              className="rounded-[11px] border border-line px-4 py-2.5 text-sm font-semibold text-slate hover:bg-[#f6f7fb]"
             >
               Cancel
             </button>
             <button
               type="submit"
-              disabled={createReview.isPending}
-              className="rounded bg-gradient-to-br from-indigo to-indigo2 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+              disabled={createReview.isPending || !formValid}
+              className="rounded-[11px] bg-gradient-to-br from-indigo to-indigo2 px-4 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
             >
               {createReview.isPending ? 'Creating…' : 'Create review'}
             </button>
@@ -236,14 +292,18 @@ function CreateReviewModal({ onClose }: CreateReviewModalProps) {
 // ── Review row ─────────────────────────────────────────────────────────────────
 
 function ReviewRow({ review }: { review: AdminReview }) {
+  const { confirm } = useConfirm();
   const deleteReview = useDeleteReview();
 
-  function handleDelete() {
+  async function handleDelete() {
     const productName = getProductName(review.productId);
     if (
-      !confirm(
-        `Delete review "${review.title}" for "${productName}"? This will hide it from the storefront.`,
-      )
+      !(await confirm({
+        title: 'Delete review',
+        message: `Delete review "${review.title}" for "${productName}"? This will hide it from the storefront.`,
+        confirmLabel: 'Delete',
+        tone: 'danger',
+      }))
     )
       return;
     deleteReview.mutate(review._id);

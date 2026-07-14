@@ -10,6 +10,7 @@ import {
   useDeleteVariant,
 } from '@/lib/seller/products';
 import type { ProductVariant } from '@/lib/catalog';
+import { useConfirm } from '@/components/ConfirmDialog';
 
 // ---------- Variant row ----------
 
@@ -20,6 +21,7 @@ function VariantRow({
   variant: ProductVariant;
   productId: string;
 }) {
+  const { confirm } = useConfirm();
   const [editing, setEditing] = useState(false);
   const [fields, setFields] = useState({
     sku: variant.sku,
@@ -43,8 +45,8 @@ function VariantRow({
     adjustStock.mutate({ variantId: variant._id, delta });
   };
 
-  const handleDelete = () => {
-    if (confirm('Delete this variant?')) {
+  const handleDelete = async () => {
+    if (await confirm({ title: 'Delete variant', message: 'Delete this variant?', confirmLabel: 'Delete', tone: 'danger' })) {
       deleteVariant.mutate(variant._id);
     }
   };

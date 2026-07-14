@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ProductCard from '@/components/ProductCard';
-import { useEmployeeProducts, useEmployeeSearch, useEmployeeFilters } from '@/lib/employee/catalog';
+import { useEmployeeProducts, useEmployeeSearch, useEmployeeFilters, type EmployeeAttribute } from '@/lib/employee/catalog';
 import { glass, primaryBtn, secondaryBtn, input, eyebrow } from '@/components/employee/ui';
 
 // Full-bleed wrapper matching the B2B /products page (wider than the shared pageWrap).
@@ -24,6 +24,9 @@ function FilterSidebar({
   bounds,
   selCats,
   toggleCat,
+  attributes,
+  selAttrs,
+  toggleAttr,
   lo,
   hi,
   setLo,
@@ -35,6 +38,9 @@ function FilterSidebar({
   bounds: { min: number; max: number };
   selCats: Set<string>;
   toggleCat: (id: string) => void;
+  attributes: EmployeeAttribute[];
+  selAttrs: Record<string, Set<string>>;
+  toggleAttr: (slug: string, value: string) => void;
   lo: number;
   hi: number;
   setLo: (n: number) => void;
@@ -105,6 +111,34 @@ function FilterSidebar({
           </ul>
         )}
       </div>
+
+      {/* Attribute filters (multi-select) */}
+      {attributes.map((attr) => {
+        const activeValues = attr.values.filter((v) => v.isActive);
+        if (activeValues.length === 0) return null;
+        const sel = selAttrs[attr.slug] ?? new Set<string>();
+        return (
+          <div key={attr._id}>
+            <label className="mb-1.5 block text-xs font-semibold text-slate">
+              {attr.name}{attr.unit ? ` (${attr.unit})` : ''}
+            </label>
+            <ul className="space-y-1.5">
+              {activeValues.map((val) => (
+                <li key={val._id} className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id={`${attr.slug}-${val.slug}`}
+                    checked={sel.has(val.slug)}
+                    onChange={() => toggleAttr(attr.slug, val.slug)}
+                    className="rounded border-line accent-accent"
+                  />
+                  <label htmlFor={`${attr.slug}-${val.slug}`} className="cursor-pointer text-sm text-slate">{val.label}</label>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -115,25 +149,43 @@ export default function EmployeeProductsPage() {
   const [q, setQ] = useState('');
   const [inputValue, setInputValue] = useState('');
   const [selCats, setSelCats] = useState<Set<string>>(new Set());
+  const [selAttrs, setSelAttrs] = useState<Record<string, Set<string>>>({});
   const [loRaw, setLoRaw] = useState<number | null>(null);
   const [hiRaw, setHiRaw] = useState<number | null>(null);
 
   const isSearching = q.trim().length > 0;
 
+  // Search-as-you-type: commit the box to the active query 350ms after typing stops,
+  // so we don't fire a request per keystroke. Enter/Search button still search instantly.
+  useEffect(() => {
+    const id = setTimeout(() => {
+      setQ(inputValue.trim());
+      setPage(1);
+    }, 350);
+    return () => clearTimeout(id);
+  }, [inputValue]);
+
   const { data: filters } = useEmployeeFilters();
   const bounds = filters?.priceRange ?? { min: 0, max: 0 };
   const categories = filters?.categories ?? [];
+  const attributes = filters?.attributes ?? [];
   const lo = loRaw ?? bounds.min;
   const hi = hiRaw ?? bounds.max;
 
   const minPrice = lo > bounds.min ? lo : undefined;
   const maxPrice = hi < bounds.max ? hi : undefined;
-  const hasFilters = selCats.size > 0 || minPrice != null || maxPrice != null;
+  // Record<slug, Set> → Record<slug, string[]>, dropping empty selections.
+  const attributeFilters = Object.fromEntries(
+    Object.entries(selAttrs).filter(([, v]) => v.size > 0).map(([k, v]) => [k, [...v]]),
+  );
+  const hasAttrs = Object.keys(attributeFilters).length > 0;
+  const hasFilters = selCats.size > 0 || minPrice != null || maxPrice != null || hasAttrs;
 
   const listQuery = useEmployeeProducts({
     categoryIds: [...selCats],
     minPrice,
     maxPrice,
+    attributeFilters,
     sort,
     page,
     limit: LIMIT,
@@ -154,7 +206,16 @@ export default function EmployeeProductsPage() {
     setSelCats((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
     setPage(1);
   }
-  function clearFilters() { setSelCats(new Set()); setLoRaw(null); setHiRaw(null); setPage(1); }
+  function toggleAttr(slug: string, value: string) {
+    setSelAttrs((prev) => {
+      const next = new Set(prev[slug] ?? []);
+      if (next.has(value)) next.delete(value);
+      else next.add(value);
+      return { ...prev, [slug]: next };
+    });
+    setPage(1);
+  }
+  function clearFilters() { setSelCats(new Set()); setSelAttrs({}); setLoRaw(null); setHiRaw(null); setPage(1); }
 
   const grid = (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -214,6 +275,9 @@ export default function EmployeeProductsPage() {
                 bounds={bounds}
                 selCats={selCats}
                 toggleCat={toggleCat}
+                attributes={attributes}
+                selAttrs={selAttrs}
+                toggleAttr={toggleAttr}
                 lo={lo}
                 hi={hi}
                 setLo={(n) => { setLoRaw(n); setPage(1); }}
