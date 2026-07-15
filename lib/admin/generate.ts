@@ -9,9 +9,15 @@ export interface AdditionalCharge {
   amount: number;
 }
 
+export interface ProductVariant {
+  label: string;
+  price: number;
+}
+
 interface GenerateBody {
   productIds: string[];
   charges: AdditionalCharge[];
+  variants: Record<string, ProductVariant[]>;
 }
 
 export interface CatalogueResult {

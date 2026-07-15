@@ -9,6 +9,7 @@ import {
   useAdminGenerateCatalogue,
   useAdminGenerateQuotation,
   type AdditionalCharge,
+  type ProductVariant,
 } from '@/lib/admin/generate';
 
 const GLASS = 'border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)]';
@@ -64,19 +65,43 @@ function GenerateInner() {
 
   // ── Selection (persists across filter/page changes) ─────────────────────────
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  type SelMeta = { name: string; image?: string; minPrice?: number };
+  type VariantRow = { label: string; price: string };
+
+  const [selMeta, setSelMeta] = useState<Map<string, SelMeta>>(new Map());
+  const [variants, setVariants] = useState<Map<string, VariantRow[]>>(new Map());
+
   const toggle = (id: string) =>
     setSelected((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else if (next.size < MAX_SELECT) next.add(id);
+      if (next.has(id)) {
+        next.delete(id);
+        setSelMeta((m) => { const n = new Map(m); n.delete(id); return n; });
+        setVariants((v) => { const n = new Map(v); n.delete(id); return n; });
+      } else if (next.size < MAX_SELECT) {
+        next.add(id);
+        const p = products.find((x) => x._id === id);
+        if (p) setSelMeta((m) => new Map(m).set(id, { name: p.name, image: p.images?.[0], minPrice: p.minPrice }));
+      }
       return next;
     });
   const allOnPageSelected = products.length > 0 && products.every((p) => selected.has(p._id));
   const togglePage = () =>
     setSelected((prev) => {
       const next = new Set(prev);
-      if (allOnPageSelected) products.forEach((p) => next.delete(p._id));
-      else for (const p of products) { if (next.size >= MAX_SELECT) break; next.add(p._id); }
+      if (allOnPageSelected) {
+        products.forEach((p) => next.delete(p._id));
+        setSelMeta((m) => { const n = new Map(m); products.forEach((p) => n.delete(p._id)); return n; });
+        setVariants((v) => { const n = new Map(v); products.forEach((p) => n.delete(p._id)); return n; });
+      } else {
+        const addMeta = new Map(selMeta);
+        for (const p of products) {
+          if (next.size >= MAX_SELECT) break;
+          next.add(p._id);
+          addMeta.set(p._id, { name: p.name, image: p.images?.[0], minPrice: p.minPrice });
+        }
+        setSelMeta(addMeta);
+      }
       return next;
     });
 
@@ -94,6 +119,29 @@ function GenerateInner() {
     [charges],
   );
 
+  // ── Per-product variant pricing (absolute price, overrides default + charges) ──
+  const addVariant = (id: string) =>
+    setVariants((v) => new Map(v).set(id, [...(v.get(id) ?? []), { label: '', price: '' }]));
+  const setVariant = (id: string, i: number, patch: Partial<VariantRow>) =>
+    setVariants((v) => {
+      const rows = (v.get(id) ?? []).map((r, idx) => (idx === i ? { ...r, ...patch } : r));
+      return new Map(v).set(id, rows);
+    });
+  const removeVariant = (id: string, i: number) =>
+    setVariants((v) => new Map(v).set(id, (v.get(id) ?? []).filter((_, idx) => idx !== i)));
+
+  const cleanVariants = useMemo<Record<string, ProductVariant[]>>(() => {
+    const out: Record<string, ProductVariant[]> = {};
+    for (const [id, rows] of variants) {
+      if (!selected.has(id)) continue;
+      const clean = rows
+        .map((r) => ({ label: r.label.trim(), price: Number(r.price) }))
+        .filter((r) => r.label && Number.isFinite(r.price) && r.price >= 0);
+      if (clean.length) out[id] = clean;
+    }
+    return out;
+  }, [variants, selected]);
+
   // ── Generate ────────────────────────────────────────────────────────────────
   const genCatalogue = useAdminGenerateCatalogue();
   const genQuotation = useAdminGenerateQuotation();
@@ -105,7 +153,7 @@ function GenerateInner() {
 
   const run = async (kind: 'Catalogue' | 'Quotation') => {
     setResult(null);
-    const body = { productIds, charges: cleanCharges };
+    const body = { productIds, charges: cleanCharges, variants: cleanVariants };
     const r = kind === 'Catalogue'
       ? await genCatalogue.mutateAsync(body)
       : await genQuotation.mutateAsync(body);
@@ -148,7 +196,7 @@ function GenerateInner() {
               <span className="font-semibold text-indigo">{selected.size}</span> selected
               {selected.size >= MAX_SELECT && <span className="ml-1 text-[#e0524d]">(max {MAX_SELECT})</span>}
               {selected.size > 0 && (
-                <button onClick={() => setSelected(new Set())} className="ml-3 text-xs text-slate underline hover:text-ink">
+                <button onClick={() => { setSelected(new Set()); setSelMeta(new Map()); setVariants(new Map()); }} className="ml-3 text-xs text-slate underline hover:text-ink">
                   Clear
                 </button>
               )}
@@ -204,11 +252,73 @@ function GenerateInner() {
         {/* ── Charges + actions ───────────────────────────────────────── */}
         <aside className="w-full shrink-0 space-y-5 lg:w-80">
           <section className={`rounded-[20px] ${GLASS} p-5`}>
+            <h2 className="text-sm font-bold text-ink">Selected products · pricing</h2>
+            <p className="mt-1 text-xs text-muted">
+              Add variant prices for a product (e.g. “Without handle ₹90”). A product with variants shows only
+              those prices — its default price and the charges below don’t apply to it.
+            </p>
+
+            {selected.size === 0 && <p className="mt-3 text-xs text-slate">No products selected yet.</p>}
+
+            <div className="mt-3 space-y-3">
+              {[...selected].map((id) => {
+                const meta = selMeta.get(id);
+                const rows = variants.get(id) ?? [];
+                return (
+                  <div key={id} className="rounded-xl border border-line/70 bg-white/50 p-2.5">
+                    <div className="flex items-center gap-2">
+                      {meta?.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={meta.image} alt="" className="h-7 w-7 flex-none rounded-md border border-line object-cover" />
+                      ) : (
+                        <div className="h-7 w-7 flex-none rounded-md border border-line bg-black/5" />
+                      )}
+                      <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{meta?.name ?? id}</span>
+                    </div>
+
+                    {rows.length === 0 && (
+                      <p className="mt-1.5 pl-9 text-xs text-slate">Default pricing{inr(meta?.minPrice) !== '—' ? ` · ${inr(meta?.minPrice)}` : ''}.</p>
+                    )}
+
+                    <div className="mt-2 space-y-2">
+                      {rows.map((r, i) => (
+                        <div key={i} className="flex items-center gap-2">
+                          <input
+                            value={r.label}
+                            onChange={(e) => setVariant(id, i, { label: e.target.value })}
+                            placeholder="Without handle"
+                            className="min-w-0 flex-1 rounded-lg border border-line bg-white/70 px-2.5 py-1.5 text-sm focus:border-accent focus:outline-none"
+                          />
+                          <div className="relative w-20 flex-none">
+                            <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted">₹</span>
+                            <input
+                              value={r.price}
+                              onChange={(e) => setVariant(id, i, { price: e.target.value.replace(/[^\d.]/g, '') })}
+                              inputMode="decimal"
+                              placeholder="90"
+                              className="w-full rounded-lg border border-line bg-white/70 py-1.5 pl-6 pr-2 text-sm focus:border-accent focus:outline-none"
+                            />
+                          </div>
+                          <button onClick={() => removeVariant(id, i)} aria-label="Remove variant" className="flex-none text-muted hover:text-[#e0524d]">✕</button>
+                        </div>
+                      ))}
+                    </div>
+
+                    <button onClick={() => addVariant(id)} className="mt-2 pl-0 text-xs font-semibold text-indigo hover:underline">
+                      + Add variant price
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          <section className={`rounded-[20px] ${GLASS} p-5`}>
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-bold text-ink">Additional charges</h2>
               <button onClick={addCharge} className="text-xs font-semibold text-indigo hover:underline">+ Add</button>
             </div>
-            <p className="mt-1 text-xs text-muted">Shown per product as base + charge (e.g. “With Print: ₹110”).</p>
+            <p className="mt-1 text-xs text-muted">Applied per product as base + charge (e.g. “With Print: ₹110”). Products with variant prices ignore these.</p>
 
             <div className="mt-3 space-y-2">
               {charges.length === 0 && <p className="text-xs text-slate">No charges — plain pricing.</p>}
