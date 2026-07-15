@@ -71,39 +71,45 @@ function GenerateInner() {
   const [selMeta, setSelMeta] = useState<Map<string, SelMeta>>(new Map());
   const [variants, setVariants] = useState<Map<string, VariantRow[]>>(new Map());
 
-  const toggle = (id: string) =>
-    setSelected((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-        setSelMeta((m) => { const n = new Map(m); n.delete(id); return n; });
-        setVariants((v) => { const n = new Map(v); n.delete(id); return n; });
-      } else if (next.size < MAX_SELECT) {
-        next.add(id);
-        const p = products.find((x) => x._id === id);
-        if (p) setSelMeta((m) => new Map(m).set(id, { name: p.name, image: p.images?.[0], minPrice: p.minPrice }));
-      }
-      return next;
-    });
+  const toggle = (id: string) => {
+    if (selected.has(id)) {
+      setSelected((prev) => { const next = new Set(prev); next.delete(id); return next; });
+      setSelMeta((m) => { const n = new Map(m); n.delete(id); return n; });
+      setVariants((v) => { const n = new Map(v); n.delete(id); return n; });
+    } else if (selected.size < MAX_SELECT) {
+      setSelected((prev) => new Set(prev).add(id));
+      const p = products.find((x) => x._id === id);
+      if (p) setSelMeta((m) => new Map(m).set(id, { name: p.name, image: p.images?.[0], minPrice: p.minPrice }));
+    }
+  };
   const allOnPageSelected = products.length > 0 && products.every((p) => selected.has(p._id));
-  const togglePage = () =>
-    setSelected((prev) => {
-      const next = new Set(prev);
-      if (allOnPageSelected) {
-        products.forEach((p) => next.delete(p._id));
-        setSelMeta((m) => { const n = new Map(m); products.forEach((p) => n.delete(p._id)); return n; });
-        setVariants((v) => { const n = new Map(v); products.forEach((p) => n.delete(p._id)); return n; });
-      } else {
-        const addMeta = new Map(selMeta);
+  const togglePage = () => {
+    if (allOnPageSelected) {
+      setSelected((prev) => { const next = new Set(prev); products.forEach((p) => next.delete(p._id)); return next; });
+      setSelMeta((m) => { const n = new Map(m); products.forEach((p) => n.delete(p._id)); return n; });
+      setVariants((v) => { const n = new Map(v); products.forEach((p) => n.delete(p._id)); return n; });
+    } else {
+      setSelected((prev) => {
+        const next = new Set(prev);
         for (const p of products) {
           if (next.size >= MAX_SELECT) break;
           next.add(p._id);
-          addMeta.set(p._id, { name: p.name, image: p.images?.[0], minPrice: p.minPrice });
         }
-        setSelMeta(addMeta);
-      }
-      return next;
-    });
+        return next;
+      });
+      setSelMeta((m) => {
+        const n = new Map(m);
+        let count = m.size;
+        for (const p of products) {
+          if (n.has(p._id)) continue;
+          if (count >= MAX_SELECT) break;
+          n.set(p._id, { name: p.name, image: p.images?.[0], minPrice: p.minPrice });
+          count++;
+        }
+        return n;
+      });
+    }
+  };
 
   // ── Additional charges (uniform across all selected products) ───────────────
   const [charges, setCharges] = useState<ChargeRow[]>([]);
@@ -135,8 +141,9 @@ function GenerateInner() {
     for (const [id, rows] of variants) {
       if (!selected.has(id)) continue;
       const clean = rows
-        .map((r) => ({ label: r.label.trim(), price: Number(r.price) }))
-        .filter((r) => r.label && Number.isFinite(r.price) && r.price >= 0);
+        .map((r) => ({ label: r.label.trim(), price: Number(r.price), raw: r.price.trim() }))
+        .filter((r) => r.label && r.raw !== '' && Number.isFinite(r.price) && r.price >= 0)
+        .map(({ label, price }) => ({ label, price }));
       if (clean.length) out[id] = clean;
     }
     return out;
