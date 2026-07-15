@@ -20,6 +20,8 @@ export interface AdminProduct {
   category?: string;
   isFeatured?: boolean;
   isActive?: boolean;
+  ownerSellerId?: string | null;
+  sellerName?: string | null; // set only for seller-owned products (admin list)
 }
 
 export interface AdminProductDetail {

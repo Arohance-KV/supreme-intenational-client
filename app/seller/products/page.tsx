@@ -19,9 +19,6 @@ function ProductRow({ product }: { product: import('@/lib/seller/products').Sell
         <DcPhoto seed={product.slug} className="h-10 w-10 flex-none rounded-[10px]" />
         <span className="min-w-0">
           <span className="block truncate font-bold text-ink">{product.name}</span>
-          {product.category && (
-            <span className="font-jbmono block truncate text-[11px] text-muted">{product.category}</span>
-          )}
         </span>
       </span>
 

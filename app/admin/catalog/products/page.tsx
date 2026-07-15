@@ -58,6 +58,11 @@ function ProductRow({ product }: { product: AdminProduct }) {
             {product.name}
           </Link>
           <p className="text-xs text-muted truncate font-jbmono">{product.slug}</p>
+          {product.sellerName && (
+            <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-medium text-violet-700">
+              Seller · {product.sellerName}
+            </span>
+          )}
         </div>
       </div>
 
