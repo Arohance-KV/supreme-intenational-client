@@ -37,6 +37,11 @@ const STATUS_CLASS_MAP: Record<string, string> = {
   suspended:   'bg-red-100 text-red-700',
   pending_review: 'bg-amber-100 text-amber-700',
 
+  // ── Support ticket statuses (open → answered → closed; seller reply reopens) ─
+  // 'open' is shared with the quotation entry below
+  answered:    'bg-indigo-100 text-indigo-700',
+  closed:      'bg-zinc-100 text-zinc-500',
+
   // ── Quotation statuses ────────────────────────────────────────────────────
   open:        'bg-blue-100 text-blue-700',
   quoted:      'bg-indigo-100 text-indigo-700',

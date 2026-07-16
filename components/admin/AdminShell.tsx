@@ -38,6 +38,7 @@ const NAV: NavEntry[] = [
       { label: 'Submissions', href: '/admin/submissions' },
       { label: 'Sellers', href: '/admin/sellers' },
       { label: 'Payouts', href: '/admin/payouts' },
+      { label: 'Support', href: '/admin/support' },
     ],
   },
   {
