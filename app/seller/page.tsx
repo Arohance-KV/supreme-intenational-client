@@ -86,22 +86,26 @@ export default function SellerDashboardPage() {
         <div className="rounded-[18px] border border-white/80 bg-white/[.62] p-5 shadow-[0_10px_30px_rgba(34,36,90,.07)] backdrop-blur-[16px]">
           <div className="mb-1 text-sm font-bold text-ink">Views this week</div>
           <div className="mb-4 text-[11px] text-muted">Product page impressions</div>
+          {/* Bars must be DIRECT children of the fixed-height row: a percentage height
+              resolves against the parent's height, and `items-end` leaves a wrapper at
+              auto height — which silently collapses every bar to minHeight. Labels sit
+              in a sibling row with the same flex-1 + gap so they stay aligned. */}
           <div className="flex h-40 items-end gap-3">
             {(dash?.viewsThisWeek ?? []).map((d) => (
-              <div key={d.date} className="flex flex-1 flex-col items-center gap-2">
-                <div
-                  className="w-full rounded-t bg-[linear-gradient(180deg,#179b8e,#13483f)]"
-                  style={{ height: `${(d.count / maxViews) * 100}%`, minHeight: 2 }}
-                  title={`${d.count} views`}
-                />
-                <span className="text-[10px] text-muted">
-                  {new Date(d.date + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'short' })[0]}
-                </span>
-              </div>
+              <div
+                key={d.date}
+                className="flex-1 rounded-t bg-[linear-gradient(180deg,#179b8e,#13483f)]"
+                style={{ height: `${(d.count / maxViews) * 100}%`, minHeight: 2 }}
+                title={`${d.count} views`}
+              />
             ))}
-            {dash && dash.viewsThisWeek.length === 0 && (
-              <p className="self-center text-xs text-muted">No views yet.</p>
-            )}
+          </div>
+          <div className="mt-2 flex gap-3">
+            {(dash?.viewsThisWeek ?? []).map((d) => (
+              <span key={d.date} className="flex-1 text-center text-[10px] text-muted">
+                {new Date(d.date + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'short' })[0]}
+              </span>
+            ))}
           </div>
         </div>
 
