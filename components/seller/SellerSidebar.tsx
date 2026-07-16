@@ -13,6 +13,7 @@ const NAV = [
   { href: '/seller', label: 'Dashboard', icon: '▦', exact: true },
   { href: '/seller/products', label: 'My Products', icon: '▤' },
   { href: '/seller/submissions', label: 'Approval Status', icon: '◷' },
+  { href: '/seller/performance', label: 'Performance', icon: '◭' },
   { href: '/seller/payouts', label: 'Payouts', icon: '₹' },
 ];
 
