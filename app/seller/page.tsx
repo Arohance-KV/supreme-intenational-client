@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { useSellerMe } from '@/lib/seller/me';
 import { useEarningsSummary } from '@/lib/seller/payouts';
+import { useSellerDashboard } from '@/lib/seller/dashboard';
 
 function inr(n: number): string {
   return '₹' + n.toLocaleString('en-IN');
@@ -24,9 +25,18 @@ function Kpi({ label, value, sub, tone }: { label: string; value: string; sub: s
   );
 }
 
+const STATUS_LABEL: Record<string, string> = {
+  submitted: 'In review',
+  approved: 'Approved',
+  rejected: 'Rejected',
+  draft: 'Draft',
+};
+
 export default function SellerDashboardPage() {
   const { data: me } = useSellerMe(true);
   const { data: summary } = useEarningsSummary();
+  const { data: dash } = useSellerDashboard();
+  const maxViews = Math.max(1, ...(dash?.viewsThisWeek ?? []).map((d) => d.count));
 
   return (
     <div className="px-6 py-6 sm:px-8 sm:py-7">
@@ -57,39 +67,62 @@ export default function SellerDashboardPage() {
         </div>
       )}
 
-      {/* Earnings KPIs */}
-      <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Kpi label="Outstanding" value={summary ? inr(summary.outstanding) : '—'} sub="awaiting payout" tone="text-[#b5801e]" />
+      {/* Performance KPIs */}
+      <div className="mb-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <Kpi label="Live products" value={dash ? String(dash.liveProducts) : '—'} sub={dash ? `${dash.inReview} in review` : ''} />
+        <Kpi label="In quotations" value={dash ? String(dash.inQuotations) : '—'} sub="times added to quotes" />
+        <Kpi label="Catalogue views" value={dash ? dash.catalogueViews.toLocaleString('en-IN') : '—'} sub="this month" />
+        <Kpi label="Est. payout" value={dash ? inr(dash.outstanding) : (summary ? inr(summary.outstanding) : '—')} sub="after platform margin" tone="text-[#b5801e]" />
+      </div>
+
+      {/* Earnings (settled / lifetime) */}
+      <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Kpi label="Settled" value={summary ? inr(summary.settled) : '—'} sub="paid out to you" tone="text-[#1a8f5a]" />
         <Kpi label="Lifetime earnings" value={summary ? inr(summary.lifetime) : '—'} sub="since you joined" />
       </div>
 
-      {/* Quick links */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Link
-          href="/seller/submissions"
-          className="rounded-[18px] border border-white/80 bg-white/[.55] p-5 no-underline shadow-[0_10px_30px_rgba(34,36,90,.07)] backdrop-blur-[16px] transition-shadow hover:shadow-[0_14px_40px_rgba(34,36,90,.14)]"
-        >
-          <div className="mb-2 text-[22px]">◷</div>
-          <p className="font-bold text-ink">Approval status</p>
-          <p className="mt-1 text-xs text-slate">View and manage your product submissions.</p>
-        </Link>
-        <Link
-          href="/seller/products"
-          className="rounded-[18px] border border-white/80 bg-white/[.55] p-5 no-underline shadow-[0_10px_30px_rgba(34,36,90,.07)] backdrop-blur-[16px] transition-shadow hover:shadow-[0_14px_40px_rgba(34,36,90,.14)]"
-        >
-          <div className="mb-2 text-[22px]">▤</div>
-          <p className="font-bold text-ink">My products</p>
-          <p className="mt-1 text-xs text-slate">Manage your live catalogue listings.</p>
-        </Link>
-        <Link
-          href="/seller/payouts"
-          className="rounded-[18px] border border-white/80 bg-white/[.55] p-5 no-underline shadow-[0_10px_30px_rgba(34,36,90,.07)] backdrop-blur-[16px] transition-shadow hover:shadow-[0_14px_40px_rgba(34,36,90,.14)]"
-        >
-          <div className="mb-2 text-[22px]">₹</div>
-          <p className="font-bold text-ink">Payouts</p>
-          <p className="mt-1 text-xs text-slate">Track your earnings and payout history.</p>
-        </Link>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {/* Views this week */}
+        <div className="rounded-[18px] border border-white/80 bg-white/[.62] p-5 shadow-[0_10px_30px_rgba(34,36,90,.07)] backdrop-blur-[16px]">
+          <div className="mb-1 text-sm font-bold text-ink">Views this week</div>
+          <div className="mb-4 text-[11px] text-muted">Product page impressions</div>
+          <div className="flex h-40 items-end gap-3">
+            {(dash?.viewsThisWeek ?? []).map((d) => (
+              <div key={d.date} className="flex flex-1 flex-col items-center gap-2">
+                <div
+                  className="w-full rounded-t bg-[linear-gradient(180deg,#179b8e,#13483f)]"
+                  style={{ height: `${(d.count / maxViews) * 100}%`, minHeight: 2 }}
+                  title={`${d.count} views`}
+                />
+                <span className="text-[10px] text-muted">
+                  {new Date(d.date + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'short' })[0]}
+                </span>
+              </div>
+            ))}
+            {dash && dash.viewsThisWeek.length === 0 && (
+              <p className="self-center text-xs text-muted">No views yet.</p>
+            )}
+          </div>
+        </div>
+
+        {/* Recent approval activity */}
+        <div className="rounded-[18px] border border-white/80 bg-white/[.62] p-5 shadow-[0_10px_30px_rgba(34,36,90,.07)] backdrop-blur-[16px]">
+          <div className="mb-3 text-sm font-bold text-ink">Recent approval activity</div>
+          <div className="divide-y divide-line">
+            {(dash?.recentActivity ?? []).map((a, i) => (
+              <div key={i} className="flex items-center justify-between gap-3 py-2.5">
+                <span className="min-w-0 truncate text-sm text-ink">{a.name}</span>
+                <span className="flex-none text-[11px] text-slate">{STATUS_LABEL[a.status] ?? a.status}</span>
+              </div>
+            ))}
+            {dash && dash.recentActivity.length === 0 && (
+              <p className="py-2 text-xs text-muted">No submissions yet.</p>
+            )}
+          </div>
+          <Link href="/seller/submissions" className="mt-3 inline-block text-xs font-semibold text-[#176054] no-underline hover:underline">
+            View all submissions →
+          </Link>
+        </div>
       </div>
     </div>
   );
