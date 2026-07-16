@@ -15,6 +15,7 @@ const NAV = [
   { href: '/seller/submissions', label: 'Approval Status', icon: '◷' },
   { href: '/seller/performance', label: 'Performance', icon: '◭' },
   { href: '/seller/payouts', label: 'Payouts', icon: '₹' },
+  { href: '/seller/support', label: 'Support', icon: '☏' },
 ];
 
 export default function SellerSidebar() {
