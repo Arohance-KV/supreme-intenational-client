@@ -8,6 +8,9 @@ interface AddToCartProps {
   variants: ProductVariant[];
   tokenKey?: string;
   cartQueryKey?: readonly unknown[];
+  // Portal-scoped cart mount. Employees must post to /employee/cart so the server reads
+  // their sov_emp_token instead of a storefront sov_token in the same browser.
+  cartPath?: string;
   // Employees buy for internal use and are not bound by MOQ; pass false to allow any qty >= 1.
   enforceMoq?: boolean;
 }
@@ -16,6 +19,7 @@ export default function AddToCart({
   variants,
   tokenKey = 'token',
   cartQueryKey = ['cart'],
+  cartPath = '/cart',
   enforceMoq = true,
 }: AddToCartProps) {
   const activeVariants = variants.filter((v) => v.isActive);
@@ -92,7 +96,7 @@ export default function AddToCart({
 
   const mutation = useMutation({
     mutationFn: () =>
-      apiFetch('/cart/items', {
+      apiFetch(`${cartPath}/items`, {
         method: 'POST',
         body: { variantId: selected._id, qty },
         tokenKey,

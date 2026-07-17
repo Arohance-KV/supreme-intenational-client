@@ -196,6 +196,7 @@ export interface AdminEnquiry {
   message: string;
   status: EnquiryStatus;
   items: AdminEnquiryItem[];
+  image?: string;
   companyId: string | null;
   companyName?: string;
   companyContact?: { name?: string; email?: string; isdCode?: string; phoneNumber?: string };

@@ -6,7 +6,7 @@ import type { Cart } from '@/lib/cart';
 export function useEmployeeCart() {
   return useQuery<Cart>({
     queryKey: ['employee', 'cart'],
-    queryFn: () => apiFetch<Cart>('/cart', { tokenKey: 'employeeToken' }),
+    queryFn: () => apiFetch<Cart>('/employee/cart', { tokenKey: 'employeeToken' }),
   });
 }
 
@@ -21,7 +21,7 @@ export function useEmployeeCartMutations() {
 
   const setQty = useMutation<Cart, Error, { variantId: string; qty: number }, { prev?: Cart }>({
     mutationFn: ({ variantId, qty }) =>
-      apiFetch<Cart>(`/cart/items/${variantId}`, { method: 'PATCH', body: { qty }, tokenKey: 'employeeToken' }),
+      apiFetch<Cart>(`/employee/cart/items/${variantId}`, { method: 'PATCH', body: { qty }, tokenKey: 'employeeToken' }),
     onMutate: async ({ variantId, qty }) => {
       await queryClient.cancelQueries({ queryKey: KEY });
       const prev = queryClient.getQueryData<Cart>(KEY);
@@ -36,25 +36,25 @@ export function useEmployeeCartMutations() {
 
   const remove = useMutation({
     mutationFn: ({ variantId }: { variantId: string }) =>
-      apiFetch<Cart>(`/cart/items/${variantId}`, { method: 'DELETE', tokenKey: 'employeeToken' }),
+      apiFetch<Cart>(`/employee/cart/items/${variantId}`, { method: 'DELETE', tokenKey: 'employeeToken' }),
     onSuccess: (data) => write(data),
   });
 
   const clear = useMutation({
     mutationFn: () =>
-      apiFetch<unknown>('/cart', { method: 'DELETE', tokenKey: 'employeeToken' }),
+      apiFetch<unknown>('/employee/cart', { method: 'DELETE', tokenKey: 'employeeToken' }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: KEY }),
   });
 
   const applyCoupon = useMutation({
     mutationFn: ({ code }: { code: string }) =>
-      apiFetch<Cart>('/cart/coupon', { method: 'POST', body: { code }, tokenKey: 'employeeToken' }),
+      apiFetch<Cart>('/employee/cart/coupon', { method: 'POST', body: { code }, tokenKey: 'employeeToken' }),
     onSuccess: (data) => write(data),
   });
 
   const removeCoupon = useMutation({
     mutationFn: () =>
-      apiFetch<Cart>('/cart/coupon', { method: 'DELETE', tokenKey: 'employeeToken' }),
+      apiFetch<Cart>('/employee/cart/coupon', { method: 'DELETE', tokenKey: 'employeeToken' }),
     onSuccess: (data) => write(data),
   });
 

@@ -206,6 +206,7 @@ function RequestProductsModal({
 }) {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
+  const [image, setImage] = useState<File | null>(null);
   const requestProducts = useRequestProducts();
   const dialogRef = useRef<HTMLDivElement>(null);
 
@@ -224,6 +225,7 @@ function RequestProductsModal({
       await requestProducts.mutateAsync({
         subject: subject.trim() || undefined,
         message: message.trim() || undefined,
+        image: image ?? undefined,
       });
       onSubmitted();
     } catch {
@@ -278,6 +280,23 @@ function RequestProductsModal({
               placeholder="Describe the products or categories you'd like added…"
               className="w-full resize-none rounded-lg border border-line px-3 py-2 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-indigo"
             />
+          </div>
+          <div>
+            <label htmlFor="rp-image" className="mb-1 block text-[12px] font-semibold text-slate">
+              Reference image (optional)
+            </label>
+            <input
+              id="rp-image"
+              type="file"
+              accept="image/png,image/jpeg,image/gif,image/webp,image/avif"
+              onChange={(e) => setImage(e.target.files?.[0] ?? null)}
+              className="w-full rounded-lg border border-line px-3 py-2 text-[12px] text-slate file:mr-3 file:rounded-md file:border-0 file:bg-[#f0f1f8] file:px-3 file:py-1.5 file:text-[12px] file:font-semibold file:text-indigo"
+            />
+            {image && (
+              <p className="mt-1 text-[11px] text-muted">
+                {image.name} · {(image.size / 1024).toFixed(0)} KB
+              </p>
+            )}
           </div>
 
           {requestProducts.isError && (

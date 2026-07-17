@@ -1,6 +1,7 @@
 'use client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { apiFetch } from '@/lib/api';
+import { apiFetch, ApiError } from '@/lib/api';
+import { getSessionId } from '@/lib/session';
 
 const T = { tokenKey: 'companyToken' as const };
 
@@ -36,6 +37,7 @@ interface PatchProductResult {
 export interface ProductRequestBody {
   subject?: string;
   message?: string;
+  image?: File;
 }
 
 const PRODUCTS_KEY = ['company', 'products'] as const;
@@ -60,9 +62,27 @@ export function usePatchProduct() {
   });
 }
 
-export function useRequestProducts() {
-  return useMutation({
-    mutationFn: (body: ProductRequestBody) =>
-      apiFetch('/company/products/requests', { method: 'POST', body, ...T }),
+// Multipart (an optional reference image rides along) — apiFetch is JSON-only, so this
+// posts directly, mirroring uploadCompanyLogo in lib/company/profile.ts.
+async function postProductRequest(body: ProductRequestBody): Promise<unknown> {
+  const fd = new FormData();
+  if (body.subject) fd.append('subject', body.subject);
+  if (body.message) fd.append('message', body.message);
+  if (body.image) fd.append('file', body.image);
+
+  const base = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4010';
+  const token = typeof window !== 'undefined' ? localStorage.getItem(T.tokenKey) : null;
+  const res = await fetch(`${base}/company/products/requests`, {
+    method: 'POST',
+    headers: { 'x-session-id': getSessionId(), ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+    credentials: 'include',
+    body: fd,
   });
+  const json = await res.json();
+  if (!res.ok || json?.success === false) throw new ApiError(json?.message ?? 'Request failed', res.status);
+  return json.data;
+}
+
+export function useRequestProducts() {
+  return useMutation({ mutationFn: postProductRequest });
 }

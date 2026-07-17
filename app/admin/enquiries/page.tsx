@@ -79,9 +79,17 @@ function EnquiryList({ type }: { type: Exclude<Tab, 'contact'> }) {
                 <div className="font-bold text-ink truncate">{e.companyName ?? '—'}</div>
                 <div className="text-xs text-muted truncate">{e.companyContact?.name ?? e.companyContact?.email ?? ''}</div>
               </div>
-              <div className="min-w-0">
-                <div className="text-ink truncate">{e.subject}</div>
-                {e.message ? <div className="text-xs text-muted truncate">{e.message}</div> : null}
+              <div className="flex min-w-0 items-center gap-2.5">
+                {e.image ? (
+                  <a href={e.image} target="_blank" rel="noopener noreferrer" title="Open reference image">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={e.image} alt="Reference" className="h-9 w-9 shrink-0 rounded-md border border-line object-cover" />
+                  </a>
+                ) : null}
+                <div className="min-w-0">
+                  <div className="text-ink truncate">{e.subject}</div>
+                  {e.message ? <div className="text-xs text-muted truncate">{e.message}</div> : null}
+                </div>
               </div>
               <span className="text-slate">{e.items?.length || 0}</span>
               <span>

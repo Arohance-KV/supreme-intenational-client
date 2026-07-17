@@ -11,6 +11,7 @@ const SEES_ALL: Role[] = ['admin', 'superAdmin'];
 const ACCESS: { prefix: string; roles: Role[] }[] = [
   { prefix: '/admin/quotations', roles: ['sales'] },
   { prefix: '/admin/enquiries', roles: ['sales'] }, // includes the "merch enquiries" tab
+  { prefix: '/admin/leads', roles: ['sales'] },
   { prefix: '/admin/clients', roles: ['marketing'] },
   { prefix: '/admin/case-studies', roles: ['marketing'] },
   { prefix: '/admin/blogs', roles: ['marketing'] },

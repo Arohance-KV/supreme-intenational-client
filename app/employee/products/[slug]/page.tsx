@@ -175,6 +175,7 @@ export default function EmployeeProductPage({ params }: PageProps) {
               variants={variants}
               tokenKey="employeeToken"
               cartQueryKey={['employee', 'cart']}
+              cartPath="/employee/cart"
               enforceMoq={false}
             />
           </div>
