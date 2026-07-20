@@ -7,13 +7,13 @@ import { apiFetch } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { useMyQuotations, type Quotation } from '@/lib/quotation';
 import { useWishlist } from '@/lib/wishlist';
+import type { Profile as AuthProfile } from '@/lib/userAuth';
 import DcFooter from '@/components/DcFooter';
 import ProductCard from '@/components/ProductCard';
 
-interface Profile {
-  firstName: string;
-  lastName?: string;
-  email: string;
+// Extends the shared Profile (lib/userAuth.ts) instead of redeclaring it — a local
+// copy is the one that drifts and silently loses fields like b2bStatus.
+interface Profile extends AuthProfile {
   verified?: boolean;
   company?: { name?: string };
   img?: { link?: string };
