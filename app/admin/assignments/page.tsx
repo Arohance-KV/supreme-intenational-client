@@ -1,9 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useCompanies, useUpdateCompany, type AdminCompany } from '@/lib/admin/companies';
 import { useAdminUsers, type AdminUser } from '@/lib/admin/users';
 import { useB2BUsers, useSetB2BApproval, type B2BUser } from '@/lib/admin/b2bUsers';
+
+const APPROVED_PAGE_LIMIT = 20;
 
 const GLASS = 'border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)]';
 
@@ -56,12 +58,34 @@ function CompanyRow({ company, salesUsers }: { company: AdminCompany; salesUsers
   );
 }
 
-// One row: a pending or approved B2B signup with a checkbox list of sales users.
-// Unlike CompanyRow, approval is a single explicit submit (Approve/Reject) rather
-// than a per-checkbox autosave, so selection lives in local state until then.
-function PendingB2BRow({ user, salesUsers }: { user: B2BUser; salesUsers: AdminUser[] }) {
+// One row: a pending, approved, or rejected B2B signup with a checkbox list of sales
+// users. Unlike CompanyRow, approval is a single explicit submit (Approve/Reject)
+// rather than a per-checkbox autosave, so selection lives in local state until then.
+function PendingB2BRow({
+  user,
+  salesUsers,
+  salesUsersLoaded,
+}: {
+  user: B2BUser;
+  salesUsers: AdminUser[];
+  salesUsersLoaded: boolean;
+}) {
   const approve = useSetB2BApproval(user._id);
   const [selected, setSelected] = useState<string[]>(user.assignedAdminIds ?? []);
+  const prunedStaleIds = useRef(false);
+
+  // Drop any assignedAdminIds id that isn't in the active sales list (e.g. that admin
+  // was later deactivated) — otherwise the stale id survives every Approve resubmit and
+  // the server 400s ("One or more selected users are not sales people") forever, with no
+  // checkbox to ever clear it. Only prune once, and only once the sales list has
+  // genuinely loaded: pruning against an empty in-flight list would wipe a valid
+  // selection instead of just the stale one.
+  useEffect(() => {
+    if (!salesUsersLoaded || prunedStaleIds.current) return;
+    prunedStaleIds.current = true;
+    const activeIds = new Set(salesUsers.map((u) => u._id));
+    setSelected((s) => s.filter((id) => activeIds.has(id)));
+  }, [salesUsersLoaded, salesUsers]);
 
   const toggle = (id: string) =>
     setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
@@ -115,7 +139,9 @@ function PendingB2BRow({ user, salesUsers }: { user: B2BUser; salesUsers: AdminU
           <button
             type="button"
             disabled={approve.isPending}
-            onClick={() => approve.mutate({ status: 'rejected', assignedAdminIds: [] })}
+            // No assignedAdminIds here: rejecting is a permission change only and the
+            // server now leaves existing assignments untouched (see b2bUser.service.ts).
+            onClick={() => approve.mutate({ status: 'rejected' })}
             className="rounded-lg border border-line px-3 py-1.5 text-xs font-semibold text-slate disabled:opacity-40"
           >
             Reject
@@ -130,12 +156,28 @@ export default function AdminAssignmentsPage() {
   const companiesQ = useCompanies(1); // page 1; extend with pagination later if needed
   const usersQ = useAdminUsers();
   const pendingQ = useB2BUsers('pending');
-  const approvedQ = useB2BUsers('approved');
+  // Important 5: after the b2bStatus migration, every legacy customer lands here
+  // approved-with-no-assignee and invisible to sales until swept. Real (server-side)
+  // pagination makes every one of them reachable regardless of count; the "needs
+  // assignment" toggle below narrows straight to the ones that actually need action,
+  // filtered client-side against just the current page since the unassigned count
+  // isn't cheap to query separately without adding a new backend filter.
+  const [approvedPage, setApprovedPage] = useState(1);
+  const [needsAssignmentOnly, setNeedsAssignmentOnly] = useState(false);
+  const approvedQ = useB2BUsers('approved', approvedPage, APPROVED_PAGE_LIMIT);
+  const rejectedQ = useB2BUsers('rejected');
 
   const companies = companiesQ.data?.items ?? [];
   const salesUsers = (usersQ.data ?? []).filter((u) => u.role === 'sales' && u.isActive);
+  const salesUsersLoaded = usersQ.isSuccess;
   const pendingUsers = pendingQ.data?.items ?? [];
-  const approvedUsers = approvedQ.data?.items ?? [];
+  const rejectedUsers = rejectedQ.data?.items ?? [];
+  const approvedUsersRaw = approvedQ.data?.items ?? [];
+  const approvedUsers = needsAssignmentOnly
+    ? approvedUsersRaw.filter((u) => (u.assignedAdminIds ?? []).length === 0)
+    : approvedUsersRaw;
+  const approvedTotal = approvedQ.data?.total ?? 0;
+  const approvedTotalPages = Math.max(1, Math.ceil(approvedTotal / APPROVED_PAGE_LIMIT));
 
   return (
     <main className="max-w-5xl mx-auto space-y-6">
@@ -211,18 +253,29 @@ export default function AdminAssignmentsPage() {
             </thead>
             <tbody>
               {pendingUsers.map((u) => (
-                <PendingB2BRow key={u._id} user={u} salesUsers={salesUsers} />
+                <PendingB2BRow key={u._id} user={u} salesUsers={salesUsers} salesUsersLoaded={salesUsersLoaded} />
               ))}
             </tbody>
           </table>
         </div>
       )}
 
-      <div>
-        <h2 className="text-xl font-extrabold tracking-tight text-ink">Approved B2B Customers</h2>
-        <p className="mt-1 text-sm text-slate">
-          Edit sales assignments, or reject to revoke a customer&apos;s quotation access.
-        </p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h2 className="text-xl font-extrabold tracking-tight text-ink">Approved B2B Customers</h2>
+          <p className="mt-1 text-sm text-slate">
+            Edit sales assignments, or reject to revoke a customer&apos;s quotation access.
+          </p>
+        </div>
+        <label className="inline-flex cursor-pointer items-center gap-1.5 text-xs font-medium text-slate">
+          <input
+            type="checkbox"
+            checked={needsAssignmentOnly}
+            onChange={(e) => setNeedsAssignmentOnly(e.target.checked)}
+            className="accent-indigo"
+          />
+          Needs assignment only (this page)
+        </label>
       </div>
 
       {approvedQ.isError ? (
@@ -237,7 +290,9 @@ export default function AdminAssignmentsPage() {
         </div>
       ) : !approvedUsers.length ? (
         <div className={`rounded-2xl p-10 text-center ${GLASS}`}>
-          <p className="text-sm text-muted">No approved B2B customers yet.</p>
+          <p className="text-sm text-muted">
+            {needsAssignmentOnly ? 'No unassigned customers on this page.' : 'No approved B2B customers yet.'}
+          </p>
         </div>
       ) : (
         <div className={`overflow-hidden rounded-2xl ${GLASS}`}>
@@ -251,7 +306,73 @@ export default function AdminAssignmentsPage() {
             </thead>
             <tbody>
               {approvedUsers.map((u) => (
-                <PendingB2BRow key={u._id} user={u} salesUsers={salesUsers} />
+                <PendingB2BRow key={u._id} user={u} salesUsers={salesUsers} salesUsersLoaded={salesUsersLoaded} />
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {approvedQ.isSuccess && approvedTotal > 0 && (
+        <div className="flex items-center justify-between text-xs text-slate">
+          <span>
+            Page {approvedPage} of {approvedTotalPages} &middot; {approvedTotal} approved total
+          </span>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              disabled={approvedPage <= 1 || approvedQ.isFetching}
+              onClick={() => setApprovedPage((p) => Math.max(1, p - 1))}
+              className="rounded-lg border border-line px-3 py-1.5 font-semibold text-slate disabled:opacity-40"
+            >
+              Previous
+            </button>
+            <button
+              type="button"
+              disabled={approvedPage >= approvedTotalPages || approvedQ.isFetching}
+              onClick={() => setApprovedPage((p) => Math.min(approvedTotalPages, p + 1))}
+              className="rounded-lg border border-line px-3 py-1.5 font-semibold text-slate disabled:opacity-40"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div>
+        <h2 className="text-xl font-extrabold tracking-tight text-ink">Rejected B2B Customers</h2>
+        <p className="mt-1 text-sm text-slate">
+          Rejection is reversible — assign at least one sales person and hit Approve to reinstate quotation access.
+        </p>
+      </div>
+
+      {rejectedQ.isError ? (
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          Failed to load rejected customers.
+        </div>
+      ) : rejectedQ.isPending || usersQ.isPending ? (
+        <div className={`rounded-2xl p-4 ${GLASS}`}>
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="mb-2 h-12 animate-pulse rounded-lg bg-black/[.04]" />
+          ))}
+        </div>
+      ) : !rejectedUsers.length ? (
+        <div className={`rounded-2xl p-10 text-center ${GLASS}`}>
+          <p className="text-sm text-muted">No rejected B2B customers.</p>
+        </div>
+      ) : (
+        <div className={`overflow-hidden rounded-2xl ${GLASS}`}>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-line text-left text-xs font-semibold uppercase tracking-wide text-slate">
+                <th className="w-1/4 px-5 py-3">Customer</th>
+                <th className="px-5 py-3">Assign to sales</th>
+                <th className="w-40 px-5 py-3">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rejectedUsers.map((u) => (
+                <PendingB2BRow key={u._id} user={u} salesUsers={salesUsers} salesUsersLoaded={salesUsersLoaded} />
               ))}
             </tbody>
           </table>

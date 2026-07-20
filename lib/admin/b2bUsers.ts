@@ -28,10 +28,15 @@ export interface SetB2BApprovalBody {
   assignedAdminIds?: string[];
 }
 
-export function useB2BUsers(status: B2BStatus) {
+// `page`/`limit` default to the previous hardcoded page-1/limit-100 behavior so
+// existing callers (pending, rejected) are unaffected. The approved list uses a
+// smaller limit + real pagination controls (see app/admin/assignments/page.tsx) —
+// with more than 100 grandfathered-approved users, limit=100/no-pagination made a
+// chunk of them permanently unreachable in the admin UI.
+export function useB2BUsers(status: B2BStatus, page = 1, limit = 100) {
   return useQuery<B2BUserPage>({
-    queryKey: ['admin', 'b2b-users', status],
-    queryFn: () => adminFetch<B2BUserPage>(`/admin/b2b-users?status=${status}&limit=100`),
+    queryKey: ['admin', 'b2b-users', status, page, limit],
+    queryFn: () => adminFetch<B2BUserPage>(`/admin/b2b-users?status=${status}&page=${page}&limit=${limit}`),
   });
 }
 
