@@ -1,6 +1,6 @@
 'use client';
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { apiFetch } from './api';
 import { useAuth } from './auth';
@@ -21,6 +21,26 @@ interface SignupBody {
 
 interface AuthResponse {
   accessToken: string;
+}
+
+// The signed-in customer's own profile. `b2bStatus` is optional because legacy
+// cached profiles / users created before the approval backfill migration ran
+// won't carry it — treat a missing value as approved, not locked out.
+export interface Profile {
+  firstName: string;
+  lastName?: string;
+  email: string;
+  b2bStatus?: 'pending' | 'approved' | 'rejected';
+}
+
+// Shared with app/account/page.tsx's ['profile'] query key so both consumers
+// hit the same cache entry instead of double-fetching.
+export function useProfile(enabled: boolean) {
+  return useQuery<Profile>({
+    queryKey: ['profile'],
+    queryFn: () => apiFetch<Profile>('/auth/profile'),
+    enabled,
+  });
 }
 
 export function useLogin() {

@@ -9,6 +9,7 @@ import type { Cart } from '@/lib/cart';
 import type { useCartMutations } from '@/lib/cart';
 import { ApiError } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { useProfile } from '@/lib/userAuth';
 import { useGenerateQuotation, emailQuotation, type GenerateQuotationResult } from '@/lib/quotation';
 import { glass, secondaryBtn, input, eyebrow } from '@/components/employee/ui';
 import CartItemRow from '@/components/CartItemRow';
@@ -26,6 +27,9 @@ interface Props {
 export default function QuotationCartView({ cart, mutations }: Props) {
   const { setQty, remove, clear, applyCoupon, removeCoupon } = mutations;
   const { isLoggedIn } = useAuth();
+  const { data: profile } = useProfile(isLoggedIn);
+  const b2bStatus = profile?.b2bStatus ?? 'approved';
+  const quotationsLocked = b2bStatus !== 'approved';
   const generate = useGenerateQuotation();
 
   const [couponCode, setCouponCode] = useState('');
@@ -237,30 +241,43 @@ export default function QuotationCartView({ cart, mutations }: Props) {
           <div className={`${eyebrow} mb-3 mt-5 !text-muted`}>Generate output</div>
 
           {isLoggedIn ? (
-            <>
-              <button
-                onClick={() => runAction('download')}
-                disabled={busy !== null || cart.hasMoqViolations}
-                className="mb-2.5 flex w-full items-center justify-center gap-2 rounded-[13px] bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)] px-4 py-3.5 text-sm font-bold text-white shadow-[0_12px_28px_rgba(42,43,106,.3)] transition-shadow hover:shadow-[0_10px_28px_rgba(42,43,106,.4)] disabled:opacity-50"
-              >
-                {busy === 'download' ? 'Generating…' : '⬇ Download Quotation PDF'}
-              </button>
-              <button
-                onClick={() => runAction('whatsapp')}
-                disabled={busy !== null || cart.hasMoqViolations}
-                className="mb-2.5 flex w-full items-center justify-center gap-2 rounded-[13px] bg-[#1fa463] px-4 py-3.5 text-sm font-bold text-white shadow-[0_12px_28px_rgba(31,164,99,.28)] transition-shadow hover:shadow-[0_10px_28px_rgba(31,164,99,.4)] disabled:opacity-50"
-              >
-                {busy === 'whatsapp' ? 'Generating…' : '⌾ Send to WhatsApp'}
-              </button>
-              <button
-                onClick={() => runAction('email')}
-                disabled={busy !== null || cart.hasMoqViolations}
-                className={`${secondaryBtn} flex w-full items-center justify-center gap-2 px-4 py-3.5 text-sm`}
-              >
-                {busy === 'email' ? 'Sending…' : emailSent ? 'Emailed ✓' : '✉ Email Quotation'}
-              </button>
-              {genError && <p className="mt-3 text-sm text-[#e0524d]">{genError}</p>}
-            </>
+            quotationsLocked ? (
+              <div className="rounded-xl border border-[rgba(224,82,77,.2)] bg-[rgba(224,82,77,.06)] px-3.5 py-3">
+                <div className="text-sm font-bold text-[#b03c38]">
+                  {b2bStatus === 'rejected' ? 'Quotations unavailable' : 'Pending approval'}
+                </div>
+                <p className="mt-1 text-xs leading-relaxed text-[#b03c38]">
+                  {b2bStatus === 'rejected'
+                    ? 'Your account is not approved for quotations.'
+                    : 'Your account is pending approval for quotations. Our team will be in touch.'}
+                </p>
+              </div>
+            ) : (
+              <>
+                <button
+                  onClick={() => runAction('download')}
+                  disabled={busy !== null || cart.hasMoqViolations}
+                  className="mb-2.5 flex w-full items-center justify-center gap-2 rounded-[13px] bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)] px-4 py-3.5 text-sm font-bold text-white shadow-[0_12px_28px_rgba(42,43,106,.3)] transition-shadow hover:shadow-[0_10px_28px_rgba(42,43,106,.4)] disabled:opacity-50"
+                >
+                  {busy === 'download' ? 'Generating…' : '⬇ Download Quotation PDF'}
+                </button>
+                <button
+                  onClick={() => runAction('whatsapp')}
+                  disabled={busy !== null || cart.hasMoqViolations}
+                  className="mb-2.5 flex w-full items-center justify-center gap-2 rounded-[13px] bg-[#1fa463] px-4 py-3.5 text-sm font-bold text-white shadow-[0_12px_28px_rgba(31,164,99,.28)] transition-shadow hover:shadow-[0_10px_28px_rgba(31,164,99,.4)] disabled:opacity-50"
+                >
+                  {busy === 'whatsapp' ? 'Generating…' : '⌾ Send to WhatsApp'}
+                </button>
+                <button
+                  onClick={() => runAction('email')}
+                  disabled={busy !== null || cart.hasMoqViolations}
+                  className={`${secondaryBtn} flex w-full items-center justify-center gap-2 px-4 py-3.5 text-sm`}
+                >
+                  {busy === 'email' ? 'Sending…' : emailSent ? 'Emailed ✓' : '✉ Email Quotation'}
+                </button>
+                {genError && <p className="mt-3 text-sm text-[#e0524d]">{genError}</p>}
+              </>
+            )
           ) : (
             <Link
               href="/login"
