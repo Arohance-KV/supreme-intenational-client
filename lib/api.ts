@@ -2,11 +2,16 @@ import { getSessionId } from './session';
 
 export class ApiError extends Error {
   status: number;
+  // Optional machine-readable error code from the response body (e.g.
+  // 'B2B_PENDING_APPROVAL'). Undefined when the server didn't send one —
+  // callers must not assume it's present.
+  code?: string;
 
-  constructor(message: string, status: number) {
+  constructor(message: string, status: number, code?: string) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
+    this.code = code;
   }
 }
 
@@ -42,7 +47,7 @@ export async function apiFetch<T>(
   const json = await res.json();
 
   if (!res.ok || json?.success === false) {
-    throw new ApiError(json?.message ?? 'Request failed', res.status);
+    throw new ApiError(json?.message ?? 'Request failed', res.status, json?.code);
   }
 
   return json.data as T;

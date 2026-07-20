@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getBestsellers } from '@/lib/catalog';
 import type { Cart } from '@/lib/cart';
 import type { useCartMutations } from '@/lib/cart';
@@ -24,9 +24,12 @@ interface Props {
   mutations: ReturnType<typeof useCartMutations>;
 }
 
+const B2B_LOCK_CODES = new Set(['B2B_PENDING_APPROVAL', 'B2B_REJECTED']);
+
 export default function QuotationCartView({ cart, mutations }: Props) {
   const { setQty, remove, clear, applyCoupon, removeCoupon } = mutations;
   const { isLoggedIn } = useAuth();
+  const queryClient = useQueryClient();
   const { data: profile } = useProfile(isLoggedIn);
   const b2bStatus = profile?.b2bStatus ?? 'approved';
   const quotationsLocked = b2bStatus !== 'approved';
@@ -72,6 +75,12 @@ export default function QuotationCartView({ cart, mutations }: Props) {
       else if (action === 'whatsapp') window.open(q.whatsappUrl, '_blank', 'noopener');
       else { await emailQuotation(q.quotationId); setEmailedSig(cartSig); }
     } catch (err) {
+      if (err instanceof ApiError && err.code && B2B_LOCK_CODES.has(err.code)) {
+        // Cached profile is stale (approved/rejected moments ago) — refetch so
+        // the locked banner takes over instead of the buttons staying live and
+        // the user retrying into the same 403 indefinitely.
+        queryClient.invalidateQueries({ queryKey: ['profile'] });
+      }
       setGenError(err instanceof ApiError ? err.message : 'Could not generate the quotation. Please try again.');
     } finally {
       setBusy(null);
