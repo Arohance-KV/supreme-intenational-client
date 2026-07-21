@@ -1,14 +1,19 @@
+import Link from 'next/link';
 import DcWordmark from './DcWordmark';
 
 // Shared site footer (the design system imports this as "Site Footer" on every page).
 export default function DcFooter() {
   return (
-    <div className="relative z-[1] bg-[linear-gradient(135deg,#1c1d44,#23254f)] px-10 pb-[30px] pt-11">
+    <div className="relative z-[1] bg-[linear-gradient(135deg,#1c1d44,#23254f)] px-5 pb-[30px] pt-10 sm:px-10 sm:pt-11">
       <div className="mx-auto max-w-[1280px]">
-        <div className="mb-[34px] grid grid-cols-1 gap-6 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
-          <div>
+        <div className="mb-[34px] grid grid-cols-2 gap-6 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+          <div className="col-span-2 md:col-span-1">
             <div className="mb-4"><DcWordmark dark /></div>
             <div className="max-w-[32ch] text-[13px] leading-[1.6] text-white/55">Corporate gifting &amp; promotional merchandise, engineered for enterprise procurement teams.</div>
+            {/* Seller login lives here rather than the nav — partner flow, not a buyer one. */}
+            <Link href="/seller/login" className="mt-4 inline-block text-[13px] font-semibold text-[#9fe7dc] no-underline hover:text-white">
+              Seller Login →
+            </Link>
           </div>
           {([
             ['Company', ['About Us', 'Clients', 'Careers', 'Contact']],

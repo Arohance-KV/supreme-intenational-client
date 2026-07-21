@@ -20,7 +20,7 @@ export const eyebrow =
   'font-jbmono text-[11px] uppercase tracking-[.14em] text-accent';
 
 export const pageWrap =
-  'mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 font-display';
+  'mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8 font-display';
 
 export const errorBanner =
   'p-3 rounded-[13px] bg-[rgba(224,82,77,.1)] border border-[rgba(224,82,77,.3)] text-[#e0524d] text-sm';

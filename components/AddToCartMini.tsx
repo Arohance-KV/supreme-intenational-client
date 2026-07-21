@@ -2,24 +2,55 @@
 
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { getProductBySlug } from '@/lib/catalog';
 import { apiFetch, ApiError } from '@/lib/api';
+import type { ProductDetail } from '@/lib/catalog';
+
+// Which cart this button posts to. Employees carry their own token and are not
+// bound by MOQ, so the portal passes its own config.
+export interface CartTarget {
+  path: string;
+  // Where to resolve the product's variants — employees are scoped to their
+  // company's catalogue, so they must not read the public detail endpoint.
+  detailPath: string;
+  tokenKey: string;
+  queryKey: readonly unknown[];
+  enforceMoq: boolean;
+}
+
+export const PUBLIC_CART: CartTarget = {
+  path: '/cart',
+  detailPath: '/catalog/products',
+  tokenKey: 'token',
+  queryKey: ['cart'],
+  enforceMoq: true,
+};
+export const EMPLOYEE_CART: CartTarget = {
+  path: '/employee/cart',
+  detailPath: '/employee/catalog/products',
+  tokenKey: 'employeeToken',
+  queryKey: ['employee', 'cart'],
+  enforceMoq: false,
+};
 
 // Card-level add to cart: resolves the product's default (first active) variant on
 // click and adds it at its MOQ. Multi-variant products can be fine-tuned on the
 // detail page. ponytail: one fetch on click — no variant data on the listing DTO.
-export default function AddToCartMini({ slug }: { slug: string }) {
+export default function AddToCartMini({ slug, target = PUBLIC_CART }: { slug: string; target?: CartTarget }) {
   const queryClient = useQueryClient();
   const [state, setState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
 
   const add = async () => {
     setState('loading');
     try {
-      const { variants } = await getProductBySlug(slug);
+      const { variants } = await apiFetch<ProductDetail>(`${target.detailPath}/${slug}`, { tokenKey: target.tokenKey });
       const v = variants.find((x) => x.isActive) ?? variants[0];
       if (!v) throw new ApiError('No variants available', 400);
-      await apiFetch('/cart/items', { method: 'POST', body: { variantId: v._id, qty: v.moq } });
-      queryClient.invalidateQueries({ queryKey: ['cart'] });
+      await apiFetch(`${target.path}/items`, {
+        method: 'POST',
+        body: { variantId: v._id, qty: target.enforceMoq ? v.moq : 1 },
+        tokenKey: target.tokenKey,
+      });
+      queryClient.invalidateQueries({ queryKey: target.queryKey });
       setState('done');
       setTimeout(() => setState('idle'), 1400);
     } catch {

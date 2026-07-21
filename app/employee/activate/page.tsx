@@ -116,7 +116,7 @@ export default function ActivatePage() {
           'linear-gradient(180deg,#eceefb,#f4f1f8,#e9f1f3)',
       }}
     >
-      <div className={`w-full max-w-md rounded-[24px] p-8 ${glass}`}>
+      <div className={`w-full max-w-md rounded-[24px] p-6 sm:p-8 ${glass}`}>
         <p className={eyebrow}>EMPLOYEE PORTAL</p>
         <h1 className="text-2xl font-extrabold tracking-[-.02em] text-ink mb-2 mt-1">Activate your account</h1>
         <p className="text-sm text-slate mb-6">

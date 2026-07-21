@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useEmployeeAuth } from '@/lib/employee/auth';
 import EmployeeHeader from '@/components/employee/EmployeeHeader';
 import EmployeeFooter from '@/components/employee/EmployeeFooter';
+import EmployeeTabBar from '@/components/employee/EmployeeTabBar';
 
 const PUBLIC = [
   '/employee/login',
@@ -45,10 +46,12 @@ export default function EmployeeLayout({ children }: { children: React.ReactNode
   return (
     <EmployeeGuard>
       {/* Shared portal background so the area around the floating header isn't bare white. */}
-      <div className="flex min-h-screen flex-col bg-[#eef0f8]">
+      {/* pb-16 on mobile clears the fixed tab bar. */}
+      <div className="flex min-h-screen flex-col bg-[#eef0f8] pb-14 md:pb-0">
         <EmployeeHeader />
         {children}
         <EmployeeFooter />
+        <EmployeeTabBar />
       </div>
     </EmployeeGuard>
   );

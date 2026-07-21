@@ -38,10 +38,10 @@ export default function WalletPage() {
 
   return (
     <div className="min-h-screen bg-[#eef0f8]">
-      <div className="mx-auto max-w-3xl px-4 py-8 font-display sm:px-6">
+      <div className="mx-auto max-w-3xl px-4 py-6 font-display sm:px-6 sm:py-8">
         {/* Balance hero */}
         <section
-          className={`relative overflow-hidden rounded-[26px] p-7 text-white shadow-[0_24px_60px_rgba(34,36,90,.24)] ${
+          className={`relative overflow-hidden rounded-[26px] p-5 text-white sm:p-7 shadow-[0_24px_60px_rgba(34,36,90,.24)] ${
             isCoupon
               ? 'bg-[linear-gradient(135deg,#0f766e,#149b8e)]'
               : 'bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)]'
@@ -59,7 +59,7 @@ export default function WalletPage() {
             ) : walletError || !wallet ? (
               <p className="mt-2 text-2xl font-semibold opacity-80">Unavailable</p>
             ) : (
-              <p className="mt-1 text-[52px] font-extrabold leading-tight tracking-[-.03em]">
+              <p className="mt-1 text-[38px] font-extrabold sm:text-[52px] leading-tight tracking-[-.03em]">
                 ₹{wallet.balance.toLocaleString('en-IN')}
               </p>
             )}
@@ -72,15 +72,15 @@ export default function WalletPage() {
         </section>
 
         {/* Summary tiles */}
-        <div className="mt-5 grid grid-cols-3 gap-3">
+        <div className="mt-5 grid grid-cols-3 gap-2 sm:gap-3">
           {[
             { label: 'Total added', value: inr(totalIn), tone: 'text-[#1a8f5a]' },
             { label: 'Total spent', value: inr(totalOut), tone: 'text-[#e0524d]' },
             { label: 'Transactions', value: String(entries.length), tone: 'text-ink' },
           ].map((t) => (
-            <div key={t.label} className={`${glass} rounded-[18px] p-4`}>
+            <div key={t.label} className={`${glass} rounded-[18px] p-3 sm:p-4`}>
               <p className="font-jbmono text-[10px] uppercase tracking-[.1em] text-muted">{t.label}</p>
-              <p className={`mt-1 text-xl font-extrabold tracking-[-.02em] ${t.tone}`}>
+              <p className={`mt-1 text-[15px] font-extrabold tracking-[-.02em] sm:text-xl ${t.tone}`}>
                 {ledgerLoading ? '—' : t.value}
               </p>
             </div>
@@ -118,7 +118,7 @@ export default function WalletPage() {
                 const credit = isCredit(entry);
                 const source = String(entry.source ?? '');
                 return (
-                  <li key={String(entry._id ?? i)} className={`${glass} flex items-center gap-3 rounded-[16px] px-4 py-3`}>
+                  <li key={String(entry._id ?? i)} className={`${glass} flex items-center gap-3 rounded-[16px] px-3 py-3 sm:px-4`}>
                     <span
                       className={`grid h-10 w-10 flex-none place-items-center rounded-full text-base font-bold ${
                         credit ? 'bg-[rgba(31,170,107,.12)] text-[#1a8f5a]' : 'bg-[rgba(224,82,77,.1)] text-[#e0524d]'

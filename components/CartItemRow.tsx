@@ -23,15 +23,15 @@ interface CartItemRowProps {
 // the employee cart and the B2B quotation cart. ponytail: don't restyle here.
 export default function CartItemRow({ item, setQty, remove, enforceMoq, productHrefBase }: CartItemRowProps) {
   return (
-    <div className={`flex gap-4 ${glass} rounded-[16px] p-4`}>
+    <div className={`flex flex-wrap gap-3 ${glass} rounded-[16px] p-3 sm:gap-4 sm:p-4`}>
       {/* Image */}
-      <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-white/40">
+      <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 rounded-lg overflow-hidden bg-white/40">
         {item.image ? (
           <Image
             src={item.image}
             alt={item.productName}
             fill
-            sizes="96px"
+            sizes="(max-width: 640px) 80px, 96px"
             className="object-cover"
           />
         ) : (
@@ -64,7 +64,7 @@ export default function CartItemRow({ item, setQty, remove, enforceMoq, productH
       </div>
 
       {/* Qty + total + remove */}
-      <div className="flex flex-col items-end justify-between gap-2 flex-shrink-0">
+      <div className="flex w-full flex-row-reverse items-center justify-between gap-3 border-t border-line pt-3 sm:w-auto sm:flex-col sm:items-end sm:justify-between sm:border-0 sm:pt-0 flex-shrink-0">
         <p className="font-extrabold text-ink">{formatPrice(item.priceSnapshot * item.qty)}</p>
 
         {/* Qty stepper */}
@@ -95,7 +95,7 @@ export default function CartItemRow({ item, setQty, remove, enforceMoq, productH
         </div>
 
         {enforceMoq && item.moq > 1 && (
-          <p className="text-xs text-muted">Min. qty: {item.moq}</p>
+          <p className="hidden text-xs text-muted sm:block">Min. qty: {item.moq}</p>
         )}
 
         <button

@@ -27,7 +27,7 @@ export default function EmployeeCartPage() {
 
   if (!cart || cart.items.length === 0) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#eef0f8] font-display">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#eef0f8] px-5 text-center font-display">
         <h1 className="text-2xl font-extrabold tracking-[-.02em] text-ink">Your cart is empty</h1>
         <p className="text-slate">Browse our catalog to add items.</p>
         <Link href="/employee/products" className={`${primaryBtn} px-6 py-2.5`}>

@@ -23,11 +23,11 @@ function OrderCard({ order }: { order: OrderSummary }) {
   return (
     <Link
       href={`/employee/orders/${order.orderId}`}
-      className={`group block rounded-[18px] p-5 transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_50px_rgba(34,36,90,.14)] ${glass}`}
+      className={`group block rounded-[18px] p-4 transition-all sm:p-5 hover:-translate-y-0.5 hover:shadow-[0_18px_50px_rgba(34,36,90,.14)] ${glass}`}
     >
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex min-w-0 items-center gap-4">
-          <span className="grid h-12 w-12 flex-none place-items-center rounded-[14px] bg-[rgba(42,43,106,.08)] text-indigo">
+      <div className="flex items-center justify-between gap-3 sm:gap-4">
+        <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+          <span className="grid h-10 w-10 flex-none place-items-center sm:h-12 sm:w-12 rounded-[14px] bg-[rgba(42,43,106,.08)] text-indigo">
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 11H6L5 9z" />
             </svg>
@@ -37,7 +37,7 @@ function OrderCard({ order }: { order: OrderSummary }) {
             <p className="mt-0.5 text-xs text-muted">{fmtDate(order.createdAt)}</p>
           </div>
         </div>
-        <div className="flex flex-none items-center gap-4">
+        <div className="flex flex-none items-center gap-2 sm:gap-4">
           <div className="text-right">
             <p className="text-base font-extrabold tracking-[-.01em] text-ink">{fmt(billing?.total)}</p>
             <span className={`mt-1 ${statusPill(order.status)}`}>{order.status}</span>
@@ -81,13 +81,13 @@ export default function OrdersPage() {
         )}
 
         {isError && (
-          <div className={`${glass} rounded-[18px] p-6 text-center text-sm text-[#e0524d]`}>
+          <div className={`${glass} rounded-[18px] p-5 text-center sm:p-6 text-sm text-[#e0524d]`}>
             Could not load orders. Please try again.
           </div>
         )}
 
         {!isLoading && !isError && orders.length === 0 && (
-          <div className={`${glass} space-y-4 rounded-[20px] p-12 text-center`}>
+          <div className={`${glass} space-y-4 rounded-[20px] p-8 text-center sm:p-12`}>
             <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-black/5 text-2xl text-muted">🛍️</div>
             <p className="font-medium text-slate">You haven&apos;t placed any orders yet.</p>
             <Link href="/employee/products" className={`inline-block ${primaryBtn} px-6 py-2.5`}>

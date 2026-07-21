@@ -17,7 +17,6 @@ import CartItemRow from '@/components/CartItemRow';
 // Indian-grouped whole-rupee headline (matches the reference: ₹3,39,000).
 const inr0 = (n: number) =>
   new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(n);
-const formatPrice = (n: number) => `₹${n.toFixed(2)}`;
 
 interface Props {
   cart: Cart;
@@ -27,7 +26,7 @@ interface Props {
 const B2B_LOCK_CODES = new Set(['B2B_PENDING_APPROVAL', 'B2B_REJECTED']);
 
 export default function QuotationCartView({ cart, mutations }: Props) {
-  const { setQty, remove, clear, applyCoupon, removeCoupon } = mutations;
+  const { setQty, remove, clear } = mutations;
   const { isLoggedIn } = useAuth();
   const queryClient = useQueryClient();
   const { data: profile } = useProfile(isLoggedIn);
@@ -35,8 +34,6 @@ export default function QuotationCartView({ cart, mutations }: Props) {
   const quotationsLocked = b2bStatus !== 'approved';
   const generate = useGenerateQuotation();
 
-  const [couponCode, setCouponCode] = useState('');
-  const [couponError, setCouponError] = useState<string | null>(null);
   const [notes, setNotes] = useState('');
   const [genError, setGenError] = useState<string | null>(null);
   const [emailedSig, setEmailedSig] = useState<string | null>(null);
@@ -87,25 +84,6 @@ export default function QuotationCartView({ cart, mutations }: Props) {
     }
   };
 
-  const handleApplyCoupon = async () => {
-    setCouponError(null);
-    try {
-      await applyCoupon.mutateAsync({ code: couponCode.trim() });
-      setCouponCode('');
-    } catch (err) {
-      setCouponError(err instanceof ApiError ? err.message : 'Failed to apply coupon');
-    }
-  };
-
-  const handleRemoveCoupon = async () => {
-    setCouponError(null);
-    try {
-      await removeCoupon.mutateAsync();
-    } catch (err) {
-      setCouponError(err instanceof ApiError ? err.message : 'Failed to remove coupon');
-    }
-  };
-
   return (
     <main className="mx-auto max-w-[1280px] px-4 py-6 font-display sm:px-6">
       {/* Header */}
@@ -113,7 +91,7 @@ export default function QuotationCartView({ cart, mutations }: Props) {
         <div className={`${eyebrow} mb-2.5`}>Corporate procurement workspace</div>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="text-[34px] font-extrabold leading-tight tracking-[-.02em] text-ink">Cart &amp; Quotation Builder</h1>
+            <h1 className="text-[26px] font-extrabold leading-tight tracking-[-.02em] text-ink sm:text-[34px]">Cart &amp; Quotation Builder</h1>
             <p className="mt-1 text-sm text-slate">
               {cart.itemCount} line item{cart.itemCount !== 1 ? 's' : ''} · ready to generate a priced quotation
             </p>
@@ -161,7 +139,7 @@ export default function QuotationCartView({ cart, mutations }: Props) {
 
           {/* Smart recommendations */}
           {recommendations.length > 0 && (
-            <div className={`mt-6 ${glass} rounded-[20px] p-5`}>
+            <div className={`mt-6 ${glass} rounded-[20px] p-4 sm:p-5`}>
               <div className="mb-4 flex items-center gap-2">
                 <span className={eyebrow}>Smart recommendations</span>
                 <span className="text-xs text-muted">— buyers often add these</span>
@@ -192,7 +170,7 @@ export default function QuotationCartView({ cart, mutations }: Props) {
 
           {/* Notes & branding — display-only draft. ponytail: not persisted; wire to
               the quotation payload when the backend accepts a notes field. */}
-          <div className={`mt-3.5 ${glass} rounded-[20px] p-5`}>
+          <div className={`mt-3.5 ${glass} rounded-[20px] p-4 sm:p-5`}>
             <div className="mb-2.5 text-[13px] font-bold text-ink">Notes &amp; branding requirements</div>
             <textarea
               value={notes}
@@ -205,45 +183,17 @@ export default function QuotationCartView({ cart, mutations }: Props) {
         </div>
 
         {/* Right: sticky summary */}
-        <div className={`sticky top-[90px] ${glass} rounded-[22px] p-6`}>
+        <div className={`${glass} rounded-[22px] p-5 sm:p-6 lg:sticky lg:top-[90px]`}>
           <div className="mb-4 text-[17px] font-extrabold tracking-[-.01em] text-ink">Summary</div>
 
           <div className="mb-3 flex justify-between text-sm text-slate"><span>Items</span><span className="font-semibold text-ink">{cart.itemCount}</span></div>
           <div className="mb-3 flex justify-between text-sm text-slate"><span>Total units</span><span className="font-semibold text-ink">{totalUnits}</span></div>
           <div className="mb-3 flex justify-between text-sm text-slate"><span>Est. branding</span><span className="font-semibold text-ink">Included</span></div>
 
-          {/* Coupon */}
-          <div className="border-t border-line pt-3.5">
-            {cart.coupon ? (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="rounded border border-line bg-white/50 px-2 py-1 font-jbmono text-sm text-ink">{cart.coupon.code}</span>
-                  <button onClick={handleRemoveCoupon} disabled={removeCoupon.isPending} className="text-xs text-slate hover:text-[#e0524d] disabled:opacity-50">Remove</button>
-                </div>
-                <p className="text-sm text-[#1a8f5a]">Discount: −{formatPrice(cart.coupon.discountAmount)}</p>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={couponCode}
-                    onChange={(e) => { setCouponCode(e.target.value); setCouponError(null); }}
-                    onKeyDown={(e) => { if (e.key === 'Enter') handleApplyCoupon(); }}
-                    placeholder="Coupon code"
-                    className={`${input} flex-1`}
-                  />
-                  <button onClick={handleApplyCoupon} disabled={!couponCode.trim() || applyCoupon.isPending} className={`${secondaryBtn} px-4 py-2 text-sm`}>Apply</button>
-                </div>
-                {couponError && <p className="text-sm text-[#e0524d]">{couponError}</p>}
-              </div>
-            )}
-          </div>
-
           {/* Estimated total */}
           <div className="mt-3.5 border-t border-line pt-3.5">
             <div className="mb-0.5 text-[13px] text-slate">Estimated total</div>
-            <div className="whitespace-nowrap text-[28px] font-extrabold tracking-[-.02em] text-ink">{inr0(cart.total)}</div>
+            <div className="whitespace-nowrap text-[26px] font-extrabold sm:text-[28px] tracking-[-.02em] text-ink">{inr0(cart.total)}</div>
             <div className="mt-0.5 font-jbmono text-[10px] text-muted">tentative · confirmed in quote</div>
           </div>
 

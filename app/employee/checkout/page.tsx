@@ -29,7 +29,6 @@ export default function EmployeeCheckoutPage() {
   const verifyPayment = useVerifyPayment();
 
   const [address, setAddress] = useState<ShippingAddress>(INITIAL_ADDRESS);
-  const [couponCode, setCouponCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
@@ -84,7 +83,6 @@ export default function EmployeeCheckoutPage() {
     try {
       const result = await checkout.mutateAsync({
         shippingAddress,
-        couponCode: couponCode.trim() || undefined,
       });
 
       if (result.fullyPaidByWallet) {
@@ -142,11 +140,11 @@ export default function EmployeeCheckoutPage() {
         <p className={eyebrow}>CHECKOUT</p>
         <h1 className="text-2xl font-extrabold tracking-[-.02em] text-ink mb-6">Checkout</h1>
       </div>
-      <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-8">
 
         {/* Left: Address Form */}
-        <div className={`${glass} rounded-[22px] p-6`}>
-          <h2 className="text-xl font-semibold text-ink mb-6">Shipping Address</h2>
+        <div className={`${glass} rounded-[22px] p-5 sm:p-6`}>
+          <h2 className="text-lg font-semibold text-ink mb-5 sm:text-xl sm:mb-6">Shipping Address</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <Field
               label="Full Name"
@@ -180,7 +178,7 @@ export default function EmployeeCheckoutPage() {
               onChange={handleAddressChange}
               placeholder="Landmark, Area"
             />
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
               <Field
                 label="City"
                 name="city"
@@ -198,7 +196,7 @@ export default function EmployeeCheckoutPage() {
                 placeholder="Maharashtra"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
               <Field
                 label="Pincode"
                 name="pincode"
@@ -214,19 +212,6 @@ export default function EmployeeCheckoutPage() {
                 value={address.country ?? 'India'}
                 onChange={handleAddressChange}
                 placeholder="India"
-              />
-            </div>
-
-            <div className="pt-2">
-              <label className={label}>
-                Coupon Code (optional)
-              </label>
-              <input
-                type="text"
-                value={couponCode}
-                onChange={(e) => setCouponCode(e.target.value)}
-                placeholder="Enter coupon code"
-                className={input}
               />
             </div>
 
@@ -249,7 +234,7 @@ export default function EmployeeCheckoutPage() {
         {/* Right: Order Summary */}
         <div className="space-y-4">
           {/* Wallet Balance */}
-          <div className={`${glass} rounded-[20px] p-6`}>
+          <div className={`${glass} rounded-[20px] p-5 sm:p-6`}>
             <h2 className="text-lg font-semibold text-ink mb-2">Wallet Balance</h2>
             <span className="inline-block bg-[rgba(23,155,142,.12)] text-accent border border-[rgba(23,155,142,.25)] rounded-full px-3 py-1 font-jbmono text-sm">
               ₹{walletBalance.toFixed(2)}
@@ -262,7 +247,7 @@ export default function EmployeeCheckoutPage() {
           </div>
 
           {/* Cart Summary */}
-          <div className={`${glass} rounded-[20px] p-6`}>
+          <div className={`${glass} rounded-[20px] p-5 sm:p-6`}>
             <h2 className="text-lg font-semibold text-ink mb-4">Order Summary</h2>
             <ul className="divide-y divide-line">
               {cart?.items.map((item) => (
@@ -286,12 +271,6 @@ export default function EmployeeCheckoutPage() {
                 <span>Subtotal</span>
                 <span>₹{cart?.subtotal.toFixed(2)}</span>
               </div>
-              {cart?.coupon && (
-                <div className="flex justify-between text-sm text-accent">
-                  <span>Coupon ({cart.coupon.code})</span>
-                  <span>-₹{cart.coupon.discountAmount.toFixed(2)}</span>
-                </div>
-              )}
               <div className="flex justify-between text-base font-semibold text-ink pt-1">
                 <span>Total</span>
                 <span>₹{cart?.total.toFixed(2)}</span>
@@ -304,7 +283,7 @@ export default function EmployeeCheckoutPage() {
       {/* Coupon forfeiture warning */}
       {couponForfeit !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(22,23,58,.42)] p-4 backdrop-blur-sm">
-          <div className={`${glass} w-full max-w-md rounded-[22px] p-6`}>
+          <div className={`${glass} w-full max-w-md rounded-[22px] p-5 sm:p-6`}>
             <h2 className="text-lg font-extrabold tracking-[-.01em] text-ink">Use your full coupon?</h2>
             <p className="mt-3 text-sm leading-relaxed text-slate">
               Your allocation is a <strong>coupon</strong> worth ₹{(wallet?.balance ?? 0).toLocaleString('en-IN')}.

@@ -162,10 +162,10 @@ export default function AddToCart({
       )}
 
       {/* Buy box — price, stock, qty and CTA kept together and always visible */}
-      <div className="flex h-fit flex-col gap-4 rounded-[18px] border border-line bg-white/70 p-5 shadow-[0_8px_26px_rgba(34,36,90,.06)]">
+      <div className="flex h-fit flex-col gap-4 sm:rounded-[18px] sm:border sm:border-line sm:bg-white/70 sm:p-5 sm:shadow-[0_8px_26px_rgba(34,36,90,.06)]">
         {/* Price */}
         <div className="flex flex-wrap items-baseline gap-2">
-          <span className="text-[30px] font-extrabold tracking-[-.02em] text-ink">₹{effectivePrice.toFixed(2)}</span>
+          <span className="text-[26px] font-extrabold tracking-[-.02em] text-ink sm:text-[30px]">₹{effectivePrice.toFixed(2)}</span>
           {hasDiscount && <span className="text-base text-muted line-through">₹{compareAt.toFixed(2)}</span>}
           <span className="text-xs text-muted">/ unit</span>
           {hasDiscount && (
@@ -203,7 +203,7 @@ export default function AddToCart({
               onClick={() => setQty((q) => clamp((Number.isFinite(q) ? q : floor) - 1))}
               disabled={outOfStock || qty <= floor}
               aria-label="Decrease quantity"
-              className="px-3.5 py-2 text-lg leading-none text-slate transition-colors hover:text-ink disabled:opacity-30"
+              className="px-4 py-2.5 text-lg leading-none text-slate transition-colors hover:text-ink disabled:opacity-30"
             >
               −
             </button>
@@ -221,7 +221,7 @@ export default function AddToCart({
               onClick={() => setQty((q) => clamp((Number.isFinite(q) ? q : floor) + 1))}
               disabled={outOfStock || qty >= selected.stock}
               aria-label="Increase quantity"
-              className="px-3.5 py-2 text-lg leading-none text-slate transition-colors hover:text-ink disabled:opacity-30"
+              className="px-4 py-2.5 text-lg leading-none text-slate transition-colors hover:text-ink disabled:opacity-30"
             >
               +
             </button>

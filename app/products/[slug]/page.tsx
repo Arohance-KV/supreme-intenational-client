@@ -53,9 +53,9 @@ export default async function ProductPage({ params }: PageProps) {
       <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(55%_45%_at_0%_0%,rgba(58,60,152,.16),transparent_60%),radial-gradient(50%_45%_at_100%_6%,rgba(20,155,142,.16),transparent_60%),linear-gradient(180deg,#eef0f8_0%,#f2f1f7_50%,#eef0f8_100%)]" />
       <div className="pointer-events-none fixed -left-[120px] -top-[160px] z-0 h-[500px] w-[500px] animate-blob1 rounded-full bg-[radial-gradient(circle,rgba(58,60,152,.16),transparent_70%)] blur-[20px]" />
 
-      <div className="relative z-[1] mx-auto max-w-[1440px] px-4 py-10 sm:px-6 lg:px-8">
+      <div className="relative z-[1] mx-auto max-w-[1440px] px-4 pb-10 pt-5 sm:px-6 sm:pt-10 lg:px-8">
         {/* Breadcrumb */}
-        <nav className="mb-6 flex items-center gap-1.5 text-sm text-muted">
+        <nav className="mb-4 flex items-center gap-1.5 text-[13px] text-muted sm:mb-6 sm:text-sm">
           <Link href="/" className="no-underline transition-colors hover:text-indigo">Home</Link>
           <span>/</span>
           <Link href="/products" className="no-underline transition-colors hover:text-indigo">Products</Link>
@@ -64,14 +64,14 @@ export default async function ProductPage({ params }: PageProps) {
         </nav>
 
         {/* Product Hero */}
-        <div className="flex flex-col gap-8 lg:flex-row">
+        <div className="flex flex-col gap-5 lg:flex-row lg:gap-8">
           {/* Image Gallery */}
           <ProductGallery images={product.images} name={product.name} slug={product.slug}>
             <WishlistButton productId={product._id} />
           </ProductGallery>
 
           {/* Product Info */}
-          <div className="flex flex-1 flex-col gap-5 rounded-[22px] border border-white/80 bg-white/55 p-7 shadow-[0_14px_44px_rgba(34,36,90,.1)] backdrop-blur-[16px]">
+          <div className="flex flex-1 flex-col gap-4 rounded-[18px] border border-white/80 bg-white/55 p-4 shadow sm:gap-5 sm:rounded-[22px] sm:p-7 sm:shadow-[0_14px_44px_rgba(34,36,90,.1)] backdrop-blur-[16px]">
             <div className="flex items-center gap-3">
               <p className="font-jbmono text-[11px] uppercase tracking-[.14em] text-accent">Catalogue</p>
               {product.badge && (
@@ -114,14 +114,14 @@ export default async function ProductPage({ params }: PageProps) {
             <AddToCart variants={variants} />
 
             {/* B2B benefits */}
-            <div className="mt-1 grid grid-cols-3 gap-3 border-t border-line pt-5">
+            <div className="mt-1 grid gap-3 border-t border-line pt-4 sm:grid-cols-3 sm:pt-5">
               {[
                 { t: 'Bulk pricing', d: 'Better rates at scale' },
                 { t: 'Self-serve quote', d: 'Instant branded PDF' },
                 { t: 'Custom branding', d: 'Add your logo' },
               ].map((b) => (
-                <div key={b.t} className="text-center">
-                  <div className="mx-auto mb-1.5 flex h-9 w-9 items-center justify-center rounded-[11px] bg-[rgba(23,155,142,.12)] text-accent">✓</div>
+                <div key={b.t} className="flex items-center gap-3 text-left sm:block sm:text-center">
+                  <div className="flex h-9 w-9 flex-none items-center justify-center rounded-[11px] bg-[rgba(23,155,142,.12)] text-accent sm:mx-auto sm:mb-1.5">✓</div>
                   <div className="text-[13px] font-bold leading-tight text-ink">{b.t}</div>
                   <div className="text-[11px] leading-tight text-muted">{b.d}</div>
                 </div>
@@ -132,7 +132,7 @@ export default async function ProductPage({ params }: PageProps) {
 
         {/* Additional Details */}
         {(product.details || product.materials || product.shipping) && (
-          <div className="mt-12 grid gap-6 sm:grid-cols-3">
+          <div className="mt-8 grid gap-4 sm:mt-12 sm:grid-cols-3 sm:gap-6">
             {([
               ['Details', '⌁', product.details],
               ['Materials', '▦', product.materials],
@@ -140,7 +140,7 @@ export default async function ProductPage({ params }: PageProps) {
             ] as const)
               .filter(([, , body]) => body)
               .map(([title, icon, body]) => (
-                <div key={title} className="rounded-[18px] border border-white/80 bg-white/55 p-6 shadow-[0_8px_26px_rgba(34,36,90,.06)] backdrop-blur-[14px]">
+                <div key={title} className="rounded-[18px] border border-white/80 bg-white/55 p-5 shadow-[0_8px_26px_rgba(34,36,90,.06)] sm:p-6 backdrop-blur-[14px]">
                   <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-[11px] bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)] text-white">{icon}</div>
                   <h3 className="mb-1.5 font-bold text-ink">{title}</h3>
                   <p className="text-sm leading-relaxed text-slate">{body}</p>
@@ -150,16 +150,16 @@ export default async function ProductPage({ params }: PageProps) {
         )}
 
         {/* Reviews */}
-        <div className="mt-12">
+        <div className="mt-8 sm:mt-12">
           <Reviews slug={slug} />
         </div>
 
         {/* Related Products */}
         {related.length > 0 && (
-          <div className="mt-12">
+          <div className="mt-8 sm:mt-12">
             <p className="font-jbmono mb-1 text-[11px] uppercase tracking-[.14em] text-accent">You may also like</p>
             <h2 className="mb-6 text-xl font-extrabold tracking-[-.02em] text-ink">Related Products</h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
               {related.map((p) => (
                 <ProductCard key={p._id} product={p} />
               ))}

@@ -208,7 +208,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ orderId:
         </div>
 
         {/* Status timeline */}
-        <div className={`${glass} rounded-[20px] p-6`}>
+        <div className={`${glass} rounded-[20px] p-5 sm:p-6`}>
           <StatusTimeline status={order.status} />
         </div>
 
@@ -227,7 +227,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ orderId:
         )}
 
         {/* Items */}
-        <section className={`${glass} rounded-[20px] p-6`}>
+        <section className={`${glass} rounded-[20px] p-5 sm:p-6`}>
           <h2 className="text-base font-semibold text-ink mb-4">Items</h2>
           <ul className="divide-y divide-line">
             {(order.items ?? []).map((item, i) => (
@@ -258,7 +258,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ orderId:
         </section>
 
         {/* Billing */}
-        <section className={`${glass} rounded-[20px] p-6 space-y-2`}>
+        <section className={`${glass} rounded-[20px] p-5 space-y-2 sm:p-6`}>
           <h2 className="text-base font-semibold text-ink mb-4">Billing</h2>
           <div className="flex justify-between text-sm text-slate">
             <span>Subtotal</span>
@@ -290,7 +290,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ orderId:
 
         {/* Payment info */}
         {order.payment && (
-          <section className={`${glass} rounded-[20px] p-6`}>
+          <section className={`${glass} rounded-[20px] p-5 sm:p-6`}>
             <h2 className="text-base font-semibold text-ink mb-3">Payment</h2>
             <div className="flex justify-between text-sm text-slate">
               <span>Status</span>

@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ProductCard from '@/components/ProductCard';
-import { useEmployeeProducts, useEmployeeSearch, useEmployeeFilters, type EmployeeAttribute } from '@/lib/employee/catalog';
+import { EMPLOYEE_CART } from '@/components/AddToCartMini';
+import { useEmployeeProductsInfinite, useEmployeeSearchInfinite, useEmployeeFilters, type EmployeeAttribute } from '@/lib/employee/catalog';
 import { glass, primaryBtn, secondaryBtn, input, eyebrow } from '@/components/employee/ui';
 
 // Full-bleed wrapper matching the B2B /products page (wider than the shared pageWrap).
@@ -16,6 +17,22 @@ const SORT_OPTIONS = [
 ];
 
 const LIMIT = 12;
+
+// Bottom sheet — mobile only, sits above the portal tab bar.
+function Sheet({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
+  return (
+    <div className="fixed inset-0 z-[60] md:hidden">
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="absolute inset-x-0 bottom-0 max-h-[78vh] overflow-y-auto rounded-t-[22px] border-t border-white/85 bg-[#eef0f8] p-4 pb-8">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-[15px] font-bold text-ink">{title}</h2>
+          <button onClick={onClose} aria-label="Close" className="cursor-pointer border-0 bg-transparent px-2 text-lg leading-none text-slate">✕</button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
 
 // ── Filter sidebar ────────────────────────────────────────────────────────────
 
@@ -33,6 +50,7 @@ function FilterSidebar({
   setHi,
   hasFilters,
   onClear,
+  idPrefix,
 }: {
   categories: { _id: string; name: string }[];
   bounds: { min: number; max: number };
@@ -47,6 +65,9 @@ function FilterSidebar({
   setHi: (n: number) => void;
   hasFilters: boolean;
   onClear: () => void;
+  // The desktop aside and the mobile sheet both mount a sidebar, so their input
+  // ids must not collide or the labels drive the wrong (hidden) checkbox.
+  idPrefix: string;
 }) {
   const hasBounds = bounds.max > bounds.min;
   return (
@@ -100,12 +121,12 @@ function FilterSidebar({
               <li key={c._id} className="flex items-center gap-2">
                 <input
                   type="checkbox"
-                  id={`cat-${c._id}`}
+                  id={`${idPrefix}-cat-${c._id}`}
                   checked={selCats.has(c._id)}
                   onChange={() => toggleCat(c._id)}
                   className="rounded border-line accent-accent"
                 />
-                <label htmlFor={`cat-${c._id}`} className="cursor-pointer text-sm text-slate">{c.name}</label>
+                <label htmlFor={`${idPrefix}-cat-${c._id}`} className="cursor-pointer text-sm text-slate">{c.name}</label>
               </li>
             ))}
           </ul>
@@ -127,12 +148,12 @@ function FilterSidebar({
                 <li key={val._id} className="flex items-center gap-2">
                   <input
                     type="checkbox"
-                    id={`${attr.slug}-${val.slug}`}
+                    id={`${idPrefix}-${attr.slug}-${val.slug}`}
                     checked={sel.has(val.slug)}
                     onChange={() => toggleAttr(attr.slug, val.slug)}
                     className="rounded border-line accent-accent"
                   />
-                  <label htmlFor={`${attr.slug}-${val.slug}`} className="cursor-pointer text-sm text-slate">{val.label}</label>
+                  <label htmlFor={`${idPrefix}-${attr.slug}-${val.slug}`} className="cursor-pointer text-sm text-slate">{val.label}</label>
                 </li>
               ))}
             </ul>
@@ -145,7 +166,6 @@ function FilterSidebar({
 
 export default function EmployeeProductsPage() {
   const [sort, setSort] = useState('rating');
-  const [page, setPage] = useState(1);
   const [q, setQ] = useState('');
   const [inputValue, setInputValue] = useState('');
   const [selCats, setSelCats] = useState<Set<string>>(new Set());
@@ -160,7 +180,6 @@ export default function EmployeeProductsPage() {
   useEffect(() => {
     const id = setTimeout(() => {
       setQ(inputValue.trim());
-      setPage(1);
     }, 350);
     return () => clearTimeout(id);
   }, [inputValue]);
@@ -181,30 +200,37 @@ export default function EmployeeProductsPage() {
   const hasAttrs = Object.keys(attributeFilters).length > 0;
   const hasFilters = selCats.size > 0 || minPrice != null || maxPrice != null || hasAttrs;
 
-  const listQuery = useEmployeeProducts({
-    categoryIds: [...selCats],
-    minPrice,
-    maxPrice,
-    attributeFilters,
-    sort,
-    page,
-    limit: LIMIT,
-  });
-  const searchQuery = useEmployeeSearch(q, page);
+  const listQuery = useEmployeeProductsInfinite(
+    { categoryIds: [...selCats], minPrice, maxPrice, attributeFilters, sort, limit: LIMIT },
+    !isSearching,
+  );
+  const searchQuery = useEmployeeSearchInfinite(q);
 
   const activeQuery = isSearching ? searchQuery : listQuery;
-  const products = activeQuery.data?.products ?? [];
-  const pagination = activeQuery.data?.pagination ?? null;
+  const products = activeQuery.data?.pages.flatMap((pg) => pg.products) ?? [];
+  const total = activeQuery.data?.pages[0]?.pagination.total ?? 0;
+
+  // Scroll-to-load: the sentinel sits below the grid and pulls the next page in.
+  const sentinel = useRef<HTMLDivElement>(null);
+  const { fetchNextPage, hasNextPage, isFetchingNextPage } = activeQuery;
+  useEffect(() => {
+    const el = sentinel.current;
+    if (!el || !hasNextPage) return;
+    const io = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting && !isFetchingNextPage) fetchNextPage(); },
+      { rootMargin: '400px' },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage, products.length]);
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
     setQ(inputValue.trim());
-    setPage(1);
   }
-  function clearSearch() { setQ(''); setInputValue(''); setPage(1); }
+  function clearSearch() { setQ(''); setInputValue(''); }
   function toggleCat(id: string) {
     setSelCats((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
-    setPage(1);
   }
   function toggleAttr(slug: string, value: string) {
     setSelAttrs((prev) => {
@@ -213,14 +239,15 @@ export default function EmployeeProductsPage() {
       else next.add(value);
       return { ...prev, [slug]: next };
     });
-    setPage(1);
   }
-  function clearFilters() { setSelCats(new Set()); setSelAttrs({}); setLoRaw(null); setHiRaw(null); setPage(1); }
+  function clearFilters() { setSelCats(new Set()); setSelAttrs({}); setLoRaw(null); setHiRaw(null); }
+
+  const [sheet, setSheet] = useState<'sort' | 'filter' | null>(null);
 
   const grid = (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
       {products.map((product) => (
-        <ProductCard key={product._id} product={product} hrefBase="/employee/products" showAddToCart={false} />
+        <ProductCard key={product._id} product={product} hrefBase="/employee/products" cartTarget={EMPLOYEE_CART} />
       ))}
     </div>
   );
@@ -233,21 +260,21 @@ export default function EmployeeProductsPage() {
           <div>
             <p className={eyebrow}>CATALOG</p>
             <h1 className="text-2xl font-extrabold tracking-[-.02em] text-ink">Product Catalog</h1>
-            {pagination && pagination.total > 0 && (
+            {total > 0 && (
               <p className="mt-1 text-sm text-muted">
-                {pagination.total} product{pagination.total !== 1 ? 's' : ''}
+                {total} product{total !== 1 ? 's' : ''}
               </p>
             )}
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <form onSubmit={handleSearch} className="flex gap-2">
+            <form onSubmit={handleSearch} className="flex flex-1 gap-2">
               <input
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="Search products…"
-                className={`${input} sm:w-60`}
+                className={`${input} min-w-0 flex-1 sm:w-60 sm:flex-none`}
               />
               <button type="submit" className={`${primaryBtn} px-3 py-1.5 text-sm`}>Search</button>
               {isSearching && (
@@ -257,8 +284,8 @@ export default function EmployeeProductsPage() {
             {!isSearching && (
               <select
                 value={sort}
-                onChange={(e) => { setSort(e.target.value); setPage(1); }}
-                className={`${input} !w-auto`}
+                onChange={(e) => setSort(e.target.value)}
+                className={`${input} !w-auto hidden lg:block`}
               >
                 {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
@@ -269,8 +296,9 @@ export default function EmployeeProductsPage() {
         <div className="flex flex-col gap-6 lg:flex-row">
           {/* Sidebar (browse mode only) */}
           {!isSearching && (
-            <aside className="w-full shrink-0 lg:w-72">
+            <aside className="hidden w-full shrink-0 lg:block lg:w-72">
               <FilterSidebar
+                idPrefix="side"
                 categories={categories}
                 bounds={bounds}
                 selCats={selCats}
@@ -280,8 +308,8 @@ export default function EmployeeProductsPage() {
                 toggleAttr={toggleAttr}
                 lo={lo}
                 hi={hi}
-                setLo={(n) => { setLoRaw(n); setPage(1); }}
-                setHi={(n) => { setHiRaw(n); setPage(1); }}
+                setLo={(n) => setLoRaw(n)}
+                setHi={(n) => setHiRaw(n)}
                 hasFilters={hasFilters}
                 onClear={clearFilters}
               />
@@ -291,7 +319,7 @@ export default function EmployeeProductsPage() {
           {/* Results */}
           <div className="flex-1">
             {activeQuery.isLoading ? (
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
                 {Array.from({ length: 8 }).map((_, i) => (
                   <div key={i} className={`h-72 animate-pulse rounded-[20px] ${glass}`} />
                 ))}
@@ -315,18 +343,64 @@ export default function EmployeeProductsPage() {
             ) : (
               <>
                 {grid}
-                {pagination && pagination.pages > 1 && (
-                  <div className="mt-6 flex items-center justify-center gap-2">
-                    <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1} className={`${secondaryBtn} px-3 py-1.5 text-sm`}>Previous</button>
-                    <span className="text-sm text-muted">Page {pagination.page} of {pagination.pages}</span>
-                    <button onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))} disabled={page >= pagination.pages} className={`${secondaryBtn} px-3 py-1.5 text-sm`}>Next</button>
-                  </div>
-                )}
+                <div ref={sentinel} className="py-6 text-center text-sm text-muted">
+                  {isFetchingNextPage ? 'Loading more…' : hasNextPage ? '' : 'You’ve reached the end.'}
+                </div>
               </>
             )}
           </div>
         </div>
       </div>
+
+      {/* Myntra-style Sort / Filter bar — mobile only, stacked above the tab bar. */}
+      {!isSearching && (
+        <div className="fixed inset-x-0 bottom-14 z-40 grid grid-cols-2 border-t border-line bg-white/95 backdrop-blur-[14px] md:hidden">
+          <button onClick={() => setSheet('sort')} className="cursor-pointer border-0 border-r border-line bg-transparent py-3 text-sm font-semibold text-ink">
+            Sort
+          </button>
+          <button onClick={() => setSheet('filter')} className="cursor-pointer border-0 bg-transparent py-3 text-sm font-semibold text-ink">
+            Filter{hasFilters ? ' ·' : ''}
+          </button>
+        </div>
+      )}
+
+      {sheet === 'sort' && (
+        <Sheet title="Sort by" onClose={() => setSheet(null)}>
+          <div className="flex flex-col">
+            {SORT_OPTIONS.map((o) => (
+              <button
+                key={o.value}
+                onClick={() => { setSort(o.value); setSheet(null); }}
+                className={`cursor-pointer rounded-xl border-0 bg-transparent px-3 py-3 text-left text-[15px] ${sort === o.value ? 'bg-white font-bold text-accent' : 'font-medium text-slate'}`}
+              >
+                {o.label}
+              </button>
+            ))}
+          </div>
+        </Sheet>
+      )}
+
+      {sheet === 'filter' && (
+        <Sheet title="Filters" onClose={() => setSheet(null)}>
+          <FilterSidebar
+            idPrefix="sheet"
+            categories={categories}
+            bounds={bounds}
+            selCats={selCats}
+            toggleCat={toggleCat}
+            attributes={attributes}
+            selAttrs={selAttrs}
+            toggleAttr={toggleAttr}
+            lo={lo}
+            hi={hi}
+            setLo={setLoRaw}
+            setHi={setHiRaw}
+            hasFilters={hasFilters}
+            onClear={clearFilters}
+          />
+          <button onClick={() => setSheet(null)} className={`${primaryBtn} mt-4 w-full py-3`}>Show results</button>
+        </Sheet>
+      )}
     </div>
   );
 }

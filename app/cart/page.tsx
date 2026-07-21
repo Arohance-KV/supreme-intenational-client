@@ -39,7 +39,7 @@ export default function CartPage() {
 // the rest of the design system instead of the bare default styling.
 function CartShell({ children }: { children: React.ReactNode }) {
   return (
-    <main className="font-display relative flex min-h-screen w-full flex-col items-center justify-center overflow-x-hidden bg-[#eef0f8] px-6 text-center text-ink selection:bg-[rgba(23,155,142,0.22)]">
+    <main className="font-display relative flex min-h-screen w-full flex-col items-center justify-center overflow-x-hidden bg-[#eef0f8] px-5 text-center text-ink selection:bg-[rgba(23,155,142,0.22)]">
       <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(55%_45%_at_100%_0%,rgba(20,155,142,.16),transparent_60%),radial-gradient(50%_45%_at_0%_6%,rgba(58,60,152,.16),transparent_60%),linear-gradient(180deg,#eef0f8_0%,#f2f1f7_50%,#eef0f8_100%)]" />
       <div className="pointer-events-none fixed -right-[120px] -top-[160px] z-0 h-[500px] w-[500px] animate-blob1 rounded-full bg-[radial-gradient(circle,rgba(20,155,142,.16),transparent_70%)] blur-[20px]" />
       <div className="pointer-events-none fixed -bottom-[160px] -left-[120px] z-0 h-[460px] w-[460px] animate-blob2 rounded-full bg-[radial-gradient(circle,rgba(58,60,152,.14),transparent_70%)] blur-[20px]" />
@@ -52,7 +52,7 @@ function EmptyCart() {
   return (
     <>
       {/* Animated illustration: a floating cart with items drifting above it, waiting to be added. */}
-      <div className="relative mb-9 h-[220px] w-[260px]">
+      <div className="relative mb-7 h-[180px] w-[220px] sm:mb-9 sm:h-[220px] sm:w-[260px]">
         {/* soft glow disc */}
         <div className="absolute left-1/2 top-1/2 h-[180px] w-[180px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(42,43,106,.12),transparent_70%)] blur-[6px]" />
 
@@ -88,12 +88,12 @@ function EmptyCart() {
       </div>
 
       <div className="font-jbmono mb-3 text-[11px] uppercase tracking-[.22em] text-accent">Your cart</div>
-      <h1 className="mb-3 text-[34px] font-extrabold leading-[1.05] tracking-[-.03em] sm:text-[42px]">Nothing here yet.</h1>
-      <p className="mb-8 max-w-[44ch] text-[16px] leading-[1.6] text-slate">Your cart is empty, browse the catalogue to shortlist products, then build a branded quotation in a click.</p>
+      <h1 className="mb-3 text-[28px] font-extrabold leading-[1.05] tracking-[-.03em] sm:text-[42px]">Nothing here yet.</h1>
+      <p className="mb-7 max-w-[44ch] text-[15px] sm:text-[16px] leading-[1.6] text-slate">Your cart is empty, browse the catalogue to shortlist products, then build a branded quotation in a click.</p>
 
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        <Link href="/products" className="rounded-[14px] bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)] px-7 py-[14px] text-[15px] font-semibold text-white no-underline shadow-[0_12px_30px_rgba(42,43,106,.32)] transition-transform hover:-translate-y-0.5">Browse Products</Link>
-        <Link href="/quotation" className="rounded-[14px] border border-white/[.78] bg-white/70 px-7 py-[14px] text-[15px] font-semibold text-indigo no-underline backdrop-blur-[8px] transition-colors hover:bg-white">Request a Quotation</Link>
+      <div className="flex w-full flex-wrap items-center justify-center gap-2.5 sm:w-auto sm:gap-3">
+        <Link href="/products" className="flex-1 whitespace-nowrap rounded-[14px] bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)] px-5 py-[14px] text-center text-[14px] sm:flex-none sm:px-7 sm:text-[15px] font-semibold text-white no-underline shadow-[0_12px_30px_rgba(42,43,106,.32)] transition-transform hover:-translate-y-0.5">Browse Products</Link>
+        <Link href="/quotation" className="flex-1 whitespace-nowrap rounded-[14px] border border-white/[.78] bg-white/70 px-5 py-[14px] text-center text-[14px] sm:flex-none sm:px-7 sm:text-[15px] font-semibold text-indigo no-underline backdrop-blur-[8px] transition-colors hover:bg-white">Request a Quotation</Link>
       </div>
     </>
   );

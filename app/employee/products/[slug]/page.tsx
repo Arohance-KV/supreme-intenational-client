@@ -5,6 +5,7 @@ import { useEmployeeProduct, useEmployeeRelated } from '@/lib/employee/catalog';
 import { apiFetch } from '@/lib/api';
 import AddToCart from '@/components/AddToCart';
 import ProductCard from '@/components/ProductCard';
+import { EMPLOYEE_CART } from '@/components/AddToCartMini';
 import { glass, eyebrow, pageWrap } from '@/components/employee/ui';
 
 interface PageProps {
@@ -61,7 +62,7 @@ export default function EmployeeProductPage({ params }: PageProps) {
     <div className="min-h-screen bg-[#eef0f8]">
       <div className={pageWrap}>
         {/* Product Hero */}
-        <div className="flex flex-col gap-8 lg:flex-row">
+        <div className="flex flex-col gap-5 lg:flex-row lg:gap-8">
           {/* Image Gallery */}
           <div className={`w-full lg:w-1/2 shrink-0 ${glass} rounded-[22px] p-3.5`}>
             {mainImage ? (
@@ -105,7 +106,7 @@ export default function EmployeeProductPage({ params }: PageProps) {
               </div>
             )}
             {imageCount > 1 && (
-              <div className="mt-3 flex gap-2 overflow-x-auto">
+              <div className="mt-2.5 flex gap-2 overflow-x-auto pb-1 sm:mt-3">
                 {product.images.map((img, i) => (
                   <button
                     type="button"
@@ -131,7 +132,7 @@ export default function EmployeeProductPage({ params }: PageProps) {
           </div>
 
           {/* Product Info */}
-          <div className={`flex flex-col gap-5 flex-1 ${glass} rounded-[20px] p-6`}>
+          <div className={`flex flex-col gap-4 flex-1 ${glass} rounded-[20px] p-4 sm:gap-5 sm:p-6`}>
             {product.category && <span className={`w-fit ${eyebrow}`}>{product.category}</span>}
 
             {product.badge && (
@@ -183,7 +184,7 @@ export default function EmployeeProductPage({ params }: PageProps) {
 
         {/* Description */}
         {product.description && (
-          <div className={`mt-8 ${glass} rounded-[20px] p-6`}>
+          <div className={`mt-8 ${glass} rounded-[20px] p-5 sm:p-6`}>
             <h2 className="mb-2 text-lg font-bold text-ink">Description</h2>
             <p className="text-sm text-slate leading-[1.6]">{product.description}</p>
           </div>
@@ -193,9 +194,9 @@ export default function EmployeeProductPage({ params }: PageProps) {
         {related.length > 0 && (
           <div className="mt-12">
             <h2 className="mb-6 text-xl font-bold text-ink">Related Products</h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
               {related.map((p) => (
-                <ProductCard key={p._id} product={p} hrefBase="/employee/products" showAddToCart={false} />
+                <ProductCard key={p._id} product={p} hrefBase="/employee/products" cartTarget={EMPLOYEE_CART} />
               ))}
             </div>
           </div>

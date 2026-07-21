@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEmployeeAuth } from '@/lib/employee/auth';
 import { useRecentlyViewed } from '@/lib/employee/catalog';
 import ProductCard from '@/components/ProductCard';
+import { EMPLOYEE_CART } from '@/components/AddToCartMini';
 import { glass, eyebrow, pageWrap } from '@/components/employee/ui';
 
 export default function EmployeeDashboard() {
@@ -25,11 +26,11 @@ export default function EmployeeDashboard() {
 
   return (
     <div className="min-h-screen bg-[#eef0f8]">
-      <div className={`${pageWrap} space-y-10`}>
+      <div className={`${pageWrap} space-y-7 sm:space-y-10`}>
         {/* Greeting hero */}
-        <section className={`${glass} rounded-[24px] p-8`}>
+        <section className={`${glass} rounded-[24px] p-5 sm:p-8`}>
           <p className={`${eyebrow} mb-2`}>EMPLOYEE PORTAL</p>
-          <h1 className="text-3xl font-extrabold tracking-[-.02em] text-ink">{greeting}</h1>
+          <h1 className="text-2xl font-extrabold sm:text-3xl tracking-[-.02em] text-ink">{greeting}</h1>
           <p className="mt-2 text-[15px] text-slate">
             Browse curated products and manage your wallet.
           </p>
@@ -63,7 +64,7 @@ export default function EmployeeDashboard() {
           <h2 className="mb-4 text-xl font-extrabold tracking-[-.02em] text-ink">Recently Viewed</h2>
 
           {isLoading ? (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
               {Array.from({ length: 5 }).map((_, i) => (
                 <div key={i} className={`h-56 animate-pulse rounded-[20px] ${glass}`} />
               ))}
@@ -79,9 +80,9 @@ export default function EmployeeDashboard() {
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
               {recentProducts.slice(0, 10).map((product) => (
-                <ProductCard key={product._id} product={product} hrefBase="/employee/products" showAddToCart={false} />
+                <ProductCard key={product._id} product={product} hrefBase="/employee/products" cartTarget={EMPLOYEE_CART} />
               ))}
             </div>
           )}

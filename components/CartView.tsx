@@ -1,11 +1,9 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import type { Cart } from '@/lib/cart';
 import type { useCartMutations } from '@/lib/cart';
-import { ApiError } from '@/lib/api';
-import { glass, primaryBtn, secondaryBtn, input } from '@/components/employee/ui';
+import { glass, primaryBtn } from '@/components/employee/ui';
 import CartItemRow from '@/components/CartItemRow';
 
 function formatPrice(value: number): string {
@@ -23,32 +21,7 @@ interface CartViewProps {
 }
 
 export default function CartView({ cart, mutations, checkoutHref, checkoutLabel = 'Request Quotation', productHrefBase = '/products', enforceMoq = true }: CartViewProps) {
-  const { setQty, remove, clear, applyCoupon, removeCoupon } = mutations;
-  const [couponCode, setCouponCode] = useState('');
-  const [couponError, setCouponError] = useState<string | null>(null);
-
-  const handleApplyCoupon = async () => {
-    setCouponError(null);
-    try {
-      await applyCoupon.mutateAsync({ code: couponCode.trim() });
-      setCouponCode('');
-    } catch (err) {
-      if (err instanceof ApiError) {
-        setCouponError(err.message);
-      } else {
-        setCouponError('Failed to apply coupon');
-      }
-    }
-  };
-
-  const handleRemoveCoupon = async () => {
-    setCouponError(null);
-    try {
-      await removeCoupon.mutateAsync();
-    } catch (err) {
-      setCouponError(err instanceof ApiError ? err.message : 'Failed to remove coupon');
-    }
-  };
+  const { setQty, remove, clear } = mutations;
 
   return (
     <main className="max-w-5xl mx-auto px-4 py-8 font-display">
@@ -80,70 +53,13 @@ export default function CartView({ cart, mutations, checkoutHref, checkoutLabel 
 
         {/* Order summary */}
         <div className="w-full lg:w-80 flex-shrink-0 space-y-4">
-          {/* Coupon */}
-          <div className={`${glass} rounded-[20px] p-4`}>
-            <h2 className="font-semibold text-ink mb-3">Coupon</h2>
-
-            {cart.coupon ? (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-jbmono bg-white/50 border border-line px-2 py-1 rounded text-ink">
-                    {cart.coupon.code}
-                  </span>
-                  <button
-                    onClick={handleRemoveCoupon}
-                    disabled={removeCoupon.isPending}
-                    className="text-xs text-slate hover:text-[#e0524d] disabled:opacity-50"
-                  >
-                    Remove
-                  </button>
-                </div>
-                <p className="text-sm text-[#1a8f5a]">
-                  Discount: −{formatPrice(cart.coupon.discountAmount)}
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={couponCode}
-                    onChange={(e) => {
-                      setCouponCode(e.target.value);
-                      setCouponError(null);
-                    }}
-                    onKeyDown={(e) => { if (e.key === 'Enter') handleApplyCoupon(); }}
-                    placeholder="Coupon code"
-                    className={`${input} flex-1`}
-                  />
-                  <button
-                    onClick={handleApplyCoupon}
-                    disabled={!couponCode.trim() || applyCoupon.isPending}
-                    className={`${secondaryBtn} px-4 py-2 text-sm`}
-                  >
-                    Apply
-                  </button>
-                </div>
-                {couponError && (
-                  <p className="text-[#e0524d] text-sm">{couponError}</p>
-                )}
-              </div>
-            )}
-          </div>
-
           {/* Totals */}
-          <div className={`${glass} rounded-[20px] p-6 space-y-3`}>
+          <div className={`${glass} rounded-[20px] p-5 space-y-3 sm:p-6`}>
             <h2 className="font-semibold text-ink">Order Summary</h2>
             <div className="flex justify-between text-sm text-slate">
               <span>Subtotal ({cart.itemCount} items)</span>
               <span>{formatPrice(cart.subtotal)}</span>
             </div>
-            {cart.coupon && (
-              <div className="flex justify-between text-sm text-[#1a8f5a]">
-                <span>Discount</span>
-                <span>−{formatPrice(cart.coupon.discountAmount)}</span>
-              </div>
-            )}
             <div className="border-t border-line pt-3 flex justify-between font-extrabold text-ink">
               <span>Total</span>
               <span>{formatPrice(cart.total)}</span>

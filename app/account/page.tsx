@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Children, useState } from 'react';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api';
@@ -78,7 +78,7 @@ function statusBadge(status: string) {
 }
 
 const card =
-  'rounded-[18px] border border-white/80 bg-white/55 p-5 shadow-[0_10px_30px_rgba(34,36,90,.07)] backdrop-blur-[14px]';
+  'rounded-[18px] border border-white/80 bg-white/55 p-4 shadow-[0_10px_30px_rgba(34,36,90,.07)] backdrop-blur-[14px] sm:p-5';
 
 export default function AccountPage() {
   const { isLoggedIn } = useAuth();
@@ -129,14 +129,14 @@ export default function AccountPage() {
       <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(55%_45%_at_100%_0%,rgba(20,155,142,.14),transparent_60%),radial-gradient(50%_45%_at_0%_6%,rgba(58,60,152,.14),transparent_60%),linear-gradient(180deg,#eef0f8_0%,#f2f1f7_50%,#eef0f8_100%)]" />
 
       <div className="relative z-[1]">
-        <div className="mx-auto max-w-[1180px] px-[18px] pb-12 pt-2 sm:px-6">
+        <div className="mx-auto max-w-[1180px] px-4 pb-12 pt-2 sm:px-6">
           {/* Profile header */}
-          <section className="flex items-center gap-4 py-8 sm:gap-[18px]">
-            <div className="flex h-[68px] w-[68px] shrink-0 items-center justify-center rounded-[18px] bg-[linear-gradient(135deg,#2a2b6a,#179b8e)] text-2xl font-extrabold tracking-[-.02em] text-white">
+          <section className="flex flex-wrap items-center gap-4 py-6 sm:gap-[18px] sm:py-8">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[16px] sm:h-[68px] sm:w-[68px] sm:rounded-[18px] bg-[linear-gradient(135deg,#2a2b6a,#179b8e)] text-2xl font-extrabold tracking-[-.02em] text-white">
               {initials(profile?.firstName ?? '', profile?.lastName)}
             </div>
             <div className="min-w-0 flex-1">
-              <h1 className="truncate text-[26px] font-extrabold tracking-[-.02em] sm:text-[30px]">
+              <h1 className="truncate text-[22px] font-extrabold tracking-[-.02em] sm:text-[30px]">
                 {fullName || 'My Account'}
               </h1>
               <div className="truncate text-sm text-slate">
@@ -152,7 +152,7 @@ export default function AccountPage() {
           </section>
 
           {/* KPIs */}
-          <div className="mb-6 grid grid-cols-3 gap-3.5">
+          <div className="mb-6 grid grid-cols-3 gap-2.5 sm:gap-3.5">
             {[
               { label: 'Quotations', value: quotationsData?.total ?? quotations.length },
               { label: 'Catalogues', value: cataloguesData?.total ?? catalogues.length },
@@ -162,23 +162,22 @@ export default function AccountPage() {
                 <div className="font-jbmono mb-2.5 text-[10px] uppercase tracking-[.08em] text-muted">
                   {kpi.label}
                 </div>
-                <div className="text-[28px] font-extrabold">{kpi.value}</div>
+                <div className="text-[22px] font-extrabold sm:text-[28px]">{kpi.value}</div>
               </div>
             ))}
           </div>
 
           {/* Tabs */}
-          <div className="mb-[18px] flex gap-1.5 border-b border-line">
+          <div className="mb-[18px] flex gap-5 overflow-x-auto border-b border-line sm:gap-[22px]">
             {tabs.map((t) => {
               const on = tab === t.k;
               return (
                 <button
                   key={t.k}
                   onClick={() => setTab(t.k)}
-                  className={`-mb-px border-b-2 px-1 pb-3.5 text-sm font-semibold transition-colors ${
+                  className={`-mb-px shrink-0 border-b-2 px-1 pb-3.5 text-sm font-semibold transition-colors ${
                     on ? 'border-indigo text-ink' : 'border-transparent text-muted hover:text-slate'
                   }`}
-                  style={{ marginRight: 22 }}
                 >
                   {t.t}
                 </button>
@@ -196,9 +195,9 @@ export default function AccountPage() {
                 <Empty text="No catalogues yet." href="/products" cta="Browse products" />
               ) : (
                 <>
-                  <TableHead cols="1fr 1fr 2fr .8fr .7fr" heads={['Catalogue', 'Date', 'Scope', 'Products', '']} />
+                  <TableHead cols={CAT_COLS} heads={CAT_HEADS} />
                   {catalogues.map((c) => (
-                    <TableRow key={c._id} cols="1fr 1fr 2fr .8fr .7fr">
+                    <TableRow key={c._id} cols={CAT_COLS} heads={CAT_HEADS}>
                       <span className="font-jbmono font-bold">{c.catalogueNumber}</span>
                       <span>{formatDate(c.createdAt)}</span>
                       <span className="truncate text-slate">{scopeLabel(c)}</span>
@@ -216,7 +215,7 @@ export default function AccountPage() {
                 <Empty text="No saved items yet." href="/products" cta="Browse products" />
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+              <div className="grid grid-cols-2 gap-2.5 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
                 {saved.map((p) => (
                   <ProductCard key={p._id} product={p} />
                 ))}
@@ -231,6 +230,10 @@ export default function AccountPage() {
   );
 }
 
+const QUOTE_HEADS = ['Quotation', 'Date', 'Items', 'Units', 'Est. total', 'Status', ''];
+const CAT_COLS = '1fr 1fr 2fr .8fr .7fr';
+const CAT_HEADS = ['Catalogue', 'Date', 'Scope', 'Products', ''];
+
 function QuoteTable({ rows }: { rows: Quotation[] }) {
   const cols = '1.1fr .9fr .5fr .5fr 1fr .9fr .7fr';
   return (
@@ -239,11 +242,11 @@ function QuoteTable({ rows }: { rows: Quotation[] }) {
         <Empty text="No quotations yet." href="/cart" cta="Go to cart" />
       ) : (
         <>
-          <TableHead cols={cols} heads={['Quotation', 'Date', 'Items', 'Units', 'Est. total', 'Status', '']} />
+          <TableHead cols={cols} heads={QUOTE_HEADS} />
           {rows.map((q) => {
             const units = q.items.reduce((s, i) => s + i.qty, 0);
             return (
-              <TableRow key={q._id} cols={cols}>
+              <TableRow key={q._id} cols={cols} heads={QUOTE_HEADS}>
                 <span className="font-jbmono font-bold">{q.quotationNumber}</span>
                 <span>{formatDate(q.createdAt)}</span>
                 <span>{q.items.length}</span>
@@ -263,7 +266,7 @@ function QuoteTable({ rows }: { rows: Quotation[] }) {
 function TableHead({ cols, heads }: { cols: string; heads: string[] }) {
   return (
     <div
-      className="font-jbmono grid gap-3.5 border-b border-line px-3.5 pb-3 text-[10px] uppercase tracking-[.05em] text-muted"
+      className="font-jbmono hidden gap-3.5 border-b border-line px-3.5 pb-3 text-[10px] uppercase tracking-[.05em] text-muted sm:grid"
       style={{ gridTemplateColumns: cols }}
     >
       {heads.map((h, i) => (
@@ -273,13 +276,20 @@ function TableHead({ cols, heads }: { cols: string; heads: string[] }) {
   );
 }
 
-function TableRow({ cols, children }: { cols: string; children: React.ReactNode }) {
+// Below sm the columns would be ~40px wide, so each cell becomes a labelled row
+// instead (the header is hidden there and supplies the labels here).
+function TableRow({ cols, heads, children }: { cols: string; heads: string[]; children: React.ReactNode }) {
   return (
     <div
-      className="grid items-center gap-3.5 border-b border-line px-3.5 py-3.5 text-[13px] last:border-b-0 [&>span]:min-w-0 [&>span]:truncate"
+      className="border-b border-line py-1.5 text-[13px] last:border-b-0 sm:grid sm:items-center sm:gap-3.5 sm:px-3.5 sm:py-3.5"
       style={{ gridTemplateColumns: cols }}
     >
-      {children}
+      {Children.toArray(children).map((cell, i) => (
+        <div key={i} className="flex min-w-0 items-center justify-between gap-3 py-1 sm:block sm:truncate sm:py-0">
+          {heads[i] && <span className="font-jbmono shrink-0 text-[10px] uppercase tracking-[.05em] text-muted sm:hidden">{heads[i]}</span>}
+          {cell}
+        </div>
+      ))}
     </div>
   );
 }

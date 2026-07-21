@@ -39,13 +39,13 @@ export default function CareersPage() {
       <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(55%_45%_at_0%_0%,rgba(58,60,152,.16),transparent_60%),radial-gradient(50%_45%_at_100%_6%,rgba(20,155,142,.16),transparent_60%),linear-gradient(180deg,#eef0f8_0%,#f2f1f7_50%,#eef0f8_100%)]" />
       <div className="pointer-events-none fixed -bottom-[160px] -left-[120px] z-0 h-[500px] w-[500px] animate-blob1 rounded-full bg-[radial-gradient(circle,rgba(58,60,152,.16),transparent_70%)] blur-[20px]" />
 
-      <div className="relative z-[1] mx-auto max-w-[1180px] px-6">
+      <div className="relative z-[1] mx-auto max-w-[1180px] px-4 sm:px-6">
 
         {/* HERO */}
-        <section className="grid grid-cols-1 items-center gap-9 pb-[30px] pt-11 md:grid-cols-2">
+        <section className="grid grid-cols-1 items-center gap-7 pb-[30px] pt-8 sm:gap-9 sm:pt-11 md:grid-cols-2">
           <div>
             <div className="font-jbmono mb-4 text-[11px] uppercase tracking-[.22em] text-accent">Careers</div>
-            <h1 className="mb-4 text-[32px] font-extrabold leading-[1.08] tracking-[-.03em] sm:text-[48px] sm:leading-[1.04]">Build the future of gifting.</h1>
+            <h1 className="mb-4 text-[28px] font-extrabold leading-[1.08] tracking-[-.03em] sm:text-[48px] sm:leading-[1.04]">Build the future of gifting.</h1>
             <p className="mb-[22px] text-base leading-[1.6] text-slate">We&apos;re a profitable, founder-led company shipping real software for a real business. Small teams, big ownership, and customers who use what you build the day it goes live.</p>
             <div className="flex flex-wrap gap-2.5">
               {heroPills.map((p) => (
@@ -58,9 +58,9 @@ export default function CareersPage() {
 
         {/* BENEFITS */}
         <section className="pb-[26px] pt-2">
-          <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 md:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-3.5 md:grid-cols-4">
             {benefits.map((b) => (
-              <div key={b.t} className="rounded-[18px] border border-white/80 bg-white/55 p-[22px] shadow-[0_10px_30px_rgba(34,36,90,.07)] backdrop-blur-[14px]">
+              <div key={b.t} className="rounded-[18px] border border-white/80 bg-white/55 p-5 sm:p-[22px] shadow-[0_10px_30px_rgba(34,36,90,.07)] backdrop-blur-[14px]">
                 <div className="mb-2.5 text-[22px]">{b.icon}</div>
                 <div className="mb-[5px] text-sm font-bold">{b.t}</div>
                 <div className="text-[12.5px] leading-[1.5] text-slate">{b.d}</div>
@@ -72,7 +72,7 @@ export default function CareersPage() {
         {/* OPENINGS */}
         <section className="pb-4 pt-2">
           <div className="mb-[18px] flex flex-wrap items-center justify-between gap-3">
-            <h2 className="m-0 text-[30px] font-extrabold tracking-[-.02em]">Open positions</h2>
+            <h2 className="m-0 text-[24px] font-extrabold tracking-[-.02em] sm:text-[30px]">Open positions</h2>
             <div className="flex flex-wrap gap-2">
               {depts.map((d) => {
                 const on = dept === d;
@@ -87,18 +87,18 @@ export default function CareersPage() {
               <div key={`sk-${i}`} className="h-[72px] animate-pulse rounded-2xl border border-white/80 bg-white/55" />
             ))}
             {!isLoading && list.length === 0 && (
-              <div className="rounded-2xl border border-white/80 bg-white/55 px-[22px] py-8 text-center text-sm text-slate backdrop-blur-[14px]">
+              <div className="rounded-2xl border border-white/80 bg-white/55 px-4 py-8 text-center sm:px-[22px] text-sm text-slate backdrop-blur-[14px]">
                 No open positions right now. Check back soon — or say hello via <Link href="/contact" className="font-semibold text-indigo">contact</Link>.
               </div>
             )}
             {!isLoading && list.map((j) => (
-              <Link key={j._id} href={`/careers/${j._id}`} className="flex flex-wrap items-center gap-4 rounded-2xl border border-white/80 bg-white/55 px-[22px] py-[18px] shadow-[0_8px_24px_rgba(34,36,90,.06)] backdrop-blur-[14px] no-underline transition-shadow hover:shadow-[0_12px_32px_rgba(34,36,90,.12)]">
-                <div className="flex-1">
+              <Link key={j._id} href={`/careers/${j._id}`} className="flex flex-wrap items-center gap-x-4 gap-y-3 rounded-2xl border border-white/80 bg-white/55 px-4 py-4 sm:px-[22px] sm:py-[18px] shadow-[0_8px_24px_rgba(34,36,90,.06)] backdrop-blur-[14px] no-underline transition-shadow hover:shadow-[0_12px_32px_rgba(34,36,90,.12)]">
+                <div className="w-full sm:flex-1">
                   <div className="mb-1 text-base font-bold text-ink">{j.title}</div>
                   <div className="text-xs text-slate">{j.department} · {j.location}</div>
                 </div>
                 <span className="font-jbmono rounded-full bg-[rgba(23,155,142,.12)] px-[11px] py-[5px] text-[11px] font-semibold text-accent">{j.employmentType}</span>
-                <span className="rounded-[11px] border border-[rgba(42,43,106,.12)] bg-[rgba(42,43,106,.07)] px-[18px] py-2.5 text-[13px] font-semibold text-indigo">View &amp; apply →</span>
+                <span className="ml-auto rounded-[11px] border border-[rgba(42,43,106,.12)] bg-[rgba(42,43,106,.07)] px-[18px] py-2.5 text-[13px] font-semibold text-indigo">View &amp; apply →</span>
               </Link>
             ))}
           </div>
@@ -106,12 +106,12 @@ export default function CareersPage() {
 
         {/* APPLICATION FLOW */}
         <section className="pb-11 pt-6">
-          <div className="rounded-3xl bg-[linear-gradient(135deg,#1c1d44,#23254f)] p-[38px] shadow-[0_24px_60px_rgba(42,43,106,.25)]">
+          <div className="rounded-3xl bg-[linear-gradient(135deg,#1c1d44,#23254f)] p-6 sm:p-[38px] shadow-[0_24px_60px_rgba(42,43,106,.25)]">
             <div className="font-jbmono mb-2 text-[11px] uppercase tracking-[.14em] text-[#9fe7dc]">How hiring works</div>
-            <h3 className="mb-[26px] text-[26px] font-extrabold tracking-[-.02em] text-white">Four honest steps</h3>
-            <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            <h3 className="mb-[26px] text-[22px] font-extrabold tracking-[-.02em] text-white sm:text-[26px]">Four honest steps</h3>
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
               {steps.map(([n, t, d]) => (
-                <div key={n} className="rounded-2xl border border-white/20 bg-white/10 p-5">
+                <div key={n} className="rounded-2xl border border-white/20 bg-white/10 p-4 sm:p-5">
                   <div className="font-jbmono mb-3 text-[13px] text-[#9fe7dc]">{n}</div>
                   <div className="mb-1.5 text-sm font-bold text-white">{t}</div>
                   <div className="text-[12.5px] leading-[1.5] text-white/70">{d}</div>

@@ -48,7 +48,7 @@ export default function CareerDetailPage() {
     <main className={`${jakarta.variable} ${mono.variable} font-display relative min-h-screen w-full overflow-x-hidden bg-[#eef0f8] text-ink selection:bg-[rgba(23,155,142,0.22)]`}>
       <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(55%_45%_at_0%_0%,rgba(58,60,152,.16),transparent_60%),radial-gradient(50%_45%_at_100%_6%,rgba(20,155,142,.16),transparent_60%),linear-gradient(180deg,#eef0f8_0%,#f2f1f7_50%,#eef0f8_100%)]" />
 
-      <div className="relative z-[1] mx-auto max-w-[900px] px-6">
+      <div className="relative z-[1] mx-auto max-w-[900px] px-4 sm:px-6">
 
         <div className="pt-8">
           <Link href="/careers" className="font-jbmono text-[11px] uppercase tracking-[.18em] text-accent no-underline">← All positions</Link>
@@ -56,7 +56,7 @@ export default function CareerDetailPage() {
 
         {isLoading && <div className="mt-6 h-40 animate-pulse rounded-3xl border border-white/80 bg-white/55" />}
         {isError && (
-          <div className="mt-6 rounded-3xl border border-white/80 bg-white/55 p-10 text-center">
+          <div className="mt-6 rounded-3xl border border-white/80 bg-white/55 p-6 text-center sm:p-10">
             <p className="text-sm text-slate">This position isn&apos;t available anymore.</p>
             <Link href="/careers" className="mt-3 inline-block text-sm font-semibold text-indigo">See open roles →</Link>
           </div>
@@ -66,7 +66,7 @@ export default function CareerDetailPage() {
           <>
             {/* Header */}
             <section className="pt-6 pb-4">
-              <h1 className="mb-2 text-[30px] font-extrabold leading-[1.1] tracking-[-.02em] sm:text-[40px]">{job.title}</h1>
+              <h1 className="mb-2 text-[26px] font-extrabold leading-[1.1] tracking-[-.02em] sm:text-[40px]">{job.title}</h1>
               <div className="flex flex-wrap gap-2.5">
                 <span className="rounded-[10px] border border-[rgba(42,43,106,.12)] bg-[rgba(42,43,106,.07)] px-[13px] py-2 text-xs font-semibold text-indigo">{job.department}</span>
                 <span className="rounded-[10px] border border-[rgba(42,43,106,.12)] bg-[rgba(42,43,106,.07)] px-[13px] py-2 text-xs font-semibold text-indigo">{job.location}</span>

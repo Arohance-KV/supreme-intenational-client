@@ -1,5 +1,5 @@
 'use client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api';
 import type { Product, Pagination, ProductDetail, ProductVariant } from '@/lib/catalog';
 
@@ -31,26 +31,39 @@ interface EmployeeProductsParams {
   attributeFilters?: Record<string, string[]>;
 }
 
-export function useEmployeeProducts(params: EmployeeProductsParams = {}) {
-  return useQuery<{ products: Product[]; pagination: Pagination }>({
+type ProductPage = { products: Product[]; pagination: Pagination };
+
+function fetchEmployeeProducts(params: EmployeeProductsParams, page: number): Promise<ProductPage> {
+  const qs = new URLSearchParams();
+  (params.categoryIds ?? []).forEach((c) => qs.append('category', c));
+  if (params.minPrice != null) qs.set('minPrice', String(params.minPrice));
+  if (params.maxPrice != null) qs.set('maxPrice', String(params.maxPrice));
+  if (params.sort) qs.set('sort', params.sort);
+  qs.set('page', String(page));
+  if (params.limit != null) qs.set('limit', String(params.limit));
+  Object.entries(params.attributeFilters ?? {}).forEach(([slug, vals]) =>
+    vals.forEach((v) => qs.append(slug, v)),
+  );
+  const search = qs.toString();
+  return apiFetch<ProductPage>(
+    `/employee/catalog/products${search ? '?' + search : ''}`,
+    { tokenKey: 'employeeToken' },
+  );
+}
+
+// Next page = current + 1 until the API says we're on the last one.
+const nextPage = (last: ProductPage) =>
+  last.pagination.page < last.pagination.pages ? last.pagination.page + 1 : undefined;
+
+// Infinite variants back the catalog's scroll-to-load list. The params object is
+// part of the query key, so changing a filter starts a fresh list automatically.
+export function useEmployeeProductsInfinite(params: EmployeeProductsParams = {}, enabled = true) {
+  return useInfiniteQuery({
     queryKey: ['employee', 'products', params],
-    queryFn: () => {
-      const qs = new URLSearchParams();
-      (params.categoryIds ?? []).forEach((c) => qs.append('category', c));
-      if (params.minPrice != null) qs.set('minPrice', String(params.minPrice));
-      if (params.maxPrice != null) qs.set('maxPrice', String(params.maxPrice));
-      if (params.sort) qs.set('sort', params.sort);
-      if (params.page != null) qs.set('page', String(params.page));
-      if (params.limit != null) qs.set('limit', String(params.limit));
-      Object.entries(params.attributeFilters ?? {}).forEach(([slug, vals]) =>
-        vals.forEach((v) => qs.append(slug, v)),
-      );
-      const search = qs.toString();
-      return apiFetch<{ products: Product[]; pagination: Pagination }>(
-        `/employee/catalog/products${search ? '?' + search : ''}`,
-        { tokenKey: 'employeeToken' },
-      );
-    },
+    enabled,
+    initialPageParam: 1,
+    queryFn: ({ pageParam }) => fetchEmployeeProducts(params, pageParam),
+    getNextPageParam: nextPage,
   });
 }
 
@@ -84,20 +97,19 @@ export function useEmployeeFilters() {
   });
 }
 
-export function useEmployeeSearch(q: string, page: number = 1) {
-  return useQuery<{ products: Product[]; pagination: Pagination }>({
-    queryKey: ['employee', 'search', q, page],
+export function useEmployeeSearchInfinite(q: string) {
+  return useInfiniteQuery({
+    queryKey: ['employee', 'search', q],
     enabled: q.trim().length > 0,
-    queryFn: () => {
-      const qs = new URLSearchParams();
-      qs.set('q', q);
-      qs.set('page', String(page));
-      qs.set('limit', '12');
-      return apiFetch<{ products: Product[]; pagination: Pagination }>(
+    initialPageParam: 1,
+    queryFn: ({ pageParam }) => {
+      const qs = new URLSearchParams({ q, page: String(pageParam), limit: '12' });
+      return apiFetch<ProductPage>(
         `/employee/catalog/search?${qs.toString()}`,
         { tokenKey: 'employeeToken' },
       );
     },
+    getNextPageParam: nextPage,
   });
 }
 

@@ -40,7 +40,7 @@ export default function ClientCaseStudies({ items }: { items: CaseStudy[] }) {
       )}
 
       <section className="pb-5">
-        <h2 className="mb-5 text-[30px] font-extrabold tracking-[-.02em]">Success stories</h2>
+        <h2 className="mb-5 text-[24px] font-extrabold tracking-[-.02em] sm:text-[30px]">Success stories</h2>
         {list.length === 0 ? (
           <div className="rounded-[18px] border border-dashed border-line bg-white/55 p-10 text-center text-sm text-muted">No case studies published yet.</div>
         ) : (
