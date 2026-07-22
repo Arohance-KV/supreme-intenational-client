@@ -2,14 +2,21 @@
 
 import Link from 'next/link';
 import { useEmployeeAuth } from '@/lib/employee/auth';
-import { useRecentlyViewed } from '@/lib/employee/catalog';
+import { useRecentlyViewed, useEmployeeCompany } from '@/lib/employee/catalog';
 import ProductCard from '@/components/ProductCard';
 import { EMPLOYEE_CART } from '@/components/AddToCartMini';
 import { glass, eyebrow, pageWrap } from '@/components/employee/ui';
+import PortalHero from '@/components/employee/PortalHero';
+import AnnouncementsSection from '@/components/employee/AnnouncementsSection';
+import ContentBlocks from '@/components/employee/ContentBlocks';
+import PromotionBanner from '@/components/employee/PromotionBanner';
+import FeaturedProducts from '@/components/employee/FeaturedProducts';
+import SupremeSection from '@/components/employee/SupremeSection';
 
 export default function EmployeeDashboard() {
   const { token } = useEmployeeAuth();
   const { data, isLoading } = useRecentlyViewed();
+  const { data: company } = useEmployeeCompany();
   const recentProducts = data?.products ?? [];
 
   // Decode a rough display name from the JWT payload (sub claim) if available
@@ -27,6 +34,8 @@ export default function EmployeeDashboard() {
   return (
     <div className="min-h-screen bg-[#eef0f8]">
       <div className={`${pageWrap} space-y-7 sm:space-y-10`}>
+        <PortalHero hero={company?.portalHero} />
+
         {/* Greeting hero */}
         <section className={`${glass} rounded-[24px] p-5 sm:p-8`}>
           <p className={`${eyebrow} mb-2`}>EMPLOYEE PORTAL</p>
@@ -57,6 +66,12 @@ export default function EmployeeDashboard() {
             </Link>
           ))}
         </section>
+
+        <AnnouncementsSection items={company?.portalAnnouncements} />
+        <ContentBlocks blocks={company?.portalContentBlocks} />
+        <PromotionBanner promo={company?.portalPromotion} />
+        <SupremeSection />
+        <FeaturedProducts products={company?.featuredProducts} />
 
         {/* Recently Viewed */}
         <section>
