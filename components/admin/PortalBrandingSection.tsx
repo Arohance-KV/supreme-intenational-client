@@ -6,7 +6,7 @@ import ImageUploadField from '@/components/admin/ImageUploadField';
 import { readableTextColor } from '@/lib/color';
 import { useAdminProducts } from '@/lib/admin/products';
 import {
-  useUpdateCompany,
+  useCompanyProducts, useUpdateCompany,
   type AdminCompany, type PortalAnnouncement, type PortalContentBlock,
 } from '@/lib/admin/companies';
 
@@ -43,10 +43,44 @@ export default function PortalBrandingSection({ company }: { company: AdminCompa
   const [searchOpen, setSearchOpen] = useState(false);
   const debouncedProductQuery = useDebounced(productQuery);
   const { data: productSearch, isFetching: productsFetching } = useAdminProducts(1, debouncedProductQuery.trim() || undefined);
+  // Company's own catalog — the common source for pre-existing featuredProductIds,
+  // since search results alone rarely include ids seeded from a prior save.
+  const { data: companyProductsData } = useCompanyProducts(company._id);
 
   const searchResults = productSearch?.products ?? [];
-  const nameById = new Map(searchResults.map((p) => [p._id, p.name]));
   const availableResults = searchResults.filter((p) => !featured.includes(p._id));
+
+  // Persistent id -> name map for chip labels. Merges names discovered via the
+  // live product search with the company's own products, so chips don't lose
+  // their resolved name when the search query changes (no products-by-ids
+  // endpoint exists, so this is the best coverage available without one).
+  // Updated during render (the React-docs-endorsed "adjusting state when a
+  // prop changes" pattern) rather than in an effect, since each query's data
+  // reference only changes when new data actually arrives.
+  const [nameById, setNameById] = useState<Map<string, string>>(new Map());
+  const [prevProductSearch, setPrevProductSearch] = useState(productSearch);
+  if (productSearch !== prevProductSearch) {
+    setPrevProductSearch(productSearch);
+    if (searchResults.length > 0) {
+      setNameById((prev) => {
+        const next = new Map(prev);
+        searchResults.forEach((p) => next.set(p._id, p.name));
+        return next;
+      });
+    }
+  }
+  const [prevCompanyProducts, setPrevCompanyProducts] = useState(companyProductsData);
+  if (companyProductsData !== prevCompanyProducts) {
+    setPrevCompanyProducts(companyProductsData);
+    const companyProducts = companyProductsData?.products ?? [];
+    if (companyProducts.length > 0) {
+      setNameById((prev) => {
+        const next = new Map(prev);
+        companyProducts.forEach((p) => next.set(p._id, p.name));
+        return next;
+      });
+    }
+  }
 
   function addFeatured(id: string) {
     setFeatured((prev) => (prev.includes(id) ? prev : [...prev, id]));
@@ -112,7 +146,7 @@ export default function PortalBrandingSection({ company }: { company: AdminCompa
               <div className="flex gap-2">
                 <input className={`${inputCls} w-16`} placeholder="📢" value={a.icon ?? ''} onChange={(e) => setAnnouncements(announcements.map((x, j) => j === i ? { ...x, icon: e.target.value } : x))} />
                 <input className={inputCls} placeholder="Title" value={a.title} onChange={(e) => setAnnouncements(announcements.map((x, j) => j === i ? { ...x, title: e.target.value } : x))} />
-                <button type="button" className="text-red-500" onClick={() => setAnnouncements(announcements.filter((_, j) => j !== i))} aria-label="Remove">✕</button>
+                <button type="button" className="text-red-500" onClick={() => setAnnouncements(announcements.filter((_, j) => j !== i))} aria-label={`Remove announcement ${i + 1}`}>✕</button>
               </div>
               <textarea className={inputCls} rows={2} placeholder="Message" value={a.message} onChange={(e) => setAnnouncements(announcements.map((x, j) => j === i ? { ...x, message: e.target.value } : x))} />
             </div>
@@ -134,7 +168,7 @@ export default function PortalBrandingSection({ company }: { company: AdminCompa
                   <option value="text-right">Image right</option>
                   <option value="centered">Centered</option>
                 </select>
-                <button type="button" className="text-red-500" onClick={() => setBlocks(blocks.filter((_, j) => j !== i))} aria-label="Remove">✕</button>
+                <button type="button" className="text-red-500" onClick={() => setBlocks(blocks.filter((_, j) => j !== i))} aria-label={`Remove content block ${i + 1}`}>✕</button>
               </div>
               <textarea className={inputCls} rows={3} placeholder="Body text" value={b.body} onChange={(e) => setBlocks(blocks.map((x, j) => j === i ? { ...x, body: e.target.value } : x))} />
               <ImageUploadField value={b.image ?? ''} onChange={(url) => setBlocks(blocks.map((x, j) => j === i ? { ...x, image: url } : x))} folder="logos" />
@@ -195,12 +229,15 @@ export default function PortalBrandingSection({ company }: { company: AdminCompa
 
           {featured.length > 0 ? (
             <div className="flex flex-wrap gap-2">
-              {featured.map((id) => (
-                <span key={id} className="flex items-center gap-1.5 rounded-full border border-line bg-white/70 px-3 py-1 text-xs text-ink">
-                  {nameById.get(id) ?? id}
-                  <button type="button" onClick={() => removeFeatured(id)} className="text-muted hover:text-red-600" aria-label="Remove">✕</button>
-                </span>
-              ))}
+              {featured.map((id) => {
+                const label = nameById.get(id) ?? id;
+                return (
+                  <span key={id} className="flex items-center gap-1.5 rounded-full border border-line bg-white/70 px-3 py-1 text-xs text-ink">
+                    {label}
+                    <button type="button" onClick={() => removeFeatured(id)} className="text-muted hover:text-red-600" aria-label={`Remove ${label}`}>✕</button>
+                  </span>
+                );
+              })}
             </div>
           ) : (
             <p className="rounded-lg border border-dashed border-line py-4 text-center text-xs text-muted">
