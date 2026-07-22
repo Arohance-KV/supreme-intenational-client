@@ -9,6 +9,7 @@ import { useAdminProducts } from '@/lib/admin/products';
 import { useCategories } from '@/lib/admin/taxonomy';
 import CreateProductModal from '@/components/admin/CreateProductModal';
 import ImageUploadField from '@/components/admin/ImageUploadField';
+import PortalBrandingSection from '@/components/admin/PortalBrandingSection';
 import { useConfirm } from '@/components/ConfirmDialog';
 import {
   useCompany,
@@ -1672,6 +1673,9 @@ function CompanyDetailInner({ id }: { id: string }) {
 
       {/* Catalog editor */}
       <CompanyCatalogSection companyId={id} />
+
+      {/* Portal branding */}
+      <PortalBrandingSection company={company} />
 
       {/* Company products */}
       <CompanyProductsSection companyId={id} companyName={company.name} />
