@@ -2,6 +2,9 @@
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api';
 import type { Product, Pagination, ProductDetail, ProductVariant } from '@/lib/catalog';
+import type {
+  PortalHero, PortalAnnouncement, PortalContentBlock, PortalPromotion, PortalTheme,
+} from '@/lib/admin/companies';
 
 export type { ProductDetail, ProductVariant };
 
@@ -9,6 +12,12 @@ export interface EmployeeCompany {
   name: string;
   slug: string;
   logo: string;
+  portalHero?: PortalHero | null;
+  portalAnnouncements?: PortalAnnouncement[];
+  portalContentBlocks?: PortalContentBlock[];
+  portalPromotion?: PortalPromotion | null;
+  portalTheme?: PortalTheme | null;
+  featuredProducts?: Product[];
 }
 
 // The company the signed-in employee belongs to — drives the portal header branding.

@@ -10,6 +10,13 @@ export interface CompanyPrimaryContact {
   phoneNumber?: string;
 }
 
+// Portal branding types
+export interface PortalHero { image?: string; headline?: string; subtitle?: string; ctaText?: string; ctaLink?: string }
+export interface PortalAnnouncement { _id?: string; title: string; message: string; icon?: string; datePosted?: string }
+export interface PortalContentBlock { _id?: string; title?: string; body: string; image?: string; layout?: 'text-left' | 'text-right' | 'centered'; order?: number }
+export interface PortalPromotion { image?: string; title?: string; description?: string }
+export interface PortalTheme { navbarColor?: string; accentColor?: string }
+
 export interface AdminCompany {
   _id: string;
   name: string;
@@ -21,6 +28,12 @@ export interface AdminCompany {
   notes?: string;
   createdBy: string;
   assignedAdminIds?: string[];
+  portalHero?: PortalHero;
+  portalAnnouncements?: PortalAnnouncement[];
+  portalContentBlocks?: PortalContentBlock[];
+  portalPromotion?: PortalPromotion;
+  featuredProductIds?: string[];
+  portalTheme?: PortalTheme;
   createdAt: string;
   updatedAt: string;
 }
@@ -44,6 +57,12 @@ export interface UpdateCompanyBody {
   primaryContact?: CompanyPrimaryContact;
   notes?: string;
   assignedAdminIds?: string[];
+  portalHero?: PortalHero;
+  portalAnnouncements?: PortalAnnouncement[];
+  portalContentBlocks?: PortalContentBlock[];
+  portalPromotion?: PortalPromotion;
+  featuredProductIds?: string[];
+  portalTheme?: PortalTheme;
 }
 
 // Employee status enum from user.model.ts: 'invited' | 'active' | 'deactivated'
