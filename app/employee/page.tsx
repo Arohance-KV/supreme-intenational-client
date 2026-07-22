@@ -70,8 +70,8 @@ export default function EmployeeDashboard() {
         <AnnouncementsSection items={company?.portalAnnouncements} />
         <ContentBlocks blocks={company?.portalContentBlocks} />
         <PromotionBanner promo={company?.portalPromotion} />
-        <SupremeSection />
         <FeaturedProducts products={company?.featuredProducts} />
+        <SupremeSection />
 
         {/* Recently Viewed */}
         <section>
