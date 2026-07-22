@@ -8,6 +8,7 @@ import { useEmployeeCart } from '@/lib/employee/cart';
 import { useEmployeeCompany } from '@/lib/employee/catalog';
 import { useWallet } from '@/lib/employee/wallet';
 import CartBadge from '@/components/CartBadge';
+import { readableTextColor } from '@/lib/color';
 
 const navLink =
   'rounded-xl px-3 py-[9px] text-sm font-medium text-slate no-underline transition-colors hover:bg-[rgba(19,184,159,.12)] hover:text-accent';
@@ -20,6 +21,11 @@ export default function EmployeeHeader() {
   const { data: walletData } = useWallet();
   const { data: company } = useEmployeeCompany();
 
+  const navColor = company?.portalTheme?.navbarColor;
+  const navStyle = navColor
+    ? { backgroundColor: navColor, color: readableTextColor(navColor), borderColor: 'transparent' }
+    : undefined;
+
   const handleLogout = () => {
     logout();
     queryClient.invalidateQueries({ queryKey: ['employee'] });
@@ -29,7 +35,7 @@ export default function EmployeeHeader() {
   return (
     // Same floating-pill layout as the public DcNav, kept in the teal portal palette.
     <header className="font-display sticky top-0 z-50 px-4 pt-3 sm:px-6 lg:px-8">
-      <div className="flex items-center gap-x-2 rounded-[18px] sm:gap-x-4 border border-[rgba(19,184,159,.28)] bg-[rgba(232,247,244,.72)] px-3.5 py-2.5 shadow-[0_8px_30px_rgba(20,155,142,.14)] sm:px-[18px] sm:py-3 backdrop-blur-[20px] backdrop-saturate-[1.6]">
+      <div className="flex items-center gap-x-2 rounded-[18px] sm:gap-x-4 border border-[rgba(19,184,159,.28)] bg-[rgba(232,247,244,.72)] px-3.5 py-2.5 shadow-[0_8px_30px_rgba(20,155,142,.14)] sm:px-[18px] sm:py-3 backdrop-blur-[20px] backdrop-saturate-[1.6]" style={navStyle}>
         {/* Client company branding: logo if set, else the company name */}
         <Link href="/employee" className="flex min-w-0 shrink items-center gap-3 no-underline">
           {company?.logo ? (
