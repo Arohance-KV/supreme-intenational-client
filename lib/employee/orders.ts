@@ -47,6 +47,7 @@ export interface OrderSummary {
   orderId: string;
   status: OrderStatus;
   billing?: OrderBilling;
+  items?: OrderItem[];
   createdAt?: string;
   [key: string]: unknown;
 }
