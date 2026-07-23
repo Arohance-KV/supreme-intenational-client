@@ -30,7 +30,10 @@ const NAV: NavEntry[] = [
   },
   {
     group: 'Companies',
-    items: [{ label: 'Companies', href: '/admin/companies' }],
+    items: [
+      { label: 'Companies', href: '/admin/companies' },
+      { label: 'Points Requests', href: '/admin/points-proposals' },
+    ],
   },
   {
     group: 'Sellers',
@@ -98,6 +101,7 @@ const ICON: Record<string, string> = {
   '/admin/blogs': '📝',
   '/admin/marketing': '📣',
   '/admin/companies': '🏢',
+  '/admin/points-proposals': '🪙',
   '/admin/assignments': '🧑‍💼',
   '/admin/customers': '👥',
   '/admin/sellers': '🏷️',
