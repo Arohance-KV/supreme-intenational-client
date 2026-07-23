@@ -33,39 +33,8 @@ export default function EmployeeDashboard() {
 
   return (
     <div className="min-h-screen bg-[#eef0f8]">
-      <div className={`${pageWrap} space-y-7 sm:space-y-10`}>
-        <PortalHero hero={company?.portalHero} />
-
-        {/* Greeting hero */}
-        <section className={`${glass} rounded-[24px] p-5 sm:p-8`}>
-          <p className={`${eyebrow} mb-2`}>EMPLOYEE PORTAL</p>
-          <h1 className="text-2xl font-extrabold sm:text-3xl tracking-[-.02em] text-ink">{greeting}</h1>
-          <p className="mt-2 text-[15px] text-slate">
-            Browse curated products and manage your wallet.
-          </p>
-        </section>
-
-        {/* Quick links */}
-        <section className="grid max-w-2xl grid-cols-1 gap-4 sm:grid-cols-2">
-          {[
-            { href: '/employee/products', icon: '🛍️', title: 'Browse Catalog', sub: 'Explore curated products' },
-            { href: '/employee/wallet', icon: '💳', title: 'My Wallet', sub: 'View balance & transactions' },
-          ].map((c) => (
-            <Link
-              key={c.href}
-              href={c.href}
-              className={`group flex items-center gap-4 rounded-[20px] p-5 no-underline transition-shadow hover:shadow-[0_16px_44px_rgba(34,36,90,.16)] ${glass}`}
-            >
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[13px] bg-[rgba(23,155,142,.12)] text-2xl">
-                {c.icon}
-              </span>
-              <div>
-                <p className="font-semibold text-ink transition-colors group-hover:text-indigo">{c.title}</p>
-                <p className="text-xs text-muted">{c.sub}</p>
-              </div>
-            </Link>
-          ))}
-        </section>
+      <div className={`${pageWrap} space-y-12 sm:space-y-16`}>
+        <PortalHero hero={company?.portalHero} greeting={greeting} />
 
         <AnnouncementsSection items={company?.portalAnnouncements} />
         <ContentBlocks blocks={company?.portalContentBlocks} />
@@ -75,8 +44,15 @@ export default function EmployeeDashboard() {
 
         {/* Recently Viewed */}
         <section>
-          <p className={`${eyebrow} mb-1`}>PICK UP WHERE YOU LEFT OFF</p>
-          <h2 className="mb-4 text-xl font-extrabold tracking-[-.02em] text-ink">Recently Viewed</h2>
+          <div className="mb-5 flex items-end justify-between gap-4">
+            <div>
+              <p className={`${eyebrow} mb-1.5`}>Pick up where you left off</p>
+              <h2 className="text-2xl font-extrabold tracking-[-.02em] text-ink sm:text-[28px]">Recently viewed</h2>
+            </div>
+            <Link href="/employee/products" className="hidden shrink-0 text-sm font-semibold text-accent no-underline transition-colors hover:text-indigo sm:inline">
+              Browse all →
+            </Link>
+          </div>
 
           {isLoading ? (
             <div className="grid grid-cols-2 gap-2.5 sm:gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
