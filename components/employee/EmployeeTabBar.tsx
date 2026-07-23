@@ -10,6 +10,7 @@ const TABS = [
   { href: '/employee/products', label: 'Catalog', icon: 'M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 0h7v7h-7v-7z' },
   { href: '/employee/orders', label: 'Orders', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 11H6L5 9z' },
   { href: '/employee/wallet', label: 'Wallet', icon: 'M3 7h15a2 2 0 012 2v7a2 2 0 01-2 2H5a2 2 0 01-2-2V7zm0 0V6a2 2 0 012-2h11M17 13h.01' },
+  { href: '/employee/profile', label: 'Profile', icon: 'M20 21a8 8 0 10-16 0M12 11a4 4 0 100-8 4 4 0 000 8' },
 ];
 
 export default function EmployeeTabBar() {
@@ -18,7 +19,7 @@ export default function EmployeeTabBar() {
   return (
     <nav
       aria-label="Portal sections"
-      className="font-display fixed inset-x-0 bottom-0 z-50 grid h-14 grid-cols-4 border-t border-[rgba(19,184,159,.25)] bg-[rgba(240,251,249,.96)] pb-[env(safe-area-inset-bottom)] backdrop-blur-[14px] md:hidden"
+      className="font-display fixed inset-x-0 bottom-0 z-50 grid h-14 grid-cols-5 border-t border-[rgba(19,184,159,.25)] bg-[rgba(240,251,249,.96)] pb-[env(safe-area-inset-bottom)] backdrop-blur-[14px] md:hidden"
     >
       {TABS.map((t) => {
         const on = t.exact ? pathname === t.href : pathname.startsWith(t.href);

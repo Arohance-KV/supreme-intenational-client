@@ -54,6 +54,7 @@ export default function EmployeeHeader() {
             <>
               <Link href="/employee/products" className={`${navLink} hidden md:inline-flex`}>Products</Link>
               <Link href="/employee/orders" className={`${navLink} hidden md:inline-flex`}>Orders</Link>
+              <Link href="/employee/profile" className={`${navLink} hidden md:inline-flex`}>Profile</Link>
               {walletData && (
                 <Link
                   href="/employee/wallet"
