@@ -35,6 +35,9 @@ export default function EmployeeCheckoutPage() {
   // When the company runs on coupons, an order below the coupon value forfeits the
   // remainder — hold that amount to confirm before placing the order.
   const [couponForfeit, setCouponForfeit] = useState<number | null>(null);
+  // Set once the order is genuinely placed (wallet-paid or payment verified) — drives
+  // the success confirmation dialog. Not set on a dismissed/incomplete payment.
+  const [successOrderId, setSuccessOrderId] = useState<string | null>(null);
 
   // Redirect if cart is empty (after data loads)
   useEffect(() => {
@@ -88,7 +91,7 @@ export default function EmployeeCheckoutPage() {
       if (result.fullyPaidByWallet) {
         setOrderPlaced(true);
         setSubmitting(false);
-        router.push('/employee/orders/' + result.orderId);
+        setSuccessOrderId(result.orderId);
         return;
       }
 
@@ -115,7 +118,7 @@ export default function EmployeeCheckoutPage() {
           } catch {
             // ignore — the order page polls and the webhook will confirm
           }
-          router.push('/employee/orders/' + result.orderId);
+          setSuccessOrderId(result.orderId);
         },
         onDismiss: () => {
           setOrderPlaced(true);
@@ -279,6 +282,42 @@ export default function EmployeeCheckoutPage() {
           </div>
         </div>
       </div>
+
+      {/* Order success confirmation */}
+      {successOrderId && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-[rgba(22,23,58,.5)] p-4 backdrop-blur-sm">
+          <div className={`${glass} w-full max-w-md rounded-[26px] p-7 text-center sm:p-8`}>
+            <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-[rgba(31,170,107,.14)] text-[#1a8f5a]">
+              <svg className="h-9 w-9" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+            </div>
+            <h2 className="mt-5 text-2xl font-extrabold tracking-[-.02em] text-ink">Order received!</h2>
+            <p className="mx-auto mt-2.5 max-w-xs text-[15px] leading-relaxed text-slate">
+              Thank you — your order has been placed. We&apos;ll process it right away and deliver it to you as soon as possible.
+            </p>
+            <p className="mt-4 inline-block rounded-full bg-black/[.04] px-3.5 py-1.5 font-jbmono text-xs text-slate">
+              Order ID: {successOrderId}
+            </p>
+            <div className="mt-7 flex flex-col gap-2.5 sm:flex-row">
+              <button
+                type="button"
+                onClick={() => router.push('/employee/orders/' + successOrderId)}
+                className={`${primaryBtn} flex-1 py-3`}
+              >
+                View order
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push('/employee/products')}
+                className="flex-1 rounded-[13px] border border-line px-4 py-3 text-sm font-semibold text-slate transition-colors hover:bg-white/60"
+              >
+                Continue shopping
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Coupon forfeiture warning */}
       {couponForfeit !== null && (
