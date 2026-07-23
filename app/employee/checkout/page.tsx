@@ -285,35 +285,53 @@ export default function EmployeeCheckoutPage() {
 
       {/* Order success confirmation */}
       {successOrderId && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-[rgba(22,23,58,.5)] p-4 backdrop-blur-sm">
-          <div className={`${glass} w-full max-w-md rounded-[26px] p-7 text-center sm:p-8`}>
-            <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-[rgba(31,170,107,.14)] text-[#1a8f5a]">
-              <svg className="h-9 w-9" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 6L9 17l-5-5" />
-              </svg>
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="order-success-title"
+          className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-[rgba(16,17,40,.55)] backdrop-blur-md animate-[dc-overlay-in_.2s_ease-out]"
+        >
+          <div className="relative w-full max-w-md overflow-hidden rounded-[28px] bg-white shadow-[0_40px_120px_rgba(16,17,40,.42)] animate-[dc-dialog-in_.3s_cubic-bezier(.2,.85,.25,1)]">
+            {/* Celebratory gradient header with animated check */}
+            <div className="relative flex items-center justify-center bg-[linear-gradient(135deg,#0f766e_0%,#149b8e_55%,#13b89f_120%)] px-8 pb-12 pt-11">
+              <div className="pointer-events-none absolute -left-10 -top-12 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+              <div className="relative grid place-items-center">
+                <span className="absolute h-[76px] w-[76px] rounded-full bg-white/25 motion-safe:animate-[sov-ring-pulse_2s_ease-out_infinite]" aria-hidden />
+                <span className="absolute h-[76px] w-[76px] rounded-full bg-white/20 motion-safe:animate-[sov-ring-pulse_2s_.7s_ease-out_infinite]" aria-hidden />
+                <span className="relative grid h-[72px] w-[72px] place-items-center rounded-full bg-white shadow-[0_10px_30px_rgba(0,0,0,.18)]">
+                  <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#149b8e" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <path d="M20 6L9 17l-5-5" strokeDasharray={30} strokeDashoffset={30} className="motion-safe:animate-[sov-check-draw_.5s_.2s_ease-out_forwards] motion-reduce:[stroke-dashoffset:0]" />
+                  </svg>
+                </span>
+              </div>
             </div>
-            <h2 className="mt-5 text-2xl font-extrabold tracking-[-.02em] text-ink">Order received!</h2>
-            <p className="mx-auto mt-2.5 max-w-xs text-[15px] leading-relaxed text-slate">
-              Thank you — your order has been placed. We&apos;ll process it right away and deliver it to you as soon as possible.
-            </p>
-            <p className="mt-4 inline-block rounded-full bg-black/[.04] px-3.5 py-1.5 font-jbmono text-xs text-slate">
-              Order ID: {successOrderId}
-            </p>
-            <div className="mt-7 flex flex-col gap-2.5 sm:flex-row">
-              <button
-                type="button"
-                onClick={() => router.push('/employee/orders/' + successOrderId)}
-                className={`${primaryBtn} flex-1 py-3`}
-              >
-                View order
-              </button>
-              <button
-                type="button"
-                onClick={() => router.push('/employee/products')}
-                className="flex-1 rounded-[13px] border border-line px-4 py-3 text-sm font-semibold text-slate transition-colors hover:bg-white/60"
-              >
-                Continue shopping
-              </button>
+
+            {/* Body */}
+            <div className="px-7 pb-7 pt-7 text-center sm:px-9">
+              <h2 id="order-success-title" className="text-[26px] font-extrabold tracking-[-.02em] text-ink">Order received!</h2>
+              <p className="mx-auto mt-2.5 max-w-xs text-[15px] leading-relaxed text-slate">
+                Thank you — your order has been placed. We&apos;ll get it packed and on its way to you as soon as possible.
+              </p>
+              <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-line bg-[#f6f7fb] px-4 py-2">
+                <span className="font-jbmono text-[10px] uppercase tracking-[.12em] text-muted">Order</span>
+                <span className="font-jbmono text-sm font-bold text-ink">{successOrderId}</span>
+              </div>
+              <div className="mt-7 flex flex-col gap-2.5 sm:flex-row">
+                <button
+                  type="button"
+                  onClick={() => router.push('/employee/orders/' + successOrderId)}
+                  className={`${primaryBtn} flex-1 py-3`}
+                >
+                  View order
+                </button>
+                <button
+                  type="button"
+                  onClick={() => router.push('/employee/products')}
+                  className="flex-1 rounded-[13px] border border-line px-4 py-3 text-sm font-semibold text-slate transition-colors hover:bg-[#f6f7fb]"
+                >
+                  Continue shopping
+                </button>
+              </div>
             </div>
           </div>
         </div>

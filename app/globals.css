@@ -60,6 +60,9 @@ body {
 /* Confirm/alert dialog entrance (see components/ConfirmDialog.tsx). */
 @keyframes dc-overlay-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes dc-dialog-in { from { opacity: 0; transform: translateY(8px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+/* Order-success dialog: checkmark draw-in + expanding celebration rings. */
+@keyframes sov-check-draw { to { stroke-dashoffset: 0; } }
+@keyframes sov-ring-pulse { 0% { transform: scale(.7); opacity: .5; } 100% { transform: scale(2); opacity: 0; } }
 
 /* Dual-thumb price slider: two range inputs share one track; only the thumbs take pointer
    events, so both are draggable. Track + fill are drawn by sibling divs (positioned inline). */
