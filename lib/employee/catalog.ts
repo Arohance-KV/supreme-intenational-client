@@ -3,7 +3,7 @@ import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api';
 import type { Product, Pagination, ProductDetail, ProductVariant } from '@/lib/catalog';
 import type {
-  PortalHero, PortalAnnouncement, PortalContentBlock, PortalPromotion, PortalTheme,
+  PortalHero, PortalAnnouncement, PortalContentBlock, PortalPromotion, PortalTheme, PortalAbout,
 } from '@/lib/admin/companies';
 
 export type { ProductDetail, ProductVariant };
@@ -17,6 +17,7 @@ export interface EmployeeCompany {
   portalContentBlocks?: PortalContentBlock[];
   portalPromotion?: PortalPromotion | null;
   portalTheme?: PortalTheme | null;
+  portalAbout?: PortalAbout | null;
   featuredProducts?: Product[];
 }
 

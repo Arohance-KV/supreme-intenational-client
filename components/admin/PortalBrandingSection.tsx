@@ -7,7 +7,7 @@ import { readableTextColor } from '@/lib/color';
 import { useAdminProducts } from '@/lib/admin/products';
 import {
   useCompanyProducts, useUpdateCompany,
-  type AdminCompany, type PortalAnnouncement, type PortalContentBlock,
+  type AdminCompany, type PortalAnnouncement, type PortalContentBlock, type PortalAbout, type PortalStat,
 } from '@/lib/admin/companies';
 
 const inputCls = 'w-full rounded-lg border border-line bg-white/70 px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20';
@@ -35,6 +35,9 @@ export default function PortalBrandingSection({ company }: { company: AdminCompa
   const [promo, setPromo] = useState(company.portalPromotion ?? {});
   const [announcements, setAnnouncements] = useState<PortalAnnouncement[]>(company.portalAnnouncements ?? []);
   const [blocks, setBlocks] = useState<PortalContentBlock[]>(company.portalContentBlocks ?? []);
+  const [about, setAbout] = useState<PortalAbout>(company.portalAbout ?? {});
+  const stats = about.stats ?? [];
+  const setStats = (next: PortalStat[]) => setAbout({ ...about, stats: next });
 
   // Featured products: local id list + a debounced search (same admin product
   // search CompanyCatalogSection uses) to resolve names/images for picking.
@@ -99,6 +102,7 @@ export default function PortalBrandingSection({ company }: { company: AdminCompa
       portalContentBlocks: blocks
         .filter((b) => b.body?.trim())
         .map((b, i) => ({ ...b, order: i })),
+      portalAbout: { ...about, stats: stats.filter((s) => s.value?.trim() && s.label?.trim()) },
       featuredProductIds: featured,
     });
   }
@@ -172,6 +176,26 @@ export default function PortalBrandingSection({ company }: { company: AdminCompa
               </div>
               <textarea className={inputCls} rows={3} placeholder="Body text" value={b.body} onChange={(e) => setBlocks(blocks.map((x, j) => j === i ? { ...x, body: e.target.value } : x))} />
               <ImageUploadField value={b.image ?? ''} onChange={(url) => setBlocks(blocks.map((x, j) => j === i ? { ...x, image: url } : x))} folder="logos" />
+            </div>
+          ))}
+        </div>
+
+        {/* About the company */}
+        <div className="space-y-3 border-t border-line/70 pt-5">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted">About the company</p>
+          <input className={inputCls} placeholder={`Heading (default "About ${company.name}")`} value={about.heading ?? ''} onChange={(e) => setAbout({ ...about, heading: e.target.value })} />
+          <textarea className={inputCls} rows={4} placeholder="Company description / profile" value={about.body ?? ''} onChange={(e) => setAbout({ ...about, body: e.target.value })} />
+          <ImageUploadField value={about.image ?? ''} onChange={(url) => setAbout({ ...about, image: url })} folder="logos" />
+          <input className={inputCls} placeholder="Website (e.g. https://acme.com)" value={about.website ?? ''} onChange={(e) => setAbout({ ...about, website: e.target.value })} />
+          <div className="flex items-center justify-between pt-1">
+            <p className="text-[11px] font-medium text-slate">Key stats (e.g. 1968 / Founded)</p>
+            <button type="button" className={subBtn} onClick={() => setStats([...stats, { value: '', label: '' }])}>+ Add stat</button>
+          </div>
+          {stats.map((s, i) => (
+            <div key={i} className="flex gap-2">
+              <input className={`${inputCls} w-32`} placeholder="Value" value={s.value} onChange={(e) => setStats(stats.map((x, j) => j === i ? { ...x, value: e.target.value } : x))} />
+              <input className={inputCls} placeholder="Label" value={s.label} onChange={(e) => setStats(stats.map((x, j) => j === i ? { ...x, label: e.target.value } : x))} />
+              <button type="button" className="text-red-500" onClick={() => setStats(stats.filter((_, j) => j !== i))} aria-label={`Remove stat ${i + 1}`}>✕</button>
             </div>
           ))}
         </div>

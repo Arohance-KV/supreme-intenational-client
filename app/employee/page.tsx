@@ -12,6 +12,7 @@ import ContentBlocks from '@/components/employee/ContentBlocks';
 import PromotionBanner from '@/components/employee/PromotionBanner';
 import FeaturedProducts from '@/components/employee/FeaturedProducts';
 import SupremeSection from '@/components/employee/SupremeSection';
+import CompanyAbout from '@/components/employee/CompanyAbout';
 
 export default function EmployeeDashboard() {
   const { token } = useEmployeeAuth();
@@ -37,6 +38,7 @@ export default function EmployeeDashboard() {
         <PortalHero hero={company?.portalHero} greeting={greeting} />
 
         <AnnouncementsSection items={company?.portalAnnouncements} />
+        <CompanyAbout about={company?.portalAbout} companyName={company?.name} />
         <ContentBlocks blocks={company?.portalContentBlocks} />
         <PromotionBanner promo={company?.portalPromotion} />
         <FeaturedProducts products={company?.featuredProducts} />

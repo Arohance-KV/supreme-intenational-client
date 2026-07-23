@@ -16,6 +16,8 @@ export interface PortalAnnouncement { _id?: string; title: string; message: stri
 export interface PortalContentBlock { _id?: string; title?: string; body: string; image?: string; layout?: 'text-left' | 'text-right' | 'centered'; order?: number }
 export interface PortalPromotion { image?: string; title?: string; description?: string }
 export interface PortalTheme { navbarColor?: string; accentColor?: string }
+export interface PortalStat { _id?: string; value: string; label: string }
+export interface PortalAbout { heading?: string; body?: string; image?: string; website?: string; stats?: PortalStat[] }
 
 export interface AdminCompany {
   _id: string;
@@ -34,6 +36,7 @@ export interface AdminCompany {
   portalPromotion?: PortalPromotion;
   featuredProductIds?: string[];
   portalTheme?: PortalTheme;
+  portalAbout?: PortalAbout;
   createdAt: string;
   updatedAt: string;
 }
@@ -63,6 +66,7 @@ export interface UpdateCompanyBody {
   portalPromotion?: PortalPromotion;
   featuredProductIds?: string[];
   portalTheme?: PortalTheme;
+  portalAbout?: PortalAbout;
 }
 
 // Employee status enum from user.model.ts: 'invited' | 'active' | 'deactivated'
