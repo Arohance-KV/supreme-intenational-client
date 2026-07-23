@@ -122,3 +122,46 @@ export function useAdjustPoints() {
     },
   });
 }
+
+export interface PointsProposal {
+  _id: string;
+  requestedAmount: number;
+  approvedAmount?: number;
+  note?: string;
+  decisionNote?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  origin: 'company_request' | 'admin_grant';
+  createdAt: string;
+}
+
+export interface PointsPoolView {
+  pool: { approved: number; available: number };
+  proposals: PointsProposal[];
+}
+
+export const POINTS_POOL_KEY = ['company', 'points-pool'] as const;
+
+// Pure, testable request-body builder — keeps validation out of the hook.
+export function buildProposalBody(requestedAmount: number, note?: string): { requestedAmount: number; note?: string } {
+  if (!Number.isFinite(requestedAmount) || requestedAmount <= 0) {
+    throw new Error('requestedAmount must be greater than 0');
+  }
+  const trimmed = note?.trim();
+  return trimmed ? { requestedAmount, note: trimmed } : { requestedAmount };
+}
+
+export function useCompanyPointsPool() {
+  return useQuery<PointsPoolView>({
+    queryKey: POINTS_POOL_KEY,
+    queryFn: () => apiFetch<PointsPoolView>('/company/points-proposals', T),
+  });
+}
+
+export function useSubmitProposal() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ requestedAmount, note }: { requestedAmount: number; note?: string }) =>
+      apiFetch('/company/points-proposals', { method: 'POST', body: buildProposalBody(requestedAmount, note), ...T }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: POINTS_POOL_KEY }),
+  });
+}
