@@ -104,16 +104,19 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
   const [folderFailed, setFolderFailed] = useState<string[]>([]);
   const [downloadingTemplate, setDownloadingTemplate] = useState(false);
   const [templateError, setTemplateError] = useState<string | null>(null);
+  const [uploadingFolder, setUploadingFolder] = useState(false);
   const folderInputRef = useRef<HTMLInputElement | null>(null);
 
   // `webkitdirectory` isn't part of the DOM lib's InputHTMLAttributes type, so it can't be set
-  // as a JSX prop without a `@ts-expect-error`/cast on the element itself. Setting it
-  // imperatively on the underlying node avoids that and needs no extra dependency.
-  useEffect(() => {
-    if (folderInputRef.current) {
-      (folderInputRef.current as HTMLInputElement & { webkitdirectory: boolean }).webkitdirectory = true;
-    }
-  }, []);
+  // as a JSX prop without a `@ts-expect-error`/cast on the element itself. Set it imperatively
+  // via a CALLBACK ref (not a mount-only effect): the folder input lives inside
+  // `{step === 'upload' && …}`, which unmounts/remounts on every Back-to-Upload transition, so
+  // a `useEffect(..., [])` would only ever apply to the very first DOM node and silently
+  // degrade the picker to a plain multi-file input after the first Back navigation.
+  function setFolderInputRef(el: HTMLInputElement | null) {
+    if (el) (el as HTMLInputElement & { webkitdirectory: boolean }).webkitdirectory = true;
+    folderInputRef.current = el;
+  }
 
   async function handleSheetFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -122,7 +125,11 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
     setParsing(true);
     setParseError(null);
     try {
-      setSheet(await parseSheet(file));
+      const parsed = await parseSheet(file);
+      // A new sheet means new headers — let the map-step effect re-suggest/restore mapping
+      // for them instead of leaving every header on '' (Ignore) forever after the first load.
+      mappingInitRef.current = false;
+      setSheet(parsed);
     } catch (err) {
       setParseError(err instanceof ApiError ? err.message : 'Could not read that file');
     } finally {
@@ -134,11 +141,16 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
     const files = Array.from(e.target.files ?? []);
     e.target.value = '';
     if (files.length === 0) return;
+    setUploadingFolder(true);
     setFolderProgress({ done: 0, total: files.length });
     setFolderFailed([]);
-    const { map, failed } = await uploadFolder(files, (done, total) => setFolderProgress({ done, total }));
-    setImageMap(map);
-    setFolderFailed(failed);
+    try {
+      const { map, failed } = await uploadFolder(files, (done, total) => setFolderProgress({ done, total }));
+      setImageMap(map);
+      setFolderFailed(failed);
+    } finally {
+      setUploadingFolder(false);
+    }
   }
 
   async function handleDownloadTemplate() {
@@ -318,7 +330,15 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
 
               <div>
                 <label className={labelCls}>Image folder (optional)</label>
-                <input ref={folderInputRef} type="file" multiple accept="image/*" onChange={handleFolderFiles} className={fileInputCls} />
+                <input
+                  ref={setFolderInputRef}
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleFolderFiles}
+                  disabled={uploadingFolder}
+                  className={fileInputCls}
+                />
                 {folderProgress && (
                   <div className="mt-2">
                     <div className={progressBarCls}>
@@ -328,7 +348,7 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
                       />
                     </div>
                     <p className="mt-1 text-xs text-muted">
-                      Uploaded {folderProgress.done} / {folderProgress.total}
+                      {uploadingFolder ? 'Uploading' : 'Uploaded'} {folderProgress.done} / {folderProgress.total}
                       {folderFailed.length > 0 && ` · ${folderFailed.length} failed`}
                     </p>
                   </div>
