@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { ApiError } from '@/lib/api';
 import {
   useAdminProducts,
@@ -13,6 +14,7 @@ import {
 } from '@/lib/admin/products';
 import { StatusChip } from '@/components/admin/StatusChip';
 import CreateProductModal from '@/components/admin/CreateProductModal';
+import BulkImportWizard from '@/components/admin/BulkImportWizard';
 import CsvImportButton from '@/components/CsvImportButton';
 import { useConfirm } from '@/components/ConfirmDialog';
 
@@ -116,8 +118,19 @@ function ProductRow({ product }: { product: AdminProduct }) {
 function ProductsTable() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [showCreate, setShowCreate] = useState(false);
+  const [showBulkImport, setShowBulkImport] = useState(false);
   const importProducts = useImportProducts();
+
+  // BulkImportWizard isn't a react-query mutation itself (it batches its own commit calls), so
+  // its completion doesn't flow through useImportProducts' onSuccess — invalidate the same list
+  // key by hand whenever the wizard closes (early exit or after a commit report is acknowledged),
+  // matching what CsvImportButton's importFn already triggers on success.
+  function handleBulkImportDone() {
+    setShowBulkImport(false);
+    queryClient.invalidateQueries({ queryKey: ['admin', 'products', 'list'] });
+  }
 
   const pageParam = Number(searchParams.get('page') ?? '1');
   const page = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
@@ -173,6 +186,12 @@ function ProductsTable() {
             templateName="products-template.csv"
           />
           <button
+            onClick={() => setShowBulkImport(true)}
+            className="rounded-full border border-line bg-white/70 px-4 py-2 text-sm font-medium text-slate hover:bg-white"
+          >
+            Bulk import
+          </button>
+          <button
             onClick={() => setShowCreate(true)}
             className="rounded bg-gradient-to-br from-indigo to-indigo2 px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-colors"
           >
@@ -182,6 +201,7 @@ function ProductsTable() {
       </div>
 
       {showCreate && <CreateProductModal onClose={() => setShowCreate(false)} />}
+      {showBulkImport && <BulkImportWizard mode="admin" onDone={handleBulkImportDone} />}
 
       {/* Loading skeleton */}
       {isLoading && (
