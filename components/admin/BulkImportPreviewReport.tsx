@@ -37,6 +37,23 @@ export default function BulkImportPreviewReport({
   if (previewError) return <p className={errorBoxCls}>{previewError}</p>;
   if (!preview) return null;
 
+  // A `row: 0` entry is the MAX_SELLER_ROWS over-cap condition (every real per-row error has
+  // row >= 2) — it means nothing in this upload can be committed at all, so it gets its own
+  // blocking banner instead of being buried in the "N row errors" list below (BulkImportWizard
+  // also disables "Start import" while this is present).
+  const capError = preview.errors.find((e) => e.row === 0);
+  const rowErrors = preview.errors.filter((e) => e.row !== 0);
+
+  if (capError) {
+    return (
+      <div className={`${errorBoxCls} space-y-1`}>
+        <p className="text-sm font-semibold">Import blocked</p>
+        <p>{capError.reason}</p>
+        <p className="text-xs">Split this sheet into smaller files and import them one at a time.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-2 gap-3">
@@ -130,13 +147,13 @@ export default function BulkImportPreviewReport({
         </div>
       )}
 
-      {preview.errors.length > 0 && (
+      {rowErrors.length > 0 && (
         <div className={errorBoxCls}>
           <p className="mb-1 text-xs font-semibold uppercase tracking-wide">
-            {preview.errors.length} row error{preview.errors.length === 1 ? '' : 's'}
+            {rowErrors.length} row error{rowErrors.length === 1 ? '' : 's'}
           </p>
           <ul className="max-h-32 space-y-1 overflow-y-auto text-xs">
-            {preview.errors.map((err, i) => (
+            {rowErrors.map((err, i) => (
               <li key={i}>
                 Row {err.row}: {err.reason}
               </li>

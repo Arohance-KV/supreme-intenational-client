@@ -1,10 +1,13 @@
 'use client';
+import { useState } from 'react';
 import Link from 'next/link';
+import { useQueryClient } from '@tanstack/react-query';
 import { useMySubmissions, useImportSubmissions } from '@/lib/seller/submissions';
 import { CSV_TEMPLATE } from '@/lib/admin/products';
 import { SubmissionStatusChip } from '@/components/seller/SubmissionStatusChip';
 import CsvImportButton from '@/components/CsvImportButton';
 import DcPhoto from '@/components/DcPhoto';
+import BulkImportWizard from '@/components/admin/BulkImportWizard';
 
 function Kpi({ label, value, sub }: { label: string; value: number; sub: string }) {
   return (
@@ -19,12 +22,25 @@ function Kpi({ label, value, sub }: { label: string; value: number; sub: string 
 export default function SubmissionsPage() {
   const { data, isLoading } = useMySubmissions();
   const importSubmissions = useImportSubmissions();
+  const queryClient = useQueryClient();
+  const [showBulkImport, setShowBulkImport] = useState(false);
   const items = data?.items ?? [];
 
   const count = (s: string) => items.filter((i) => i.status === s).length;
 
+  // BulkImportWizard isn't a react-query mutation itself (it batches its own commit calls), so
+  // its completion doesn't flow through useImportSubmissions' onSuccess — invalidate the same
+  // list key by hand whenever the wizard closes (early exit or after a commit report is
+  // acknowledged), matching what CsvImportButton's importFn already triggers on success and the
+  // admin catalogue products page's own handleBulkImportDone.
+  function handleBulkImportDone() {
+    setShowBulkImport(false);
+    queryClient.invalidateQueries({ queryKey: ['seller', 'submissions'] });
+  }
+
   return (
     <div className="px-6 py-6 sm:px-8 sm:py-7">
+      {showBulkImport && <BulkImportWizard mode="seller" onDone={handleBulkImportDone} />}
       <div className="mb-6 flex items-center justify-between gap-5">
         <div>
           <h1 className="mb-0.5 text-[26px] font-extrabold tracking-[-.02em] text-ink">Approval Status</h1>
@@ -36,6 +52,12 @@ export default function SubmissionsPage() {
             templateCsv={CSV_TEMPLATE}
             templateName="products-template.csv"
           />
+          <button
+            onClick={() => setShowBulkImport(true)}
+            className="rounded-xl border border-line bg-white/70 px-4 py-2.5 text-sm font-semibold text-slate hover:bg-white"
+          >
+            Bulk import
+          </button>
           <Link
             href="/seller/submissions/new"
             className="flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#176054,#179b8e)] px-[18px] py-3 text-sm font-bold text-white no-underline shadow-[0_10px_24px_rgba(23,155,142,.3)]"

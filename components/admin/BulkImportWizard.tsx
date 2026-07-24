@@ -6,15 +6,9 @@ import { ApiError } from '@/lib/api';
 import BulkImportPreviewReport from './BulkImportPreviewReport';
 import { useAttributes } from '@/lib/admin/taxonomy';
 import { buildTargets, suggestMapping, applyMapping } from '@/lib/admin/importMapping';
-import {
-  parseSheet,
-  previewImport,
-  commitImportBatch,
-  uploadFolder,
-  downloadTemplate,
-  type ImportPreview,
-  type ImportResult,
-} from '@/lib/admin/bulkImport';
+import * as adminBulkImport from '@/lib/admin/bulkImport';
+import * as sellerBulkImport from '@/lib/seller/bulkImport';
+import type { ImportPreview, ImportResult } from '@/lib/admin/bulkImport';
 
 type Mode = 'admin' | 'seller';
 type Step = 'upload' | 'map' | 'preview' | 'commit';
@@ -22,6 +16,44 @@ type ImageEntry = { filename: string; url: string };
 type SheetData = { headers: string[]; rows: Record<string, string>[] };
 
 const BATCH_SIZE = 50;
+
+// Mode-aware API set (B2/C1): admin and seller each get their own parse/preview/commit/upload
+// endpoints (different auth, different base paths), but share the exact same ImportPreview /
+// ImportResult shapes and the same wizard UI. `downloadTemplate` is admin-only — sellers have no
+// template route, so it's `null` here and the "Download template" button hides itself on that.
+// Kept as a plain function (not a hook) since it holds no state; called once per `mode` via
+// `useMemo` below so identity stays stable across re-renders.
+interface ImportApi {
+  parseSheet: (file: File) => Promise<SheetData>;
+  previewImport: (rows: Record<string, string>[], images: ImageEntry[]) => Promise<ImportPreview>;
+  commitImportBatch: (rows: Record<string, string>[], images: ImageEntry[], autoCreateTaxonomy: boolean) => Promise<ImportResult>;
+  uploadFolder: (
+    files: File[],
+    onProgress: (done: number, total: number) => void,
+    concurrency?: number,
+  ) => Promise<{ map: ImageEntry[]; failed: string[] }>;
+  downloadTemplate: (() => Promise<void>) | null;
+}
+
+function getImportApi(mode: Mode): ImportApi {
+  if (mode === 'admin') {
+    return {
+      parseSheet: adminBulkImport.parseSheet,
+      previewImport: adminBulkImport.previewImport,
+      commitImportBatch: adminBulkImport.commitImportBatch,
+      uploadFolder: adminBulkImport.uploadFolder,
+      downloadTemplate: adminBulkImport.downloadTemplate,
+    };
+  }
+  return {
+    parseSheet: sellerBulkImport.parseSheet,
+    previewImport: sellerBulkImport.previewImport,
+    // Sellers have no autoCreateTaxonomy — the flag is simply dropped here.
+    commitImportBatch: (rows, images) => sellerBulkImport.commitImportBatch(rows, images),
+    uploadFolder: sellerBulkImport.uploadFolder,
+    downloadTemplate: null,
+  };
+}
 
 const REQUIRED_TARGETS: { key: string; label: string }[] = [
   { key: 'name', label: 'Name' },
@@ -88,6 +120,7 @@ function chunkByHandle(rows: Record<string, string>[]): Record<string, string>[]
 // (header ✕, before commit starts) and again when they acknowledge the final commit report;
 // the caller is expected to hide/unmount the wizard and refresh its product list in response.
 export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone: () => void }) {
+  const api = useMemo(() => getImportApi(mode), [mode]);
   const { data: attributes = [], isLoading: attributesLoading } = useAttributes();
   const attributeNames = useMemo(() => attributes.map((a) => a.name), [attributes]);
   const targets = useMemo(() => buildTargets(attributeNames), [attributeNames]);
@@ -125,7 +158,7 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
     setParsing(true);
     setParseError(null);
     try {
-      const parsed = await parseSheet(file);
+      const parsed = await api.parseSheet(file);
       // A new sheet means new headers — let the map-step effect re-suggest/restore mapping
       // for them instead of leaving every header on '' (Ignore) forever after the first load.
       mappingInitRef.current = false;
@@ -145,7 +178,7 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
     setFolderProgress({ done: 0, total: files.length });
     setFolderFailed([]);
     try {
-      const { map, failed } = await uploadFolder(files, (done, total) => setFolderProgress({ done, total }));
+      const { map, failed } = await api.uploadFolder(files, (done, total) => setFolderProgress({ done, total }));
       setImageMap(map);
       setFolderFailed(failed);
     } finally {
@@ -154,10 +187,11 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
   }
 
   async function handleDownloadTemplate() {
+    if (!api.downloadTemplate) return;
     setDownloadingTemplate(true);
     setTemplateError(null);
     try {
-      await downloadTemplate();
+      await api.downloadTemplate();
     } catch (err) {
       setTemplateError(err instanceof ApiError ? err.message : 'Template download failed');
     } finally {
@@ -218,7 +252,7 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
     try {
       const mapped = applyMapping(sheet.rows, mapping);
       setMappedRows(mapped);
-      setPreview(await previewImport(mapped, imageMap));
+      setPreview(await api.previewImport(mapped, imageMap));
     } catch (err) {
       setPreviewError(err instanceof ApiError ? err.message : 'Preview failed');
     } finally {
@@ -244,6 +278,13 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
     ? preview.images.productsWithoutImage.filter((h) => !(h in imageOverrides))
     : [];
 
+  // Seller row cap (C1): productImportService.plan() reports the MAX_SELLER_ROWS over-cap
+  // condition as a `row: 0` entry in preview.errors (every real per-row error has row >= 2) --
+  // that's the one error that means NOTHING in this upload can be committed at all, so unlike
+  // ordinary row errors (which just get skipped and reported at commit time), it must block
+  // "Start import" outright rather than let the user walk into a batch loop that fixes nothing.
+  const capError = preview?.errors.find((e) => e.row === 0) ?? null;
+
   // ── Step 4: batched commit ────────────────────────────────────────────────
   const [committing, setCommitting] = useState(false);
   const [commitProgress, setCommitProgress] = useState<{ done: number; total: number } | null>(null);
@@ -262,7 +303,7 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
     const totals: ImportResult = { imported: 0, updated: 0, variants: 0, failed: [] };
     for (const batch of batches) {
       try {
-        const res = await commitImportBatch(batch, finalImages, mode === 'admin' && autoCreateTaxonomy);
+        const res = await api.commitImportBatch(batch, finalImages, mode === 'admin' && autoCreateTaxonomy);
         totals.imported += res.imported;
         totals.updated += res.updated;
         totals.variants += res.variants;
@@ -355,17 +396,19 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
                 )}
               </div>
 
-              <div className="flex items-center gap-3 border-t border-line/70 pt-4">
-                <button
-                  type="button"
-                  onClick={handleDownloadTemplate}
-                  disabled={downloadingTemplate}
-                  className="text-xs font-semibold text-indigo hover:underline disabled:opacity-50"
-                >
-                  {downloadingTemplate ? 'Downloading…' : 'Download template'}
-                </button>
-                {templateError && <span className="text-xs text-[#d8524d]">{templateError}</span>}
-              </div>
+              {api.downloadTemplate && (
+                <div className="flex items-center gap-3 border-t border-line/70 pt-4">
+                  <button
+                    type="button"
+                    onClick={handleDownloadTemplate}
+                    disabled={downloadingTemplate}
+                    className="text-xs font-semibold text-indigo hover:underline disabled:opacity-50"
+                  >
+                    {downloadingTemplate ? 'Downloading…' : 'Download template'}
+                  </button>
+                  {templateError && <span className="text-xs text-[#d8524d]">{templateError}</span>}
+                </div>
+              )}
             </div>
           )}
 
@@ -488,7 +531,7 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
             {step === 'preview' && (
               <button
                 type="button"
-                disabled={!preview || previewing || !!previewError}
+                disabled={!preview || previewing || !!previewError || !!capError}
                 onClick={startCommit}
                 className={primaryBtnCls}
               >
