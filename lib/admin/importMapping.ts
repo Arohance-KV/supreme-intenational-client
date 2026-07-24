@@ -19,7 +19,7 @@ export const RESERVED_TARGETS: MapTarget[] = [
   { key: 'name', label: 'Name', synonyms: ['name', 'title', 'product name', 'product title', 'item', 'item name'] },
   { key: 'category', label: 'Category', synonyms: ['category', 'cat', 'type', 'product category'] },
   { key: 'description', label: 'Description', synonyms: ['description', 'desc', 'details', 'product description'] },
-  { key: 'material', label: 'Material', synonyms: ['material', 'materials', 'fabric', 'made of'] },
+  { key: 'material', label: 'Material', synonyms: ['material', 'materials', 'made of'] },
   { key: 'sku', label: 'SKU', synonyms: ['sku', 'sku code', 'item code', 'product code', 'code'] },
   { key: 'price', label: 'Price', synonyms: ['price', 'mrp', 'rate', 'selling price', 'unit price', 'sale price', 'cost'] },
   {
@@ -46,12 +46,16 @@ export const RESERVED_TARGETS: MapTarget[] = [
 // Extra synonyms for common taxonomy attribute names. Attribute names themselves come from the
 // DB at runtime (buildTargets' argument), so this table only covers well-known ones; anything
 // else still works via its own name/label (exact or fuzzy) with no extra synonyms.
+// IMPORTANT: never add an entry here whose key duplicates a RESERVED_TARGETS key (e.g.
+// 'material') -- buildTargets dedupes by key so it wouldn't create a second target, but a
+// shared synonym (e.g. 'fabric') on both would still let two DISTINCT source columns (a real
+// "Material" column and a real "Fabric" column) collide onto the same output key and silently
+// overwrite one another in applyMapping. Reserved keys stay exclusively in RESERVED_TARGETS.
 const ATTRIBUTE_SYNONYMS: Record<string, string[]> = {
   color: ['colour', 'colours', 'colors', 'col'],
   size: ['sizes', 'dimension', 'dimensions'],
   capacity: ['volume', 'vol'],
   weight: ['wt', 'mass'],
-  material: ['materials', 'fabric'],
   finish: ['texture'],
   pattern: ['design', 'print'],
   style: ['variant', 'variant type'],
@@ -64,14 +68,32 @@ const IGNORE_TARGET: MapTarget = {
 };
 
 // Build the full target list for a mapping session: reserved fields + one target per (active)
-// taxonomy attribute + a trailing "ignore this column" option.
+// taxonomy attribute + a trailing "ignore this column" option. Deduped by key: a taxonomy
+// attribute whose lowercased name collides with a reserved key (or an earlier attribute) must
+// NOT produce a second target with the same key -- two targets sharing a key is exactly what
+// let two distinct source columns collide onto the same output key and silently overwrite one
+// another in applyMapping. Any new synonyms are merged into the one surviving target instead.
 export function buildTargets(attributeNames: string[]): MapTarget[] {
-  const attributeTargets: MapTarget[] = attributeNames.map((name) => {
-    const normalized = normalize(name);
-    const extraSynonyms = ATTRIBUTE_SYNONYMS[normalized] ?? [];
-    return { key: name.toLowerCase(), label: name, synonyms: extraSynonyms };
-  });
-  return [...RESERVED_TARGETS, ...attributeTargets, IGNORE_TARGET];
+  // Clone RESERVED_TARGETS' objects (and their synonym arrays) so merging attribute synonyms
+  // below never mutates the shared exported constant across calls.
+  const targets: MapTarget[] = RESERVED_TARGETS.map((t) => ({ ...t, synonyms: [...t.synonyms] }));
+  const byKey = new Map<string, MapTarget>(targets.map((t) => [t.key, t]));
+
+  for (const name of attributeNames) {
+    const key = name.toLowerCase();
+    const extraSynonyms = ATTRIBUTE_SYNONYMS[normalize(name)] ?? [];
+    const existing = byKey.get(key);
+    if (existing) {
+      existing.synonyms = Array.from(new Set([...existing.synonyms, ...extraSynonyms]));
+      continue;
+    }
+    const target: MapTarget = { key, label: name, synonyms: extraSynonyms };
+    targets.push(target);
+    byKey.set(key, target);
+  }
+
+  targets.push(IGNORE_TARGET);
+  return targets;
 }
 
 // Normalize a header/synonym for comparison: lowercase, strip everything but letters/digits.
@@ -102,6 +124,11 @@ export function levenshtein(a: string, b: string): number {
 }
 
 const FUZZY_MAX_DISTANCE = 2;
+// Short tokens (e.g. 'cat', 'moq', 'qty') are cheap to accidentally land within
+// FUZZY_MAX_DISTANCE of an unrelated short header (e.g. 'Car' is 1 edit from 'cat') -- a false
+// positive. Below this length a synonym/label may only match exactly (the pass above), never
+// fuzzily.
+const MIN_FUZZY_TOKEN_LENGTH = 4;
 
 // Suggest a header -> target.key mapping. Deterministic, no network/LLM call: normalize each
 // header, try an exact match against every target's normalized label/key/synonyms first, then
@@ -139,6 +166,7 @@ function matchOne(
   let bestDistance = FUZZY_MAX_DISTANCE + 1;
   for (const { target, normalizedSynonyms } of candidates) {
     for (const synonym of normalizedSynonyms) {
+      if (synonym.length < MIN_FUZZY_TOKEN_LENGTH) continue; // exact-only below this length
       const distance = levenshtein(normalizedHeader, synonym);
       if (distance < bestDistance) {
         bestDistance = distance;

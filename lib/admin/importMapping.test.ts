@@ -21,6 +21,12 @@ describe('buildTargets', () => {
     const keys = targets.map((t) => t.key);
     expect(keys).toEqual(expect.arrayContaining(['color', 'size', '']));
   });
+
+  it('does not create a duplicate target when an attribute name collides with a reserved key', () => {
+    const t = buildTargets(['Material', 'Color', 'Size']);
+    const materialTargets = t.filter((x) => x.key === 'material');
+    expect(materialTargets).toHaveLength(1);
+  });
 });
 
 describe('suggestMapping', () => {
@@ -79,5 +85,27 @@ describe('applyMapping', () => {
   it('drops a header that has no entry in the mapping at all', () => {
     const out = applyMapping([{ Name: 'Pen', Unmapped: 'x' }], { Name: 'name' });
     expect(out).toEqual([{ name: 'Pen' }]);
+  });
+
+  it('does not silently collapse Material and Fabric columns onto the same key (data-loss regression)', () => {
+    const t = buildTargets(['Material', 'Color']);
+    const mapping = suggestMapping(['Material', 'Fabric', 'Color'], t);
+    expect(mapping['Material']).toBe('material');
+    // Fabric must never win the SAME non-empty key as Material -- either it gets a distinct
+    // key or it's left unmapped ('') for the human to assign; silently merging is the bug.
+    expect(mapping['Fabric'] === '' || mapping['Fabric'] !== mapping['Material']).toBe(true);
+
+    const rows = applyMapping([{ Material: 'Cotton', Fabric: 'Linen', Color: 'Red' }], mapping);
+    expect(rows[0].material).toBe('Cotton'); // Material's own value must survive
+  });
+});
+
+describe('suggestMapping - short-synonym false positives', () => {
+  it('does not fuzzy-match an unrelated short header to an unrelated short synonym', () => {
+    // 'Car' is edit-distance 1 from the 3-char 'cat' synonym (Category) -- a real false
+    // positive under a naive Levenshtein<=2 fuzzy pass over ALL synonym lengths. Short
+    // tokens (<4 normalized chars) must require an exact match, not fuzzy, to be eligible.
+    const m = suggestMapping(['Car'], targets);
+    expect(m['Car']).toBe('');
   });
 });
