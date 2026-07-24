@@ -82,17 +82,27 @@ const errorBoxCls =
 const progressBarCls = 'h-2 w-full overflow-hidden rounded-full bg-[rgba(42,43,106,.08)]';
 const progressFillCls = 'h-full rounded-full bg-gradient-to-r from-indigo to-indigo2 transition-[width]';
 
+// Mirrors server/src/utils/slug.util.ts's `slugify` exactly (lowercase, trim, collapse
+// whitespace runs to '-', strip anything left that isn't a-z/0-9/-). The server has no
+// client-importable equivalent (it's a server-only util), so it's inlined here rather than
+// pulled in — used ONLY for the commit-batching group key below, never sent to the server.
+function slugifyForGrouping(text: string): string {
+  return text.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+}
+
 // Group mapped rows by their Handle (falling back to Name, then a per-row unique key so two
-// blank-handle/blank-name rows never accidentally merge) — mirrors the server's own
-// `slugify(handle || name)` grouping key exactly (product-import.service.ts groupRows), so a
-// row this client considers "grouped with X" is exactly the group the server will build too.
-// Whole groups are then packed into ~BATCH_SIZE-row chunks: a product's variant rows must
-// never be split across two commit batches.
+// blank-handle/blank-name rows never accidentally merge), keyed by the SAME `slugify(handle ||
+// name)` the server's groupRows uses (product-import.service.ts) — not just a lowercase/trim,
+// since e.g. "Metal Pen" and "metal-pen" collapse to the same slug server-side but would NOT
+// match under plain `.trim().toLowerCase()`. Getting this wrong lets a product's own variant
+// rows land in two different commit batches; admin self-heals via upsert, but seller mode (no
+// upsert) would create duplicate draft submissions. Whole groups are then packed into
+// ~BATCH_SIZE-row chunks: a product's variant rows must never be split across two batches.
 function chunkByHandle(rows: Record<string, string>[]): Record<string, string>[][] {
   const order: string[] = [];
   const groups = new Map<string, Record<string, string>[]>();
   rows.forEach((row, i) => {
-    const raw = (row.handle || row.name || '').trim().toLowerCase();
+    const raw = slugifyForGrouping(row.handle || row.name || '');
     const key = raw || `__row_${i}`;
     if (!groups.has(key)) {
       groups.set(key, []);
