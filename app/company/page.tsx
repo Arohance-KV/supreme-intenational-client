@@ -296,7 +296,7 @@ export default function CompanyOverviewPage() {
           </Card>
 
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.6fr_1fr]">
-            <Card className="p-6">
+            <Card className="min-w-0 p-6">
               <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <h2 className="text-[15px] font-bold text-ink">Points redeemed</h2>
@@ -307,7 +307,7 @@ export default function CompanyOverviewPage() {
               <RedeemedChart series={series} />
             </Card>
 
-            <Card className="p-6">
+            <Card className="min-w-0 p-6">
               <h2 className="mb-4 text-[15px] font-bold text-ink">Recent orders</h2>
               {recentOrders.length === 0 ? (
                 <p className="text-[13px] text-muted">No orders yet.</p>
