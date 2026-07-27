@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 import { adminFetch } from './api';
 import { ApiError } from '@/lib/api';
@@ -146,6 +146,22 @@ export function useAdminProducts(page = 1, search?: string) {
   });
 }
 
+// Infinite/lazy-loading variant for the products list page (page 1, 2, … accumulated).
+export function useAdminProductsInfinite(search?: string) {
+  return useInfiniteQuery<AdminProductsResponse>({
+    queryKey: ['admin', 'products', 'infinite', search ?? ''],
+    queryFn: ({ pageParam }) => {
+      const qs = new URLSearchParams();
+      qs.set('page', String(pageParam));
+      if (search) qs.set('search', search);
+      return adminFetch<AdminProductsResponse>(`/admin/products?${qs.toString()}`);
+    },
+    initialPageParam: 1,
+    getNextPageParam: (last) =>
+      last.pagination.page < last.pagination.pages ? last.pagination.page + 1 : undefined,
+  });
+}
+
 export function useAdminProduct(slug: string) {
   return useQuery<AdminProductDetailResponse>({
     queryKey: PRODUCT_DETAIL_KEY(slug),
@@ -159,7 +175,7 @@ function useInvalidate(slug: string) {
   const qc = useQueryClient();
   return () => {
     qc.invalidateQueries({ queryKey: PRODUCT_DETAIL_KEY(slug) });
-    qc.invalidateQueries({ queryKey: ['admin', 'products', 'list'] });
+    qc.invalidateQueries({ queryKey: ['admin', 'products'] });
   };
 }
 
@@ -169,7 +185,7 @@ export function useCreateProduct() {
     mutationFn: (body: CreateProductBody) =>
       adminFetch<AdminProductDetail>('/admin/products', { method: 'POST', body }),
     onSuccess: () =>
-      qc.invalidateQueries({ queryKey: ['admin', 'products', 'list'] }),
+      qc.invalidateQueries({ queryKey: ['admin', 'products'] }),
   });
 }
 
@@ -191,7 +207,7 @@ export function useDeleteProduct() {
     mutationFn: (productId: string) =>
       adminFetch<boolean>(`/admin/products/${productId}`, { method: 'DELETE' }),
     onSuccess: () =>
-      qc.invalidateQueries({ queryKey: ['admin', 'products', 'list'] }),
+      qc.invalidateQueries({ queryKey: ['admin', 'products'] }),
   });
 }
 
@@ -332,7 +348,7 @@ export function useImportProducts() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (file: File) => importProductsCsv(file),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'products', 'list'] }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'products'] }),
   });
 }
 

@@ -1,11 +1,11 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ApiError } from '@/lib/api';
 import {
-  useAdminProducts,
+  useAdminProductsInfinite,
   useDeleteProduct,
   useImportProducts,
   CSV_TEMPLATE,
@@ -119,14 +119,28 @@ function ProductsTable() {
   const [showCreate, setShowCreate] = useState(false);
   const importProducts = useImportProducts();
 
-  const pageParam = Number(searchParams.get('page') ?? '1');
-  const page = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
   const search = searchParams.get('search') ?? '';
 
-  const { data, isLoading, isError, error } = useAdminProducts(page, search || undefined);
+  const { data, isLoading, isError, error, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useAdminProductsInfinite(search || undefined);
 
-  const products = data?.products ?? [];
-  const pagination = data?.pagination;
+  const products = data?.pages.flatMap((p) => p.products) ?? [];
+  const total = data?.pages[0]?.pagination.total;
+
+  // Lazy loading: fetch the next page when the sentinel scrolls into view.
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el || !hasNextPage) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !isFetchingNextPage) fetchNextPage();
+      },
+      { rootMargin: '400px' }, // start loading before the user hits the bottom
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   // Local input mirrors the URL; debounce writes back so we don't re-query per keystroke.
   const [term, setTerm] = useState(search);
@@ -143,12 +157,6 @@ function ProductsTable() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [term]);
 
-  function setPage(p: number) {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('page', String(p));
-    router.push(`/admin/catalog/products?${params.toString()}`);
-  }
-
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -163,9 +171,7 @@ function ProductsTable() {
         </div>
         <div className="flex items-center gap-3">
           <p className="text-sm text-slate">
-            {typeof pagination?.total === 'number'
-              ? `${pagination.total.toLocaleString('en-IN')} products`
-              : ''}
+            {typeof total === 'number' ? `${total.toLocaleString('en-IN')} products` : ''}
           </p>
           <CsvImportButton
             importFn={(f) => importProducts.mutateAsync(f)}
@@ -229,28 +235,10 @@ function ProductsTable() {
         </div>
       )}
 
-      {/* Pagination */}
-      {pagination && pagination.pages > 1 && (
-        <div className="flex items-center justify-between pt-2">
-          <p className="text-xs text-slate">
-            Page {pagination.page} of {pagination.pages}
-          </p>
-          <div className="flex gap-2">
-            <button
-              disabled={pagination.page <= 1}
-              onClick={() => setPage(pagination.page - 1)}
-              className="rounded border border-line px-3 py-1 text-xs font-medium text-slate hover:bg-white/60 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              Previous
-            </button>
-            <button
-              disabled={pagination.page >= pagination.pages}
-              onClick={() => setPage(pagination.page + 1)}
-              className="rounded border border-line px-3 py-1 text-xs font-medium text-slate hover:bg-white/60 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              Next
-            </button>
-          </div>
+      {/* Lazy-load sentinel — scrolling near it fetches the next page */}
+      {hasNextPage && (
+        <div ref={sentinelRef} className="flex justify-center py-4 text-xs text-slate">
+          {isFetchingNextPage ? 'Loading more…' : ''}
         </div>
       )}
     </div>
