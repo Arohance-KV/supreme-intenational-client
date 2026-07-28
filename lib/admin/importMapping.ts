@@ -67,6 +67,15 @@ const IGNORE_TARGET: MapTarget = {
   synonyms: ['ignore', 'skip', 'na', 'n a', 'do not import', 'none', 'blank'],
 };
 
+// Sentinel target: "keep this column as a brand-new attribute". Offered in the wizard dropdown so
+// a seller/admin can carry an attribute the taxonomy doesn't have yet (e.g. "Fragrance"). unlike
+// a reserved/existing-attribute target, applyMapping keeps the column keyed by its ORIGINAL
+// header, so the server treats it as a free-text attribute named after that header (seller: goes
+// onto the draft, created globally on admin approval; admin: auto-created via _createNeededTaxonomy).
+// NEVER auto-suggested -- it's a deliberate manual choice, so suggestMapping excludes it below.
+export const NEW_ATTRIBUTE_KEY = '__new_attribute__';
+const NEW_ATTRIBUTE_TARGET: MapTarget = { key: NEW_ATTRIBUTE_KEY, label: 'New attribute (keep column name)', synonyms: [] };
+
 // Build the full target list for a mapping session: reserved fields + one target per (active)
 // taxonomy attribute + a trailing "ignore this column" option. Deduped by key: a taxonomy
 // attribute whose lowercased name collides with a reserved key (or an earlier attribute) must
@@ -92,6 +101,7 @@ export function buildTargets(attributeNames: string[]): MapTarget[] {
     byKey.set(key, target);
   }
 
+  targets.push(NEW_ATTRIBUTE_TARGET);
   targets.push(IGNORE_TARGET);
   return targets;
 }
@@ -136,7 +146,8 @@ const MIN_FUZZY_TOKEN_LENGTH = 4;
 // (ignore) -- the human confirms/corrects the whole table via dropdown downstream, so this only
 // needs to save clicks, not be perfect.
 export function suggestMapping(headers: string[], targets: MapTarget[]): Record<string, string> {
-  const candidates = targets.map((target) => {
+  // Exclude the "new attribute" sentinel — it must be a deliberate manual pick, never auto-suggested.
+  const candidates = targets.filter((t) => t.key !== NEW_ATTRIBUTE_KEY).map((target) => {
     const normalizedSynonyms = new Set<string>([normalize(target.label), normalize(target.key), ...target.synonyms.map(normalize)]);
     normalizedSynonyms.delete(''); // don't let an empty key/label/synonym match blank headers
     return { target, normalizedSynonyms };
@@ -190,6 +201,9 @@ export function applyMapping(
     for (const [header, value] of Object.entries(row)) {
       const key = mapping[header];
       if (!key) continue;
+      // "New attribute": keep the column keyed by its own header so the server treats it as a
+      // brand-new (free-text) attribute rather than a known field.
+      if (key === NEW_ATTRIBUTE_KEY) { out[header.trim()] = value; continue; }
       out[key] = value;
     }
     return out;

@@ -1,4 +1,4 @@
-import { RESERVED_TARGETS, buildTargets, suggestMapping, applyMapping } from './importMapping';
+import { RESERVED_TARGETS, buildTargets, suggestMapping, applyMapping, NEW_ATTRIBUTE_KEY } from './importMapping';
 
 const targets = buildTargets(['Color', 'Size']);
 
@@ -97,6 +97,25 @@ describe('applyMapping', () => {
 
     const rows = applyMapping([{ Material: 'Cotton', Fabric: 'Linen', Color: 'Red' }], mapping);
     expect(rows[0].material).toBe('Cotton'); // Material's own value must survive
+  });
+});
+
+describe('new-attribute passthrough', () => {
+  it('buildTargets offers a "new attribute" option', () => {
+    expect(targets.some((t) => t.key === NEW_ATTRIBUTE_KEY)).toBe(true);
+  });
+
+  it('never auto-suggests the new-attribute sentinel (must be a manual choice)', () => {
+    const m = suggestMapping(['Fragrance', 'New Attribute', 'Scent'], targets);
+    expect(Object.values(m)).not.toContain(NEW_ATTRIBUTE_KEY);
+  });
+
+  it('keeps a column mapped to NEW_ATTRIBUTE_KEY under its original header (server reads it as a new attribute)', () => {
+    const out = applyMapping(
+      [{ Name: 'Candle', Fragrance: 'Vanilla', Weird: 'x' }],
+      { Name: 'name', Fragrance: NEW_ATTRIBUTE_KEY, Weird: '' },
+    );
+    expect(out).toEqual([{ name: 'Candle', Fragrance: 'Vanilla' }]);
   });
 });
 
