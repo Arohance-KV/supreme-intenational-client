@@ -32,8 +32,8 @@ function SubmissionRow({ submission }: { submission: AdminSubmission }) {
           {submission._id}
         </span>
       </div>
-      <span className="text-xs text-slate truncate">
-        {typeof submission.sellerId === 'string' ? submission.sellerId : '—'}
+      <span className="text-xs text-slate truncate" title={typeof submission.sellerId === 'string' ? submission.sellerId : undefined}>
+        {submission.sellerName ?? (typeof submission.sellerId === 'string' ? submission.sellerId : '—')}
       </span>
       <span className="text-xs text-slate">
         {variantsArray.length}
@@ -114,7 +114,7 @@ function SubmissionsTable() {
         <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] overflow-hidden">
           <div className="grid grid-cols-[1fr_140px_80px_120px_100px_72px] gap-3 bg-white/50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-slate">
             <span>Submission</span>
-            <span>Seller ID</span>
+            <span>Seller</span>
             <span>Variants</span>
             <span>Min price</span>
             <span>Status</span>

@@ -28,6 +28,7 @@ export interface SubmissionBadge {
 export interface AdminSubmission {
   _id: string;
   sellerId: string;
+  sellerName?: string | null;
   status: SubmissionStatus;
   name: string;
   description: string;
