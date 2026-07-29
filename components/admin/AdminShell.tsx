@@ -40,7 +40,8 @@ const NAV: NavEntry[] = [
     items: [
       { label: 'Submissions', href: '/admin/submissions' },
       { label: 'Sellers', href: '/admin/sellers' },
-      { label: 'Payouts', href: '/admin/payouts' },
+      // ponytail: payouts hidden — uncomment to restore
+      // { label: 'Payouts', href: '/admin/payouts' },
       { label: 'Support', href: '/admin/support' },
     ],
   },

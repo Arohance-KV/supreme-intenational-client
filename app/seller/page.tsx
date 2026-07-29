@@ -1,12 +1,14 @@
 'use client';
 import Link from 'next/link';
 import { useSellerMe } from '@/lib/seller/me';
-import { useEarningsSummary } from '@/lib/seller/payouts';
+// ponytail: payout figures hidden — restore alongside the KPIs below
+// import { useEarningsSummary } from '@/lib/seller/payouts';
 import { useSellerDashboard } from '@/lib/seller/dashboard';
 
-function inr(n: number): string {
-  return '₹' + n.toLocaleString('en-IN');
-}
+// ponytail: only used by the hidden payout KPIs — restore with them
+// function inr(n: number): string {
+//   return '₹' + n.toLocaleString('en-IN');
+// }
 
 const STATUS_CHIP: Record<string, string> = {
   pending: 'text-[#b5801e] bg-[rgba(224,163,59,.16)]',
@@ -34,7 +36,8 @@ const STATUS_LABEL: Record<string, string> = {
 
 export default function SellerDashboardPage() {
   const { data: me } = useSellerMe(true);
-  const { data: summary } = useEarningsSummary();
+  // ponytail: payout summary hidden — restore with the KPIs below
+  // const { data: summary } = useEarningsSummary();
   const { data: dash } = useSellerDashboard();
   const maxViews = Math.max(1, ...(dash?.viewsThisWeek ?? []).map((d) => d.count));
 
@@ -72,14 +75,17 @@ export default function SellerDashboardPage() {
         <Kpi label="Live products" value={dash ? String(dash.liveProducts) : '—'} sub={dash ? `${dash.inReview} in review` : ''} />
         <Kpi label="In quotations" value={dash ? String(dash.inQuotations) : '—'} sub="times added to quotes" />
         <Kpi label="Catalogue views" value={dash ? dash.catalogueViews.toLocaleString('en-IN') : '—'} sub="this month" />
+        {/* ponytail: payout figures hidden — uncomment to restore
         <Kpi label="Est. payout" value={dash ? inr(dash.outstanding) : (summary ? inr(summary.outstanding) : '—')} sub="after platform margin" tone="text-[#b5801e]" />
+        */}
       </div>
 
-      {/* Earnings (settled / lifetime) */}
+      {/* Earnings (settled / lifetime) — ponytail: hidden, uncomment to restore
       <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Kpi label="Settled" value={summary ? inr(summary.settled) : '—'} sub="paid out to you" tone="text-[#1a8f5a]" />
         <Kpi label="Lifetime earnings" value={summary ? inr(summary.lifetime) : '—'} sub="since you joined" />
       </div>
+      */}
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {/* Views this week */}
