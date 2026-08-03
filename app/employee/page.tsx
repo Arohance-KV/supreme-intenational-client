@@ -35,14 +35,15 @@ export default function EmployeeDashboard() {
   return (
     <div className="min-h-screen bg-[#eef0f8]">
       <div className={`${pageWrap} space-y-12 sm:space-y-16`}>
-        <PortalHero hero={company?.portalHero} greeting={greeting} />
+        {/* Supreme static content sits at the top; the designated company's dynamic design renders below it. */}
+        <SupremeSection />
 
+        <PortalHero hero={company?.portalHero} greeting={greeting} />
         <AnnouncementsSection items={company?.portalAnnouncements} />
         <CompanyAbout about={company?.portalAbout} companyName={company?.name} />
         <ContentBlocks blocks={company?.portalContentBlocks} />
         <PromotionBanner promo={company?.portalPromotion} />
         <FeaturedProducts products={company?.featuredProducts} />
-        <SupremeSection />
 
         {/* Recently Viewed */}
         <section>
