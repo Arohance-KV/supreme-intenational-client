@@ -37,6 +37,8 @@ export default function CreateProductModal({
     description: '',
     visibility: lockedCompany ? 'company' : 'public',
     ownerCompanyId: lockedCompany?.id,
+    hsn: '',
+    gstRate: 5,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -124,6 +126,37 @@ export default function CreateProductModal({
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               className={fieldCls}
             />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="cp-hsn" className={labelCls}>
+                HSN code
+              </label>
+              <input
+                id="cp-hsn"
+                value={form.hsn ?? ''}
+                onChange={(e) => setForm({ ...form, hsn: e.target.value })}
+                className={fieldCls}
+              />
+            </div>
+            <div>
+              <label htmlFor="cp-gstRate" className={labelCls}>
+                GST rate
+              </label>
+              <select
+                id="cp-gstRate"
+                value={form.gstRate ?? 5}
+                onChange={(e) => setForm({ ...form, gstRate: Number(e.target.value) })}
+                className={fieldCls}
+              >
+                {[0, 5, 12, 18, 28].map((rate) => (
+                  <option key={rate} value={rate}>
+                    {rate}%
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {!lockedCompany && (

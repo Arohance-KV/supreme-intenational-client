@@ -806,6 +806,8 @@ function ProductEditForm({
     isActive: product.isActive,
     rating: product.rating,
     totalReviews: product.totalReviews,
+    hsn: product.hsn,
+    gstRate: product.gstRate,
   });
 
   const handleSave = (e: React.FormEvent) => {
@@ -888,6 +890,38 @@ function ProductEditForm({
           onChange={(e) => setFields({ ...fields, shipping: e.target.value })}
           className="w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
         />
+      </div>
+
+      {/* Tax */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label htmlFor="p-hsn" className="mb-1 block text-sm font-medium text-slate">
+            HSN code
+          </label>
+          <input
+            id="p-hsn"
+            value={fields.hsn ?? ''}
+            onChange={(e) => setFields({ ...fields, hsn: e.target.value })}
+            className="w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+          />
+        </div>
+        <div>
+          <label htmlFor="p-gstRate" className="mb-1 block text-sm font-medium text-slate">
+            GST rate
+          </label>
+          <select
+            id="p-gstRate"
+            value={fields.gstRate ?? 5}
+            onChange={(e) => setFields({ ...fields, gstRate: Number(e.target.value) })}
+            className="w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+          >
+            {[0, 5, 12, 18, 28].map((rate) => (
+              <option key={rate} value={rate}>
+                {rate}%
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Badge */}

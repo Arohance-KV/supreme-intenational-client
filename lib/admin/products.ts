@@ -42,6 +42,8 @@ export interface AdminProductDetail {
   visibility: 'public' | 'company';
   ownerCompanyId?: string;
   category: string;
+  hsn: string;
+  gstRate: number;
 }
 
 export interface AdminProductsResponse {
@@ -68,6 +70,8 @@ export interface CreateProductBody {
   isFeatured?: boolean;
   visibility?: 'public' | 'company';
   ownerCompanyId?: string;
+  hsn?: string;
+  gstRate?: number;
 }
 
 // Update product body — matches updateProductValidator + controller
@@ -84,6 +88,8 @@ export interface UpdateProductBody {
   rating?: number;
   totalReviews?: number;
   totalPurchases?: number;
+  hsn?: string;
+  gstRate?: number;
 }
 
 // Create variant — matches createVariantValidator + controller
