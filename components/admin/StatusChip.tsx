@@ -48,6 +48,8 @@ const STATUS_CLASS_MAP: Record<string, string> = {
   accepted:    'bg-green-100 text-green-700',
   declined:    'bg-red-100 text-red-700',
   expired:     'bg-zinc-100 text-zinc-500',
+  pending_approval: 'bg-amber-100 text-amber-700',
+  // 'approved' already covered by the shared submission-status entry above
 };
 
 const FALLBACK = 'bg-zinc-100 text-zinc-600';

@@ -6,6 +6,7 @@ import { ApiError } from '@/lib/api';
 import {
   useQuotation,
   useUpdateQuotationStatus,
+  useApproveQuotation,
   type QuotationStatus,
 } from '@/lib/admin/enquiries';
 import { StatusChip } from '@/components/admin/StatusChip';
@@ -23,11 +24,13 @@ function getErrorMessage(err: unknown): string {
 // The backend allows any → any transition (no server-side transition map enforced).
 // All statuses are therefore always available when changing.
 const QUOTATION_STATUSES: QuotationStatus[] = [
+  'pending_approval',
   'generated',
   'sent',
   'viewed',
   'converted',
   'archived',
+  'approved',
 ];
 
 // ── Detail page ───────────────────────────────────────────────────────────────
@@ -41,9 +44,11 @@ export default function AdminQuotationDetailPage({
   const { confirm } = useConfirm();
   const { data: quotation, isLoading, isError } = useQuotation(id);
   const updateStatus = useUpdateQuotationStatus(id);
+  const approve = useApproveQuotation(id);
 
   const [pendingStatus, setPendingStatus] = useState<QuotationStatus | ''>('');
   const [actionError, setActionError] = useState<string | null>(null);
+  const [terms, setTerms] = useState<string | null>(null);
 
   if (isLoading) {
     return (
@@ -72,6 +77,21 @@ export default function AdminQuotationDetailPage({
   }
 
   const otherStatuses = QUOTATION_STATUSES.filter((s) => s !== quotation.status);
+  const termsValue = terms ?? quotation?.terms ?? '';
+
+  async function handleApprove() {
+    const confirmed = await confirm({
+      title: 'Approve & send quotation',
+      message: 'This will generate the PDF with the terms below and email it to the customer. Continue?',
+    });
+    if (!confirmed) return;
+    setActionError(null);
+    try {
+      await approve.mutateAsync(termsValue);
+    } catch (err) {
+      setActionError(getErrorMessage(err));
+    }
+  }
 
   async function handleStatusChange() {
     if (!pendingStatus) return;
@@ -272,6 +292,27 @@ export default function AdminQuotationDetailPage({
           </div>
         )}
       </section>
+
+      {/* Terms & Conditions (pending approval only) */}
+      {quotation.status === 'pending_approval' && (
+        <section className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5 space-y-3">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-slate">Terms &amp; Conditions</h2>
+          <p className="text-sm text-slate">Edit the terms that appear on the last page of the PDF, then approve to generate and email it to the customer.</p>
+          <textarea
+            value={termsValue}
+            onChange={(e) => setTerms(e.target.value)}
+            rows={8}
+            className="w-full rounded border border-line bg-white px-3 py-2 text-sm text-ink focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+          />
+          <button
+            onClick={handleApprove}
+            disabled={approve.isPending}
+            className="rounded bg-gradient-to-br from-indigo to-indigo2 px-4 py-2 text-sm font-medium text-white disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {approve.isPending ? 'Approving…' : 'Approve & send'}
+          </button>
+        </section>
+      )}
 
       {/* Status update */}
       <section className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5 space-y-4">
