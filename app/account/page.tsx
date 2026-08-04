@@ -66,6 +66,8 @@ const STATUS_STYLE: Record<string, { label: string; cls: string }> = {
   sent: { label: 'Sent', cls: 'text-indigo bg-[rgba(42,43,106,.1)]' },
   viewed: { label: 'Viewed', cls: 'text-[#b5801e] bg-[rgba(224,163,59,.16)]' },
   archived: { label: 'Archived', cls: 'text-slate bg-[rgba(91,93,122,.12)]' },
+  pending_approval: { label: 'Pending approval', cls: 'text-[#b5801e] bg-[rgba(224,163,59,.16)]' },
+  approved: { label: 'Approved', cls: 'text-[#1a8f5a] bg-[rgba(31,170,107,.12)]' },
 };
 
 function statusBadge(status: string) {
@@ -253,7 +255,7 @@ function QuoteTable({ rows }: { rows: Quotation[] }) {
                 <span>{units}</span>
                 <span className="font-bold">{formatINR(q.total)}</span>
                 <span>{statusBadge(q.status)}</span>
-                <ViewBtn url={q.pdfUrl} />
+                {q.status === 'approved' ? <ViewBtn url={q.pdfUrl} /> : <span />}
               </TableRow>
             );
           })}

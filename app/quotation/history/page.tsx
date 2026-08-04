@@ -127,39 +127,47 @@ export default function QuotationHistoryPage() {
                   </p>
                   <span
                     className={`inline-block mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
-                      q.status === 'converted'
+                      q.status === 'converted' || q.status === 'approved'
                         ? 'bg-green-100 text-green-700'
+                        : q.status === 'pending_approval'
+                        ? 'bg-amber-100 text-amber-700'
                         : q.status === 'generated'
                         ? 'bg-blue-100 text-blue-700'
                         : 'bg-gray-100 text-gray-600'
                     }`}
                   >
-                    {q.status}
+                    {q.status === 'pending_approval' ? 'Pending approval' : q.status}
                   </span>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={() => handleDownloadPdf(q._id)}
-                    disabled={pdfLoading[q._id]}
-                    className="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-                  >
-                    {pdfLoading[q._id] ? 'Opening…' : 'Download PDF'}
-                  </button>
+                  {q.status === 'approved' ? (
+                    <>
+                      <button
+                        onClick={() => handleDownloadPdf(q._id)}
+                        disabled={pdfLoading[q._id]}
+                        className="px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                      >
+                        {pdfLoading[q._id] ? 'Opening…' : 'Download PDF'}
+                      </button>
 
-                  <button
-                    onClick={() => handleEmail(q._id)}
-                    disabled={emailStatus[q._id] === 'sending' || emailStatus[q._id] === 'sent'}
-                    className="px-3 py-1.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 disabled:opacity-50 transition-colors"
-                  >
-                    {emailStatus[q._id] === 'sending'
-                      ? 'Sending…'
-                      : emailStatus[q._id] === 'sent'
-                      ? 'Sent!'
-                      : emailStatus[q._id] === 'error'
-                      ? 'Retry Email'
-                      : 'Email PDF'}
-                  </button>
+                      <button
+                        onClick={() => handleEmail(q._id)}
+                        disabled={emailStatus[q._id] === 'sending' || emailStatus[q._id] === 'sent'}
+                        className="px-3 py-1.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 disabled:opacity-50 transition-colors"
+                      >
+                        {emailStatus[q._id] === 'sending'
+                          ? 'Sending…'
+                          : emailStatus[q._id] === 'sent'
+                          ? 'Sent!'
+                          : emailStatus[q._id] === 'error'
+                          ? 'Retry Email'
+                          : 'Email PDF'}
+                      </button>
+                    </>
+                  ) : (
+                    <span className="self-center text-xs text-gray-400">Awaiting approval — you&apos;ll be emailed once approved.</span>
+                  )}
                 </div>
               </div>
             </div>
