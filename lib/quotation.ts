@@ -10,8 +10,7 @@ export interface GenerateQuotationBody {
 export interface GenerateQuotationResult {
   quotationId: string;
   quotationNumber: string;
-  pdfUrl: string;
-  whatsappUrl: string;
+  status: 'pending_approval';
 }
 
 export interface QuotationItem {

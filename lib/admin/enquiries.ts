@@ -3,7 +3,7 @@ import { adminFetch } from './api';
 
 // ── Quotation types ────────────────────────────────────────────────────────────
 
-export type QuotationStatus = 'generated' | 'sent' | 'viewed' | 'converted' | 'archived';
+export type QuotationStatus = 'pending_approval' | 'generated' | 'sent' | 'viewed' | 'converted' | 'archived' | 'approved';
 export type LeadFollowUpStatus = 'new' | 'followed_up' | 'closed';
 export type LeadType = 'quotation' | 'catalogue';
 
@@ -47,6 +47,8 @@ export interface Quotation {
   sourceType: 'cart' | 'filters' | 'company';
   companyId?: string | null;
   filtersApplied: unknown;
+  terms?: string;
+  approvedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -133,6 +135,18 @@ export function useUpdateQuotationStatus(id: string) {
         method: 'PATCH',
         body: { status },
       }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin', 'quotations', 'detail', id] });
+      qc.invalidateQueries({ queryKey: ['admin', 'quotations'] });
+    },
+  });
+}
+
+export function useApproveQuotation(id: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (terms: string) =>
+      adminFetch<Quotation>(`/admin/quotations/${id}/approve`, { method: 'POST', body: { terms } }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin', 'quotations', 'detail', id] });
       qc.invalidateQueries({ queryKey: ['admin', 'quotations'] });
