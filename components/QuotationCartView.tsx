@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -10,8 +10,8 @@ import type { useCartMutations } from '@/lib/cart';
 import { ApiError } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { useProfile } from '@/lib/userAuth';
-import { useGenerateQuotation, emailQuotation, type GenerateQuotationResult } from '@/lib/quotation';
-import { glass, secondaryBtn, input, eyebrow } from '@/components/employee/ui';
+import { useGenerateQuotation } from '@/lib/quotation';
+import { glass, input, eyebrow } from '@/components/employee/ui';
 import CartItemRow from '@/components/CartItemRow';
 
 // Indian-grouped whole-rupee headline (matches the reference: ₹3,39,000).
@@ -31,13 +31,12 @@ export default function QuotationCartView({ cart, mutations }: Props) {
   const queryClient = useQueryClient();
   const { data: profile } = useProfile(isLoggedIn);
   const b2bStatus = profile?.b2bStatus ?? 'approved';
-  const quotationsLocked = b2bStatus !== 'approved';
+  const quotationsLocked = b2bStatus === 'rejected';
   const generate = useGenerateQuotation();
 
   const [notes, setNotes] = useState('');
   const [genError, setGenError] = useState<string | null>(null);
-  const [emailedSig, setEmailedSig] = useState<string | null>(null);
-  const [busy, setBusy] = useState<'download' | 'whatsapp' | 'email' | null>(null);
+  const [submitted, setSubmitted] = useState(false);
 
   const totalUnits = useMemo(() => cart.items.reduce((s, i) => s + i.qty, 0), [cart.items]);
 
@@ -48,39 +47,16 @@ export default function QuotationCartView({ cart, mutations }: Props) {
     return (bestsellers ?? []).filter((p) => !inCart.has(p._id)).slice(0, 2);
   }, [bestsellers, cart.items]);
 
-  // Signature of the priced cart. When it changes, any cached quote / "emailed"
-  // state is stale and both derive fresh from it — no effect needed.
-  const cartSig = `${cart.itemCount}|${cart.total}|${cart.coupon?.code ?? ''}`;
-  const emailSent = emailedSig === cartSig;
-
-  // Cache one generated quotation per cart signature and reuse it across the
-  // three actions so we don't create a duplicate record per click.
-  const quoteRef = useRef<{ sig: string; result: GenerateQuotationResult } | null>(null);
-  const ensureQuote = async () => {
-    if (quoteRef.current?.sig === cartSig) return quoteRef.current.result;
-    const result = await generate.mutateAsync({ source: 'cart' });
-    quoteRef.current = { sig: cartSig, result };
-    return result;
-  };
-
-  const runAction = async (action: 'download' | 'whatsapp' | 'email') => {
+  const submit = async () => {
     setGenError(null);
-    setBusy(action);
     try {
-      const q = await ensureQuote();
-      if (action === 'download') window.open(q.pdfUrl, '_blank', 'noopener');
-      else if (action === 'whatsapp') window.open(q.whatsappUrl, '_blank', 'noopener');
-      else { await emailQuotation(q.quotationId); setEmailedSig(cartSig); }
+      await generate.mutateAsync({ source: 'cart' });
+      setSubmitted(true);
     } catch (err) {
       if (err instanceof ApiError && err.code && B2B_LOCK_CODES.has(err.code)) {
-        // Cached profile is stale (approved/rejected moments ago) — refetch so
-        // the locked banner takes over instead of the buttons staying live and
-        // the user retrying into the same 403 indefinitely.
         queryClient.invalidateQueries({ queryKey: ['profile'] });
       }
-      setGenError(err instanceof ApiError ? err.message : 'Could not generate the quotation. Please try again.');
-    } finally {
-      setBusy(null);
+      setGenError(err instanceof ApiError ? err.message : 'Could not submit the quotation. Please try again.');
     }
   };
 
@@ -202,37 +178,26 @@ export default function QuotationCartView({ cart, mutations }: Props) {
           {isLoggedIn ? (
             quotationsLocked ? (
               <div className="rounded-xl border border-[rgba(224,82,77,.2)] bg-[rgba(224,82,77,.06)] px-3.5 py-3">
-                <div className="text-sm font-bold text-[#b03c38]">
-                  {b2bStatus === 'rejected' ? 'Quotations unavailable' : 'Pending approval'}
-                </div>
+                <div className="text-sm font-bold text-[#b03c38]">Quotations unavailable</div>
                 <p className="mt-1 text-xs leading-relaxed text-[#b03c38]">
-                  {b2bStatus === 'rejected'
-                    ? 'Your account is not approved for quotations.'
-                    : 'Your account is pending approval for quotations. Our team will be in touch.'}
+                  Your account is not approved for quotations.
+                </p>
+              </div>
+            ) : submitted ? (
+              <div className="rounded-xl border border-[rgba(23,155,142,.25)] bg-[rgba(23,155,142,.08)] px-3.5 py-3">
+                <div className="text-sm font-bold text-[#127d72]">Submitted for approval</div>
+                <p className="mt-1 text-xs leading-relaxed text-[#127d72]">
+                  Your quotation has been sent to our team for review. You&apos;ll receive the PDF by email once it&apos;s approved.
                 </p>
               </div>
             ) : (
               <>
                 <button
-                  onClick={() => runAction('download')}
-                  disabled={busy !== null || cart.hasMoqViolations}
+                  onClick={submit}
+                  disabled={generate.isPending || cart.hasMoqViolations}
                   className="mb-2.5 flex w-full items-center justify-center gap-2 rounded-[13px] bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)] px-4 py-3.5 text-sm font-bold text-white shadow-[0_12px_28px_rgba(42,43,106,.3)] transition-shadow hover:shadow-[0_10px_28px_rgba(42,43,106,.4)] disabled:opacity-50"
                 >
-                  {busy === 'download' ? 'Generating…' : '⬇ Download Quotation PDF'}
-                </button>
-                <button
-                  onClick={() => runAction('whatsapp')}
-                  disabled={busy !== null || cart.hasMoqViolations}
-                  className="mb-2.5 flex w-full items-center justify-center gap-2 rounded-[13px] bg-[#1fa463] px-4 py-3.5 text-sm font-bold text-white shadow-[0_12px_28px_rgba(31,164,99,.28)] transition-shadow hover:shadow-[0_10px_28px_rgba(31,164,99,.4)] disabled:opacity-50"
-                >
-                  {busy === 'whatsapp' ? 'Generating…' : '⌾ Send to WhatsApp'}
-                </button>
-                <button
-                  onClick={() => runAction('email')}
-                  disabled={busy !== null || cart.hasMoqViolations}
-                  className={`${secondaryBtn} flex w-full items-center justify-center gap-2 px-4 py-3.5 text-sm`}
-                >
-                  {busy === 'email' ? 'Sending…' : emailSent ? 'Emailed ✓' : '✉ Email Quotation'}
+                  {generate.isPending ? 'Submitting…' : 'Submit quotation for approval'}
                 </button>
                 {genError && <p className="mt-3 text-sm text-[#e0524d]">{genError}</p>}
               </>
@@ -248,7 +213,7 @@ export default function QuotationCartView({ cart, mutations }: Props) {
 
           <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-[rgba(23,155,142,.2)] bg-[rgba(23,155,142,.08)] px-3.5 py-3">
             <span className="text-sm">✓</span>
-            <div className="text-xs leading-relaxed text-[#127d72]">Every quotation reaches Supreme&apos;s team as a qualified lead — we follow up with confirmed pricing.</div>
+            <div className="text-xs leading-relaxed text-[#127d72]">Every quotation is reviewed by Supreme&apos;s team — we confirm pricing and email your approved PDF.</div>
           </div>
         </div>
       </div>
