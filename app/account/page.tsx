@@ -255,7 +255,7 @@ function QuoteTable({ rows }: { rows: Quotation[] }) {
                 <span>{units}</span>
                 <span className="font-bold">{formatINR(q.total)}</span>
                 <span>{statusBadge(q.status)}</span>
-                {q.status === 'approved' ? <ViewBtn url={q.pdfUrl} /> : <span />}
+                {q.pdfUrl ? <ViewBtn url={q.pdfUrl} /> : <span />}
               </TableRow>
             );
           })}

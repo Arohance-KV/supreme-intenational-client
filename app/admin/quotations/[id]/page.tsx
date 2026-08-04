@@ -24,13 +24,11 @@ function getErrorMessage(err: unknown): string {
 // The backend allows any → any transition (no server-side transition map enforced).
 // All statuses are therefore always available when changing.
 const QUOTATION_STATUSES: QuotationStatus[] = [
-  'pending_approval',
   'generated',
   'sent',
   'viewed',
   'converted',
   'archived',
-  'approved',
 ];
 
 // ── Detail page ───────────────────────────────────────────────────────────────

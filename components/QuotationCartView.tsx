@@ -23,7 +23,7 @@ interface Props {
   mutations: ReturnType<typeof useCartMutations>;
 }
 
-const B2B_LOCK_CODES = new Set(['B2B_PENDING_APPROVAL', 'B2B_REJECTED']);
+const B2B_LOCK_CODES = new Set(['B2B_REJECTED']);
 
 export default function QuotationCartView({ cart, mutations }: Props) {
   const { setQty, remove, clear } = mutations;

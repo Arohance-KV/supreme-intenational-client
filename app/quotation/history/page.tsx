@@ -141,7 +141,7 @@ export default function QuotationHistoryPage() {
                 </div>
 
                 <div className="flex flex-wrap gap-2">
-                  {q.status === 'approved' ? (
+                  {q.pdfUrl ? (
                     <>
                       <button
                         onClick={() => handleDownloadPdf(q._id)}
