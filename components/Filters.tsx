@@ -170,6 +170,34 @@ export default function Filters({ basePath = '/products' }: { basePath?: string 
               aria-label="Maximum price"
             />
           </div>
+          {/* Optional exact min/max — commit on blur or Enter, same rules as the slider. */}
+          <div className="mt-3 flex items-center gap-2">
+            <input
+              type="number"
+              inputMode="numeric"
+              min={0}
+              placeholder="Min"
+              value={minPrice}
+              onChange={(e) => setMinPrice(e.target.value)}
+              onBlur={commitPrice}
+              onKeyDown={(e) => e.key === 'Enter' && commitPrice()}
+              aria-label="Minimum price"
+              className="w-full rounded-lg border border-line bg-white/70 px-2.5 py-1.5 text-xs text-ink focus:border-accent focus:outline-none"
+            />
+            <span className="text-xs text-muted">–</span>
+            <input
+              type="number"
+              inputMode="numeric"
+              min={0}
+              placeholder="Max"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(e.target.value)}
+              onBlur={commitPrice}
+              onKeyDown={(e) => e.key === 'Enter' && commitPrice()}
+              aria-label="Maximum price"
+              className="w-full rounded-lg border border-line bg-white/70 px-2.5 py-1.5 text-xs text-ink focus:border-accent focus:outline-none"
+            />
+          </div>
         </div>
       )}
 

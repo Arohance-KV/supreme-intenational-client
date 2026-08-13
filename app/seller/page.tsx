@@ -75,7 +75,7 @@ export default function SellerDashboardPage() {
       )}
 
       {/* Performance KPIs */}
-      <div className="mb-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Kpi label="Live products" value={dash ? String(dash.liveProducts) : '—'} sub={dash ? `${dash.inReview} in review` : ''} />
         <Kpi label="In quotations" value={dash ? String(dash.inQuotations) : '—'} sub="times added to quotes" />
         <Kpi label="Catalogue views" value={dash ? dash.catalogueViews.toLocaleString('en-IN') : '—'} sub="this month" />

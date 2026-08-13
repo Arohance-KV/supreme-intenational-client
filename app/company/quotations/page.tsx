@@ -5,14 +5,13 @@ import { PageHeader } from '@/components/company/PageHeader';
 import { Card } from '@/components/company/Card';
 import { StatusPill } from '@/components/company/StatusPill';
 import {
-  useCompanyQuotations,
   useCompanyEnquiries,
   useRaiseEnquiry,
-  type CompanyQuotation,
   type Enquiry,
 } from '@/lib/company/quotations';
-import { formatIN, formatDate } from '@/lib/company/format';
+import { formatDate } from '@/lib/company/format';
 import { ApiError } from '@/lib/api';
+import { RequestProductsModal } from '@/components/company/RequestProductsModal';
 
 function EnvelopeIcon() {
   return (
@@ -30,34 +29,6 @@ function EnvelopeIcon() {
       <rect x="2.5" y="4.5" width="15" height="11" rx="1.5" />
       <path d="m3 5.5 7 5.5 7-5.5" />
     </svg>
-  );
-}
-
-function QuotationRow({ quotation }: { quotation: CompanyQuotation }) {
-  const itemCount = quotation.items.length;
-  return (
-    <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-4 text-[13px] last:border-0">
-      <div className="min-w-0">
-        <p className="truncate text-[14px] font-bold text-ink">
-          {itemCount} item{itemCount === 1 ? '' : 's'}
-        </p>
-        <p className="font-jbmono mt-1 truncate text-[12px] text-muted">
-          {quotation.quotationNumber} · ₹{formatIN(quotation.total)}
-        </p>
-        <p className="mt-0.5 text-[11px] text-muted">{formatDate(quotation.createdAt)}</p>
-      </div>
-      <div className="flex flex-none items-center gap-3">
-        <StatusPill status={quotation.status} />
-        <a
-          href={quotation.pdfUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="whitespace-nowrap text-[12px] font-bold text-indigo hover:underline"
-        >
-          View →
-        </a>
-      </div>
-    </div>
   );
 }
 
@@ -199,12 +170,12 @@ function RaiseEnquiryModal({
 }
 
 export default function CompanyQuotationsPage() {
-  const quotationsQuery = useCompanyQuotations();
   const enquiriesQuery = useCompanyEnquiries();
   const [showRaise, setShowRaise] = useState(false);
   const [enquirySent, setEnquirySent] = useState(false);
+  const [showRequest, setShowRequest] = useState(false);
+  const [requestSent, setRequestSent] = useState(false);
 
-  const quotations = useMemo(() => quotationsQuery.data?.items ?? [], [quotationsQuery.data]);
   const enquiries = useMemo(() => enquiriesQuery.data?.items ?? [], [enquiriesQuery.data]);
 
   return (
@@ -249,30 +220,50 @@ export default function CompanyQuotationsPage() {
         </div>
       )}
 
+      {requestSent && (
+        <div
+          className="mb-6 flex items-center justify-between gap-4 text-[13px] font-semibold text-[#1a8f5a]"
+          style={{
+            padding: '13px 16px',
+            borderRadius: 14,
+            background: 'rgba(31,170,107,.08)',
+            border: '1px solid rgba(31,170,107,.25)',
+          }}
+        >
+          <span>Your product request has been sent to Supreme. We&rsquo;ll be in touch soon.</span>
+          <button
+            type="button"
+            onClick={() => setRequestSent(false)}
+            aria-label="Dismiss"
+            className="text-[12px] font-bold text-[#1a8f5a] hover:opacity-70"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-2">
         <Card className="overflow-hidden">
           <div className="border-b border-line px-5 py-4">
-            <h2 className="text-[14px] font-bold text-ink">Your quotations</h2>
+            <h2 className="text-[14px] font-bold text-ink">Request more products</h2>
           </div>
-
-          {quotationsQuery.isError && (
-            <p className="p-6 text-[13px] text-muted">Could not load quotations.</p>
-          )}
-          {quotationsQuery.isLoading && !quotationsQuery.data && (
-            <p className="p-6 text-[13px] text-muted">Loading…</p>
-          )}
-          {!quotationsQuery.isLoading && !quotationsQuery.isError && quotations.length === 0 && (
-            <p className="p-10 text-center text-[13px] text-muted">
-              No quotations yet. Quotations raised for your company will appear here.
+          <div className="p-5">
+            <p className="text-[13px] text-muted">
+              Need something specific for your team? Tell Supreme what you&rsquo;d like added — bulk
+              items, custom branding, or new categories. We&rsquo;ll curate and get back to you.
             </p>
-          )}
-          {quotations.length > 0 && (
-            <div>
-              {quotations.map((q) => (
-                <QuotationRow key={q._id} quotation={q} />
-              ))}
-            </div>
-          )}
+            <button
+              type="button"
+              onClick={() => setShowRequest(true)}
+              className="mt-4 whitespace-nowrap rounded-xl px-4 py-[11px] text-[13.5px] font-bold text-white transition-opacity hover:opacity-90"
+              style={{
+                background: 'linear-gradient(135deg,#2a2b6a,#3a3c98)',
+                boxShadow: '0 8px 20px rgba(42,43,106,.28)',
+              }}
+            >
+              ＋ Request products
+            </button>
+          </div>
         </Card>
 
         <Card className="overflow-hidden">
@@ -307,6 +298,16 @@ export default function CompanyQuotationsPage() {
           onSubmitted={() => {
             setShowRaise(false);
             setEnquirySent(true);
+          }}
+        />
+      )}
+
+      {showRequest && (
+        <RequestProductsModal
+          onClose={() => setShowRequest(false)}
+          onSubmitted={() => {
+            setShowRequest(false);
+            setRequestSent(true);
           }}
         />
       )}

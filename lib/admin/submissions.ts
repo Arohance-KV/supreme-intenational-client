@@ -36,6 +36,7 @@ export interface AdminSubmission {
   materials: string;
   shipping: string;
   categoryId: string;
+  categoryName?: string | null;
   images: string[];
   badge: SubmissionBadge | null;
   variants: DraftVariant[];

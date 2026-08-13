@@ -16,14 +16,22 @@ export default function DcFooter() {
             </Link>
           </div>
           {([
-            ['Company', ['About Us', 'Clients', 'Careers', 'Contact']],
-            ['Products', ['Catalogue', 'Quotation builder', 'Catalogue generator', 'Merchandise portal']],
-            ['Connect', ['WhatsApp', 'hello@supreme.example', '+91 ·· ···· ····']],
+            ['Company', [['About Us', '/about'], ['Clients', '/clients'], ['Careers', '/careers'], ['Contact', '/contact']]],
+            ['Products', [['Catalogue', '/products'], ['Quotation builder', '/cart'], ['Catalogue generator', '/products'], ['Merchandise portal', '/employee']]],
+            ['Connect', [['WhatsApp', 'https://wa.me/'], ['hello@supreme.example', 'mailto:hello@supreme.example'], ['+91 ·· ···· ····', null]]],
           ] as const).map(([title, links]) => (
             <div key={title}>
               <div className="font-jbmono mb-3.5 text-[11px] uppercase tracking-[.1em] text-[#9fe7dc]">{title}</div>
-              <div className="flex flex-col gap-2.5 text-[13px] text-white/70">
-                {links.map((i) => <span key={i}>{i}</span>)}
+              <div className="flex flex-col items-start gap-2.5 text-[13px] text-white/70">
+                {links.map(([label, href]) =>
+                  href == null ? (
+                    <span key={label}>{label}</span>
+                  ) : href.startsWith('/') ? (
+                    <Link key={label} href={href} className="no-underline hover:text-white">{label}</Link>
+                  ) : (
+                    <a key={label} href={href} className="no-underline hover:text-white">{label}</a>
+                  ),
+                )}
               </div>
             </div>
           ))}

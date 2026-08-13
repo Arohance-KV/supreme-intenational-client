@@ -428,15 +428,15 @@ function SubmissionDetailInner({ id }: { id: string }) {
         <h2 className="mb-4 text-base font-semibold text-ink">Product details</h2>
         <dl className="grid grid-cols-1 gap-y-3 sm:grid-cols-2 gap-x-6">
           <div>
-            <dt className="text-xs font-medium text-slate uppercase tracking-wider">Category ID</dt>
-            <dd className="mt-0.5 text-sm text-ink font-mono">
-              {submission.categoryId ?? '—'}
+            <dt className="text-xs font-medium text-slate uppercase tracking-wider">Category</dt>
+            <dd className="mt-0.5 text-sm text-ink">
+              {submission.categoryName ?? submission.categoryId ?? '—'}
             </dd>
           </div>
           <div>
-            <dt className="text-xs font-medium text-slate uppercase tracking-wider">Seller ID</dt>
-            <dd className="mt-0.5 text-sm text-ink font-mono">
-              {submission.sellerId ?? '—'}
+            <dt className="text-xs font-medium text-slate uppercase tracking-wider">Seller</dt>
+            <dd className="mt-0.5 text-sm text-ink">
+              {submission.sellerName ?? submission.sellerId ?? '—'}
             </dd>
           </div>
           {submission.badge && (
