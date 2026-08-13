@@ -10,7 +10,7 @@ import {
 import { AdminModal, Field, inputCls } from '@/components/admin/AdminModal';
 import ImageUploadField from '@/components/admin/ImageUploadField';
 
-const GLASS = 'border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)]';
+const GLASS = 'border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)]';
 
 type Draft = { id?: string; name: string; logoUrl: string; website: string; order: number; isActive: boolean };
 const EMPTY: Draft = { name: '', logoUrl: '', website: '', order: 0, isActive: true };

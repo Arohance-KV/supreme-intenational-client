@@ -10,7 +10,10 @@ import {
 import { AdminModal, Field, inputCls } from '@/components/admin/AdminModal';
 import ImageUploadField from '@/components/admin/ImageUploadField';
 
-const GLASS = 'border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)]';
+// No backdrop-blur: this class is applied to every list row, and a 40px (blur-2xl)
+// backdrop-filter per row over the shell's gradient repaints the whole list on nav (~23fps).
+// Opaque bg — the frost was barely visible over an already-light background.
+const GLASS = 'border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)]';
 
 type Draft = { id?: string; title: string; industry: string; result: string; summary: string; coverImage: string; order: number; isPublished: boolean };
 const EMPTY: Draft = { title: '', industry: '', result: '', summary: '', coverImage: '', order: 0, isPublished: false };

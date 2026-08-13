@@ -21,7 +21,7 @@ import { useConfirm } from '@/components/ConfirmDialog';
 const inputCls =
   'w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20';
 const labelCls = 'mb-1 block text-sm font-medium text-slate';
-const sectionCls = 'rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5';
+const sectionCls = 'rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5';
 
 // ── Allowed next transitions (mirrors backend logic) ──────────────────────────
 

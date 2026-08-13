@@ -67,7 +67,7 @@ export default function AdminOrderDetailPage({
     return (
       <main className="max-w-4xl mx-auto space-y-6">
         <div className="h-7 w-48 rounded bg-black/5 animate-pulse" />
-        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-6 space-y-3 animate-pulse">
+        <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-6 space-y-3 animate-pulse">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="h-4 w-full rounded bg-black/5" />
           ))}
@@ -158,7 +158,7 @@ export default function AdminOrderDetailPage({
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
 
         {/* Customer */}
-        <section className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
+        <section className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
           <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate">
             Customer
           </h2>
@@ -175,7 +175,7 @@ export default function AdminOrderDetailPage({
         </section>
 
         {/* Shipping Address */}
-        <section className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
+        <section className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
           <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate">
             Shipping Address
           </h2>
@@ -197,7 +197,7 @@ export default function AdminOrderDetailPage({
         </section>
 
         {/* Payment */}
-        <section className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
+        <section className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
           <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate">
             Payment
           </h2>
@@ -234,7 +234,7 @@ export default function AdminOrderDetailPage({
         </section>
 
         {/* Billing Summary */}
-        <section className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
+        <section className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
           <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate">
             Billing
           </h2>
@@ -277,7 +277,7 @@ export default function AdminOrderDetailPage({
       {/* Tracking Info */}
       {order.trackingInfo &&
         (order.trackingInfo.courier || order.trackingInfo.trackingId) && (
-        <section className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
+        <section className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
           <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate">
             Tracking
           </h2>
@@ -314,7 +314,7 @@ export default function AdminOrderDetailPage({
       )}
 
       {/* Line Items */}
-      <section className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] overflow-hidden">
+      <section className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] overflow-hidden">
         <div className="px-5 py-3 bg-white/50 border-b border-line">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-slate">
             Line Items ({typeof order.items?.length === 'number' ? order.items.length : '—'})
@@ -375,7 +375,7 @@ export default function AdminOrderDetailPage({
       </section>
 
       {/* ── Actions ── */}
-      <section className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5 space-y-4">
+      <section className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5 space-y-4">
         <h2 className="text-xs font-semibold uppercase tracking-wider text-slate">
           Actions
         </h2>
@@ -453,7 +453,7 @@ export default function AdminOrderDetailPage({
 
       {/* Timeline */}
       {Array.isArray(order.timeline) && order.timeline.length > 0 && (
-        <section className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
+        <section className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
           <h2 className="mb-4 text-xs font-semibold uppercase tracking-wider text-slate">
             Timeline
           </h2>

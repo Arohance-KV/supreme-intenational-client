@@ -93,7 +93,7 @@ function BlogsTable() {
 
       {/* Loading skeleton */}
       {isLoading && (
-        <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] divide-y divide-line">
+        <div className="rounded-2xl border border-white/70 bg-white/90 shadow-[0_12px_34px_rgba(34,36,90,.08)] divide-y divide-line">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={`skeleton-${i}`} className="flex items-center gap-4 px-5 py-3 animate-pulse">
               <div className="h-4 flex-1 rounded bg-black/5" />
@@ -117,14 +117,14 @@ function BlogsTable() {
 
       {/* Empty */}
       {!isLoading && !isError && list.length === 0 && (
-        <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] p-10 text-center">
+        <div className="rounded-2xl border border-white/70 bg-white/90 shadow-[0_12px_34px_rgba(34,36,90,.08)] p-10 text-center">
           <p className="text-sm text-slate">No blogs yet. Create your first one above.</p>
         </div>
       )}
 
       {/* Table */}
       {!isLoading && !isError && list.length > 0 && (
-        <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] overflow-hidden">
+        <div className="rounded-2xl border border-white/70 bg-white/90 shadow-[0_12px_34px_rgba(34,36,90,.08)] overflow-hidden">
           {/* Header */}
           <div className="grid grid-cols-[1fr_120px_120px_100px_140px] gap-3 bg-white/50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-slate">
             <span>Title / Slug</span>
@@ -156,7 +156,7 @@ export default function AdminBlogsPage() {
 
       <Suspense
         fallback={
-          <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] p-8 text-center text-sm text-slate animate-pulse">
+          <div className="rounded-2xl border border-white/70 bg-white/90 shadow-[0_12px_34px_rgba(34,36,90,.08)] p-8 text-center text-sm text-slate animate-pulse">
             Loading blogs…
           </div>
         }

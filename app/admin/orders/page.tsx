@@ -86,7 +86,7 @@ function OrdersTable() {
 
       {/* Table */}
       {isLoading && (
-        <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] divide-y divide-line">
+        <div className="rounded-2xl border border-white/70 bg-white/90 shadow-[0_12px_34px_rgba(34,36,90,.08)] divide-y divide-line">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="flex items-center gap-4 px-5 py-3 animate-pulse">
               <div className="h-4 w-32 rounded bg-black/5" />
@@ -106,13 +106,13 @@ function OrdersTable() {
       )}
 
       {!isLoading && !isError && orders.length === 0 && (
-        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-10 text-center">
+        <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-10 text-center">
           <p className="text-sm text-slate">No orders found.</p>
         </div>
       )}
 
       {!isLoading && !isError && orders.length > 0 && (
-        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] divide-y divide-line overflow-hidden">
+        <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] divide-y divide-line overflow-hidden">
           {/* Header */}
           <div className="grid grid-cols-[160px_1fr_120px_120px_160px] gap-4 px-5 py-2 bg-white/50 text-xs font-semibold text-slate uppercase tracking-wider">
             <span>Order ID</span>
@@ -204,7 +204,7 @@ export default function AdminOrdersPage() {
 
       <Suspense
         fallback={
-          <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-8 text-center text-sm text-slate animate-pulse">
+          <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-8 text-center text-sm text-slate animate-pulse">
             Loading orders…
           </div>
         }

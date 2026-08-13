@@ -113,7 +113,7 @@ function CouponFormModal({ mode, initial, couponId, onClose }: CouponFormModalPr
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 overflow-y-auto">
-      <div className="my-8 w-full max-w-2xl rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-6 shadow-xl">
+      <div className="my-8 w-full max-w-2xl rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-6 shadow-xl">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-base font-semibold text-ink">
             {mode === 'create' ? 'Create coupon' : 'Edit coupon'}
@@ -453,7 +453,7 @@ function CouponsTable() {
 
       {/* Loading skeleton */}
       {isLoading && (
-        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] divide-y divide-line">
+        <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] divide-y divide-line">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="flex items-center gap-4 px-5 py-3 animate-pulse">
               <div className="h-4 w-28 rounded bg-black/5 font-jbmono" />
@@ -477,14 +477,14 @@ function CouponsTable() {
 
       {/* Empty state */}
       {!isLoading && !isError && list.length === 0 && (
-        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-10 text-center">
+        <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-10 text-center">
           <p className="text-sm text-slate">No coupons found. Create your first one above.</p>
         </div>
       )}
 
       {/* Table */}
       {!isLoading && !isError && list.length > 0 && (
-        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] overflow-hidden">
+        <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] overflow-hidden">
           {/* Header */}
           <div className="grid grid-cols-[140px_1fr_120px_100px_120px_110px_140px] gap-3 bg-white/50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-slate">
             <span>Code</span>
@@ -518,7 +518,7 @@ export default function AdminCouponsPage() {
 
       <Suspense
         fallback={
-          <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-8 text-center text-sm text-slate animate-pulse">
+          <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-8 text-center text-sm text-slate animate-pulse">
             Loading coupons…
           </div>
         }

@@ -30,7 +30,7 @@ function ProfileSection() {
 
   if (isLoading) {
     return (
-      <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] p-6 animate-pulse space-y-3">
+      <div className="rounded-2xl border border-white/70 bg-white/90 shadow-[0_12px_34px_rgba(34,36,90,.08)] p-6 animate-pulse space-y-3">
         <div className="h-4 w-32 rounded bg-black/5" />
         <div className="h-4 w-48 rounded bg-black/5" />
         <div className="h-4 w-40 rounded bg-black/5" />
@@ -49,7 +49,7 @@ function ProfileSection() {
   const fullName = [profile?.firstName, profile?.lastName].filter(Boolean).join(' ') || '—';
 
   return (
-    <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] p-6">
+    <div className="rounded-2xl border border-white/70 bg-white/90 shadow-[0_12px_34px_rgba(34,36,90,.08)] p-6">
       <h2 className="mb-4 text-base font-semibold text-ink">Profile</h2>
       <dl className="space-y-3">
         <div className="grid grid-cols-[140px_1fr] gap-2">
@@ -149,7 +149,7 @@ function ChangePasswordSection() {
   const serverErr = changePassword.error;
 
   return (
-    <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] p-6">
+    <div className="rounded-2xl border border-white/70 bg-white/90 shadow-[0_12px_34px_rgba(34,36,90,.08)] p-6">
       <h2 className="mb-4 text-base font-semibold text-ink">Change password</h2>
       <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
         <div>

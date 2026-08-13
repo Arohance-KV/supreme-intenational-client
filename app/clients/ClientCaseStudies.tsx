@@ -50,7 +50,9 @@ export default function ClientCaseStudies({ items }: { items: CaseStudy[] }) {
                 key={c._id}
                 type="button"
                 onClick={() => setOpen(c)}
-                className="cursor-pointer overflow-hidden rounded-[18px] border border-white/80 bg-white/55 text-left shadow-[0_10px_30px_rgba(34,36,90,.07)] backdrop-blur-[14px] transition-shadow hover:shadow-[0_16px_40px_rgba(34,36,90,.14)]"
+                // No backdrop-blur: the ambient blob animates behind these, and a frosted
+                // card grid re-blurs the screen every frame (paint-bound, ~26fps). Opaque bg, same look.
+                className="cursor-pointer overflow-hidden rounded-[18px] border border-white/80 bg-white/80 text-left shadow-[0_10px_30px_rgba(34,36,90,.07)] transition-shadow hover:shadow-[0_16px_40px_rgba(34,36,90,.14)]"
               >
                 {c.coverImage ? (
                   // eslint-disable-next-line @next/next/no-img-element

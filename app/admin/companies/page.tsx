@@ -57,7 +57,7 @@ function CreateCompanyModal({ onClose }: CreateCompanyModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 overflow-y-auto">
-      <div className="my-8 w-full max-w-lg rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-6 shadow-xl">
+      <div className="my-8 w-full max-w-lg rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-6 shadow-xl">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-base font-semibold text-ink">Create company</h2>
           <button
@@ -261,7 +261,7 @@ function CompaniesTable() {
 
       {/* Loading */}
       {isLoading && (
-        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] divide-y divide-line">
+        <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] divide-y divide-line">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={`skeleton-${i}`} className="flex items-center gap-4 px-5 py-3 animate-pulse">
               <div className="h-4 w-48 rounded bg-black/5" />
@@ -282,14 +282,14 @@ function CompaniesTable() {
 
       {/* Empty */}
       {!isLoading && !isError && items.length === 0 && (
-        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-10 text-center">
+        <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-10 text-center">
           <p className="text-sm text-slate">No companies found.</p>
         </div>
       )}
 
       {/* Table */}
       {!isLoading && !isError && items.length > 0 && (
-        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] overflow-hidden">
+        <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] overflow-hidden">
           <div className={`grid ${LIST_COLS} gap-4 border-b border-line px-5 py-3 font-jbmono text-[10px] uppercase tracking-[.05em] text-muted`}>
             <span>Company</span>
             <span>Model</span>
@@ -344,7 +344,7 @@ export default function AdminCompaniesPage() {
 
       <Suspense
         fallback={
-          <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-8 text-center text-sm text-slate animate-pulse">
+          <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-8 text-center text-sm text-slate animate-pulse">
             Loading companies…
           </div>
         }

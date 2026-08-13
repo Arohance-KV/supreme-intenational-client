@@ -18,7 +18,7 @@ import { useAttributes, type AdminAttribute } from '@/lib/admin/taxonomy';
 import { inr, fmtDate, fmtDateTime } from '@/lib/admin/format';
 import { useConfirm } from '@/components/ConfirmDialog';
 
-const sectionCls = 'rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] p-5';
+const sectionCls = 'rounded-2xl border border-white/70 bg-white/90 shadow-[0_12px_34px_rgba(34,36,90,.08)] p-5';
 const labelCls = 'mb-1 block text-sm font-medium text-slate';
 const inputCls =
   'w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-line';

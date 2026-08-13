@@ -12,7 +12,7 @@ import { AdminModal, Field, inputCls } from '@/components/admin/AdminModal';
 import ImageUploadField from '@/components/admin/ImageUploadField';
 import { fmtDate } from '@/lib/admin/format';
 
-const GLASS = 'border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)]';
+const GLASS = 'border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)]';
 
 const TRIGGER_LABEL: Record<PopupTrigger, string> = {
   immediate: 'On page load',

@@ -38,7 +38,10 @@ function ProductRow({ product }: { product: AdminProduct }) {
   };
 
   return (
-    <div className={`${ROW} border-b border-line px-5 py-3 hover:bg-white/50 transition-colors`}>
+    // content-visibility:auto — infinite scroll keeps every row in the DOM; this lets the
+    // browser skip layout/paint for off-screen rows (rapid scroll was repainting the whole list).
+    // contain-intrinsic-size reserves each row's height so the scrollbar doesn't jump.
+    <div className={`${ROW} border-b border-line px-5 py-3 hover:bg-white/50 transition-colors [content-visibility:auto] [contain-intrinsic-size:0_72px]`}>
       <div className="flex min-w-0 items-center gap-3">
         {product.images?.[0] ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -211,7 +214,7 @@ function ProductsTable() {
 
       {/* Loading skeleton */}
       {isLoading && (
-        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] divide-y divide-line">
+        <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] divide-y divide-line">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="flex items-center gap-4 px-5 py-3 animate-pulse">
               <div className="h-4 w-48 rounded bg-black/5" />
@@ -232,14 +235,14 @@ function ProductsTable() {
 
       {/* Empty state */}
       {!isLoading && !isError && products.length === 0 && (
-        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-10 text-center">
+        <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-10 text-center">
           <p className="text-sm text-slate">No products found.</p>
         </div>
       )}
 
       {/* Table */}
       {!isLoading && !isError && products.length > 0 && (
-        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] overflow-hidden">
+        <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] overflow-hidden">
           {/* Header */}
           <div className={`${ROW} bg-white/50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-slate`}>
             <span>Product</span>
@@ -277,7 +280,7 @@ export default function AdminProductsPage() {
 
       <Suspense
         fallback={
-          <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-8 text-center text-sm text-slate animate-pulse">
+          <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-8 text-center text-sm text-slate animate-pulse">
             Loading products…
           </div>
         }

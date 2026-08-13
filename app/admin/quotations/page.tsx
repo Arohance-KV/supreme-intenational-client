@@ -11,7 +11,7 @@ import {
 import { StatusChip } from '@/components/admin/StatusChip';
 import { inr, fmtDateTime } from '@/lib/admin/format';
 
-const GLASS = 'border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)]';
+const GLASS = 'border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)]';
 const COLS = 'grid-cols-[140px_1fr_100px_120px_110px_90px_150px]';
 
 const QUOTATION_STATUSES: QuotationStatus[] = ['pending_approval', 'generated', 'sent', 'viewed', 'converted', 'archived', 'approved'];

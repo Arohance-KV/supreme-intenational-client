@@ -4,7 +4,7 @@ import { ApiError } from '@/lib/api';
 import { useAdminTickets, useAdminTicket, useAdminReply, useAdminClose, type TicketStatus } from '@/lib/admin/support';
 import { StatusChip } from '@/components/admin/StatusChip';
 
-const CARD = 'rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)]';
+const CARD = 'rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)]';
 const FILTERS: (TicketStatus | 'all')[] = ['all', 'open', 'answered', 'closed'];
 
 function Thread({ id, onBack }: { id: string; onBack: () => void }) {

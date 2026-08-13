@@ -9,7 +9,7 @@ import {
 } from '@/lib/admin/dashboard';
 import SeriesBarChart, { MonthsFilter } from '@/components/admin/SeriesBarChart';
 
-const GLASS = 'border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)]';
+const GLASS = 'border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)]';
 
 function inr(n: unknown): string {
   return typeof n === 'number' ? `₹${n.toLocaleString('en-IN')}` : '—';

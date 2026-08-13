@@ -52,7 +52,7 @@ export default function AdminQuotationDetailPage({
     return (
       <main className="max-w-4xl mx-auto space-y-6">
         <div className="h-7 w-48 rounded bg-black/5 animate-pulse" />
-        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-6 space-y-3 animate-pulse">
+        <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-6 space-y-3 animate-pulse">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={`skeleton-${i}`} className="h-4 w-full rounded bg-black/5" />
           ))}
@@ -138,7 +138,7 @@ export default function AdminQuotationDetailPage({
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
 
         {/* Contact / Customer */}
-        <section className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
+        <section className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
           <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate">
             Contact
           </h2>
@@ -170,7 +170,7 @@ export default function AdminQuotationDetailPage({
         </section>
 
         {/* Summary */}
-        <section className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
+        <section className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
           <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate">
             Summary
           </h2>
@@ -235,7 +235,7 @@ export default function AdminQuotationDetailPage({
       </div>
 
       {/* Line Items */}
-      <section className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] overflow-hidden">
+      <section className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] overflow-hidden">
         <div className="px-5 py-3 bg-white/50 border-b border-line">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-slate">
             Line Items ({Array.isArray(quotation.items) ? quotation.items.length : '—'})
@@ -293,7 +293,7 @@ export default function AdminQuotationDetailPage({
 
       {/* Terms & Conditions (pending approval only) */}
       {quotation.status === 'pending_approval' && (
-        <section className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5 space-y-3">
+        <section className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5 space-y-3">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-slate">Terms &amp; Conditions</h2>
           <p className="text-sm text-slate">Edit the terms that appear on the last page of the PDF, then approve to generate and email it to the customer.</p>
           <textarea
@@ -313,7 +313,7 @@ export default function AdminQuotationDetailPage({
       )}
 
       {/* Status update */}
-      <section className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5 space-y-4">
+      <section className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5 space-y-4">
         <h2 className="text-xs font-semibold uppercase tracking-wider text-slate">
           Update Status
         </h2>

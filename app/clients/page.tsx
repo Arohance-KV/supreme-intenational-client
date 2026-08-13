@@ -14,7 +14,8 @@ export default async function ClientsPage() {
     <main className="font-display relative min-h-screen w-full overflow-x-hidden bg-[#eef0f8] text-ink selection:bg-[rgba(23,155,142,0.22)]">
       {/* ambient background */}
       <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(55%_45%_at_100%_0%,rgba(20,155,142,.16),transparent_60%),radial-gradient(50%_45%_at_0%_6%,rgba(58,60,152,.16),transparent_60%),linear-gradient(180deg,#eef0f8_0%,#f2f1f7_50%,#eef0f8_100%)]" />
-      <div className="pointer-events-none fixed -right-[120px] -top-[160px] z-0 h-[500px] w-[500px] animate-blob1 rounded-full bg-[radial-gradient(circle,rgba(20,155,142,.16),transparent_70%)] blur-[20px]" />
+      {/* Static: animating a 20px-blur layer with scale re-rasterizes the blur every frame (paint-bound). */}
+      <div className="pointer-events-none fixed -right-[120px] -top-[160px] z-0 h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle,rgba(20,155,142,.16),transparent_70%)] blur-[20px]" />
 
       <div className="relative z-[1] mx-auto max-w-[1180px] px-4 sm:px-6">
 
@@ -29,7 +30,7 @@ export default async function ClientsPage() {
             shifts by -50%, so the loop is seamless (same dc-marquee keyframe as TrustedBy). */}
         {logos.length > 0 && (
           <div className="mb-9 overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_6%,#000_94%,transparent)]">
-            <div className="flex w-max animate-marquee gap-3 hover:[animation-play-state:paused]">
+            <div className="flex w-max animate-marquee gap-3 transform-gpu will-change-transform hover:[animation-play-state:paused]">
               {logoRow.map((l, i) => (
                 <div key={`${l._id}-${i}`} className="flex h-16 w-[128px] shrink-0 items-center justify-center rounded-[14px] border border-line bg-white/60 px-3 sm:h-20 sm:w-[168px]">
                   {l.logoUrl ? (

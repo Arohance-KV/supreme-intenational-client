@@ -43,7 +43,7 @@ import { inr, fmtDate, fmtDateTime } from '@/lib/admin/format';
 const inputCls =
   'w-full rounded-lg border border-line bg-white/70 px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20';
 const labelCls = 'mb-1 block text-xs font-medium text-slate';
-const sectionCls = 'rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5 sm:p-6';
+const sectionCls = 'rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5 sm:p-6';
 const primaryBtn =
   'rounded-lg bg-gradient-to-br from-indigo to-indigo2 px-3 py-1.5 text-xs font-medium text-white shadow-sm transition hover:opacity-90 disabled:opacity-60';
 

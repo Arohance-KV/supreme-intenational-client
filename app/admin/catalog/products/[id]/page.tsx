@@ -1072,7 +1072,7 @@ function VariantsSection({
   slug: string;
 }) {
   return (
-    <section className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
+    <section className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
       <h2 className="mb-4 text-base font-semibold text-ink">
         Variants ({variants.length})
       </h2>
@@ -1176,7 +1176,7 @@ export default function AdminProductDetailPage({
       </div>
 
       {/* Core fields */}
-      <section className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
+      <section className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
         <h2 className="mb-4 text-base font-semibold text-ink">Product details</h2>
         <ProductEditForm product={product} productId={productId} slug={slug} />
       </section>

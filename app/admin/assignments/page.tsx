@@ -7,7 +7,7 @@ import { useB2BUsers, useSetB2BApproval, type B2BStatus, type B2BUser } from '@/
 
 const APPROVED_PAGE_LIMIT = 20;
 
-const GLASS = 'border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)]';
+const GLASS = 'border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)]';
 
 const CHIP_BASE =
   'inline-flex cursor-pointer items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-colors';

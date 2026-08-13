@@ -35,7 +35,7 @@ function CreateAttributeForm({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5 shadow-sm">
+    <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5 shadow-sm">
       <h3 className="mb-4 text-sm font-semibold text-ink">New attribute</h3>
       <form onSubmit={handleSubmit} className="flex flex-wrap gap-3 items-end">
         <div>
@@ -371,7 +371,7 @@ function AttributeCard({ attribute }: { attribute: AdminAttribute }) {
   const values = attribute.values ?? [];
 
   return (
-    <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
+    <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
       {/* Header */}
       <div className="mb-3 flex items-start justify-between gap-2">
         <div className="min-w-0">
@@ -461,7 +461,7 @@ function AttributesList() {
       {isLoading && (
         <div className="space-y-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5 animate-pulse">
+            <div key={i} className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5 animate-pulse">
               <div className="mb-3 h-4 w-32 rounded bg-black/5" />
               <div className="flex gap-2">
                 <div className="h-6 w-16 rounded bg-black/5" />
@@ -480,7 +480,7 @@ function AttributesList() {
       )}
 
       {!isLoading && !isError && attributes.length === 0 && (
-        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-10 text-center">
+        <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-10 text-center">
           <p className="text-sm text-slate">No attributes yet. Create one above.</p>
         </div>
       )}
@@ -507,7 +507,7 @@ export default function AdminAttributesPage() {
       </div>
       <Suspense
         fallback={
-          <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-8 text-center text-sm text-slate animate-pulse">
+          <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-8 text-center text-sm text-slate animate-pulse">
             Loading attributes…
           </div>
         }

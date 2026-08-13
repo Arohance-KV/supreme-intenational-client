@@ -83,7 +83,7 @@ function SubmissionsTable() {
 
       {/* Loading */}
       {isLoading && (
-        <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] divide-y divide-line">
+        <div className="rounded-2xl border border-white/70 bg-white/90 shadow-[0_12px_34px_rgba(34,36,90,.08)] divide-y divide-line">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={`skeleton-${i}`} className="flex items-center gap-4 px-5 py-3 animate-pulse">
               <div className="h-4 w-48 rounded bg-black/5" />
@@ -104,14 +104,14 @@ function SubmissionsTable() {
 
       {/* Empty */}
       {!isLoading && !isError && items.length === 0 && (
-        <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] p-10 text-center">
+        <div className="rounded-2xl border border-white/70 bg-white/90 shadow-[0_12px_34px_rgba(34,36,90,.08)] p-10 text-center">
           <p className="text-sm text-slate">No submissions found.</p>
         </div>
       )}
 
       {/* Table */}
       {!isLoading && !isError && items.length > 0 && (
-        <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] overflow-hidden">
+        <div className="rounded-2xl border border-white/70 bg-white/90 shadow-[0_12px_34px_rgba(34,36,90,.08)] overflow-hidden">
           <div className="grid grid-cols-[1fr_140px_80px_120px_100px_72px] gap-3 bg-white/50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-slate">
             <span>Submission</span>
             <span>Seller</span>
@@ -168,7 +168,7 @@ export default function AdminSubmissionsPage() {
 
       <Suspense
         fallback={
-          <div className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] p-8 text-center text-sm text-slate animate-pulse">
+          <div className="rounded-2xl border border-white/70 bg-white/90 shadow-[0_12px_34px_rgba(34,36,90,.08)] p-8 text-center text-sm text-slate animate-pulse">
             Loading submissions…
           </div>
         }

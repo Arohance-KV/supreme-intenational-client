@@ -12,7 +12,7 @@ import {
 } from '@/lib/admin/sellers';
 import { StatusChip } from '@/components/admin/StatusChip';
 
-const GLASS = 'border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)]';
+const GLASS = 'border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)]';
 const COLS = 'grid-cols-[1.5fr_90px_90px_140px_120px_1.4fr]';
 
 function fmtDate(iso: string | null | undefined): string {

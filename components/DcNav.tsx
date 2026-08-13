@@ -106,7 +106,9 @@ export default function DcNav({ active }: { active?: string }) {
 
   return (
     <header className="font-display sticky top-0 z-50 px-3 pt-3 sm:px-6 lg:px-8">
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2.5 rounded-[18px] border border-white/80 bg-white/[.62] px-3.5 py-2.5 shadow-[0_8px_30px_rgba(34,36,90,.1)] backdrop-blur-[20px] backdrop-saturate-[1.6] sm:px-[18px] sm:py-3">
+      {/* Sticky bar: backdrop-blur re-runs over the full width every scroll/anim frame.
+          20px was paint-bound; 8px + a more opaque bg keeps the frost at a fraction of the cost. */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2.5 rounded-[18px] border border-white/80 bg-white/[.78] px-3.5 py-2.5 shadow-[0_8px_30px_rgba(34,36,90,.1)] backdrop-blur-[8px] backdrop-saturate-[1.6] sm:px-[18px] sm:py-3">
         <Link href="/" className="no-underline" onClick={close}><DcWordmark /></Link>
         <div className="ml-2 hidden items-center gap-1 lg:flex">
           <NavProductsMenu active={active === 'products'} />

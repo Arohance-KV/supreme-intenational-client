@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useCustomers, type CustomerAccountType } from '@/lib/admin/customers';
 import { fmtDate } from '@/lib/admin/format';
 
-const GLASS = 'border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)]';
+const GLASS = 'border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)]';
 const COLS = 'grid-cols-[1.4fr_1.3fr_.9fr_.7fr_.9fr]';
 
 type Filter = '' | CustomerAccountType;

@@ -22,7 +22,7 @@ const labelCls = 'mb-1 block text-sm font-medium text-slate';
 const primaryBtn =
   'rounded-xl bg-[linear-gradient(135deg,#176054,#179b8e)] px-4 py-2 text-sm font-bold text-white shadow-[0_10px_24px_rgba(23,155,142,.3)] disabled:opacity-60';
 const section =
-  'rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5 sm:p-6';
+  'rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5 sm:p-6';
 
 // ---------- Variant row ----------
 

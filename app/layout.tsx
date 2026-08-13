@@ -44,6 +44,14 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${jakarta.variable} ${jbMono.variable} h-full antialiased`}
     >
+      {/* react-scan: dev-only re-render highlighter. Must load before React, so a raw
+          <script> in <head> — not next/script (loads too late). Stripped in prod builds. */}
+      {process.env.NODE_ENV === "development" && (
+        <head>
+          {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+          <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
+        </head>
+      )}
       <body className="min-h-full flex flex-col">
         <Providers>
           <ConditionalSiteHeader />

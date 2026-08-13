@@ -7,7 +7,7 @@ import { useCompany } from '@/lib/admin/companies';
 import { fmtDateTime } from '@/lib/admin/format';
 import { useConfirm } from '@/components/ConfirmDialog';
 
-const GLASS = 'border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)]';
+const GLASS = 'border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)]';
 
 function CompanyName({ companyId }: { companyId: string }) {
   const { data, isLoading } = useCompany(companyId);

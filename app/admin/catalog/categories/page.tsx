@@ -38,7 +38,7 @@ function CreateCategoryForm({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5 shadow-sm">
+    <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5 shadow-sm">
       <h3 className="mb-4 text-sm font-semibold text-ink">New category</h3>
       <form onSubmit={handleSubmit} className="space-y-3">
         <div>
@@ -290,7 +290,7 @@ function CategoriesTable() {
       )}
 
       {isLoading && (
-        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] divide-y divide-line">
+        <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] divide-y divide-line">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="flex items-center gap-4 px-5 py-3 animate-pulse">
               <div className="h-4 w-40 rounded bg-black/5" />
@@ -309,13 +309,13 @@ function CategoriesTable() {
       )}
 
       {!isLoading && !isError && categories.length === 0 && (
-        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-10 text-center">
+        <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-10 text-center">
           <p className="text-sm text-slate">No categories yet. Create one above.</p>
         </div>
       )}
 
       {!isLoading && !isError && categories.length > 0 && (
-        <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] overflow-hidden">
+        <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] overflow-hidden">
           <div className="grid grid-cols-[1fr_160px_100px_80px_140px] gap-4 bg-white/50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-slate">
             <span>Name</span>
             <span>Slug</span>
@@ -343,7 +343,7 @@ export default function AdminCategoriesPage() {
       </div>
       <Suspense
         fallback={
-          <div className="rounded-[20px] border border-white/80 bg-white/[.62] backdrop-blur-2xl shadow-[0_10px_30px_rgba(34,36,90,.07)] p-8 text-center text-sm text-slate animate-pulse">
+          <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-8 text-center text-sm text-slate animate-pulse">
             Loading categories…
           </div>
         }

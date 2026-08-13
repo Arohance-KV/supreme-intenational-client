@@ -400,7 +400,7 @@ export default function AdminBlogEditorPage({
         {isCreate ? 'New blog' : 'Edit blog'}
       </h1>
 
-      <section className="rounded-2xl border border-white/70 bg-white/60 backdrop-blur-xl shadow-[0_12px_34px_rgba(34,36,90,.08)] p-6">
+      <section className="rounded-2xl border border-white/70 bg-white/90 shadow-[0_12px_34px_rgba(34,36,90,.08)] p-6">
         {isCreate ? (
           <CreateBlogForm />
         ) : (
