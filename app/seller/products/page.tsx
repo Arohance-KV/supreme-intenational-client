@@ -3,9 +3,7 @@ import Link from 'next/link';
 import { ApiError } from '@/lib/api';
 import DcPhoto from '@/components/DcPhoto';
 import { useMyProducts, useSetProductActive } from '@/lib/seller/products';
-import { useImportSubmissions } from '@/lib/seller/submissions';
-import { CSV_TEMPLATE } from '@/lib/admin/products';
-import CsvImportButton from '@/components/CsvImportButton';
+import SellerBulkImportButton from '@/components/seller/SellerBulkImportButton';
 
 const GRID = 'grid grid-cols-[minmax(150px,1.8fr)_.8fr_1.1fr_auto] items-center gap-4';
 
@@ -72,7 +70,6 @@ function ProductRow({ product }: { product: import('@/lib/seller/products').Sell
 
 export default function SellerProductsPage() {
   const { data, isLoading, error } = useMyProducts();
-  const importSubmissions = useImportSubmissions();
   const products = data?.products ?? [];
 
   return (
@@ -83,11 +80,7 @@ export default function SellerProductsPage() {
           <div className="text-[13px] text-slate">Manage and toggle your live catalogue listings.</div>
         </div>
         <div className="flex items-center gap-3">
-          <CsvImportButton
-            importFn={(f) => importSubmissions.mutateAsync(f)}
-            templateCsv={CSV_TEMPLATE}
-            templateName="products-template.csv"
-          />
+          <SellerBulkImportButton />
           <Link
             href="/seller/submissions/new"
             className="flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#176054,#179b8e)] px-[18px] py-3 text-sm font-bold text-white no-underline shadow-[0_10px_24px_rgba(23,155,142,.3)]"

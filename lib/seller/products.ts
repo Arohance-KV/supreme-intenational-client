@@ -12,6 +12,8 @@ export type SellerProductDetail = SellerProduct & {
   details: string;
   materials: string;
   shipping: string;
+  hsn?: string;
+  gstRate?: number;
 };
 
 interface Paginated<U> {

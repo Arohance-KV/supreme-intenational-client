@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
@@ -43,6 +43,22 @@ export default function ProductsToolbar() {
   const [modalOpen, setModalOpen] = useState(false);
   const [sheet, setSheet] = useState<'sort' | 'filter' | null>(null);
   const sort = searchParams.get('sort') ?? '';
+  const search = searchParams.get('search') ?? '';
+
+  // Local input mirrors the URL; debounce writes back so we don't navigate per keystroke.
+  const [term, setTerm] = useState(search);
+  useEffect(() => {
+    const id = setTimeout(() => {
+      if (term.trim() === search) return;
+      const p = new URLSearchParams(searchParams.toString());
+      p.delete('page');
+      if (term.trim()) p.set('search', term.trim()); else p.delete('search');
+      const qs = p.toString();
+      router.push(qs ? '/products?' + qs : '/products');
+    }, 350);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [term]);
 
   const onSort = (v: string) => {
     const p = new URLSearchParams(searchParams.toString());
@@ -60,6 +76,15 @@ export default function ProductsToolbar() {
 
   return (
     <div className="flex items-center gap-3">
+      <input
+        type="search"
+        value={term}
+        onChange={(e) => setTerm(e.target.value)}
+        placeholder="Search products…"
+        aria-label="Search products"
+        className="w-full min-w-0 rounded-xl border border-line bg-white/80 px-3 py-2.5 text-sm text-ink outline-none transition-colors focus:border-accent focus:bg-white sm:w-52"
+      />
+
       {/* Sort moves into the sticky bottom bar on mobile. */}
       <select value={sort} onChange={(e) => onSort(e.target.value)} className={`hidden lg:block ${selectCls}`} aria-label="Sort products">
         {SORTS.map((s) => <option key={s.value} value={s.value}>Sort: {s.label}</option>)}

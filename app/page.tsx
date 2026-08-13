@@ -3,6 +3,7 @@ import Image from 'next/image';
 import DcFooter from '@/components/DcFooter';
 import DcPhoto from '@/components/DcPhoto';
 import ProductCard from '@/components/ProductCard';
+import ScrollRow from '@/components/ScrollRow';
 import HomeHeroFloats from '@/components/HomeHeroFloats';
 import TrustedBy from '@/components/TrustedBy';
 import { getCategories, getFeatured, type Category, type Product } from '@/lib/catalog';
@@ -69,9 +70,9 @@ export default async function HomePage() {
             <Link href="/products" className="text-sm font-semibold text-indigo no-underline">View all →</Link>
           </div>
           {categories.length > 0 ? (
-            <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 lg:grid-cols-6">
-              {categories.slice(0, 6).map((c) => (
-                <Link key={c._id} href={`/products?category=${c.slug}`} className="group rounded-[18px] border border-white/80 bg-white/55 p-3.5 no-underline shadow-[0_8px_26px_rgba(34,36,90,.08)] backdrop-blur-[12px] transition-shadow hover:shadow-[0_14px_36px_rgba(34,36,90,.16)]">
+            <ScrollRow className="-mx-4 snap-x snap-mandatory gap-3.5 px-4 pb-2 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-1">
+              {categories.map((c) => (
+                <Link key={c._id} href={`/products?category=${c.slug}`} className="group w-[42%] shrink-0 snap-start rounded-[18px] border border-white/80 bg-white/55 p-3.5 no-underline shadow-[0_8px_26px_rgba(34,36,90,.08)] backdrop-blur-[12px] transition-shadow hover:shadow-[0_14px_36px_rgba(34,36,90,.16)] sm:w-[30%] lg:w-[15.5%]">
                   <div className="relative mb-3 aspect-square overflow-hidden rounded-[13px] bg-[#eef0f8]">
                     {c.image ? (
                       <Image src={c.image} alt={c.name} fill className="object-cover transition-transform duration-300 group-hover:scale-105" sizes="(max-width: 640px) 50vw, 16vw" />
@@ -82,7 +83,7 @@ export default async function HomePage() {
                   <div className="text-[13px] font-bold leading-[1.25] text-ink group-hover:text-indigo">{c.name}</div>
                 </Link>
               ))}
-            </div>
+            </ScrollRow>
           ) : (
             <p className="text-sm text-muted">Categories are loading — check back shortly.</p>
           )}
@@ -98,14 +99,14 @@ export default async function HomePage() {
             <Link href="/products" className="text-sm font-semibold text-indigo no-underline">Full catalogue →</Link>
           </div>
           {featured.length > 0 ? (
-            // ponytail: native scroll-snap carousel, no slider lib; plain grid at lg.
-            <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 sm:-mx-6 sm:px-6 lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-[18px] lg:overflow-visible lg:px-0 lg:pb-0">
-              {featured.slice(0, 4).map((p) => (
-                <div key={p._id} className="w-[74%] shrink-0 snap-start sm:w-[44%] lg:w-auto">
+            // ponytail: native scroll-snap carousel + arrow buttons (ScrollRow), no slider lib.
+            <ScrollRow className="-mx-4 snap-x snap-mandatory gap-3 px-4 pb-2 sm:-mx-6 sm:px-6 lg:mx-0 lg:gap-[18px] lg:px-1">
+              {featured.slice(0, 12).map((p) => (
+                <div key={p._id} className="w-[74%] shrink-0 snap-start sm:w-[44%] lg:w-[23.4%]">
                   <ProductCard product={p} />
                 </div>
               ))}
-            </div>
+            </ScrollRow>
           ) : (
             <p className="text-sm text-muted">Featured products are loading — check back shortly.</p>
           )}

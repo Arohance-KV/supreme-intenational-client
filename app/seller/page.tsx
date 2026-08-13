@@ -4,6 +4,7 @@ import { useSellerMe } from '@/lib/seller/me';
 // ponytail: payout figures hidden — restore alongside the KPIs below
 // import { useEarningsSummary } from '@/lib/seller/payouts';
 import { useSellerDashboard } from '@/lib/seller/dashboard';
+import SellerBulkImportButton from '@/components/seller/SellerBulkImportButton';
 
 // ponytail: only used by the hidden payout KPIs — restore with them
 // function inr(n: number): string {
@@ -51,12 +52,15 @@ export default function SellerDashboardPage() {
           </h1>
           <div className="text-[13px] text-slate">Here&apos;s how your catalogue is performing on Supreme.</div>
         </div>
-        <Link
-          href="/seller/submissions/new"
-          className="flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#176054,#179b8e)] px-[18px] py-3 text-sm font-bold text-white no-underline shadow-[0_10px_24px_rgba(23,155,142,.3)]"
-        >
-          ＋ Add Product
-        </Link>
+        <div className="flex items-center gap-3">
+          <SellerBulkImportButton />
+          <Link
+            href="/seller/submissions/new"
+            className="flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#176054,#179b8e)] px-[18px] py-3 text-sm font-bold text-white no-underline shadow-[0_10px_24px_rgba(23,155,142,.3)]"
+          >
+            ＋ Add Product
+          </Link>
+        </div>
       </div>
 
       {/* Account status */}
