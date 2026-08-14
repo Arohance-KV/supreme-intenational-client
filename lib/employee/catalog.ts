@@ -130,6 +130,11 @@ export function useRecentlyViewed() {
       apiFetch<{ products: Product[] }>('/employee/catalog/recently-viewed', {
         tokenKey: 'employeeToken',
       }),
+    // A view is recorded server-side when a product page opens; the dashboard must
+    // reflect it on return. Default 60s staleTime made the list lag reality — always
+    // refetch on mount so it's current the moment you come back.
+    staleTime: 0,
+    refetchOnMount: 'always',
   });
 }
 

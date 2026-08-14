@@ -1,5 +1,6 @@
 'use client';
 import { useSyncExternalStore } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 // H6: the access token now lives in an HttpOnly cookie the API sets on login, so XSS
 // can't read it. JS can't see that cookie, so we track auth state via a companion,
@@ -19,18 +20,24 @@ function clearCookie(name: string) {
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4010';
 
 export function useCookieAuth(flagCookie: string, logoutPath: string) {
+  const qc = useQueryClient();
   const isLoggedIn = useSyncExternalStore(
     (cb) => { listeners.add(cb); return () => listeners.delete(cb); },
     () => hasCookie(flagCookie),
     () => false,
   );
+  // Wipe the whole query cache on every auth boundary. Cached data (e.g. ['employee','profile'])
+  // has a staleTime, so without this the previous account's data survives a login/logout and shows
+  // to the next user until a manual refresh. This hook is shared by all portals and doesn't know
+  // their query prefixes, so a full clear() is the correct, prefix-agnostic reset.
   return {
     token: null as string | null, // kept for back-compat; the real token is HttpOnly now
     isLoggedIn,
     // The API already set the auth cookie on the login response — just re-read state.
-    login: (_t?: string) => { emit(); },
+    login: (_t?: string) => { qc.clear(); emit(); },
     logout: () => {
       clearCookie(flagCookie); // instant UI logout
+      qc.clear();
       emit();
       // clear the HttpOnly token cookie server-side (fire-and-forget)
       fetch(`${API_BASE}${logoutPath}`, { method: 'POST', credentials: 'include' }).catch(() => {});
