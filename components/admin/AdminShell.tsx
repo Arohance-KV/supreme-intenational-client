@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAdminAuth } from '@/lib/admin/auth';
@@ -226,20 +227,16 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         </button>
 
         <div className={`flex items-center gap-2.5 px-4 pt-5 pb-4 mb-3 border-b border-white/[.08] ${collapsed ? 'md:justify-center md:gap-0 md:px-2' : ''}`}>
-          {/* Logo mark — always visible, anchors the collapsed rail */}
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[9px] bg-gradient-to-br from-[#179b8e] to-[#13b89f] font-extrabold text-white shadow-[0_6px_16px_rgba(23,155,142,.4)]">
+          {/* Compact mark — desktop collapsed rail only (the wordmark can't fit 76px) */}
+          <div className={`h-8 w-8 shrink-0 items-center justify-center rounded-[9px] bg-gradient-to-br from-[#179b8e] to-[#13b89f] font-extrabold text-white shadow-[0_6px_16px_rgba(23,155,142,.4)] hidden ${collapsed ? 'md:flex' : ''}`}>
             S
           </div>
-          <div className={`overflow-hidden max-w-[160px] opacity-100 transition-[opacity,max-width] duration-200 ${collapsed ? 'md:max-w-0 md:opacity-0' : ''}`}>
-            <div className="flex items-center gap-2">
-              <div className="leading-none">
-                <div className="text-white font-extrabold text-[15px] tracking-tight">Supreme</div>
-                <div className="mt-0.5 font-jbmono text-[7px] tracking-[.3em] text-white/50">INTERNATIONAL</div>
-              </div>
-              <span className="font-jbmono text-[9px] tracking-[.1em] text-[#9fe7dc] border border-[#9fe7dc]/40 px-1.5 py-0.5 rounded-[5px] whitespace-nowrap">
-                ADMIN
-              </span>
-            </div>
+          {/* Full logo — expanded (mobile always; desktop when not collapsed). brightness-0 invert paints the navy mark white for the dark rail. */}
+          <div className={`flex items-center gap-2 overflow-hidden ${collapsed ? 'md:hidden' : ''}`}>
+            <Image src="/supreme-logo.png" alt="Supreme International" width={300} height={87} priority className="h-6 w-auto brightness-0 invert" />
+            <span className="font-jbmono text-[9px] tracking-[.1em] text-[#9fe7dc] border border-[#9fe7dc]/40 px-1.5 py-0.5 rounded-[5px] whitespace-nowrap">
+              ADMIN
+            </span>
           </div>
         </div>
 
@@ -301,10 +298,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
             </svg>
           </button>
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-[8px] bg-gradient-to-br from-[#179b8e] to-[#13b89f] text-sm font-extrabold text-white">
-              S
-            </div>
-            <span className="font-extrabold text-[15px] tracking-tight text-ink">Supreme</span>
+            <Image src="/supreme-logo.png" alt="Supreme International" width={300} height={87} priority className="h-6 w-auto" />
             <span className="font-jbmono text-[9px] tracking-[.1em] text-[#179b8e] border border-[#179b8e]/40 px-1.5 py-0.5 rounded-[5px]">
               ADMIN
             </span>
