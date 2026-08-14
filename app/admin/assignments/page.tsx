@@ -14,6 +14,9 @@ const CHIP_BASE =
 const CHIP_ON = 'border-indigo bg-indigo/10 text-indigo';
 const CHIP_OFF = 'border-line text-slate hover:bg-white/60';
 
+const UNASSIGNED_BADGE =
+  'mt-1 inline-block rounded-md bg-amber-100 px-1.5 py-0.5 text-[11px] font-semibold text-amber-700';
+
 // Per-status button copy. The same row component drives all three tabs, but "Approve"
 // means something different in each: grant, re-save, reinstate.
 const ACTION_COPY: Record<B2BStatus, { primary: string; secondary: string | null }> = {
@@ -55,48 +58,57 @@ function SalesChips({
   );
 }
 
-// One row: a company with a checkbox list of sales users. Saving writes the full
-// assignedAdminIds array via PATCH /admin/companies/:id (the existing update route).
-function CompanyRow({ company, salesUsers }: { company: AdminCompany; salesUsers: AdminUser[] }) {
+// ── Company assignment: shared logic for the desktop row + mobile card ──────────
+// Saving writes the full assignedAdminIds array via PATCH /admin/companies/:id.
+function useCompanyAssignment(company: AdminCompany) {
   const update = useUpdateCompany(company._id);
   const assigned = company.assignedAdminIds ?? [];
-
   const toggle = (userId: string) => {
     const next = assigned.includes(userId)
       ? assigned.filter((id) => id !== userId)
       : [...assigned, userId];
     update.mutate({ assignedAdminIds: next });
   };
+  return { assigned, toggle, isPending: update.isPending, isError: update.isError };
+}
 
+function CompanyRow({ company, salesUsers }: { company: AdminCompany; salesUsers: AdminUser[] }) {
+  const { assigned, toggle, isPending, isError } = useCompanyAssignment(company);
   return (
     <tr className="border-b border-line/60 last:border-0 hover:bg-white/40">
       <td className="px-5 py-3 align-top">
         <div className="font-semibold text-ink">{company.name}</div>
-        {assigned.length === 0 && (
-          <span className="mt-1 inline-block rounded-md bg-amber-100 px-1.5 py-0.5 text-[11px] font-semibold text-amber-700">
-            Unassigned
-          </span>
-        )}
+        {assigned.length === 0 && <span className={UNASSIGNED_BADGE}>Unassigned</span>}
       </td>
       <td className="px-5 py-3">
-        <SalesChips salesUsers={salesUsers} selected={assigned} disabled={update.isPending} onToggle={toggle} />
-        {update.isError && <p className="mt-1.5 text-xs text-red-600">Save failed — try again.</p>}
+        <SalesChips salesUsers={salesUsers} selected={assigned} disabled={isPending} onToggle={toggle} />
+        {isError && <p className="mt-1.5 text-xs text-red-600">Save failed — try again.</p>}
       </td>
     </tr>
   );
 }
 
-// One B2B customer row. Unlike CompanyRow, approval is a single explicit submit rather
-// than a per-checkbox autosave, so selection lives in local state until then.
-function B2BUserRow({
-  user,
-  salesUsers,
-  salesUsersLoaded,
-}: {
-  user: B2BUser;
-  salesUsers: AdminUser[];
-  salesUsersLoaded: boolean;
-}) {
+function CompanyCard({ company, salesUsers }: { company: AdminCompany; salesUsers: AdminUser[] }) {
+  const { assigned, toggle, isPending, isError } = useCompanyAssignment(company);
+  return (
+    <div className={`space-y-3 rounded-2xl p-4 ${GLASS}`}>
+      <div>
+        <div className="font-semibold text-ink">{company.name}</div>
+        {assigned.length === 0 && <span className={UNASSIGNED_BADGE}>Unassigned</span>}
+      </div>
+      <div>
+        <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate">Assigned sales people</p>
+        <SalesChips salesUsers={salesUsers} selected={assigned} disabled={isPending} onToggle={toggle} />
+        {isError && <p className="mt-1.5 text-xs text-red-600">Save failed — try again.</p>}
+      </div>
+    </div>
+  );
+}
+
+// ── B2B customer approval: shared logic for the desktop row + mobile card ───────
+// Unlike company assignment, approval is a single explicit submit rather than a
+// per-checkbox autosave, so selection lives in local state until then.
+function useB2BAssignment(user: B2BUser, salesUsers: AdminUser[], salesUsersLoaded: boolean) {
   const approve = useSetB2BApproval(user._id);
   const [selected, setSelected] = useState<string[]>(user.assignedAdminIds ?? []);
   const prunedStaleIds = useRef(false);
@@ -122,56 +134,121 @@ function B2BUserRow({
   const dirty = selected.length !== saved.length || selected.some((id) => !saved.includes(id));
   // Approving always needs at least one assignee (the server enforces this too). On an
   // already-approved row the button is a re-save, so it's only live once something changed.
-  const canSubmit =
-    selected.length > 0 && (user.b2bStatus !== 'approved' || dirty) && !approve.isPending;
+  const canSubmit = selected.length > 0 && (user.b2bStatus !== 'approved' || dirty) && !approve.isPending;
 
+  return {
+    selected,
+    toggle,
+    copy,
+    saved,
+    canSubmit,
+    isPending: approve.isPending,
+    isError: approve.isError,
+    // No assignedAdminIds on reject: it's a permission change only; the server leaves
+    // existing assignments untouched (see b2bUser.service.ts).
+    submitApprove: () => approve.mutate({ status: 'approved', assignedAdminIds: selected }),
+    reject: () => approve.mutate({ status: 'rejected' }),
+    needsPickHint: selected.length === 0,
+    noChangesHint: user.b2bStatus === 'approved' && !dirty,
+  };
+}
+
+type B2BAssignment = ReturnType<typeof useB2BAssignment>;
+
+function B2BCustomerInfo({ user, saved }: { user: B2BUser; saved: string[] }) {
+  return (
+    <>
+      <div className="font-semibold text-ink">{user.firstName} {user.lastName ?? ''}</div>
+      <div className="text-xs text-slate">{user.email}</div>
+      {user.company?.name && <div className="text-xs text-muted">{user.company.name}</div>}
+      {user.b2bStatus === 'approved' && saved.length === 0 && (
+        <span className={UNASSIGNED_BADGE}>Unassigned — invisible to sales</span>
+      )}
+    </>
+  );
+}
+
+function B2BActions({ a }: { a: B2BAssignment }) {
+  return (
+    <>
+      <div className="flex justify-end gap-2">
+        <button
+          type="button"
+          disabled={!a.canSubmit}
+          onClick={a.submitApprove}
+          className="rounded-lg bg-indigo px-3 py-1.5 text-xs font-bold text-white transition-opacity disabled:opacity-40"
+        >
+          {a.isPending ? 'Saving…' : a.copy.primary}
+        </button>
+        {a.copy.secondary && (
+          <button
+            type="button"
+            disabled={a.isPending}
+            onClick={a.reject}
+            className="rounded-lg border border-line px-3 py-1.5 text-xs font-semibold text-slate transition-colors hover:border-red-300 hover:text-red-600 disabled:opacity-40"
+          >
+            {a.copy.secondary}
+          </button>
+        )}
+      </div>
+      {/* Say why the button is dead rather than just grey it out. */}
+      {a.needsPickHint ? (
+        <p className="mt-1.5 text-right text-[11px] text-muted">Pick a sales person first</p>
+      ) : a.noChangesHint ? (
+        <p className="mt-1.5 text-right text-[11px] text-muted">No changes</p>
+      ) : null}
+    </>
+  );
+}
+
+function B2BUserRow({
+  user,
+  salesUsers,
+  salesUsersLoaded,
+}: {
+  user: B2BUser;
+  salesUsers: AdminUser[];
+  salesUsersLoaded: boolean;
+}) {
+  const a = useB2BAssignment(user, salesUsers, salesUsersLoaded);
   return (
     <tr className="border-b border-line/60 last:border-0 hover:bg-white/40">
       <td className="px-5 py-3 align-top">
-        <div className="font-semibold text-ink">{user.firstName} {user.lastName ?? ''}</div>
-        <div className="text-xs text-slate">{user.email}</div>
-        {user.company?.name && <div className="text-xs text-muted">{user.company.name}</div>}
-        {user.b2bStatus === 'approved' && saved.length === 0 && (
-          <span className="mt-1 inline-block rounded-md bg-amber-100 px-1.5 py-0.5 text-[11px] font-semibold text-amber-700">
-            Unassigned — invisible to sales
-          </span>
-        )}
+        <B2BCustomerInfo user={user} saved={a.saved} />
       </td>
       <td className="px-5 py-3">
-        <SalesChips salesUsers={salesUsers} selected={selected} disabled={approve.isPending} onToggle={toggle} />
-        {approve.isError && <p className="mt-1.5 text-xs text-red-600">Save failed — try again.</p>}
+        <SalesChips salesUsers={salesUsers} selected={a.selected} disabled={a.isPending} onToggle={a.toggle} />
+        {a.isError && <p className="mt-1.5 text-xs text-red-600">Save failed — try again.</p>}
       </td>
       <td className="px-5 py-3 align-top">
-        <div className="flex justify-end gap-2">
-          <button
-            type="button"
-            disabled={!canSubmit}
-            onClick={() => approve.mutate({ status: 'approved', assignedAdminIds: selected })}
-            className="rounded-lg bg-indigo px-3 py-1.5 text-xs font-bold text-white transition-opacity disabled:opacity-40"
-          >
-            {approve.isPending ? 'Saving…' : copy.primary}
-          </button>
-          {copy.secondary && (
-            <button
-              type="button"
-              disabled={approve.isPending}
-              // No assignedAdminIds here: rejecting is a permission change only and the
-              // server now leaves existing assignments untouched (see b2bUser.service.ts).
-              onClick={() => approve.mutate({ status: 'rejected' })}
-              className="rounded-lg border border-line px-3 py-1.5 text-xs font-semibold text-slate transition-colors hover:border-red-300 hover:text-red-600 disabled:opacity-40"
-            >
-              {copy.secondary}
-            </button>
-          )}
-        </div>
-        {/* Say why the button is dead rather than just grey it out. */}
-        {selected.length === 0 ? (
-          <p className="mt-1.5 text-right text-[11px] text-muted">Pick a sales person first</p>
-        ) : user.b2bStatus === 'approved' && !dirty ? (
-          <p className="mt-1.5 text-right text-[11px] text-muted">No changes</p>
-        ) : null}
+        <B2BActions a={a} />
       </td>
     </tr>
+  );
+}
+
+function B2BUserCard({
+  user,
+  salesUsers,
+  salesUsersLoaded,
+}: {
+  user: B2BUser;
+  salesUsers: AdminUser[];
+  salesUsersLoaded: boolean;
+}) {
+  const a = useB2BAssignment(user, salesUsers, salesUsersLoaded);
+  return (
+    <div className={`space-y-3 rounded-2xl p-4 ${GLASS}`}>
+      <div>
+        <B2BCustomerInfo user={user} saved={a.saved} />
+      </div>
+      <div>
+        <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate">Assigned sales people</p>
+        <SalesChips salesUsers={salesUsers} selected={a.selected} disabled={a.isPending} onToggle={a.toggle} />
+        {a.isError && <p className="mt-1.5 text-xs text-red-600">Save failed — try again.</p>}
+      </div>
+      <B2BActions a={a} />
+    </div>
   );
 }
 
@@ -316,7 +393,7 @@ export default function AdminAssignmentsPage() {
             })}
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex w-full flex-wrap items-center gap-3 md:w-auto">
             {tab === 'approved' && (
               <label className="inline-flex cursor-pointer items-center gap-1.5 text-xs font-medium text-slate">
                 <input
@@ -337,7 +414,7 @@ export default function AdminAssignmentsPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Filter this page…"
-              className="w-56 rounded-lg border border-line bg-white/70 px-3 py-1.5 text-xs text-ink placeholder:text-muted focus:border-indigo focus:outline-none"
+              className="w-full rounded-lg border border-line bg-white/70 px-3 py-1.5 text-xs text-ink placeholder:text-muted focus:border-indigo focus:outline-none md:w-56"
             />
           </div>
         </div>
@@ -355,20 +432,31 @@ export default function AdminAssignmentsPage() {
               : `No ${tab} B2B customers.`}
           </EmptyCard>
         ) : (
-          <TableCard>
-            <thead>
-              <tr className="border-b border-line text-left text-xs font-semibold uppercase tracking-wide text-slate">
-                <th className="w-[320px] px-5 py-3">Customer</th>
-                <th className="px-5 py-3">Assigned sales people</th>
-                <th className="w-[220px] px-5 py-3 text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody>
+          <>
+            {/* Desktop table — unchanged at md+ */}
+            <div className="hidden md:block">
+              <TableCard>
+                <thead>
+                  <tr className="border-b border-line text-left text-xs font-semibold uppercase tracking-wide text-slate">
+                    <th className="w-[320px] px-5 py-3">Customer</th>
+                    <th className="px-5 py-3">Assigned sales people</th>
+                    <th className="w-[220px] px-5 py-3 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {visibleUsers.map((u) => (
+                    <B2BUserRow key={u._id} user={u} salesUsers={salesUsers} salesUsersLoaded={salesUsersLoaded} />
+                  ))}
+                </tbody>
+              </TableCard>
+            </div>
+            {/* Mobile cards */}
+            <div className="space-y-3 md:hidden">
               {visibleUsers.map((u) => (
-                <B2BUserRow key={u._id} user={u} salesUsers={salesUsers} salesUsersLoaded={salesUsersLoaded} />
+                <B2BUserCard key={u._id} user={u} salesUsers={salesUsers} salesUsersLoaded={salesUsersLoaded} />
               ))}
-            </tbody>
-          </TableCard>
+            </div>
+          </>
         )}
 
         {tab === 'approved' && approvedQ.isSuccess && approvedTotal > 0 && (
@@ -414,19 +502,30 @@ export default function AdminAssignmentsPage() {
         ) : !companies.length ? (
           <EmptyCard>No companies yet.</EmptyCard>
         ) : (
-          <TableCard>
-            <thead>
-              <tr className="border-b border-line text-left text-xs font-semibold uppercase tracking-wide text-slate">
-                <th className="w-[320px] px-5 py-3">Company</th>
-                <th className="px-5 py-3">Assigned sales people</th>
-              </tr>
-            </thead>
-            <tbody>
+          <>
+            {/* Desktop table — unchanged at md+ */}
+            <div className="hidden md:block">
+              <TableCard>
+                <thead>
+                  <tr className="border-b border-line text-left text-xs font-semibold uppercase tracking-wide text-slate">
+                    <th className="w-[320px] px-5 py-3">Company</th>
+                    <th className="px-5 py-3">Assigned sales people</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {companies.map((c) => (
+                    <CompanyRow key={c._id} company={c} salesUsers={salesUsers} />
+                  ))}
+                </tbody>
+              </TableCard>
+            </div>
+            {/* Mobile cards */}
+            <div className="space-y-3 md:hidden">
               {companies.map((c) => (
-                <CompanyRow key={c._id} company={c} salesUsers={salesUsers} />
+                <CompanyCard key={c._id} company={c} salesUsers={salesUsers} />
               ))}
-            </tbody>
-          </TableCard>
+            </div>
+          </>
         )}
       </section>
     </main>
