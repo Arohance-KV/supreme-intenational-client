@@ -7,6 +7,7 @@ import {
   useDeleteClientLogo,
   type ClientLogo,
 } from '@/lib/admin/content';
+import { useAdminProfile } from '@/lib/admin/userAuth';
 import { AdminModal, Field, inputCls } from '@/components/admin/AdminModal';
 import ImageUploadField from '@/components/admin/ImageUploadField';
 
@@ -19,6 +20,8 @@ export default function AdminClientsPage() {
   const { data, isPending, isError } = useClientLogos();
   const save = useSaveClientLogo();
   const del = useDeleteClientLogo();
+  const { data: me } = useAdminProfile();
+  const isBackend = me?.role === 'backend';
 
   const [draft, setDraft] = useState<Draft | null>(null);
   const logos = data ?? [];
@@ -64,7 +67,13 @@ export default function AdminClientsPage() {
               <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${c.isActive ? 'bg-[rgba(31,170,107,.12)] text-[#1a8f5a]' : 'bg-black/[.05] text-muted'}`}>{c.isActive ? 'Active' : 'Hidden'}</span>
               <div className="mt-1 flex gap-3 text-xs">
                 <button onClick={() => openEdit(c)} className="text-indigo hover:underline">Edit</button>
-                <button onClick={() => save.mutate({ id: c._id, isActive: !c.isActive })} className="text-slate hover:underline">{c.isActive ? 'Hide' : 'Show'}</button>
+                <button
+                  onClick={() => save.mutate({ id: c._id, isActive: !c.isActive })}
+                  disabled={isBackend}
+                  className="text-slate hover:underline disabled:cursor-not-allowed disabled:opacity-50 disabled:no-underline"
+                >
+                  {c.isActive ? 'Hide' : 'Show'}
+                </button>
                 <button onClick={() => del.mutate(c._id)} className="text-[#d8524d] hover:underline">Delete</button>
               </div>
             </div>
@@ -86,8 +95,13 @@ export default function AdminClientsPage() {
             <Field label="Website (optional)"><input className={inputCls} value={draft.website} onChange={(e) => setDraft({ ...draft, website: e.target.value })} placeholder="https://…" /></Field>
             <div className="flex gap-4">
               <Field label="Order"><input type="number" className={inputCls} value={draft.order} onChange={(e) => setDraft({ ...draft, order: Number(e.target.value) || 0 })} /></Field>
-              <label className="flex items-end gap-2 pb-2.5 text-sm text-slate"><input type="checkbox" checked={draft.isActive} onChange={(e) => setDraft({ ...draft, isActive: e.target.checked })} /> Active on site</label>
+              {!isBackend && (
+                <label className="flex items-end gap-2 pb-2.5 text-sm text-slate"><input type="checkbox" checked={draft.isActive} onChange={(e) => setDraft({ ...draft, isActive: e.target.checked })} /> Active on site</label>
+              )}
             </div>
+            {isBackend && (
+              <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">Your changes will be submitted for superadmin approval.</p>
+            )}
           </>
         )}
       </AdminModal>

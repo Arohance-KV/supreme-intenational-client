@@ -5,8 +5,9 @@ import { ApiError } from '@/lib/api';
 import ImageUploadField from '@/components/admin/ImageUploadField';
 import { readableTextColor } from '@/lib/color';
 import { useAdminProducts } from '@/lib/admin/products';
+import { useAdminProfile } from '@/lib/admin/userAuth';
 import {
-  useCompanyProducts, useUpdateCompany,
+  useCompanyProducts, useUpdateCompany, useStagePortalBranding,
   type AdminCompany, type PortalAnnouncement, type PortalContentBlock, type PortalAbout, type PortalStat,
 } from '@/lib/admin/companies';
 
@@ -28,7 +29,16 @@ function useDebounced<T>(value: T, ms = 300): T {
 }
 
 export default function PortalBrandingSection({ company }: { company: AdminCompany }) {
-  const update = useUpdateCompany(company._id);
+  const { data: me } = useAdminProfile();
+  const isBackend = me?.role === 'backend';
+
+  // Backend team can't PATCH /admin/companies/:id (server 403s general company
+  // fields for that role) — their branding edits are staged for superadmin
+  // approval via a separate endpoint instead of writing the live fields.
+  const liveUpdate = useUpdateCompany(company._id);
+  const stagedUpdate = useStagePortalBranding(company._id);
+  const update = isBackend ? stagedUpdate : liveUpdate;
+  const hasPendingBranding = !!company.portalBrandingPending;
 
   const [hero, setHero] = useState(company.portalHero ?? {});
   const [theme, setTheme] = useState(company.portalTheme ?? {});
@@ -111,8 +121,21 @@ export default function PortalBrandingSection({ company }: { company: AdminCompa
 
   return (
     <section className={sectionCls}>
-      <h2 className="mb-1 text-base font-semibold text-ink">Portal Branding</h2>
+      <div className="mb-1 flex items-center gap-2">
+        <h2 className="text-base font-semibold text-ink">Portal Branding</h2>
+        {hasPendingBranding && (
+          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800">
+            Pending approval
+          </span>
+        )}
+      </div>
       <p className="mb-5 text-xs text-slate">Customize this company&apos;s employee portal landing page. Empty fields hide their section.</p>
+
+      {isBackend && (
+        <div className="mb-5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+          Branding changes are submitted for superadmin approval and go live once approved.
+        </div>
+      )}
 
       <form onSubmit={save} className="space-y-6">
         {/* Theme + live navbar preview */}
@@ -272,8 +295,12 @@ export default function PortalBrandingSection({ company }: { company: AdminCompa
 
         {update.error && <p className="text-sm text-red-600">{update.error instanceof ApiError ? update.error.message : 'Save failed.'}</p>}
         <div className="flex items-center gap-3 border-t border-line/70 pt-4">
-          <button type="submit" disabled={update.isPending} className={primaryBtn}>{update.isPending ? 'Saving…' : 'Save portal branding'}</button>
-          {update.isSuccess && <span className="text-sm text-green-600">Saved.</span>}
+          <button type="submit" disabled={update.isPending} className={primaryBtn}>
+            {update.isPending ? 'Saving…' : isBackend ? 'Submit for approval' : 'Save portal branding'}
+          </button>
+          {update.isSuccess && (
+            <span className="text-sm text-green-600">{isBackend ? 'Submitted for approval.' : 'Saved.'}</span>
+          )}
         </div>
       </form>
     </section>

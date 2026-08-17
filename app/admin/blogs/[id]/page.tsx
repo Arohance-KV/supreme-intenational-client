@@ -11,6 +11,7 @@ import {
   type CreateBlogBody,
   type UpdateBlogBody,
 } from '@/lib/admin/blogs';
+import { useAdminProfile } from '@/lib/admin/userAuth';
 import ImageUploadField from '@/components/admin/ImageUploadField';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -44,6 +45,8 @@ function joinTags(tags: string[]): string {
 function CreateBlogForm() {
   const router = useRouter();
   const createBlog = useCreateBlog();
+  const { data: me } = useAdminProfile();
+  const isBackend = me?.role === 'backend';
   const [form, setForm] = useState<CreateBlogBody>(blankForm());
   const [tagsRaw, setTagsRaw] = useState('');
 
@@ -146,17 +149,23 @@ function CreateBlogForm() {
       </div>
 
       {/* Published */}
-      <div>
-        <label className="flex items-center gap-2 text-sm text-slate">
-          <input
-            type="checkbox"
-            checked={!!form.isPublished}
-            onChange={(e) => setForm({ ...form, isPublished: e.target.checked })}
-            className="rounded"
-          />
-          Publish immediately
-        </label>
-      </div>
+      {isBackend ? (
+        <p className="rounded border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          Your changes will be submitted for superadmin approval.
+        </p>
+      ) : (
+        <div>
+          <label className="flex items-center gap-2 text-sm text-slate">
+            <input
+              type="checkbox"
+              checked={!!form.isPublished}
+              onChange={(e) => setForm({ ...form, isPublished: e.target.checked })}
+              className="rounded"
+            />
+            Publish immediately
+          </label>
+        </div>
+      )}
 
       {/* Error */}
       {createBlog.error && (
@@ -190,6 +199,8 @@ function CreateBlogForm() {
 function EditBlogForm({ blogId }: { blogId: string }) {
   const { data: blog, isLoading, error } = useBlog(blogId);
   const updateBlog = useUpdateBlog(blogId);
+  const { data: me } = useAdminProfile();
+  const isBackend = me?.role === 'backend';
 
   // Local form state — initialised once blog loads
   const [initialised, setInitialised] = useState(false);
@@ -331,17 +342,23 @@ function EditBlogForm({ blogId }: { blogId: string }) {
       </div>
 
       {/* Published */}
-      <div>
-        <label className="flex items-center gap-2 text-sm text-slate">
-          <input
-            type="checkbox"
-            checked={!!form.isPublished}
-            onChange={(e) => setForm({ ...form, isPublished: e.target.checked })}
-            className="rounded"
-          />
-          Published
-        </label>
-      </div>
+      {isBackend ? (
+        <p className="rounded border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          Your changes will be submitted for superadmin approval.
+        </p>
+      ) : (
+        <div>
+          <label className="flex items-center gap-2 text-sm text-slate">
+            <input
+              type="checkbox"
+              checked={!!form.isPublished}
+              onChange={(e) => setForm({ ...form, isPublished: e.target.checked })}
+              className="rounded"
+            />
+            Published
+          </label>
+        </div>
+      )}
 
       {/* Feedback */}
       {updateBlog.error && (

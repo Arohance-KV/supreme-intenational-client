@@ -8,6 +8,7 @@ import {
   type SitePopup,
   type PopupTrigger,
 } from '@/lib/admin/content';
+import { useAdminProfile } from '@/lib/admin/userAuth';
 import { AdminModal, Field, inputCls } from '@/components/admin/AdminModal';
 import ImageUploadField from '@/components/admin/ImageUploadField';
 import { fmtDate } from '@/lib/admin/format';
@@ -34,6 +35,8 @@ export default function AdminMarketingPage() {
   const { data, isPending, isError } = usePopups();
   const save = useSavePopup();
   const del = useDeletePopup();
+  const { data: me } = useAdminProfile();
+  const isBackend = me?.role === 'backend';
 
   const [draft, setDraft] = useState<Draft | null>(null);
   const items = data ?? [];
@@ -80,8 +83,9 @@ export default function AdminMarketingPage() {
               </div>
               <button
                 onClick={() => save.mutate({ id: p._id, isActive: !p.isActive })}
-                className="shrink-0"
-                title={p.isActive ? 'Active — click to disable' : 'Inactive — click to enable'}
+                disabled={isBackend}
+                className="shrink-0 disabled:cursor-not-allowed disabled:opacity-50"
+                title={isBackend ? 'Only superadmin can change this' : p.isActive ? 'Active — click to disable' : 'Inactive — click to enable'}
               >
                 <span className="inline-flex h-[22px] w-[38px] items-center rounded-full p-0.5 transition-colors" style={{ background: p.isActive ? 'var(--c-accent, #149b8e)' : '#e6e7f2' }}>
                   <span className="h-[18px] w-[18px] rounded-full bg-white shadow transition-transform" style={{ transform: p.isActive ? 'translateX(16px)' : 'translateX(0)' }} />
@@ -128,7 +132,11 @@ export default function AdminMarketingPage() {
               <Field label="Start (optional)"><input type="date" className={inputCls} value={draft.startAt} onChange={(e) => setDraft({ ...draft, startAt: e.target.value })} /></Field>
               <Field label="End (optional)"><input type="date" className={inputCls} value={draft.endAt} onChange={(e) => setDraft({ ...draft, endAt: e.target.value })} /></Field>
             </div>
-            <label className="flex items-center gap-2 text-sm text-slate"><input type="checkbox" checked={draft.isActive} onChange={(e) => setDraft({ ...draft, isActive: e.target.checked })} /> Active (shown on site)</label>
+            {isBackend ? (
+              <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">Your changes will be submitted for superadmin approval.</p>
+            ) : (
+              <label className="flex items-center gap-2 text-sm text-slate"><input type="checkbox" checked={draft.isActive} onChange={(e) => setDraft({ ...draft, isActive: e.target.checked })} /> Active (shown on site)</label>
+            )}
           </>
         )}
       </AdminModal>

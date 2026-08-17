@@ -37,6 +37,9 @@ export interface AdminCompany {
   featuredProductIds?: string[];
   portalTheme?: PortalTheme;
   portalAbout?: PortalAbout;
+  // Non-null while a backend-team branding edit awaits superadmin approval
+  // (see stagePortalBranding/acceptBranding/rejectBranding on the server).
+  portalBrandingPending?: Record<string, unknown> | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -255,6 +258,19 @@ export function useUpdateCompany(id: string) {
       qc.invalidateQueries({ queryKey: COMPANY_KEY(id) });
       qc.invalidateQueries({ queryKey: ['admin', 'companies', 'list'] });
     },
+  });
+}
+
+// Backend-role branding save: stages the 7 portal-branding fields under
+// portalBrandingPending instead of writing the live fields (server 403s the
+// backend role on the plain PATCH /admin/companies/:id it can't use for this).
+export function useStagePortalBranding(id: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: Partial<Pick<UpdateCompanyBody,
+      'portalHero' | 'portalAnnouncements' | 'portalContentBlocks' | 'portalPromotion' | 'featuredProductIds' | 'portalTheme' | 'portalAbout'>>) =>
+      adminFetch<AdminCompany>(`/admin/companies/${id}/portal-branding`, { method: 'PATCH', body }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: COMPANY_KEY(id) }),
   });
 }
 

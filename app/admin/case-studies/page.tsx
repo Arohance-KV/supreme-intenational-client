@@ -7,6 +7,7 @@ import {
   useDeleteCaseStudy,
   type CaseStudy,
 } from '@/lib/admin/content';
+import { useAdminProfile } from '@/lib/admin/userAuth';
 import { AdminModal, Field, inputCls } from '@/components/admin/AdminModal';
 import ImageUploadField from '@/components/admin/ImageUploadField';
 
@@ -22,6 +23,8 @@ export default function AdminCaseStudiesPage() {
   const { data, isPending, isError } = useCaseStudies();
   const save = useSaveCaseStudy();
   const del = useDeleteCaseStudy();
+  const { data: me } = useAdminProfile();
+  const isBackend = me?.role === 'backend';
 
   const [draft, setDraft] = useState<Draft | null>(null);
   const items = data ?? [];
@@ -67,7 +70,13 @@ export default function AdminCaseStudiesPage() {
               </div>
               <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${c.isPublished ? 'bg-[rgba(31,170,107,.12)] text-[#1a8f5a]' : 'bg-black/[.05] text-muted'}`}>{c.isPublished ? 'Published' : 'Draft'}</span>
               <div className="flex items-center gap-3 text-xs">
-                <button onClick={() => save.mutate({ id: c._id, isPublished: !c.isPublished })} className="rounded-[9px] bg-black/[.04] px-3 py-1.5 font-semibold text-slate hover:bg-black/[.07]">{c.isPublished ? 'Unpublish' : 'Publish'}</button>
+                <button
+                  onClick={() => save.mutate({ id: c._id, isPublished: !c.isPublished })}
+                  disabled={isBackend}
+                  className="rounded-[9px] bg-black/[.04] px-3 py-1.5 font-semibold text-slate hover:bg-black/[.07] disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {c.isPublished ? 'Unpublish' : 'Publish'}
+                </button>
                 <button onClick={() => openEdit(c)} className="text-indigo hover:underline">Edit</button>
                 <button onClick={() => del.mutate(c._id)} className="text-[#d8524d] hover:underline">Delete</button>
               </div>
@@ -93,7 +102,11 @@ export default function AdminCaseStudiesPage() {
             <Field label="Headline result"><input className={inputCls} value={draft.result} onChange={(e) => setDraft({ ...draft, result: e.target.value })} placeholder="e.g. Delivered nationwide in 3 weeks" /></Field>
             <Field label="Cover image"><ImageUploadField folder="case-studies" value={draft.coverImage} onChange={(url) => setDraft({ ...draft, coverImage: url })} /></Field>
             <Field label="Summary"><textarea className={`${inputCls} h-24 resize-none`} value={draft.summary} onChange={(e) => setDraft({ ...draft, summary: e.target.value })} placeholder="Short description of the engagement and outcome…" /></Field>
-            <label className="flex items-center gap-2 text-sm text-slate"><input type="checkbox" checked={draft.isPublished} onChange={(e) => setDraft({ ...draft, isPublished: e.target.checked })} /> Published on site</label>
+            {isBackend ? (
+              <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">Your changes will be submitted for superadmin approval.</p>
+            ) : (
+              <label className="flex items-center gap-2 text-sm text-slate"><input type="checkbox" checked={draft.isPublished} onChange={(e) => setDraft({ ...draft, isPublished: e.target.checked })} /> Published on site</label>
+            )}
           </>
         )}
       </AdminModal>
