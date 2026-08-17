@@ -23,7 +23,7 @@ interface Props {
   mutations: ReturnType<typeof useCartMutations>;
 }
 
-const B2B_LOCK_CODES = new Set(['B2B_REJECTED']);
+const B2B_LOCK_CODES = new Set(['B2B_REJECTED', 'NO_SALES_ASSIGNED']);
 
 export default function QuotationCartView({ cart, mutations }: Props) {
   const { setQty, remove, clear } = mutations;
@@ -32,6 +32,8 @@ export default function QuotationCartView({ cart, mutations }: Props) {
   const { data: profile } = useProfile(isLoggedIn);
   const b2bStatus = profile?.b2bStatus ?? 'approved';
   const quotationsLocked = b2bStatus === 'rejected';
+  // No assigned sales rep → cannot request a quotation (server enforces; this hides the button).
+  const noSalesRep = profile?.canRequestQuotation === false;
   const generate = useGenerateQuotation();
 
   const [notes, setNotes] = useState('');
@@ -181,6 +183,13 @@ export default function QuotationCartView({ cart, mutations }: Props) {
                 <div className="text-sm font-bold text-[#b03c38]">Quotations unavailable</div>
                 <p className="mt-1 text-xs leading-relaxed text-[#b03c38]">
                   Your account is not approved for quotations.
+                </p>
+              </div>
+            ) : noSalesRep ? (
+              <div className="rounded-xl border border-[rgba(180,120,10,.25)] bg-[rgba(217,170,10,.08)] px-3.5 py-3">
+                <div className="text-sm font-bold text-[#a16207]">Awaiting a sales representative</div>
+                <p className="mt-1 text-xs leading-relaxed text-[#a16207]">
+                  A sales representative needs to be assigned to your account before you can request a quotation. Our team will be in touch shortly.
                 </p>
               </div>
             ) : submitted ? (

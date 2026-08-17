@@ -99,6 +99,7 @@ export interface AdminOrdersResponse {
 
 export interface AdminOrderFilters {
   status?: OrderStatus | '';
+  company?: string; // companyId — filters to one company's (employee) orders
   page?: number;
 }
 
@@ -107,14 +108,29 @@ export interface AdminOrderFilters {
 export function useAdminOrders(filters: AdminOrderFilters = {}) {
   const qs = new URLSearchParams();
   if (filters.status) qs.set('status', filters.status);
+  if (filters.company) qs.set('company', filters.company);
   if (filters.page && filters.page > 1) qs.set('page', String(filters.page));
 
   const qsStr = qs.toString();
 
   return useQuery<AdminOrdersResponse>({
-    queryKey: ['admin', 'orders', filters.status ?? 'all', filters.page ?? 1],
+    queryKey: ['admin', 'orders', filters.status ?? 'all', filters.company ?? 'all', filters.page ?? 1],
     queryFn: () =>
       adminFetch<AdminOrdersResponse>(`/admin/orders${qsStr ? `?${qsStr}` : ''}`),
+  });
+}
+
+export interface OrderCompany {
+  _id: string;
+  name: string;
+}
+
+// Companies that appear on orders — powers the Orders company filter (scoped for sales).
+export function useOrderCompanies() {
+  return useQuery<OrderCompany[]>({
+    queryKey: ['admin', 'orders', 'companies'],
+    queryFn: () => adminFetch<OrderCompany[]>('/admin/orders/companies'),
+    staleTime: 5 * 60_000,
   });
 }
 

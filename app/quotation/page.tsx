@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
+import { useProfile } from '@/lib/userAuth';
 import { useCart } from '@/lib/cart';
 import { useGenerateQuotation, type GenerateQuotationResult } from '@/lib/quotation';
 import { ApiError } from '@/lib/api';
@@ -13,7 +14,10 @@ function formatPrice(value: number): string {
 
 export default function QuotationPage() {
   const { isLoggedIn } = useAuth();
+  const { data: profile } = useProfile(isLoggedIn);
   const { data: cart, isLoading: cartLoading } = useCart();
+  // Server sends canRequestQuotation === false only when the account has no assigned sales rep.
+  const noSalesRep = profile?.canRequestQuotation === false;
   const generateMutation = useGenerateQuotation();
   const [result, setResult] = useState<GenerateQuotationResult | null>(null);
   const [generateError, setGenerateError] = useState<string | null>(null);
@@ -130,8 +134,16 @@ export default function QuotationPage() {
         </div>
       )}
 
+      {/* No assigned sales rep → cannot request a quotation yet */}
+      {!result && noSalesRep && (
+        <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm">
+          A sales representative needs to be assigned to your account before you can request a
+          quotation. Our team will be in touch shortly.
+        </div>
+      )}
+
       {/* Generate button */}
-      {!result && cart && cart.items.length > 0 && (
+      {!result && !noSalesRep && cart && cart.items.length > 0 && (
         <button
           onClick={handleGenerate}
           disabled={generateMutation.isPending}

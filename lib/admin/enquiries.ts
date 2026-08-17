@@ -142,11 +142,30 @@ export function useUpdateQuotationStatus(id: string) {
   });
 }
 
+export interface ApproveQuotationInput {
+  terms: string;
+  // Per-line price/qty overrides applied before the PDF is generated. Omit when unchanged.
+  items?: { variantId: string; unitPrice: number; qty: number }[];
+}
+
 export function useApproveQuotation(id: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (terms: string) =>
-      adminFetch<Quotation>(`/admin/quotations/${id}/approve`, { method: 'POST', body: { terms } }),
+    mutationFn: (input: ApproveQuotationInput) =>
+      adminFetch<Quotation>(`/admin/quotations/${id}/approve`, { method: 'POST', body: input }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin', 'quotations', 'detail', id] });
+      qc.invalidateQueries({ queryKey: ['admin', 'quotations'] });
+    },
+  });
+}
+
+// Backend team (and sales/superAdmin): save T&C + line prices without approving.
+export function useSaveQuotationDraft(id: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input: ApproveQuotationInput) =>
+      adminFetch<Quotation>(`/admin/quotations/${id}/draft`, { method: 'POST', body: input }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin', 'quotations', 'detail', id] });
       qc.invalidateQueries({ queryKey: ['admin', 'quotations'] });

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useCustomers, type CustomerAccountType } from '@/lib/admin/customers';
 import { fmtDate } from '@/lib/admin/format';
 
@@ -80,7 +81,7 @@ export default function AdminCustomersPage() {
             <p className="px-5 py-10 text-center text-sm text-muted">No customers found.</p>
           ) : (
             items.map((c) => (
-              <div key={c._id} className={`grid ${COLS} gap-3 items-center px-5 py-3 text-[13px]`}>
+              <Link key={c._id} href={`/admin/customers/${c._id}`} className={`grid ${COLS} gap-3 items-center px-5 py-3 text-[13px] hover:bg-white/60 transition-colors`}>
                 <span className="flex items-center gap-3 min-w-0">
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-gradient-to-br from-indigo to-accent text-[11px] font-extrabold text-white">
                     {initials(c.firstName, c.lastName)}
@@ -99,7 +100,7 @@ export default function AdminCustomersPage() {
                 </span>
                 <span className={`text-[11px] font-semibold ${c.verified ? 'text-[#1a8f5a]' : 'text-muted'}`}>{c.verified ? '✓ Verified' : 'Unverified'}</span>
                 <span className="text-xs text-muted">{fmtDate(c.createdAt)}</span>
-              </div>
+              </Link>
             ))
           )}
         </div>

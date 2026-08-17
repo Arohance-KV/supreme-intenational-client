@@ -190,7 +190,7 @@ function ModelPill({ mode }: { mode: 'points' | 'coupon' }) {
   );
 }
 
-const LIST_COLS = 'grid-cols-[1fr_130px_120px_140px]';
+const LIST_COLS = 'grid-cols-[1fr_110px_100px_90px_140px]';
 
 function CompanyRow({ company }: { company: AdminCompany }) {
   return (
@@ -204,6 +204,12 @@ function CompanyRow({ company }: { company: AdminCompany }) {
       </Link>
       <ModelPill mode={company.walletMode ?? 'points'} />
       <StatusChip status={company.status} />
+      <Link
+        href={`/admin/orders?company=${company._id}`}
+        className="justify-self-end rounded-lg border border-line px-3 py-2 text-xs font-medium text-slate hover:bg-white"
+      >
+        Orders
+      </Link>
       <Link
         href={`/admin/companies/${company._id}`}
         className="justify-self-end rounded-lg bg-indigo/[.07] px-3.5 py-2 text-xs font-medium text-indigo hover:bg-indigo/10"
@@ -294,6 +300,7 @@ function CompaniesTable() {
             <span>Company</span>
             <span>Model</span>
             <span>Status</span>
+            <span></span>
             <span></span>
           </div>
           {items.map((c) => (

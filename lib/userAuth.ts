@@ -31,6 +31,9 @@ export interface Profile {
   lastName?: string;
   email: string;
   b2bStatus?: 'pending' | 'approved' | 'rejected';
+  // Server-derived: false when a self-signup individual has no assigned sales rep yet.
+  // Missing on legacy cached profiles — treat absence as allowed.
+  canRequestQuotation?: boolean;
 }
 
 // Shared with app/account/page.tsx's ['profile'] query key so both consumers

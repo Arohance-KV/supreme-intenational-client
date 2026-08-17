@@ -1,10 +1,14 @@
 // Client-side mirror of the server's section segregation (adminSectionAccess.middleware.ts).
 // The server enforces access; this only decides what to show and where to land a user.
 
-export type Role = 'sales' | 'marketing' | 'finance' | 'admin' | 'superAdmin';
+export type Role = 'sales' | 'marketing' | 'finance' | 'admin' | 'backend' | 'superAdmin';
 
 // General operators see everything.
 const SEES_ALL: Role[] = ['admin', 'superAdmin'];
+
+// Admin/security sections the read-only BACKEND team may not view (mirror of the server's
+// BACKEND_DENIED in adminSectionAccess.middleware.ts).
+const BACKEND_DENIED = ['/admin/users', '/admin/points-proposals', '/admin/assignments', '/admin/generate', '/admin/careers'];
 
 // Which roles may open each admin path. Anything not listed is general-operator only.
 // Paths use startsWith matching so sub-routes inherit their section's access.
@@ -27,6 +31,9 @@ const ACCESS: { prefix: string; roles: Role[] }[] = [
 export function canAccess(role: Role | undefined, path: string): boolean {
   if (!role) return false;
   if (SEES_ALL.includes(role)) return true;
+  // Backend team: view everything except the admin/security sections (read-only is
+  // enforced server-side; this only decides nav visibility).
+  if (role === 'backend') return !BACKEND_DENIED.some((p) => path === p || path.startsWith(p + '/'));
   const match = ACCESS.find((a) => path === a.prefix || path.startsWith(a.prefix + '/'));
   // Unmatched section (orders, catalog, sellers, dashboard, …) is general-operator only.
   return match ? match.roles.includes(role) : false;
@@ -38,7 +45,7 @@ export function homeFor(role: Role | undefined): string {
     case 'sales': return '/admin/quotations';
     case 'marketing': return '/admin/clients';
     case 'finance': return '/admin/settings';
-    default: return '/admin'; // admin / superAdmin
+    default: return '/admin'; // admin / backend / superAdmin
   }
 }
 
@@ -47,5 +54,6 @@ export const ROLE_LABEL: Record<Role, string> = {
   marketing: 'Marketing',
   finance: 'Finance',
   admin: 'Admin',
+  backend: 'Backend Team',
   superAdmin: 'Super Admin',
 };

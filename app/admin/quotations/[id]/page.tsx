@@ -7,8 +7,10 @@ import {
   useQuotation,
   useUpdateQuotationStatus,
   useApproveQuotation,
+  useSaveQuotationDraft,
   type QuotationStatus,
 } from '@/lib/admin/enquiries';
+import { useAdminProfile } from '@/lib/admin/userAuth';
 import { StatusChip } from '@/components/admin/StatusChip';
 import { inr, fmtDateTime } from '@/lib/admin/format';
 import { useConfirm } from '@/components/ConfirmDialog';
@@ -41,12 +43,18 @@ export default function AdminQuotationDetailPage({
   const { id } = use(params);
   const { confirm } = useConfirm();
   const { data: quotation, isLoading, isError } = useQuotation(id);
+  const { data: me } = useAdminProfile();
   const updateStatus = useUpdateQuotationStatus(id);
   const approve = useApproveQuotation(id);
+  const saveDraft = useSaveQuotationDraft(id);
+  // Backend team can edit + save the T&C/prices but never approve — that's sales-only.
+  const canApprove = me?.role !== 'backend';
 
   const [pendingStatus, setPendingStatus] = useState<QuotationStatus | ''>('');
   const [actionError, setActionError] = useState<string | null>(null);
   const [terms, setTerms] = useState<string | null>(null);
+  // Per-line price/qty edits, keyed by variantId; only populated once the admin touches a field.
+  const [edits, setEdits] = useState<Record<string, { unitPrice: number; qty: number }>>({});
 
   if (isLoading) {
     return (
@@ -76,16 +84,47 @@ export default function AdminQuotationDetailPage({
 
   const otherStatuses = QUOTATION_STATUSES.filter((s) => s !== quotation.status);
   const termsValue = terms ?? quotation?.terms ?? '';
+  const editable = quotation.status === 'pending_approval';
+
+  // Effective price/qty for a line = edited value if present, else the stored value.
+  const lineOf = (it: { variantId: string; unitPrice: number; qty: number }) =>
+    edits[it.variantId] ?? { unitPrice: it.unitPrice, qty: it.qty };
+  const setLine = (variantId: string, patch: Partial<{ unitPrice: number; qty: number }>) =>
+    setEdits((prev) => {
+      const base = prev[variantId] ??
+        (() => {
+          const it = quotation!.items.find((i) => i.variantId === variantId)!;
+          return { unitPrice: it.unitPrice, qty: it.qty };
+        })();
+      return { ...prev, [variantId]: { ...base, ...patch } };
+    });
 
   async function handleApprove() {
     const confirmed = await confirm({
       title: 'Approve & send quotation',
-      message: 'This will generate the PDF with the terms below and email it to the customer. Continue?',
+      message: 'This will generate the PDF with the terms and prices below, then email it to the customer. Continue?',
     });
     if (!confirmed) return;
     setActionError(null);
     try {
-      await approve.mutateAsync(termsValue);
+      await approve.mutateAsync({ terms: termsValue, items: editedItems() });
+    } catch (err) {
+      setActionError(getErrorMessage(err));
+    }
+  }
+
+  // Snapshot of edited line items (undefined when nothing was touched).
+  function editedItems() {
+    return Object.keys(edits).length
+      ? quotation!.items.map((it) => ({ variantId: it.variantId, ...lineOf(it) }))
+      : undefined;
+  }
+
+  async function handleSaveDraft() {
+    setActionError(null);
+    try {
+      await saveDraft.mutateAsync({ terms: termsValue, items: editedItems() });
+      setEdits({});
     } catch (err) {
       setActionError(getErrorMessage(err));
     }
@@ -254,7 +293,10 @@ export default function AdminQuotationDetailPage({
               <span className="text-right">Qty</span>
               <span className="text-right">Line Total</span>
             </div>
-            {quotation.items.map((item) => (
+            {quotation.items.map((item) => {
+              const line = lineOf(item);
+              const lineTotal = editable ? line.unitPrice * line.qty : item.lineTotal;
+              return (
               <div
                 key={item.variantId ?? item.sku}
                 className="flex flex-col md:grid md:grid-cols-[1fr_80px_100px_80px_120px] gap-2 md:gap-4 items-start md:items-center px-5 py-3"
@@ -274,19 +316,42 @@ export default function AdminQuotationDetailPage({
                   <span className="md:hidden text-xs text-muted">MOQ: </span>
                   {typeof item.moq === 'number' ? item.moq : '—'}
                 </p>
-                <p className="text-sm text-ink md:text-right">
-                  <span className="md:hidden text-xs text-muted">Unit: </span>
-                  {inr(item.unitPrice)}
-                </p>
-                <p className="text-sm text-ink md:text-right">
-                  <span className="md:hidden text-xs text-muted">Qty: </span>
-                  {typeof item.qty === 'number' ? item.qty : '—'}
-                </p>
+                {editable ? (
+                  <label className="flex items-center gap-1 md:justify-end">
+                    <span className="md:hidden text-xs text-muted">Unit: </span>
+                    <input
+                      type="number" min={0} step="0.01" value={line.unitPrice}
+                      onChange={(e) => setLine(item.variantId, { unitPrice: Math.max(0, Number(e.target.value) || 0) })}
+                      className="w-24 rounded border border-line bg-white px-2 py-1 text-sm text-ink text-right focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+                    />
+                  </label>
+                ) : (
+                  <p className="text-sm text-ink md:text-right">
+                    <span className="md:hidden text-xs text-muted">Unit: </span>
+                    {inr(item.unitPrice)}
+                  </p>
+                )}
+                {editable ? (
+                  <label className="flex items-center gap-1 md:justify-end">
+                    <span className="md:hidden text-xs text-muted">Qty: </span>
+                    <input
+                      type="number" min={1} step="1" value={line.qty}
+                      onChange={(e) => setLine(item.variantId, { qty: Math.max(1, Math.floor(Number(e.target.value) || 1)) })}
+                      className="w-20 rounded border border-line bg-white px-2 py-1 text-sm text-ink text-right focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+                    />
+                  </label>
+                ) : (
+                  <p className="text-sm text-ink md:text-right">
+                    <span className="md:hidden text-xs text-muted">Qty: </span>
+                    {typeof item.qty === 'number' ? item.qty : '—'}
+                  </p>
+                )}
                 <p className="text-sm font-semibold text-ink md:text-right">
-                  {inr(item.lineTotal)}
+                  {inr(lineTotal)}
                 </p>
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </section>
@@ -295,20 +360,35 @@ export default function AdminQuotationDetailPage({
       {quotation.status === 'pending_approval' && (
         <section className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5 space-y-3">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-slate">Terms &amp; Conditions</h2>
-          <p className="text-sm text-slate">Edit the terms that appear on the last page of the PDF, then approve to generate and email it to the customer.</p>
+          <p className="text-sm text-slate">
+            {canApprove
+              ? 'Adjust line-item prices and quantities above and edit the terms below. Save to stage changes, or approve to generate the PDF (with GST recomputed) and email it to the customer.'
+              : 'Adjust line-item prices and quantities above and edit the terms below, then Save. The sales team will review and approve it.'}
+          </p>
           <textarea
             value={termsValue}
             onChange={(e) => setTerms(e.target.value)}
             rows={8}
             className="w-full rounded border border-line bg-white px-3 py-2 text-sm text-ink focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
-          <button
-            onClick={handleApprove}
-            disabled={approve.isPending}
-            className="rounded bg-gradient-to-br from-indigo to-indigo2 px-4 py-2 text-sm font-medium text-white disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            {approve.isPending ? 'Approving…' : 'Approve & send'}
-          </button>
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={handleSaveDraft}
+              disabled={saveDraft.isPending || approve.isPending}
+              className="rounded border border-line bg-white px-4 py-2 text-sm font-medium text-ink hover:bg-black/[.03] disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {saveDraft.isPending ? 'Saving…' : 'Save changes'}
+            </button>
+            {canApprove && (
+              <button
+                onClick={handleApprove}
+                disabled={approve.isPending || saveDraft.isPending}
+                className="rounded bg-gradient-to-br from-indigo to-indigo2 px-4 py-2 text-sm font-medium text-white disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {approve.isPending ? 'Approving…' : 'Approve & send'}
+              </button>
+            )}
+          </div>
         </section>
       )}
 

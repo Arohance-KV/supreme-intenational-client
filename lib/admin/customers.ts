@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { adminFetch } from './api';
+import type { Quotation } from './enquiries';
 
 export type CustomerAccountType = 'company' | 'employee' | 'individual';
 
@@ -36,5 +37,30 @@ export function useCustomers(filters: { type?: CustomerAccountType | ''; search?
   return useQuery<CustomersResponse>({
     queryKey: ['admin', 'customers', filters.type ?? 'b2b', filters.search ?? '', filters.page ?? 1],
     queryFn: () => adminFetch<CustomersResponse>(`/admin/customers${qsStr ? `?${qsStr}` : ''}`),
+  });
+}
+
+export interface CustomerCatalogue {
+  _id: string;
+  catalogueNumber: string;
+  pdfUrl: string;
+  status: string;
+  downloadCount: number;
+  items?: unknown[];
+  createdAt: string;
+}
+
+export interface CustomerDetail {
+  customer: AdminCustomer & { company?: { name?: string; url?: string } };
+  quotations: Quotation[];
+  catalogues: CustomerCatalogue[];
+}
+
+// Customer profile + the quotations & catalogues they generated (assignment-scoped server-side).
+export function useCustomer(id: string) {
+  return useQuery<CustomerDetail>({
+    queryKey: ['admin', 'customers', 'detail', id],
+    queryFn: () => adminFetch<CustomerDetail>(`/admin/customers/${id}`),
+    enabled: !!id,
   });
 }

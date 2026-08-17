@@ -7,6 +7,7 @@ export interface AdminUser {
   firstName: string;
   lastName?: string;
   email: string;
+  phoneNumber?: string;
   role: Role;
   isActive: boolean;
   lastLoginAt: string | null;
@@ -17,6 +18,7 @@ export type CreateUserInput = {
   firstName: string;
   lastName?: string;
   email: string;
+  phoneNumber?: string;
   password: string;
   role: Role;
 };
@@ -48,7 +50,7 @@ export function useUpdateUserRole() {
 export function useUpdateUser() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, ...body }: { id: string; firstName?: string; lastName?: string; email?: string }) =>
+    mutationFn: ({ id, ...body }: { id: string; firstName?: string; lastName?: string; email?: string; phoneNumber?: string }) =>
       adminFetch<AdminUser>(`/admin/users/${id}`, { method: 'PATCH', body }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'users'] }),
   });

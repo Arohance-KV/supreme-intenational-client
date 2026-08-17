@@ -12,11 +12,11 @@ import { AdminModal, Field, inputCls } from '@/components/admin/AdminModal';
 import { useConfirm } from '@/components/ConfirmDialog';
 
 const GLASS = 'border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)]';
-const ROLES: Role[] = ['sales', 'marketing', 'finance', 'admin', 'superAdmin'];
+const ROLES: Role[] = ['sales', 'marketing', 'finance', 'admin', 'backend', 'superAdmin'];
 
 // id present → editing an existing user (name/email); absent → creating (adds password + role).
-type Draft = { id?: string; firstName: string; lastName: string; email: string; password: string; role: Role };
-const EMPTY: Draft = { firstName: '', lastName: '', email: '', password: '', role: 'sales' };
+type Draft = { id?: string; firstName: string; lastName: string; email: string; phoneNumber: string; password: string; role: Role };
+const EMPTY: Draft = { firstName: '', lastName: '', email: '', phoneNumber: '', password: '', role: 'sales' };
 
 function fmtDate(iso: string | null): string {
   if (!iso) return '—';
@@ -30,6 +30,7 @@ const ROLE_CHIP: Record<Role, string> = {
   marketing: 'bg-[rgba(217,70,160,.10)] text-[#c026a3]',
   finance: 'bg-[rgba(180,120,10,.12)] text-[#a16207]',
   admin: 'bg-[rgba(31,170,107,.12)] text-[#1a8f5a]',
+  backend: 'bg-[rgba(100,116,139,.14)] text-[#475569]',
   superAdmin: 'bg-[rgba(42,43,106,.10)] text-indigo',
 };
 
@@ -51,7 +52,7 @@ export default function AdminUsersPage() {
   const openNew = () => { setFormError(null); setDraft({ ...EMPTY }); };
   const openEdit = (u: AdminUser) => {
     setFormError(null);
-    setDraft({ id: u._id, firstName: u.firstName, lastName: u.lastName ?? '', email: u.email, password: '', role: u.role });
+    setDraft({ id: u._id, firstName: u.firstName, lastName: u.lastName ?? '', email: u.email, phoneNumber: u.phoneNumber ?? '', password: '', role: u.role });
   };
 
   const onRowError = (e: unknown) => setRowError(e instanceof ApiError ? e.message : 'Action failed.');
@@ -67,7 +68,7 @@ export default function AdminUsersPage() {
         return;
       }
       updateUser.mutate(
-        { id: draft.id, firstName: draft.firstName, lastName, email: draft.email },
+        { id: draft.id, firstName: draft.firstName, lastName, email: draft.email, phoneNumber: draft.phoneNumber.trim() },
         { onSuccess: () => setDraft(null), onError: (e) => setFormError(e instanceof ApiError ? e.message : 'Failed to save.') },
       );
       return;
@@ -78,7 +79,7 @@ export default function AdminUsersPage() {
       return;
     }
     create.mutate(
-      { firstName: draft.firstName, lastName, email: draft.email, password: draft.password, role: draft.role },
+      { firstName: draft.firstName, lastName, email: draft.email, phoneNumber: draft.phoneNumber.trim() || undefined, password: draft.password, role: draft.role },
       { onSuccess: () => setDraft(null), onError: (e) => setFormError(e instanceof ApiError ? e.message : 'Failed to create user.') },
     );
   };
@@ -189,6 +190,7 @@ export default function AdminUsersPage() {
               <Field label="Last name (optional)"><input className={inputCls} value={draft.lastName} onChange={(e) => setDraft({ ...draft, lastName: e.target.value })} /></Field>
             </div>
             <Field label="Email"><input type="email" className={inputCls} value={draft.email} onChange={(e) => setDraft({ ...draft, email: e.target.value })} placeholder="person@company.com" /></Field>
+            <Field label="Phone (shown on quotation PDFs)"><input type="tel" className={inputCls} value={draft.phoneNumber} onChange={(e) => setDraft({ ...draft, phoneNumber: e.target.value })} placeholder="98448 27777" /></Field>
             {!draft.id && (
               <>
                 <Field label="Temporary password"><input type="text" className={inputCls} value={draft.password} onChange={(e) => setDraft({ ...draft, password: e.target.value })} placeholder="min 8 characters" /></Field>

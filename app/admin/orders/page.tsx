@@ -3,7 +3,7 @@
 import { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useAdminOrders, type OrderStatus } from '@/lib/admin/orders';
+import { useAdminOrders, useOrderCompanies, type OrderStatus } from '@/lib/admin/orders';
 import { StatusChip } from '@/components/admin/StatusChip';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -29,13 +29,16 @@ function OrdersTable() {
   const router = useRouter();
 
   const statusParam = searchParams.get('status') as OrderStatus | null;
+  const companyParam = searchParams.get('company');
   const pageParam = Number(searchParams.get('page') ?? '1');
   const page = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
 
   const { data, isLoading, isError } = useAdminOrders({
     status: statusParam ?? undefined,
+    company: companyParam ?? undefined,
     page,
   });
+  const { data: companies } = useOrderCompanies();
 
   const orders = data?.orders ?? [];
   const pagination = data?.pagination;
@@ -82,6 +85,18 @@ function OrdersTable() {
             {s}
           </button>
         ))}
+
+        {/* Company filter */}
+        <select
+          value={companyParam ?? ''}
+          onChange={(e) => setFilter('company', e.target.value || null)}
+          className="ml-auto rounded-full border border-line bg-white/70 px-3 py-1 text-xs font-medium text-slate outline-none hover:bg-white focus:border-accent"
+        >
+          <option value="">All companies</option>
+          {(companies ?? []).map((c) => (
+            <option key={c._id} value={c._id}>{c.name}</option>
+          ))}
+        </select>
       </div>
 
       {/* Table */}
