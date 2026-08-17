@@ -8,7 +8,7 @@ const SEES_ALL: Role[] = ['admin', 'superAdmin'];
 
 // Admin/security sections the read-only BACKEND team may not view (mirror of the server's
 // BACKEND_DENIED in adminSectionAccess.middleware.ts).
-const BACKEND_DENIED = ['/admin/users', '/admin/points-proposals', '/admin/assignments', '/admin/generate', '/admin/careers'];
+const BACKEND_DENIED = ['/admin/users', '/admin/points-proposals', '/admin/assignments', '/admin/generate', '/admin/careers', '/admin/approvals'];
 
 // Which roles may open each admin path. Anything not listed is general-operator only.
 // Paths use startsWith matching so sub-routes inherit their section's access.

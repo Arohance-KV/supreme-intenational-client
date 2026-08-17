@@ -35,6 +35,7 @@ const NAV: NavEntry[] = [
     items: [
       { label: 'Companies', href: '/admin/companies' },
       { label: 'Points Requests', href: '/admin/points-proposals' },
+      { label: 'Approvals', href: '/admin/approvals' },
     ],
   },
   {
@@ -54,7 +55,6 @@ const NAV: NavEntry[] = [
       { label: 'Categories', href: '/admin/catalog/categories' },
       { label: 'Attributes', href: '/admin/catalog/attributes' },
       { label: 'Generate Docs', href: '/admin/generate' },
-      { label: 'Coupons', href: '/admin/coupons' },
       { label: 'Reviews', href: '/admin/reviews' },
     ],
   },
@@ -97,7 +97,6 @@ const ICON: Record<string, string> = {
   '/admin/catalog/categories': '🗂️',
   '/admin/catalog/attributes': '🔧',
   '/admin/generate': '🧾',
-  '/admin/coupons': '🎟️',
   '/admin/reviews': '⭐',
   '/admin/clients': '🤝',
   '/admin/case-studies': '🏆',
@@ -105,6 +104,7 @@ const ICON: Record<string, string> = {
   '/admin/marketing': '📣',
   '/admin/companies': '🏢',
   '/admin/points-proposals': '🪙',
+  '/admin/approvals': '✅',
   '/admin/assignments': '🧑‍💼',
   '/admin/customers': '👥',
   '/admin/sellers': '🏷️',
