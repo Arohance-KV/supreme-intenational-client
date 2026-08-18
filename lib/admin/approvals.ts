@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminFetch } from './api';
 
-export type ApprovalType = 'blog' | 'caseStudy' | 'clientLogo' | 'popup' | 'companyBranding';
+export type ApprovalType = 'blog' | 'caseStudy' | 'clientLogo' | 'popup' | 'companyBranding' | 'quotation';
 
 export interface ApprovalItem {
   type: ApprovalType;
@@ -24,6 +24,9 @@ export function useDecideApproval() {
   return useMutation({
     mutationFn: ({ type, id, decision }: { type: ApprovalType; id: string; decision: 'accept' | 'reject' }) =>
       adminFetch(`/admin/approvals/${type}/${id}/${decision}`, { method: 'POST' }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'approvals'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin', 'approvals'] });
+      qc.invalidateQueries({ queryKey: ['admin', 'quotations'] });
+    },
   });
 }

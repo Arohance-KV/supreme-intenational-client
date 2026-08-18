@@ -66,10 +66,11 @@ function QuotationsTable() {
   const router = useRouter();
 
   const statusParam = searchParams.get('status') as QuotationStatus | null;
+  const submittedParam = searchParams.get('submitted') === 'true';
   const pageParam = Number(searchParams.get('page') ?? '1');
   const page = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
 
-  const { data, isLoading, isError } = useQuotations({ status: statusParam ?? undefined, page });
+  const { data, isLoading, isError } = useQuotations({ status: statusParam ?? undefined, submitted: submittedParam || undefined, page });
 
   const quotations = data?.items ?? [];
   const total = data?.total ?? 0;
@@ -80,6 +81,9 @@ function QuotationsTable() {
     const params = new URLSearchParams(searchParams.toString());
     if (value === null || value === '') params.delete(key);
     else params.set(key, value);
+    // status and submitted are mutually exclusive views — picking one clears the other.
+    if (key === 'status') params.delete('submitted');
+    if (key === 'submitted') params.delete('status');
     if (key !== 'page') params.delete('page');
     router.push(`/admin/quotations?${params.toString()}`);
   }
@@ -91,9 +95,16 @@ function QuotationsTable() {
         <span className="font-jbmono text-xs font-semibold text-muted uppercase tracking-wider mr-1">Filter:</span>
         <button
           onClick={() => setFilter('status', null)}
-          className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${!statusParam ? 'bg-indigo text-white' : 'bg-white/70 border border-line text-slate hover:bg-white'}`}
+          className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${!statusParam && !submittedParam ? 'bg-indigo text-white' : 'bg-white/70 border border-line text-slate hover:bg-white'}`}
         >
           All
+        </button>
+        {/* Pending approval: quotes the backroom submitted, awaiting approve & send. */}
+        <button
+          onClick={() => setFilter('submitted', submittedParam ? null : 'true')}
+          className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${submittedParam ? 'bg-amber-500 text-white' : 'bg-amber-50 border border-amber-200 text-amber-700 hover:bg-amber-100'}`}
+        >
+          Pending approval
         </button>
         {QUOTATION_STATUSES.map((s) => (
           <button
@@ -144,7 +155,12 @@ function QuotationsTable() {
                 {q.contact?.company && <p className="text-xs text-muted truncate">{q.contact.company}</p>}
               </div>
               <span><SourceChip t={q.sourceType} /></span>
-              <div><StatusChip status={q.status} /></div>
+              <div className="flex flex-wrap items-center gap-1">
+                <StatusChip status={q.status} />
+                {q.submittedForApprovalAt && (
+                  <span className="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">Pending approval</span>
+                )}
+              </div>
               <span className="text-sm font-bold text-ink">{inr(q.total)}</span>
               <span className="text-sm text-slate text-center">{typeof q.downloadCount === 'number' ? q.downloadCount : '—'}</span>
               <span className="text-xs text-muted">{fmtDateTime(q.createdAt)}</span>

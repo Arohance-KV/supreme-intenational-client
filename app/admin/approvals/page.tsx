@@ -11,6 +11,7 @@ const TYPE_LABEL: Record<ApprovalType, string> = {
   clientLogo: 'Client Logo',
   popup: 'Popup',
   companyBranding: 'Company Branding',
+  quotation: 'Quotation',
 };
 
 function groupByType(items: ApprovalItem[]): [ApprovalType, ApprovalItem[]][] {
@@ -74,7 +75,7 @@ export default function AdminApprovalsPage() {
     <main className="max-w-5xl mx-auto space-y-6">
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight text-ink">Approvals</h1>
-        <p className="mt-1 text-sm text-slate">Content edits from the backend team, awaiting your review before going live.</p>
+        <p className="mt-1 text-sm text-slate">Content edits and quotations submitted by the backend team, awaiting your review before going live.</p>
       </div>
 
       {isError ? (

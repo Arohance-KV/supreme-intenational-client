@@ -49,6 +49,8 @@ export interface Quotation {
   filtersApplied: unknown;
   terms?: string;
   approvedAt?: string | null;
+  submittedForApprovalAt?: string | null;
+  submittedForApprovalBy?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -61,6 +63,7 @@ export interface QuotationsResponse {
 export interface QuotationFilters {
   status?: QuotationStatus | '';
   search?: string;
+  submitted?: boolean; // true -> only quotations submitted for approval
   page?: number;
 }
 
@@ -110,11 +113,12 @@ export function useQuotations(filters: QuotationFilters = {}) {
   const qs = new URLSearchParams();
   if (filters.status) qs.set('status', filters.status);
   if (filters.search) qs.set('search', filters.search);
+  if (filters.submitted) qs.set('submitted', 'true');
   if (filters.page && filters.page > 1) qs.set('page', String(filters.page));
   const qsStr = qs.toString();
 
   return useQuery<QuotationsResponse>({
-    queryKey: ['admin', 'quotations', 'list', filters.status ?? 'all', filters.search ?? '', filters.page ?? 1],
+    queryKey: ['admin', 'quotations', 'list', filters.status ?? 'all', filters.search ?? '', filters.submitted ? 'submitted' : 'all', filters.page ?? 1],
     queryFn: () =>
       adminFetch<QuotationsResponse>(`/admin/quotations${qsStr ? `?${qsStr}` : ''}`),
   });
@@ -167,6 +171,19 @@ export function useSaveQuotationDraft(id: string) {
   return useMutation({
     mutationFn: (input: ApproveQuotationInput) =>
       adminFetch<Quotation>(`/admin/quotations/${id}/draft`, { method: 'POST', body: input }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin', 'quotations', 'detail', id] });
+      qc.invalidateQueries({ queryKey: ['admin', 'quotations'] });
+    },
+  });
+}
+
+// Backroom team: save edits AND submit the quotation for approval (Approvals tab + queue).
+export function useSubmitQuotationForApproval(id: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input: ApproveQuotationInput) =>
+      adminFetch<Quotation>(`/admin/quotations/${id}/submit-approval`, { method: 'POST', body: input }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin', 'quotations', 'detail', id] });
       qc.invalidateQueries({ queryKey: ['admin', 'quotations'] });

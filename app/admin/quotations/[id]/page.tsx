@@ -8,6 +8,7 @@ import {
   useUpdateQuotationStatus,
   useApproveQuotation,
   useSaveQuotationDraft,
+  useSubmitQuotationForApproval,
   type QuotationStatus,
 } from '@/lib/admin/enquiries';
 import { useAdminProfile } from '@/lib/admin/userAuth';
@@ -47,7 +48,9 @@ export default function AdminQuotationDetailPage({
   const updateStatus = useUpdateQuotationStatus(id);
   const approve = useApproveQuotation(id);
   const saveDraft = useSaveQuotationDraft(id);
+  const submitApproval = useSubmitQuotationForApproval(id);
   // Backend team can edit + save the T&C/prices but never approve — that's sales-only.
+  // Instead they submit for approval, routing the quote to the Approvals tab / queue.
   const canApprove = me?.role !== 'backend';
 
   const [pendingStatus, setPendingStatus] = useState<QuotationStatus | ''>('');
@@ -124,6 +127,21 @@ export default function AdminQuotationDetailPage({
     setActionError(null);
     try {
       await saveDraft.mutateAsync({ terms: termsValue, items: editedItems() });
+      setEdits({});
+    } catch (err) {
+      setActionError(getErrorMessage(err));
+    }
+  }
+
+  async function handleSubmitForApproval() {
+    const confirmed = await confirm({
+      title: 'Send for approval',
+      message: 'This saves your edits and sends the quotation to Super Admin / Sales for approval. Continue?',
+    });
+    if (!confirmed) return;
+    setActionError(null);
+    try {
+      await submitApproval.mutateAsync({ terms: termsValue, items: editedItems() });
       setEdits({});
     } catch (err) {
       setActionError(getErrorMessage(err));
@@ -363,8 +381,13 @@ export default function AdminQuotationDetailPage({
           <p className="text-sm text-slate">
             {canApprove
               ? 'Adjust line-item prices and quantities above and edit the terms below. Save to stage changes, or approve to generate the PDF (with GST recomputed) and email it to the customer.'
-              : 'Adjust line-item prices and quantities above and edit the terms below, then Save. The sales team will review and approve it.'}
+              : 'Adjust line-item prices and quantities above and edit the terms below. Save to stage changes, or send for approval to route it to Super Admin / Sales.'}
           </p>
+          {quotation.submittedForApprovalAt && (
+            <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800">
+              Submitted for approval on {fmtDateTime(quotation.submittedForApprovalAt)} — awaiting Super Admin / Sales review.
+            </div>
+          )}
           <textarea
             value={termsValue}
             onChange={(e) => setTerms(e.target.value)}
@@ -374,18 +397,26 @@ export default function AdminQuotationDetailPage({
           <div className="flex flex-wrap gap-3">
             <button
               onClick={handleSaveDraft}
-              disabled={saveDraft.isPending || approve.isPending}
+              disabled={saveDraft.isPending || approve.isPending || submitApproval.isPending}
               className="rounded border border-line bg-white px-4 py-2 text-sm font-medium text-ink hover:bg-black/[.03] disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {saveDraft.isPending ? 'Saving…' : 'Save changes'}
             </button>
-            {canApprove && (
+            {canApprove ? (
               <button
                 onClick={handleApprove}
                 disabled={approve.isPending || saveDraft.isPending}
                 className="rounded bg-gradient-to-br from-indigo to-indigo2 px-4 py-2 text-sm font-medium text-white disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {approve.isPending ? 'Approving…' : 'Approve & send'}
+              </button>
+            ) : (
+              <button
+                onClick={handleSubmitForApproval}
+                disabled={submitApproval.isPending || saveDraft.isPending}
+                className="rounded bg-gradient-to-br from-indigo to-indigo2 px-4 py-2 text-sm font-medium text-white disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {submitApproval.isPending ? 'Sending…' : quotation.submittedForApprovalAt ? 'Re-send for approval' : 'Send for approval'}
               </button>
             )}
           </div>
