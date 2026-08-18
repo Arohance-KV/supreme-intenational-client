@@ -58,7 +58,7 @@ export default function AdminMarketingPage() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight text-ink">Marketing</h1>
-          <p className="mt-1 text-sm text-slate">Pop-ups shown automatically on the website — offers &amp; discounts.</p>
+          <p className="mt-1 text-sm text-slate">Pop-ups shown automatically on the website, offers &amp; discounts.</p>
         </div>
         <button onClick={() => setDraft({ ...EMPTY })} className="rounded-xl bg-gradient-to-br from-indigo to-indigo2 px-4 py-2.5 text-sm font-bold text-white shadow-[0_8px_20px_rgba(42,43,106,.28)]">+ New pop-up</button>
       </div>
@@ -85,7 +85,7 @@ export default function AdminMarketingPage() {
                 onClick={() => save.mutate({ id: p._id, isActive: !p.isActive })}
                 disabled={isBackend}
                 className="shrink-0 disabled:cursor-not-allowed disabled:opacity-50"
-                title={isBackend ? 'Only superadmin can change this' : p.isActive ? 'Active — click to disable' : 'Inactive — click to enable'}
+                title={isBackend ? 'Only superadmin can change this' : p.isActive ? 'Active, click to disable' : 'Inactive, click to enable'}
               >
                 <span className="inline-flex h-[22px] w-[38px] items-center rounded-full p-0.5 transition-colors" style={{ background: p.isActive ? 'var(--c-accent, #149b8e)' : '#e6e7f2' }}>
                   <span className="h-[18px] w-[18px] rounded-full bg-white shadow transition-transform" style={{ transform: p.isActive ? 'translateX(16px)' : 'translateX(0)' }} />
@@ -109,7 +109,7 @@ export default function AdminMarketingPage() {
       >
         {draft && (
           <>
-            <Field label="Title"><input className={inputCls} value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} placeholder="e.g. Diwali 2026 — 15% off" /></Field>
+            <Field label="Title"><input className={inputCls} value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} placeholder="e.g. Diwali 2026, 15% off" /></Field>
             <Field label="Message"><textarea className={`${inputCls} h-20 resize-none`} value={draft.message} onChange={(e) => setDraft({ ...draft, message: e.target.value })} placeholder="Offer details shown in the pop-up…" /></Field>
             <Field label="Image (optional)"><ImageUploadField folder="popups" value={draft.imageUrl} onChange={(url) => setDraft({ ...draft, imageUrl: url })} /></Field>
             <div className="flex gap-4">

@@ -75,7 +75,7 @@ function OrderCard({ order }: { order: OrderSummary }) {
 
       {paymentPending && (
         <p className="mt-3 rounded-lg bg-[rgba(224,163,59,.12)] px-3 py-1.5 text-xs font-medium text-[#b5801e]">
-          Payment pending — tap to complete
+          Payment pending, tap to complete
         </p>
       )}
     </Link>

@@ -179,7 +179,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ orderId:
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                     </svg>
-                    <p className="text-sm font-medium text-[#b5801e]">Payment processing — confirming your order…</p>
+                    <p className="text-sm font-medium text-[#b5801e]">Payment processing, confirming your order…</p>
                   </div>
                 )}
               </section>

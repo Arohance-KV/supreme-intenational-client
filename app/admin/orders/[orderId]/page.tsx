@@ -395,7 +395,7 @@ export default function AdminOrderDetailPage({
                   onChange={(e) => setPendingStatus(e.target.value as OrderStatus | '')}
                   className="rounded border border-line bg-white px-3 py-1.5 text-sm text-ink focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
                 >
-                  <option value="">— select —</option>
+                  <option value="">select</option>
                   {nextStatuses.map((s) => (
                     <option key={s} value={s} className="capitalize">
                       {s}

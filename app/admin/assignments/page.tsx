@@ -82,7 +82,7 @@ function CompanyRow({ company, salesUsers }: { company: AdminCompany; salesUsers
       </td>
       <td className="px-5 py-3">
         <SalesChips salesUsers={salesUsers} selected={assigned} disabled={isPending} onToggle={toggle} />
-        {isError && <p className="mt-1.5 text-xs text-red-600">Save failed — try again.</p>}
+        {isError && <p className="mt-1.5 text-xs text-red-600">Save failed, try again.</p>}
       </td>
     </tr>
   );
@@ -99,7 +99,7 @@ function CompanyCard({ company, salesUsers }: { company: AdminCompany; salesUser
       <div>
         <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate">Assigned sales people</p>
         <SalesChips salesUsers={salesUsers} selected={assigned} disabled={isPending} onToggle={toggle} />
-        {isError && <p className="mt-1.5 text-xs text-red-600">Save failed — try again.</p>}
+        {isError && <p className="mt-1.5 text-xs text-red-600">Save failed, try again.</p>}
       </div>
     </div>
   );
@@ -162,7 +162,7 @@ function B2BCustomerInfo({ user, saved }: { user: B2BUser; saved: string[] }) {
       <div className="text-xs text-slate">{user.email}</div>
       {user.company?.name && <div className="text-xs text-muted">{user.company.name}</div>}
       {user.b2bStatus === 'approved' && saved.length === 0 && (
-        <span className={UNASSIGNED_BADGE}>Unassigned — invisible to sales</span>
+        <span className={UNASSIGNED_BADGE}>Unassigned, invisible to sales</span>
       )}
     </>
   );
@@ -218,7 +218,7 @@ function B2BUserRow({
       </td>
       <td className="px-5 py-3">
         <SalesChips salesUsers={salesUsers} selected={a.selected} disabled={a.isPending} onToggle={a.toggle} />
-        {a.isError && <p className="mt-1.5 text-xs text-red-600">Save failed — try again.</p>}
+        {a.isError && <p className="mt-1.5 text-xs text-red-600">Save failed, try again.</p>}
       </td>
       <td className="px-5 py-3 align-top">
         <B2BActions a={a} />
@@ -245,7 +245,7 @@ function B2BUserCard({
       <div>
         <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate">Assigned sales people</p>
         <SalesChips salesUsers={salesUsers} selected={a.selected} disabled={a.isPending} onToggle={a.toggle} />
-        {a.isError && <p className="mt-1.5 text-xs text-red-600">Save failed — try again.</p>}
+        {a.isError && <p className="mt-1.5 text-xs text-red-600">Save failed, try again.</p>}
       </div>
       <B2BActions a={a} />
     </div>
@@ -293,7 +293,7 @@ const TABS: { key: B2BStatus; label: string }[] = [
 const TAB_BLURB: Record<B2BStatus, string> = {
   pending: 'Approve a signup with at least one assigned sales person, or reject to deny quotation access.',
   approved: 'Edit sales assignments, or revoke to take away a customer’s quotation access.',
-  rejected: 'Rejection is reversible — assign at least one sales person and hit Reinstate.',
+  rejected: 'Rejection is reversible, assign at least one sales person and hit Reinstate.',
 };
 
 export default function AdminAssignmentsPage() {

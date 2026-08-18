@@ -371,7 +371,7 @@ export default function AdminLeadsPage() {
       <div>
         <h1 className="text-2xl font-bold text-ink">Leads</h1>
         <p className="mt-1 text-sm text-slate">
-          Merged quotation and catalogue enquiry leads — track and update follow-up status
+          Merged quotation and catalogue enquiry leads, track and update follow-up status
         </p>
       </div>
 

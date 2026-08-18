@@ -58,7 +58,7 @@ export default function CartItemRow({ item, setQty, remove, enforceMoq, productH
         </p>
         {item.priceChanged && (
           <p className="text-xs text-amber-600 mt-0.5">
-            Price changed — current: {formatPrice(item.currentPrice)}
+            Price changed, current: {formatPrice(item.currentPrice)}
           </p>
         )}
       </div>

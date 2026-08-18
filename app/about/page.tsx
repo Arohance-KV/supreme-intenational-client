@@ -9,7 +9,7 @@ const mono = JetBrains_Mono({ subsets: ['latin'], weight: ['400', '500', '700'],
 
 export const metadata: Metadata = {
   title: 'About · Supreme International',
-  description: 'Three decades of trusted corporate gifting across South India — established 1996.',
+  description: 'Three decades of trusted corporate gifting across South India, established 1996.',
 };
 
 const stats = [
@@ -21,14 +21,14 @@ const stats = [
 
 const directors = [
   { initials: 'SJ', grad: 'bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)]', name: 'Mr. Surendra B Jain', role: 'Founder & Managing Director', bio: 'Founded the company in 1996 and built it from SV Enterprises into a trusted corporate gifting house across South India.' },
-  { initials: 'SI', grad: 'bg-[linear-gradient(135deg,#149b8e,#13b89f)]', name: 'Director Name', role: 'Director', bio: "Placeholder — share the second director's name, title and bio and I'll drop it in. Photo replaces the slot at left." },
+  { initials: 'SI', grad: 'bg-[linear-gradient(135deg,#149b8e,#13b89f)]', name: 'Director Name', role: 'Director', bio: "Placeholder, share the second director's name, title and bio and I'll drop it in. Photo replaces the slot at left." },
 ];
 
 const advantages = [
   { n: '01', t: 'Wide Distribution', d: 'A wide distribution network across India.' },
   { n: '02', t: 'Premium Quality', d: 'We manufacture and supply premium-quality products.' },
   { n: '03', t: 'Ethical Business', d: 'We adhere to ethical business practices.' },
-  { n: '04', t: 'Delivery Punctuality', d: 'Punctual delivery — you can rest assured.' },
+  { n: '04', t: 'Delivery Punctuality', d: 'Punctual delivery, you can rest assured.' },
   { n: '05', t: 'One-Stop Shop', d: 'A single source for all your gifting needs.' },
   { n: '06', t: 'Decades of Experience', d: 'More than two decades of experience.' },
 ];
@@ -50,15 +50,15 @@ export default function AboutPage() {
         <section className="pb-6 pt-8 sm:pt-12">
           <div className={eyebrow}>Company Profile · Since 1996</div>
           <h1 className="mb-5 max-w-[20ch] text-[32px] font-extrabold leading-[1.08] tracking-[-.03em] sm:text-[52px] sm:leading-[1.03]">Three decades of trusted corporate gifting.</h1>
-          <p className="m-0 max-w-[70ch] text-[16px] leading-[1.65] text-slate sm:text-[18px]">Established in 1996 by Mr. Surendra B Jain — and formerly known as SV Enterprises — Supreme International is one of the most trusted associates for the corporate gifting requirements of leading business entities across South India.</p>
+          <p className="m-0 max-w-[70ch] text-[16px] leading-[1.65] text-slate sm:text-[18px]">Established in 1996 by Mr. Surendra B Jain, and formerly known as SV Enterprises, Supreme International is one of the most trusted associates for the corporate gifting requirements of leading business entities across South India.</p>
         </section>
 
         {/* STORY + IMAGE */}
         <section className="grid grid-cols-1 items-stretch gap-8 pb-7 pt-3 md:grid-cols-[1.1fr_.9fr]">
           <div className="rounded-[22px] border border-white/80 bg-white/55 p-6 sm:p-[30px] shadow-[0_12px_40px_rgba(34,36,90,.08)] backdrop-blur-[16px]">
-            <p className="mb-4 text-[15px] leading-[1.7] text-slate">We carry a diverse range of products to meet any gifting requirement and constantly thrive to introduce new, innovative products — giving you a basket of options to choose from. The assortment starts at pens, key chains and bags, and goes all the way up to home appliances, suitcases and much more.</p>
+            <p className="mb-4 text-[15px] leading-[1.7] text-slate">We carry a diverse range of products to meet any gifting requirement and constantly thrive to introduce new, innovative products, giving you a basket of options to choose from. The assortment starts at pens, key chains and bags, and goes all the way up to home appliances, suitcases and much more.</p>
             <p className="mb-4 text-[15px] leading-[1.7] text-slate">Our expertise is to customize and personalize any product to your design. With a team of 25 people, we commit to professional, expert service that caters to your requirements within the time frame assured.</p>
-            <p className="m-0 text-[15px] leading-[1.7] text-slate">We believe in following ethical business practices and the utmost quality to strengthen our relationships with clients — addressing the growing needs of varied clients with experience, expertise, excellence and diligence.</p>
+            <p className="m-0 text-[15px] leading-[1.7] text-slate">We believe in following ethical business practices and the utmost quality to strengthen our relationships with clients, addressing the growing needs of varied clients with experience, expertise, excellence and diligence.</p>
             <div className="mt-[22px] inline-flex items-center gap-2.5 rounded-full border border-[rgba(23,155,142,.22)] bg-[rgba(23,155,142,.1)] px-3.5 py-[9px] text-[13px] font-semibold text-accent">
               <span className="h-1.5 w-1.5 rounded-full bg-accent" />Launching soon in Ahmedabad, Chennai, Hyderabad, Mumbai &amp; Pune
             </div>
@@ -120,7 +120,7 @@ export default function AboutPage() {
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(50%_80%_at_50%_0%,rgba(23,155,142,.18),transparent_60%)]" />
             <div className="relative">
               <h3 className="mb-3 text-[24px] font-extrabold tracking-[-.025em] sm:text-[32px]">Let&apos;s plan your next gift programme</h3>
-              <p className="mx-auto mb-6 max-w-[50ch] text-base text-slate">Browse the catalogue or send a quick brief — our team replies within a day.</p>
+              <p className="mx-auto mb-6 max-w-[50ch] text-base text-slate">Browse the catalogue or send a quick brief, our team replies within a day.</p>
               <div className="flex justify-center gap-2.5 sm:gap-3">
                 <Link href="/products" className="flex-1 rounded-[14px] bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)] px-4 py-[15px] text-center text-[14px] font-semibold text-white no-underline sm:flex-none sm:px-7 sm:text-[15px] shadow-[0_12px_30px_rgba(42,43,106,.32)]">Browse Products</Link>
                 <Link href="/contact" className="flex-1 rounded-[14px] border border-white/[.78] bg-white/70 px-4 py-[15px] text-center text-[14px] font-semibold text-indigo no-underline sm:flex-none sm:px-7 sm:text-[15px]">Contact Us</Link>

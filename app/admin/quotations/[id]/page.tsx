@@ -385,7 +385,7 @@ export default function AdminQuotationDetailPage({
           </p>
           {quotation.submittedForApprovalAt && (
             <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800">
-              Submitted for approval on {fmtDateTime(quotation.submittedForApprovalAt)} — awaiting Super Admin / Sales review.
+              Submitted for approval on {fmtDateTime(quotation.submittedForApprovalAt)}, awaiting Super Admin / Sales review.
             </div>
           )}
           <textarea
@@ -447,7 +447,7 @@ export default function AdminQuotationDetailPage({
                 onChange={(e) => setPendingStatus(e.target.value as QuotationStatus | '')}
                 className="rounded border border-line bg-white px-3 py-1.5 text-sm text-ink focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
               >
-                <option value="">— select —</option>
+                <option value="">select</option>
                 {otherStatuses.map((s) => (
                   <option key={s} value={s} className="capitalize">
                     {s}

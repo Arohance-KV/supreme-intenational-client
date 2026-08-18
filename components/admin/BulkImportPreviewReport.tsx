@@ -84,7 +84,7 @@ export default function BulkImportPreviewReport({
             className="mt-0.5"
           />
           <span>
-            <strong className="text-ink">Auto-create new taxonomy</strong> — this import introduces
+            <strong className="text-ink">Auto-create new taxonomy</strong>, this import introduces
             {preview.newCategories.length > 0 && (
               <>
                 {' '}
@@ -100,7 +100,7 @@ export default function BulkImportPreviewReport({
                 {preview.newAttributeValues.map((v) => `${v.attribute}: ${v.value}`).join(', ')})
               </>
             )}
-            . Check to create them automatically — otherwise those rows will fail.
+            . Check to create them automatically, otherwise those rows will fail.
           </span>
         </label>
       )}

@@ -20,7 +20,7 @@ const benefits = [
 ];
 
 const steps = [
-  ['01', 'Apply', 'Send your CV — a real person reads it.'],
+  ['01', 'Apply', 'Send your CV, a real person reads it.'],
   ['02', 'Conversation', 'A chat about your work and ours.'],
   ['03', 'Practical', 'A short, paid, real-world exercise.'],
   ['04', 'Offer', 'Decision within a week. No ghosting.'],
@@ -88,7 +88,7 @@ export default function CareersPage() {
             ))}
             {!isLoading && list.length === 0 && (
               <div className="rounded-2xl border border-white/80 bg-white/55 px-4 py-8 text-center sm:px-[22px] text-sm text-slate backdrop-blur-[14px]">
-                No open positions right now. Check back soon — or say hello via <Link href="/contact" className="font-semibold text-indigo">contact</Link>.
+                No open positions right now. Check back soon, or say hello via<Link href="/contact" className="font-semibold text-indigo">contact</Link>.
               </div>
             )}
             {!isLoading && list.map((j) => (

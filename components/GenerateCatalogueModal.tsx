@@ -137,7 +137,7 @@ export default function GenerateCatalogueModal({ open, onClose }: { open: boolea
             <p className="font-jbmono mb-2.5 text-[11px] uppercase tracking-[.14em] text-muted">Selected filters</p>
             <div className="mb-6 flex flex-wrap gap-2">
               {chips.length === 0 ? (
-                <span className="text-sm text-muted">No filters — full catalogue</span>
+                <span className="text-sm text-muted">No filters, full catalogue</span>
               ) : (
                 chips.map((c, i) => (
                   <span key={i} className="rounded-full border border-line bg-white/70 px-3 py-1 text-[13px] font-medium text-indigo">{c}</span>
@@ -161,7 +161,7 @@ export default function GenerateCatalogueModal({ open, onClose }: { open: boolea
             </div>
 
             <p className="mt-5 rounded-[14px] border border-[rgba(23,155,142,.25)] bg-[rgba(23,155,142,.08)] px-4 py-3 text-[13px] leading-relaxed text-slate">
-              Pricing visibility is optional — hide both for a clean no-price catalogue, or show tentative price and crossed-out MRP for internal use.
+              Pricing visibility is optional, hide both for a clean no-price catalogue, or show tentative price and crossed-out MRP for internal use.
             </p>
           </div>
 
@@ -196,7 +196,7 @@ export default function GenerateCatalogueModal({ open, onClose }: { open: boolea
             </div>
             {count !== undefined && (
               <p className={`mt-2 text-xs ${overLimit ? 'text-[#e0524d]' : 'text-slate'}`}>
-                {overLimit ? `${count} products match — over the 100 limit. Narrow your filters.` : `Includes ${count} product${count !== 1 ? 's' : ''}.`}
+                {overLimit ? `${count} products match, over the 100 limit. Narrow your filters.` : `Includes ${count} product${count !== 1 ? 's' : ''}.`}
               </p>
             )}
           </div>

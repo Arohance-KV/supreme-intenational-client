@@ -26,12 +26,12 @@ const portals = [
   {
     label: 'Company Login',
     href: '/company/login',
-    blurb: 'For procurement teams — run your company store, budgets and employee orders.',
+    blurb: 'For procurement teams, run your company store, budgets and employee orders.',
   },
   {
     label: 'Employee Login',
     href: '/employee/login',
-    blurb: 'For employees — spend your allowance or points on your company store.',
+    blurb: 'For employees, spend your allowance or points on your company store.',
   },
 ];
 

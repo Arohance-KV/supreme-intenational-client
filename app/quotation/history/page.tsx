@@ -166,7 +166,7 @@ export default function QuotationHistoryPage() {
                       </button>
                     </>
                   ) : (
-                    <span className="self-center text-xs text-gray-400">Awaiting approval — you&apos;ll be emailed once approved.</span>
+                    <span className="self-center text-xs text-gray-400">Awaiting approval, you&apos;ll be emailed once approved.</span>
                   )}
                 </div>
               </div>

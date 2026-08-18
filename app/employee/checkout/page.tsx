@@ -310,7 +310,7 @@ export default function EmployeeCheckoutPage() {
             <div className="px-7 pb-7 pt-7 text-center sm:px-9">
               <h2 id="order-success-title" className="text-[26px] font-extrabold tracking-[-.02em] text-ink">Order received!</h2>
               <p className="mx-auto mt-2.5 max-w-xs text-[15px] leading-relaxed text-slate">
-                Thank you — your order has been placed. We&apos;ll get it packed and on its way to you as soon as possible.
+                Thank you, your order has been placed. We&apos;ll get it packed and on its way to you as soon as possible.
               </p>
               <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-line bg-[#f6f7fb] px-4 py-2">
                 <span className="font-jbmono text-[10px] uppercase tracking-[.12em] text-muted">Order</span>
@@ -346,7 +346,7 @@ export default function EmployeeCheckoutPage() {
               Your allocation is a <strong>coupon</strong> worth ₹{(wallet?.balance ?? 0).toLocaleString('en-IN')}.
               This order is ₹{(cart?.total ?? 0).toLocaleString('en-IN')}, so the remaining{' '}
               <strong className="text-[#e0524d]">₹{couponForfeit.toLocaleString('en-IN')}</strong> will be
-              forfeited — it cannot be reused on a later order.
+              forfeited, it cannot be reused on a later order.
             </p>
             <div className="mt-6 flex justify-end gap-3">
               <button

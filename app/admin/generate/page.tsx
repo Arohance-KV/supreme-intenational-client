@@ -265,7 +265,7 @@ function GenerateInner() {
             <h2 className="text-sm font-bold text-ink">Selected products · pricing</h2>
             <p className="mt-1 text-xs text-muted">
               Add variant prices for a product (e.g. “Without handle ₹90”). A product with variants shows only
-              those prices — its default price and the charges below don’t apply to it.
+              those prices, its default price and the charges below don’t apply to it.
             </p>
 
             {selected.size === 0 && <p className="mt-3 text-xs text-slate">No products selected yet.</p>}
@@ -331,7 +331,7 @@ function GenerateInner() {
             <p className="mt-1 text-xs text-muted">Applied per product as base + charge (e.g. “With Print: ₹110”). Products with variant prices ignore these.</p>
 
             <div className="mt-3 space-y-2">
-              {charges.length === 0 && <p className="text-xs text-slate">No charges — plain pricing.</p>}
+              {charges.length === 0 && <p className="text-xs text-slate">No charges, plain pricing.</p>}
               {charges.map((c, i) => (
                 <div key={i} className="flex items-center gap-2">
                   <input

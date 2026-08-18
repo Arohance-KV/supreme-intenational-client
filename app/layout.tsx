@@ -31,7 +31,7 @@ const jbMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "Supreme International",
-  description: "Supreme International — B2B & B2C merchandise catalogue, quotations, and ordering.",
+  description: "Supreme International, B2B & B2C merchandise catalogue, quotations, and ordering.",
 };
 
 export default function RootLayout({

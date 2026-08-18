@@ -162,7 +162,7 @@ export default function AdminSubmissionsPage() {
       <div>
         <h1 className="text-2xl font-bold text-ink">Seller Submissions</h1>
         <p className="mt-1 text-sm text-slate">
-          Review and moderate seller product submissions — approve or reject with a reason
+          Review and moderate seller product submissions, approve or reject with a reason
         </p>
       </div>
 

@@ -349,7 +349,7 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
               {mode === 'admin' ? 'Catalogue' : 'Seller catalogue'} · Bulk import
             </p>
             <h2 className="mt-1 text-[22px] font-extrabold tracking-[-.02em] text-ink">
-              Step {stepIndex + 1} of {STEP_LABELS.length} — {STEP_LABELS[stepIndex].label}
+              Step {stepIndex + 1} of {STEP_LABELS.length}, {STEP_LABELS[stepIndex].label}
             </h2>
           </div>
           <button
@@ -425,7 +425,7 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
           {step === 'map' && sheet && (
             <div className="space-y-4">
               <p className="text-sm text-slate">
-                Confirm how each column in your sheet maps to a product field. We&apos;ve suggested a match — correct
+                Confirm how each column in your sheet maps to a product field. We&apos;ve suggested a match, correct
                 any that look wrong.
               </p>
               <div className="space-y-2">

@@ -32,7 +32,7 @@ export default function ContactPage() {
         <section className="pb-[26px] pt-11">
           <div className="font-jbmono mb-4 text-[11px] uppercase tracking-[.22em] text-accent">Contact</div>
           <h1 className="mb-3 text-[32px] font-extrabold leading-[1.08] tracking-[-.03em] sm:text-[48px] sm:leading-[1.04]">Let&apos;s talk gifting.</h1>
-          <p className="m-0 max-w-[56ch] text-[17px] text-slate">Send a quick brief or a sample product — our team replies within a day.</p>
+          <p className="m-0 max-w-[56ch] text-[17px] text-slate">Send a quick brief or a sample product, our team replies within a day.</p>
         </section>
 
         <div className="grid grid-cols-1 items-start gap-5 pb-5 md:grid-cols-[1.2fr_1fr]">
@@ -53,7 +53,7 @@ export default function ContactPage() {
               <span className="flex h-[38px] w-[38px] items-center justify-center rounded-[10px] bg-[rgba(23,155,142,.12)] text-base text-accent">⬆</span>
               <div>
                 <div className="text-[13px] font-semibold">Upload a sample product image</div>
-                <div className="text-[11px] text-muted">PNG / JPG — we&apos;ll source a match</div>
+                <div className="text-[11px] text-muted">PNG / JPG, we&apos;ll source a match</div>
               </div>
               <input type="file" accept="image/png,image/jpeg" className="hidden" />
             </label>
@@ -61,7 +61,7 @@ export default function ContactPage() {
               onClick={submit}
               className={`w-full cursor-pointer rounded-[13px] p-[15px] text-[15px] font-bold text-white shadow-[0_12px_28px_rgba(42,43,106,.3)] transition-colors ${sent ? 'bg-[linear-gradient(135deg,#176054,#179b8e)]' : 'bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)]'}`}
             >
-              {sent ? "✓ Request sent — we'll reply within a day" : 'Send request'}
+              {sent ? "✓ Request sent, we'll reply within a day" : 'Send request'}
             </button>
           </div>
 

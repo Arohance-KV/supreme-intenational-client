@@ -120,7 +120,7 @@ export default function QuotationCartView({ cart, mutations }: Props) {
             <div className={`mt-6 ${glass} rounded-[20px] p-4 sm:p-5`}>
               <div className="mb-4 flex items-center gap-2">
                 <span className={eyebrow}>Smart recommendations</span>
-                <span className="text-xs text-muted">— buyers often add these</span>
+                <span className="text-xs text-muted">buyers often add these</span>
               </div>
               <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
                 {recommendations.map((r) => (
@@ -222,7 +222,7 @@ export default function QuotationCartView({ cart, mutations }: Props) {
 
           <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-[rgba(23,155,142,.2)] bg-[rgba(23,155,142,.08)] px-3.5 py-3">
             <span className="text-sm">✓</span>
-            <div className="text-xs leading-relaxed text-[#127d72]">Every quotation is reviewed by Supreme&apos;s team — we confirm pricing and email your approved PDF.</div>
+            <div className="text-xs leading-relaxed text-[#127d72]">Every quotation is reviewed by Supreme&apos;s team, we confirm pricing and email your approved PDF.</div>
           </div>
         </div>
       </div>

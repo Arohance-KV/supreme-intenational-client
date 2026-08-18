@@ -368,7 +368,7 @@ function CompanyLoginSection({ companyId }: { companyId: string }) {
     <section className={sectionCls}>
       <CardHeader
         title="Company login"
-        description="Mint a self-service login this company can use to sign in directly. The password is stored hashed — it can't be viewed later, only re-created."
+        description="Mint a self-service login this company can use to sign in directly. The password is stored hashed, it can't be viewed later, only re-created."
         action={
           <button
             onClick={() => { setShowForm(!showForm); setCreatedEmail(null); }}
@@ -1218,7 +1218,7 @@ function EmployeesSection({
       {bulkMode === 'invite' && (
         <BulkModal
           title="Bulk invite employees"
-          blurb="Invite many employees at once from a spreadsheet. Required columns: firstName and email. Optional: lastName, isdCode, phoneNumber. The whole file is validated first — if any row is invalid, nothing is imported."
+          blurb="Invite many employees at once from a spreadsheet. Required columns: firstName and email. Optional: lastName, isdCode, phoneNumber. The whole file is validated first, if any row is invalid, nothing is imported."
           templateFilename="employee-invite-template.csv"
           templateCsv={INVITE_TEMPLATE_CSV}
           onClose={() => setBulkMode(null)}
@@ -1230,8 +1230,8 @@ function EmployeesSection({
           title={walletMode === 'coupon' ? 'Bulk issue coupons' : 'Bulk credit points'}
           blurb={
             walletMode === 'coupon'
-              ? "Set the same coupon value for several employees at once — pick them below, or upload a spreadsheet (columns: email, value). Coupon mode sets each employee's coupon to the value (replacing any existing one)."
-              : 'Credit the same points to several employees at once — pick them below, or upload a spreadsheet (columns: email, value).'
+              ? "Set the same coupon value for several employees at once, pick them below, or upload a spreadsheet (columns: email, value). Coupon mode sets each employee's coupon to the value (replacing any existing one)."
+              : 'Credit the same points to several employees at once, pick them below, or upload a spreadsheet (columns: email, value).'
           }
           templateFilename="coupon-template.csv"
           templateCsv={COUPON_TEMPLATE_CSV}
@@ -1489,7 +1489,7 @@ function CompanyCatalogSection({ companyId }: { companyId: string }) {
             </ul>
           ) : (
             <p className="mt-3 rounded-lg border border-dashed border-line py-6 text-center text-xs text-muted">
-              No products whitelisted — search above to add.
+              No products whitelisted, search above to add.
             </p>
           )}
         </div>
@@ -1532,7 +1532,7 @@ function CompanyCatalogSection({ companyId }: { companyId: string }) {
             </ul>
           ) : (
             <p className="mt-3 rounded-lg border border-dashed border-line py-6 text-center text-xs text-muted">
-              No categories whitelisted — search above to add.
+              No categories whitelisted, search above to add.
             </p>
           )}
         </div>

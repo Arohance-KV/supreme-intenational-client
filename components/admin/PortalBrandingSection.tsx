@@ -146,7 +146,7 @@ export default function PortalBrandingSection({ company }: { company: AdminCompa
             <input type="text" value={theme.navbarColor ?? ''} placeholder="#179b8e" onChange={(e) => setTheme({ ...theme, navbarColor: e.target.value })} className={inputCls} />
           </div>
           <div className="rounded-xl px-4 py-3 text-sm font-semibold" style={{ backgroundColor: theme.navbarColor || '#e8f7f4', color: navText }}>
-            {company.name} — navbar preview
+            {company.name}, navbar preview
           </div>
         </div>
 
@@ -288,7 +288,7 @@ export default function PortalBrandingSection({ company }: { company: AdminCompa
             </div>
           ) : (
             <p className="rounded-lg border border-dashed border-line py-4 text-center text-xs text-muted">
-              No featured products selected — search above to add.
+              No featured products selected, search above to add.
             </p>
           )}
         </div>

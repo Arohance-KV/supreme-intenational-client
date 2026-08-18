@@ -12,7 +12,7 @@ export default function CartBadge({ count, href }: CartBadgeProps) {
     <Link
       href={href}
       className="relative inline-flex shrink-0 items-center gap-1.5 rounded-xl px-2.5 py-[9px] text-sm sm:px-3 font-medium text-slate no-underline transition-colors hover:bg-[rgba(42,43,106,.07)] hover:text-ink"
-      aria-label={`Cart${count > 0 ? ` — ${count} items` : ''}`}
+      aria-label={`Cart${count > 0 ? `, ${count} items` : ''}`}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

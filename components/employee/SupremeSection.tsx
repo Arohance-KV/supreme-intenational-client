@@ -60,7 +60,7 @@ export default function SupremeSection() {
           </h2>
           <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-white/75 sm:text-lg">
             We partner with organizations across India to deliver curated merchandise that blends quality,
-            reliability, and service — at every step, for every team.
+            reliability, and service, at every step, for every team.
           </p>
 
           <div className="mt-7 flex flex-wrap gap-x-7 gap-y-3">

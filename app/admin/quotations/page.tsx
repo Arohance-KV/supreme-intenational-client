@@ -189,7 +189,7 @@ export default function AdminQuotationsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight text-ink">Quotations</h1>
-        <p className="mt-1 text-sm text-slate">Manage B2B quotation requests — including those raised from company dashboards — and track status.</p>
+        <p className="mt-1 text-sm text-slate">Manage B2B quotation requests, including those raised from company dashboards, and track status.</p>
       </div>
 
       <AnalyticsCards />

@@ -41,7 +41,7 @@ export default function AdminCustomersPage() {
     <main className="max-w-5xl mx-auto space-y-6">
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight text-ink">Customers</h1>
-        <p className="mt-1 text-sm text-slate">Company accounts and their employees — the B2B users who can quote &amp; order.</p>
+        <p className="mt-1 text-sm text-slate">Company accounts and their employees, the B2B users who can quote &amp; order.</p>
       </div>
 
       {/* Filters + search */}

@@ -106,7 +106,7 @@ function RaiseEnquiryModal({
           Raise Enquiry
         </h2>
         <p className="mt-1 text-[12px] text-muted">
-          Send a merchandising enquiry to Supreme — bulk orders, custom branding, or anything
+          Send a merchandising enquiry to Supreme, bulk orders, custom branding, or anything
           else you need.
         </p>
 
@@ -133,7 +133,7 @@ function RaiseEnquiryModal({
               rows={4}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Describe what you need — quantities, timelines, branding…"
+              placeholder="Describe what you need, quantities, timelines, branding…"
               className="w-full resize-none rounded-lg border border-line px-3 py-2 text-[13px] text-ink focus:outline-none focus:ring-2 focus:ring-indigo"
             />
           </div>
@@ -249,7 +249,7 @@ export default function CompanyQuotationsPage() {
           </div>
           <div className="p-5">
             <p className="text-[13px] text-muted">
-              Need something specific for your team? Tell Supreme what you&rsquo;d like added — bulk
+              Need something specific for your team? Tell Supreme what you&rsquo;d like added, bulk
               items, custom branding, or new categories. We&rsquo;ll curate and get back to you.
             </p>
             <button

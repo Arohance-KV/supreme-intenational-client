@@ -7,7 +7,7 @@ function fmt(d: string | null) {
   return d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
 }
 
-export const metadata = { title: 'Blog — Supreme International' };
+export const metadata = { title: 'Blog, Supreme International' };
 
 export default async function BlogListPage() {
   const { blogs } = await getBlogs();

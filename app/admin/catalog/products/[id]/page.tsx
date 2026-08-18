@@ -519,7 +519,7 @@ function AddVariantForm({ productId, slug }: { productId: string; slug: string }
 
       {mode === 'bulk' && (
         <p className="text-xs text-muted">
-          Select multiple values per attribute — every combination is created automatically.
+          Select multiple values per attribute, every combination is created automatically.
         </p>
       )}
 
@@ -673,7 +673,7 @@ function AddVariantForm({ productId, slug }: { productId: string; slug: string }
 
       {mode === 'bulk' && (
         <p className="text-xs text-muted">
-          SKUs are auto-generated. Default MOQ applies to every variant — edit any row afterwards to set individual prices or images.
+          SKUs are auto-generated. Default MOQ applies to every variant, edit any row afterwards to set individual prices or images.
         </p>
       )}
 

@@ -38,7 +38,7 @@ export default async function HomePage() {
         <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-[1.05fr_0.95fr]">
           <div>
             <h1 className={`mb-4 text-[32px] font-extrabold leading-[1.07] tracking-[-.03em] sm:mb-5 sm:text-[44px] lg:text-[60px] lg:leading-[1.02] bg-[linear-gradient(120deg,#2a2b6a_0%,#4143b0_38%,#149b8e_100%)] ${gradClip}`}>Corporate gifting,<br />simplified.</h1>
-            <p className="mb-7 max-w-[46ch] text-[16px] leading-[1.6] text-slate sm:mb-[30px] sm:text-[18px]">Browse a curated catalogue, shortlist in a click, and generate branded quotations &amp; catalogues yourself — no back-and-forth, no waiting on sales.</p>
+            <p className="mb-7 max-w-[46ch] text-[16px] leading-[1.6] text-slate sm:mb-[30px] sm:text-[18px]">Browse a curated catalogue, shortlist in a click, and generate branded quotations &amp; catalogues yourself, no back-and-forth, no waiting on sales.</p>
             <div className="mb-8 flex gap-2.5 sm:mb-[34px] sm:gap-3">
               <Link href="/products" className="flex-1 rounded-[14px] bg-[linear-gradient(120deg,#2a2b6a_0%,#5644d2_50%,#13b89f_100%)] px-4 py-[15px] text-center text-[14px] font-semibold text-white no-underline shadow-[0_12px_30px_rgba(86,68,210,.34)] sm:flex-none sm:px-[26px] sm:text-[15px]">Browse Products</Link>
               <Link href="/quotation" className="flex-1 rounded-[14px] border border-white/[.78] bg-white/60 px-4 py-[15px] text-center text-[14px] font-semibold text-indigo no-underline backdrop-blur-[8px] sm:flex-none sm:px-[26px] sm:text-[15px]">Request Quotation</Link>
@@ -85,7 +85,7 @@ export default async function HomePage() {
               ))}
             </ScrollRow>
           ) : (
-            <p className="text-sm text-muted">Categories are loading — check back shortly.</p>
+            <p className="text-sm text-muted">Categories are loading, check back shortly.</p>
           )}
         </div>
 
@@ -108,7 +108,7 @@ export default async function HomePage() {
               ))}
             </ScrollRow>
           ) : (
-            <p className="text-sm text-muted">Featured products are loading — check back shortly.</p>
+            <p className="text-sm text-muted">Featured products are loading, check back shortly.</p>
           )}
         </div>
 
@@ -120,7 +120,7 @@ export default async function HomePage() {
           </div>
           <div className="grid grid-cols-1 gap-[18px] md:grid-cols-3">
             {[
-              { icon: '⌁', g: 'bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)]', sh: 'shadow-[0_8px_20px_rgba(42,43,106,.28)]', t: 'Quotation engine', d: 'Turn any cart into a priced, branded quotation PDF in one click — delivered by WhatsApp, email or download.' },
+              { icon: '⌁', g: 'bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)]', sh: 'shadow-[0_8px_20px_rgba(42,43,106,.28)]', t: 'Quotation engine', d: 'Turn any cart into a priced, branded quotation PDF in one click, delivered by WhatsApp, email or download.' },
               { icon: '▦', g: 'bg-[linear-gradient(135deg,#179b8e,#13b89f)]', sh: 'shadow-[0_8px_20px_rgba(23,155,142,.28)]', t: 'Catalogue generator', d: 'Apply filters and compile every matching product into a branded, no-pricing catalogue to circulate internally.' },
               { icon: '◎', g: 'bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)]', sh: 'shadow-[0_8px_20px_rgba(42,43,106,.28)]', t: 'Merchandise portals', d: 'Branded employee stores with points & coupon wallets, real-time balances and self-paid overage.' },
             ].map((s) => (
@@ -143,9 +143,9 @@ export default async function HomePage() {
               <h3 className="mb-6 text-[22px] font-extrabold tracking-[-.02em] text-white sm:mb-7 sm:text-[28px]">From browse to lead in four steps</h3>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-[18px] lg:grid-cols-4">
                 {[
-                  ['01', 'Browse & filter', 'No login wall — explore the full catalogue freely.'],
+                  ['01', 'Browse & filter', 'No login wall, explore the full catalogue freely.'],
                   ['02', 'Shortlist to cart', 'Add items with MOQ & branding captured per line.'],
-                  ['03', 'Generate output', 'Quotation PDF or no-pricing catalogue — OTP at this step.'],
+                  ['03', 'Generate output', 'Quotation PDF or no-pricing catalogue, OTP at this step.'],
                   ['04', 'Delivered', "WhatsApp routes the lead straight to Supreme's team."],
                 ].map(([n, t, d]) => (
                   <div key={n} className="rounded-2xl border border-white/20 bg-white/10 p-5">
@@ -188,7 +188,7 @@ export default async function HomePage() {
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(50%_80%_at_50%_0%,rgba(23,155,142,.18),transparent_60%)]" />
             <div className="relative">
               <h3 className="mb-3.5 text-[26px] font-extrabold tracking-[-.025em] text-ink sm:text-[38px]">Ready to simplify your gifting?</h3>
-              <p className="mx-auto mb-7 max-w-[52ch] text-[15px] text-slate sm:text-[17px]">Browse the catalogue or send us a quick brief — we&apos;ll respond with a tailored quotation.</p>
+              <p className="mx-auto mb-7 max-w-[52ch] text-[15px] text-slate sm:text-[17px]">Browse the catalogue or send us a quick brief, we&apos;ll respond with a tailored quotation.</p>
               <div className="flex justify-center gap-2.5 sm:gap-3">
                 <Link href="/products" className="flex-1 rounded-[14px] bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)] px-4 py-[15px] text-[14px] font-semibold text-white no-underline shadow-[0_12px_30px_rgba(42,43,106,.32)] sm:flex-none sm:px-7 sm:text-[15px]">Browse Products</Link>
                 <Link href="/quotation" className="flex-1 rounded-[14px] border border-white/[.78] bg-white/70 px-4 py-[15px] text-[14px] font-semibold text-indigo no-underline sm:flex-none sm:px-7 sm:text-[15px]">Request Quotation</Link>

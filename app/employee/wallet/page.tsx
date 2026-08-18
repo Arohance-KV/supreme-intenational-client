@@ -70,7 +70,7 @@ export default function WalletPage() {
             )}
             <p className="mt-1 max-w-md text-sm text-white/70">
               {isCoupon
-                ? 'Spend it in one go — any unused value is forfeited after your order.'
+                ? 'Spend it in one go, any unused value is forfeited after your order.'
                 : `${wallet?.currency ?? 'INR'} · reusable across every order`}
             </p>
           </div>

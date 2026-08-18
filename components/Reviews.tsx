@@ -214,7 +214,7 @@ export default function Reviews({ slug }: ReviewsProps) {
                 {review.body && (
                   <p className="text-sm leading-relaxed text-slate">{review.body}</p>
                 )}
-                <p className="text-xs text-muted">— {authorName}</p>
+                <p className="text-xs text-muted">{authorName}</p>
               </div>
             );
           })}

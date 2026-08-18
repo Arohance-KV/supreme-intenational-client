@@ -103,7 +103,7 @@ function VariantAttributes({
       {custom.length > 0 && (
         <div className="space-y-2 rounded-[10px] border border-dashed border-line bg-white/40 p-3">
           <p className="text-[11px] font-semibold uppercase tracking-[.04em] text-[#b5801e]">
-            Custom — admin will review
+            Custom, admin will review
           </p>
           {custom.map((a) => (
             <div key={a._key} className="flex items-center gap-2">
@@ -220,7 +220,7 @@ function BulkVariantPanel({
   return (
     <div className="space-y-4 rounded-[14px] border border-dashed border-accent/40 bg-[rgba(20,155,142,.05)] p-4">
       <div className="flex items-center justify-between">
-        <p className="text-[13px] font-bold text-ink">Bulk add — select multiple values per attribute</p>
+        <p className="text-[13px] font-bold text-ink">Bulk add, select multiple values per attribute</p>
         {count > 0 && (
           <span className="rounded-full bg-accent px-3 py-1 text-[11px] font-semibold text-white">
             {count} variant{count !== 1 ? 's' : ''}
@@ -260,7 +260,7 @@ function BulkVariantPanel({
       {/* Custom attributes with multiple values — admin reviews each before go-live */}
       <div className="space-y-3 rounded-[10px] border border-dashed border-line bg-white/40 p-3">
         <p className="text-[11px] font-semibold uppercase tracking-[.04em] text-[#b5801e]">
-          Custom attributes — admin will review
+          Custom attributes, admin will review
         </p>
         {customAttrs.map((c) => (
           <div key={c._key} className="space-y-2 rounded-[10px] border border-line bg-white/60 p-2.5">
@@ -358,7 +358,7 @@ function BulkVariantPanel({
       </div>
 
       <p className="text-[11px] text-muted">
-        SKUs are auto-generated from the selected values — edit any variant afterwards to adjust.
+        SKUs are auto-generated from the selected values, edit any variant afterwards to adjust.
       </p>
 
       <div className="flex gap-2">
@@ -756,7 +756,7 @@ export function SubmissionForm({ initial, submitting, submitLabel, onSubmit }: P
                 />
                 {v.attributes.filter((a) => a.name.trim() && a.value.trim()).length === 0 && (
                   <p className="mt-2 text-[11px] text-[#b5801e]">
-                    Add at least one attribute — required to submit this variant for review.
+                    Add at least one attribute, required to submit this variant for review.
                   </p>
                 )}
               </div>
@@ -772,7 +772,7 @@ export function SubmissionForm({ initial, submitting, submitLabel, onSubmit }: P
           <h2 className={`${sectionTitle} mb-3`}>Before you submit</h2>
           <ul className="space-y-2 text-[13px] leading-relaxed text-slate">
             <li className="flex gap-2"><span className="text-accent">•</span> Name and category are required.</li>
-            <li className="flex gap-2"><span className="text-accent">•</span> Add clear photos — the first is used as the cover.</li>
+            <li className="flex gap-2"><span className="text-accent">•</span> Add clear photos, the first is used as the cover.</li>
             <li className="flex gap-2"><span className="text-accent">•</span> Each variant needs a price and at least one attribute.</li>
             <li className="flex gap-2"><span className="text-accent">•</span> Custom attributes are flagged for admin review.</li>
           </ul>
