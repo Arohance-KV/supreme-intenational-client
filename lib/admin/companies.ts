@@ -26,6 +26,7 @@ export interface AdminCompany {
   logo?: string;
   status: 'active' | 'inactive';
   walletMode: 'points' | 'coupon';
+  razorpayEnabled?: boolean;
   primaryContact?: CompanyPrimaryContact;
   notes?: string;
   createdBy: string;
@@ -60,6 +61,7 @@ export interface UpdateCompanyBody {
   logo?: string;
   status?: 'active' | 'inactive';
   walletMode?: 'points' | 'coupon';
+  razorpayEnabled?: boolean;
   primaryContact?: CompanyPrimaryContact;
   notes?: string;
   assignedAdminIds?: string[];

@@ -127,6 +127,7 @@ function CompanyEditForm({ company }: { company: AdminCompany }) {
     logo: company.logo ?? '',
     status: company.status,
     walletMode: company.walletMode ?? 'points',
+    razorpayEnabled: company.razorpayEnabled ?? true,
     notes: company.notes ?? '',
     primaryContact: {
       name: company.primaryContact?.name ?? '',
@@ -150,6 +151,7 @@ function CompanyEditForm({ company }: { company: AdminCompany }) {
       logo: fields.logo ?? '',
       status: fields.status,
       walletMode: fields.walletMode,
+      razorpayEnabled: fields.razorpayEnabled,
       notes: fields.notes?.trim() || undefined,
       primaryContact: {
         name: fields.primaryContact?.name?.trim() || undefined,
@@ -231,6 +233,37 @@ function CompanyEditForm({ company }: { company: AdminCompany }) {
             Existing employee balances will now behave under the new mode on their next order.
           </p>
         )}
+      </div>
+
+      {/* Razorpay difference-payment — segmented toggle (mirrors Wallet model) */}
+      <div>
+        <label className={labelCls}>Razorpay difference payment</label>
+        <div className="grid grid-cols-2 gap-1.5 rounded-xl border border-line bg-white/50 p-1.5">
+          {([
+            [true, 'On', 'pay the difference via Razorpay'],
+            [false, 'Off', 'block order · "Insufficient balance"'],
+          ] as const).map(([val, label, sub]) => {
+            const on = (fields.razorpayEnabled ?? true) === val;
+            return (
+              <button
+                key={String(val)}
+                type="button"
+                onClick={() => setFields({ ...fields, razorpayEnabled: val })}
+                className={`rounded-lg px-4 py-2.5 text-center transition ${
+                  on
+                    ? 'bg-gradient-to-br from-indigo to-indigo2 text-white shadow-sm'
+                    : 'text-slate hover:bg-white/70'
+                }`}
+              >
+                <span className="block text-sm font-semibold">{label}</span>
+                <span className={`mt-0.5 block text-[10px] ${on ? 'text-white/70' : 'text-muted'}`}>{sub}</span>
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-1.5 text-xs text-muted">
+          When off, an employee order that exceeds their allocated balance is rejected instead of charging the remainder.
+        </p>
       </div>
 
       <p className="border-t border-line/70 pt-4 text-[11px] font-semibold uppercase tracking-wider text-muted">
