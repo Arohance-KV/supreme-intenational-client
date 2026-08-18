@@ -83,6 +83,7 @@ export interface LeadContact {
 export interface LeadItem {
   type: LeadType;
   refId: string;
+  userId: string;
   contact: LeadContact;
   productNames: string[];
   itemCount: number;

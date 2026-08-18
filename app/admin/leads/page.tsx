@@ -1,6 +1,7 @@
 'use client';
 
 import { Suspense, useState } from 'react';
+import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
   useLeads,
@@ -99,12 +100,16 @@ function LeadsTable() {
 
   const typeParam = searchParams.get('type') as LeadType | null;
   const statusParam = searchParams.get('status') as LeadFollowUpStatus | null;
+  const searchParam = searchParams.get('search') ?? '';
   const pageParam = Number(searchParams.get('page') ?? '1');
   const page = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
+
+  const [searchInput, setSearchInput] = useState(searchParam);
 
   const { data, isLoading, isError } = useLeads({
     type: typeParam ?? undefined,
     status: statusParam ?? undefined,
+    search: searchParam || undefined,
     page,
   });
 
@@ -187,6 +192,35 @@ function LeadsTable() {
             </button>
           ))}
         </div>
+
+        {/* Search by contact name / email / company */}
+        <form
+          onSubmit={(e) => { e.preventDefault(); setFilter('search', searchInput.trim() || null); }}
+          className="ml-auto flex items-center gap-2"
+        >
+          <input
+            type="text"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            placeholder="Search contact name, email or company…"
+            className="w-64 rounded-[11px] border border-line bg-white/70 px-3.5 py-2 text-sm text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+          />
+          <button
+            type="submit"
+            className="rounded-[11px] bg-indigo px-4 py-2 text-xs font-semibold text-white hover:opacity-90 transition-opacity"
+          >
+            Search
+          </button>
+          {searchParam && (
+            <button
+              type="button"
+              onClick={() => { setSearchInput(''); setFilter('search', null); }}
+              className="rounded-[11px] border border-line px-3 py-2 text-xs font-medium text-slate hover:bg-white/60 transition-colors"
+            >
+              Clear
+            </button>
+          )}
+        </form>
       </div>
 
       {/* Table */}
@@ -244,11 +278,18 @@ function LeadsTable() {
                 {lead.type}
               </span>
 
-              {/* Contact + products */}
+              {/* Contact + products — contact links to the customer's profile */}
               <div className="min-w-0">
-                <p className="text-sm font-medium text-ink truncate">
-                  {lead.contact?.name ?? '—'}
-                </p>
+                {lead.userId ? (
+                  <Link
+                    href={`/admin/customers/${lead.userId}`}
+                    className="text-sm font-medium text-indigo hover:underline truncate block"
+                  >
+                    {lead.contact?.name ?? '—'}
+                  </Link>
+                ) : (
+                  <p className="text-sm font-medium text-ink truncate">{lead.contact?.name ?? '—'}</p>
+                )}
                 <p className="text-xs text-muted truncate">{lead.contact?.email ?? ''}</p>
                 {Array.isArray(lead.productNames) && lead.productNames.length > 0 && (
                   <p className="text-xs text-muted truncate mt-0.5">
