@@ -12,6 +12,7 @@ const TYPE_LABEL: Record<ApprovalType, string> = {
   popup: 'Popup',
   companyBranding: 'Company Branding',
   quotation: 'Quotation',
+  product: 'Product Change',
 };
 
 function groupByType(items: ApprovalItem[]): [ApprovalType, ApprovalItem[]][] {
@@ -27,6 +28,16 @@ function groupByType(items: ApprovalItem[]): [ApprovalType, ApprovalItem[]][] {
 function ApprovalRow({ item }: { item: ApprovalItem }) {
   const decide = useDecideApproval();
   const pending = decide.isPending && decide.variables?.id === item.id && decide.variables?.type === item.type;
+
+  const handleReject = () => {
+    if (item.type === 'product') {
+      const reason = window.prompt('Reason for rejecting this change?');
+      if (reason === null) return;
+      decide.mutate({ type: item.type, id: item.id, decision: 'reject', reason });
+      return;
+    }
+    decide.mutate({ type: item.type, id: item.id, decision: 'reject' });
+  };
 
   return (
     <div className="grid grid-cols-[1.6fr_1fr_auto] gap-3 items-center px-5 py-3 text-[13px]">
@@ -56,7 +67,7 @@ function ApprovalRow({ item }: { item: ApprovalItem }) {
         </button>
         <button
           disabled={pending}
-          onClick={() => decide.mutate({ type: item.type, id: item.id, decision: 'reject' })}
+          onClick={handleReject}
           className="rounded-full border border-line bg-white/70 px-3.5 py-1.5 text-xs font-semibold text-slate transition-colors hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed"
         >
           Reject
