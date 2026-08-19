@@ -9,6 +9,7 @@ import { buildTargets, suggestMapping, applyMapping } from '@/lib/admin/importMa
 import * as adminBulkImport from '@/lib/admin/bulkImport';
 import * as sellerBulkImport from '@/lib/seller/bulkImport';
 import type { ImportPreview, ImportResult } from '@/lib/admin/bulkImport';
+import { useAdminProfile } from '@/lib/admin/userAuth';
 
 type Mode = 'admin' | 'seller';
 type Step = 'upload' | 'map' | 'preview' | 'commit';
@@ -131,6 +132,9 @@ function chunkByHandle(rows: Record<string, string>[]): Record<string, string>[]
 // the caller is expected to hide/unmount the wizard and refresh its product list in response.
 export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone: () => void }) {
   const api = useMemo(() => getImportApi(mode), [mode]);
+  // Seller portal has no admin profile to fetch — only ask for admin mode.
+  const { data: me } = useAdminProfile({ enabled: mode === 'admin' });
+  const isBackend = mode === 'admin' && me?.role === 'backend';
   const { data: attributes = [], isLoading: attributesLoading } = useAttributes();
   const attributeNames = useMemo(() => attributes.map((a) => a.name), [attributes]);
   const targets = useMemo(() => buildTargets(attributeNames), [attributeNames]);
@@ -299,17 +303,40 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
   const [committing, setCommitting] = useState(false);
   const [commitProgress, setCommitProgress] = useState<{ done: number; total: number } | null>(null);
   const [commitResult, setCommitResult] = useState<ImportResult | null>(null);
+  // Backend role: every batch comes back as a queued change request
+  // ({ queued, requestId, summary }), not an ImportResult — so its numeric
+  // create/update/variant counts are meaningless here. Track submission
+  // outcome separately and skip the numeric report for that role.
+  const [backendSubmitted, setBackendSubmitted] = useState(false);
 
   async function startCommit() {
     setStep('commit');
     setCommitting(true);
     setCommitResult(null);
+    setBackendSubmitted(false);
     const batches = chunkByHandle(mappedRows);
     const finalImages: ImageEntry[] = [
       ...imageMap,
       ...Object.entries(imageOverrides).map(([handle, url]) => ({ filename: handle, url })),
     ];
     setCommitProgress({ done: 0, total: batches.length });
+
+    if (isBackend) {
+      const failed: { row: number; reason: string }[] = [];
+      for (const batch of batches) {
+        try {
+          await api.commitImportBatch(batch, finalImages, mode === 'admin' && autoCreateTaxonomy);
+        } catch (err) {
+          failed.push({ row: 0, reason: err instanceof ApiError ? err.message : 'This batch failed to submit' });
+        }
+        setCommitProgress((prev) => (prev ? { done: prev.done + 1, total: prev.total } : prev));
+      }
+      setCommitResult({ imported: 0, updated: 0, variants: 0, failed });
+      setBackendSubmitted(true);
+      setCommitting(false);
+      return;
+    }
+
     const totals: ImportResult = { imported: 0, updated: 0, variants: 0, failed: [] };
     for (const batch of batches) {
       try {
@@ -489,13 +516,21 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
               {commitResult && (
                 <div className="space-y-3">
                   <div className="rounded-xl border border-line bg-white/70 p-4">
-                    <p className="text-lg font-bold text-ink">
-                      {commitResult.imported} created{mode === 'admin' ? ` · ${commitResult.updated} updated` : ''} ·{' '}
-                      {commitResult.variants} variants
-                    </p>
+                    {backendSubmitted ? (
+                      <p className="text-lg font-bold text-ink">Import submitted for approval</p>
+                    ) : (
+                      <p className="text-lg font-bold text-ink">
+                        {commitResult.imported} created{mode === 'admin' ? ` · ${commitResult.updated} updated` : ''} ·{' '}
+                        {commitResult.variants} variants
+                      </p>
+                    )}
                     {commitResult.failed.length > 0 && (
                       <p className="mt-1 text-sm text-[#e0524d]">
-                        {commitResult.failed.length} row{commitResult.failed.length === 1 ? '' : 's'} failed
+                        {commitResult.failed.length}{' '}
+                        {commitResult.failed.length === 1
+                          ? backendSubmitted ? 'batch' : 'row'
+                          : backendSubmitted ? 'batches' : 'rows'}{' '}
+                        failed
                       </p>
                     )}
                   </div>
@@ -545,7 +580,7 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
                 onClick={startCommit}
                 className={primaryBtnCls}
               >
-                Start import
+                {isBackend ? 'Submit import for approval' : 'Start import'}
               </button>
             )}
             {step === 'commit' && commitResult && (
