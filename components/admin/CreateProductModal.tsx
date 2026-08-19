@@ -7,6 +7,7 @@ import { ApiError } from '@/lib/api';
 import { useCreateProduct, type CreateProductBody } from '@/lib/admin/products';
 import { useCategories } from '@/lib/admin/taxonomy';
 import { useCompanies } from '@/lib/admin/companies';
+import { useAdminProfile } from '@/lib/admin/userAuth';
 
 const fieldCls =
   'w-full rounded-xl border border-line bg-white/70 px-3.5 py-2.5 text-sm text-ink transition-colors placeholder:text-muted focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20';
@@ -29,6 +30,9 @@ export default function CreateProductModal({
     enabled: !lockedCompany,
   });
   const companies = companiesData?.items ?? [];
+  const { data: me } = useAdminProfile();
+  const isBackend = me?.role === 'backend';
+  const [submitted, setSubmitted] = useState(false);
 
   const [form, setForm] = useState<CreateProductBody>({
     name: '',
@@ -48,7 +52,16 @@ export default function CreateProductModal({
       ownerCompanyId: form.visibility === 'company' ? form.ownerCompanyId : undefined,
     };
     createProduct.mutate(payload, {
-      onSuccess: (product) => router.push(`/admin/catalog/products/${product.slug}`),
+      onSuccess: (product) => {
+        // Backend role: the response is a queued change request (no slug on it),
+        // so there is nothing to navigate to — just confirm and close.
+        if (isBackend) {
+          setSubmitted(true);
+          window.setTimeout(onClose, 1200);
+          return;
+        }
+        router.push(`/admin/catalog/products/${product.slug}`);
+      },
     });
   };
 
@@ -218,8 +231,16 @@ export default function CreateProductModal({
             </p>
           )}
 
+          {submitted && (
+            <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm text-emerald-700">
+              Submitted for approval.
+            </p>
+          )}
+
           <p className="text-[13px] leading-relaxed text-muted">
-            Add pricing, variants and images on the next step after the product is created.
+            {isBackend
+              ? 'Your changes will be submitted for superadmin approval before going live.'
+              : 'Add pricing, variants and images on the next step after the product is created.'}
           </p>
 
           <div className="flex items-center justify-end gap-3 border-t border-line/70 pt-5">
@@ -232,10 +253,16 @@ export default function CreateProductModal({
             </button>
             <button
               type="submit"
-              disabled={createProduct.isPending}
+              disabled={createProduct.isPending || submitted}
               className="rounded-xl bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_22px_rgba(42,43,106,.3)] transition-shadow hover:shadow-[0_10px_28px_rgba(42,43,106,.4)] disabled:opacity-50"
             >
-              {createProduct.isPending ? 'Creating…' : 'Create product'}
+              {createProduct.isPending
+                ? isBackend
+                  ? 'Submitting…'
+                  : 'Creating…'
+                : isBackend
+                  ? 'Submit for approval'
+                  : 'Create product'}
             </button>
           </div>
         </form>

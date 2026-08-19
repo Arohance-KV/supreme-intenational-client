@@ -2,10 +2,12 @@
 
 import { use, useState, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ApiError } from '@/lib/api';
 import {
   useAdminProduct,
   useUpdateProduct,
+  useDeleteProduct,
   useCreateVariant,
   useBulkCreateVariants,
   useUpdateVariant,
@@ -19,9 +21,17 @@ import {
   type FlashSaleBody,
 } from '@/lib/admin/products';
 import { useAttributes } from '@/lib/admin/taxonomy';
+import { useAdminProfile } from '@/lib/admin/userAuth';
 import { StatusChip } from '@/components/admin/StatusChip';
 import { useConfirm } from '@/components/ConfirmDialog';
 import type { ProductVariant } from '@/lib/catalog';
+
+// Shared label helper: every write action reads "Submit for approval" for the
+// read-only `backend` role (its writes are queued as change requests, never
+// applied live) and its normal verb otherwise.
+function actionLabel(isBackend: boolean, normal: string): string {
+  return isBackend ? 'Submit for approval' : normal;
+}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -35,10 +45,14 @@ function FlashSaleEditor({
   variant,
   productId,
   slug,
+  isBackend,
+  notifySubmitted,
 }: {
   variant: ProductVariant;
   productId: string;
   slug: string;
+  isBackend: boolean;
+  notifySubmitted: () => void;
 }) {
   const setFlashSale = useSetFlashSale(productId, slug);
   const [open, setOpen] = useState(false);
@@ -50,14 +64,24 @@ function FlashSaleEditor({
   const handleSave = () => {
     setFlashSale.mutate(
       { variantId: variant._id, body: fields },
-      { onSuccess: () => setOpen(false) },
+      {
+        onSuccess: () => {
+          if (isBackend) notifySubmitted();
+          setOpen(false);
+        },
+      },
     );
   };
 
   const handleClear = () => {
     setFlashSale.mutate(
       { variantId: variant._id, body: { flashSalePrice: null, flashSaleEndsAt: null } },
-      { onSuccess: () => setOpen(false) },
+      {
+        onSuccess: () => {
+          if (isBackend) notifySubmitted();
+          setOpen(false);
+        },
+      },
     );
   };
 
@@ -111,7 +135,7 @@ function FlashSaleEditor({
           disabled={setFlashSale.isPending}
           className="rounded bg-violet-600 px-2 py-0.5 text-xs text-white disabled:opacity-60"
         >
-          Save
+          {actionLabel(isBackend, 'Save')}
         </button>
         <button
           onClick={handleClear}
@@ -137,10 +161,14 @@ function VariantRow({
   variant,
   productId,
   slug,
+  isBackend,
+  notifySubmitted,
 }: {
   variant: ProductVariant;
   productId: string;
   slug: string;
+  isBackend: boolean;
+  notifySubmitted: () => void;
 }) {
   const [editing, setEditing] = useState(false);
   const [fields, setFields] = useState<UpdateVariantBody>({
@@ -160,13 +188,26 @@ function VariantRow({
   const handleSave = () => {
     updateVariant.mutate(
       { variantId: variant._id, body: fields },
-      { onSuccess: () => setEditing(false) },
+      {
+        onSuccess: () => {
+          if (isBackend) notifySubmitted();
+          setEditing(false);
+        },
+      },
     );
   };
 
   const handleDelete = async () => {
-    if (!(await confirm({ title: 'Delete variant', message: `Delete variant ${variant.sku || variant._id}?`, confirmLabel: 'Delete', tone: 'danger' }))) return;
-    deleteVariant.mutate(variant._id);
+    const confirmLabel = isBackend ? 'Submit for approval' : 'Delete';
+    if (!(await confirm({ title: isBackend ? 'Submit variant deletion for approval' : 'Delete variant', message: `Delete variant ${variant.sku || variant._id}?`, confirmLabel, tone: 'danger' }))) return;
+    deleteVariant.mutate(variant._id, { onSuccess: () => { if (isBackend) notifySubmitted(); } });
+  };
+
+  const handleAdjustStock = (delta: number) => {
+    adjustStock.mutate(
+      { variantId: variant._id, delta },
+      { onSuccess: () => { if (isBackend) notifySubmitted(); } },
+    );
   };
 
   const attrLabel = Array.isArray(variant.attributes) && variant.attributes.length
@@ -240,18 +281,20 @@ function VariantRow({
       <td className="px-3 py-2 text-slate">
         <div className="flex items-center gap-1">
           <button
-            onClick={() => adjustStock.mutate({ variantId: variant._id, delta: -1 })}
+            onClick={() => handleAdjustStock(-1)}
             disabled={adjustStock.isPending}
-            aria-label="Decrease stock by 1"
+            aria-label={isBackend ? 'Submit stock decrease for approval' : 'Decrease stock by 1'}
+            title={isBackend ? 'Submit for approval' : undefined}
             className="rounded border border-line px-1.5 py-0.5 text-xs hover:bg-white/60 disabled:opacity-60"
           >
             −
           </button>
           <span className="w-10 text-center">{typeof variant.stock === 'number' ? variant.stock : '—'}</span>
           <button
-            onClick={() => adjustStock.mutate({ variantId: variant._id, delta: 1 })}
+            onClick={() => handleAdjustStock(1)}
             disabled={adjustStock.isPending}
-            aria-label="Increase stock by 1"
+            aria-label={isBackend ? 'Submit stock increase for approval' : 'Increase stock by 1'}
+            title={isBackend ? 'Submit for approval' : undefined}
             className="rounded border border-line px-1.5 py-0.5 text-xs hover:bg-white/60 disabled:opacity-60"
           >
             +
@@ -296,7 +339,7 @@ function VariantRow({
 
       {/* Flash sale */}
       <td className="px-3 py-2">
-        <FlashSaleEditor variant={variant} productId={productId} slug={slug} />
+        <FlashSaleEditor variant={variant} productId={productId} slug={slug} isBackend={isBackend} notifySubmitted={notifySubmitted} />
       </td>
 
       {/* Actions */}
@@ -310,7 +353,7 @@ function VariantRow({
                   disabled={updateVariant.isPending}
                   className="rounded bg-blue-600 px-2 py-1 text-xs text-white disabled:opacity-60"
                 >
-                  {updateVariant.isPending ? '…' : 'Save'}
+                  {updateVariant.isPending ? '…' : actionLabel(isBackend, 'Save')}
                 </button>
                 <button
                   onClick={() => setEditing(false)}
@@ -332,7 +375,7 @@ function VariantRow({
               disabled={deleteVariant.isPending}
               className="rounded border border-red-200 px-2 py-1 text-xs text-red-600 hover:bg-red-50 disabled:opacity-60"
             >
-              Del
+              {actionLabel(isBackend, 'Del')}
             </button>
           </div>
           {mutError && (
@@ -409,7 +452,17 @@ function AttributeValuePicker({
 
 const inputCls = 'w-full rounded border border-line px-2 py-1 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20';
 
-function AddVariantForm({ productId, slug }: { productId: string; slug: string }) {
+function AddVariantForm({
+  productId,
+  slug,
+  isBackend,
+  notifySubmitted,
+}: {
+  productId: string;
+  slug: string;
+  isBackend: boolean;
+  notifySubmitted: () => void;
+}) {
   const { data: allAttributes = [], isLoading: attrLoading } = useAttributes();
   const createVariant = useCreateVariant(productId, slug);
   const bulkCreate = useBulkCreateVariants(productId, slug);
@@ -451,7 +504,10 @@ function AddVariantForm({ productId, slug }: { productId: string; slug: string }
       .filter(([, valueId]) => !!valueId)
       .map(([attributeId, valueId]) => ({ attributeId, valueId }));
     if (attrs.length === 0) return;
-    createVariant.mutate({ ...single, images: singleImages, attributes: attrs }, { onSuccess: reset });
+    createVariant.mutate(
+      { ...single, images: singleImages, attributes: attrs },
+      { onSuccess: () => { if (isBackend) notifySubmitted(); reset(); } },
+    );
   };
 
   const handleBulkSubmit = (e: React.FormEvent) => {
@@ -460,7 +516,10 @@ function AddVariantForm({ productId, slug }: { productId: string; slug: string }
       .filter(([, set]) => set.size > 0)
       .map(([attributeId, set]) => ({ attributeId, valueIds: Array.from(set) }));
     if (attrs.length === 0) return;
-    bulkCreate.mutate({ ...bulk, attributes: attrs }, { onSuccess: reset });
+    bulkCreate.mutate(
+      { ...bulk, attributes: attrs },
+      { onSuccess: () => { if (isBackend) notifySubmitted(); reset(); } },
+    );
   };
 
   // Mode picker (collapsed state)
@@ -690,10 +749,14 @@ function AddVariantForm({ productId, slug }: { productId: string; slug: string }
           className="rounded bg-gradient-to-br from-indigo to-indigo2 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-60 hover:opacity-90"
         >
           {submitting
-            ? 'Creating…'
-            : mode === 'single'
-              ? 'Add variant'
-              : `Create ${hasBulkSelection ? bulkCombinations : ''} variant${bulkCombinations !== 1 ? 's' : ''}`}
+            ? isBackend
+              ? 'Submitting…'
+              : 'Creating…'
+            : isBackend
+              ? 'Submit for approval'
+              : mode === 'single'
+                ? 'Add variant'
+                : `Create ${hasBulkSelection ? bulkCombinations : ''} variant${bulkCombinations !== 1 ? 's' : ''}`}
         </button>
         <button
           type="button"
@@ -788,10 +851,14 @@ function ProductEditForm({
   product,
   productId,
   slug,
+  isBackend,
+  notifySubmitted,
 }: {
   product: AdminProductDetail;
   productId: string;
   slug: string;
+  isBackend: boolean;
+  notifySubmitted: () => void;
 }) {
   const updateProduct = useUpdateProduct(productId, slug);
   const [fields, setFields] = useState<UpdateProductBody>({
@@ -812,7 +879,7 @@ function ProductEditForm({
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    updateProduct.mutate(fields);
+    updateProduct.mutate(fields, { onSuccess: () => { if (isBackend) notifySubmitted(); } });
   };
 
   return (
@@ -1046,7 +1113,9 @@ function ProductEditForm({
         </p>
       )}
       {updateProduct.isSuccess && (
-        <p className="text-sm text-green-600">Saved successfully.</p>
+        <p className="text-sm text-green-600">
+          {isBackend ? 'Submitted for approval.' : 'Saved successfully.'}
+        </p>
       )}
 
       <button
@@ -1054,7 +1123,11 @@ function ProductEditForm({
         disabled={updateProduct.isPending}
         className="rounded bg-gradient-to-br from-indigo to-indigo2 px-4 py-2 text-sm font-medium text-white disabled:opacity-60 hover:opacity-90 transition-colors"
       >
-        {updateProduct.isPending ? 'Saving…' : 'Save changes'}
+        {updateProduct.isPending
+          ? isBackend
+            ? 'Submitting…'
+            : 'Saving…'
+          : actionLabel(isBackend, 'Save changes')}
       </button>
     </form>
   );
@@ -1066,10 +1139,14 @@ function VariantsSection({
   variants,
   productId,
   slug,
+  isBackend,
+  notifySubmitted,
 }: {
   variants: ProductVariant[];
   productId: string;
   slug: string;
+  isBackend: boolean;
+  notifySubmitted: () => void;
 }) {
   return (
     <section className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
@@ -1096,7 +1173,7 @@ function VariantsSection({
             <tbody>
               {variants.map((v) => (
                 // Use v._id as stable key — never use array index
-                <VariantRow key={v._id} variant={v} productId={productId} slug={slug} />
+                <VariantRow key={v._id} variant={v} productId={productId} slug={slug} isBackend={isBackend} notifySubmitted={notifySubmitted} />
               ))}
             </tbody>
           </table>
@@ -1105,7 +1182,7 @@ function VariantsSection({
         <p className="text-sm text-slate">No variants yet.</p>
       )}
 
-      <AddVariantForm productId={productId} slug={slug} />
+      <AddVariantForm productId={productId} slug={slug} isBackend={isBackend} notifySubmitted={notifySubmitted} />
     </section>
   );
 }
@@ -1120,8 +1197,22 @@ export default function AdminProductDetailPage({
   // The [id] segment carries the SLUG (detail GET is by slug).
   // Create/update/delete use the real _id from the loaded product.
   const { id: slug } = use(params);
+  const router = useRouter();
+  const { confirm } = useConfirm();
 
   const { data, isLoading, error } = useAdminProduct(slug);
+  const { data: me } = useAdminProfile();
+  const isBackend = me?.role === 'backend';
+  const deleteProduct = useDeleteProduct();
+
+  // Page-level "queued for review" notice shared by every write action below the header
+  // (product save/delete, variant create/bulk/update/stock/delete/flash-sale) — the backend
+  // role's mutations never touch live data, they only ever produce a change request.
+  const [flash, setFlash] = useState<string | null>(null);
+  const notifySubmitted = () => {
+    setFlash('Submitted for approval.');
+    window.setTimeout(() => setFlash(null), 4000);
+  };
 
   if (isLoading) {
     return (
@@ -1143,6 +1234,25 @@ export default function AdminProductDetailPage({
   const { product, variants } = data;
   const productId = product._id;
 
+  const handleDeleteProduct = async () => {
+    const ok = await confirm({
+      title: isBackend ? 'Submit product deletion for approval' : 'Delete product',
+      message: `Delete "${product.name}"? This action cannot be undone.`,
+      confirmLabel: isBackend ? 'Submit for approval' : 'Delete',
+      tone: 'danger',
+    });
+    if (!ok) return;
+    deleteProduct.mutate(productId, {
+      onSuccess: () => {
+        if (isBackend) {
+          notifySubmitted();
+          return;
+        }
+        router.push('/admin/catalog/products');
+      },
+    });
+  };
+
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
@@ -1153,6 +1263,18 @@ export default function AdminProductDetailPage({
         <span>/</span>
         <span className="text-ink font-medium truncate">{product.name}</span>
       </div>
+
+      {isBackend && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          You have edit access, your changes are sent to a super admin for approval before going live.
+        </div>
+      )}
+
+      {flash && (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+          {flash}
+        </div>
+      )}
 
       <div className="flex items-start justify-between gap-4">
         <div>
@@ -1172,17 +1294,34 @@ export default function AdminProductDetailPage({
           <span className="inline-flex items-center rounded-full bg-white/70 border border-line px-2 py-0.5 text-xs text-slate capitalize">
             {product.visibility}
           </span>
+          <button
+            onClick={handleDeleteProduct}
+            disabled={deleteProduct.isPending}
+            className="rounded border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 disabled:opacity-60"
+          >
+            {deleteProduct.isPending
+              ? isBackend
+                ? 'Submitting…'
+                : 'Deleting…'
+              : actionLabel(isBackend, 'Delete')}
+          </button>
         </div>
       </div>
+
+      {deleteProduct.error && (
+        <p className="text-sm text-red-600">
+          {deleteProduct.error instanceof ApiError ? deleteProduct.error.message : 'Failed to delete product.'}
+        </p>
+      )}
 
       {/* Core fields */}
       <section className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
         <h2 className="mb-4 text-base font-semibold text-ink">Product details</h2>
-        <ProductEditForm product={product} productId={productId} slug={slug} />
+        <ProductEditForm product={product} productId={productId} slug={slug} isBackend={isBackend} notifySubmitted={notifySubmitted} />
       </section>
 
       {/* Variants */}
-      <VariantsSection variants={variants} productId={productId} slug={slug} />
+      <VariantsSection variants={variants} productId={productId} slug={slug} isBackend={isBackend} notifySubmitted={notifySubmitted} />
     </div>
   );
 }
