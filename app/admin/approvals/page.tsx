@@ -73,8 +73,23 @@ function ChangeFieldRow({ field }: { field: ApprovalChangeField }) {
   );
 }
 
+// Short verb for the product change action (e.g. 'variant.update' -> 'Update'); null for
+// non-product types, which have no `action` and get no chip.
+function actionChipLabel(action?: string): string | null {
+  if (!action) return null;
+  if (action === 'variant.bulkCreate') return 'Bulk add';
+  if (action === 'variant.adjustStock') return 'Stock';
+  if (action === 'variant.flashSale') return 'Flash sale';
+  if (action === 'import.commit') return 'Import';
+  if (action.endsWith('.create')) return 'Create';
+  if (action.endsWith('.update')) return 'Update';
+  if (action.endsWith('.delete')) return 'Delete';
+  return null;
+}
+
 function ApprovalChangePanel({ type, id }: { type: ApprovalType; id: string }) {
   const { data, isPending, isError } = useApprovalDetail(type, id, true);
+  const chip = actionChipLabel(data?.action);
 
   return (
     <div className="mt-3 rounded-2xl border border-line bg-white/60 overflow-hidden">
@@ -90,6 +105,11 @@ function ApprovalChangePanel({ type, id }: { type: ApprovalType; id: string }) {
         <p className="px-4 py-4 text-xs text-muted">No field-level changes to show.</p>
       ) : (
         <div className="divide-y divide-line">
+          {chip ? (
+            <div className="px-4 py-2">
+              <span className="inline-flex rounded-full bg-indigo/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-indigo">{chip}</span>
+            </div>
+          ) : null}
           {data.note ? <p className="px-4 py-2.5 text-xs italic text-muted">{data.note}</p> : null}
           {data.fields.map((field, i) => (
             <ChangeFieldRow key={`${field.label}-${i}`} field={field} />
