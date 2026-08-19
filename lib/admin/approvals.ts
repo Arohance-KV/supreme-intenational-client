@@ -12,6 +12,29 @@ export interface ApprovalItem {
   previewLink: string;
 }
 
+export interface ApprovalChangeField {
+  label: string;
+  before?: string | null;
+  after?: string | null;
+  changed: boolean;
+}
+
+export interface ApprovalChangeDetail {
+  type: string;
+  action?: string;
+  title: string;
+  note?: string;
+  fields: ApprovalChangeField[];
+}
+
+export function useApprovalDetail(type: ApprovalType, id: string, enabled: boolean) {
+  return useQuery<ApprovalChangeDetail>({
+    queryKey: ['admin', 'approvals', 'detail', type, id],
+    queryFn: () => adminFetch<ApprovalChangeDetail>(`/admin/approvals/${type}/${id}/detail`),
+    enabled,
+  });
+}
+
 export function useApprovals() {
   return useQuery<ApprovalItem[]>({
     queryKey: ['admin', 'approvals'],
