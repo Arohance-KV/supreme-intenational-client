@@ -142,7 +142,7 @@ function FlashSaleEditor({
           disabled={setFlashSale.isPending}
           className="rounded border border-line px-2 py-0.5 text-xs text-slate"
         >
-          Clear
+          {actionLabel(isBackend, 'Clear')}
         </button>
         <button
           onClick={() => setOpen(false)}
@@ -199,7 +199,11 @@ function VariantRow({
 
   const handleDelete = async () => {
     const confirmLabel = isBackend ? 'Submit for approval' : 'Delete';
-    if (!(await confirm({ title: isBackend ? 'Submit variant deletion for approval' : 'Delete variant', message: `Delete variant ${variant.sku || variant._id}?`, confirmLabel, tone: 'danger' }))) return;
+    const label = variant.sku || variant._id;
+    const message = isBackend
+      ? `Submit deletion of variant "${label}" for approval? A super admin will review it before it goes live.`
+      : `Delete variant ${label}?`;
+    if (!(await confirm({ title: isBackend ? 'Submit variant deletion for approval' : 'Delete variant', message, confirmLabel, tone: 'danger' }))) return;
     deleteVariant.mutate(variant._id, { onSuccess: () => { if (isBackend) notifySubmitted(); } });
   };
 
@@ -1112,10 +1116,8 @@ function ProductEditForm({
             : 'Save failed.'}
         </p>
       )}
-      {updateProduct.isSuccess && (
-        <p className="text-sm text-green-600">
-          {isBackend ? 'Submitted for approval.' : 'Saved successfully.'}
-        </p>
+      {updateProduct.isSuccess && !isBackend && (
+        <p className="text-sm text-green-600">Saved successfully.</p>
       )}
 
       <button
@@ -1237,7 +1239,9 @@ export default function AdminProductDetailPage({
   const handleDeleteProduct = async () => {
     const ok = await confirm({
       title: isBackend ? 'Submit product deletion for approval' : 'Delete product',
-      message: `Delete "${product.name}"? This action cannot be undone.`,
+      message: isBackend
+        ? `Submit deletion of "${product.name}" for approval? A super admin will review it before it goes live.`
+        : `Delete "${product.name}"? This action cannot be undone.`,
       confirmLabel: isBackend ? 'Submit for approval' : 'Delete',
       tone: 'danger',
     });

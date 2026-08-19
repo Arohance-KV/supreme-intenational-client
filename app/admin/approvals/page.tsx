@@ -33,6 +33,10 @@ function ApprovalRow({ item }: { item: ApprovalItem }) {
     if (item.type === 'product') {
       const reason = window.prompt('Reason for rejecting this change?');
       if (reason === null) return;
+      if (!reason.trim()) {
+        window.alert('A reason is required.');
+        return;
+      }
       decide.mutate({ type: item.type, id: item.id, decision: 'reject', reason });
       return;
     }
