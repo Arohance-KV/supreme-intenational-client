@@ -37,6 +37,8 @@ export interface AdminSubmission {
   shipping: string;
   categoryId: string;
   categoryName?: string | null;
+  /** Set on a bulk-import draft proposing a category not yet in the global taxonomy. */
+  proposedCategoryName?: string | null;
   images: string[];
   badge: SubmissionBadge | null;
   variants: DraftVariant[];
@@ -159,6 +161,41 @@ export function useResolveAttribute(id: string) {
     onSuccess: (data) => {
       qc.setQueryData(ATTR_REVIEW_KEY(id), data);
       qc.invalidateQueries({ queryKey: ['admin', 'attributes'] });
+      qc.invalidateQueries({ queryKey: SUBMISSION_KEY(id) });
+    },
+  });
+}
+
+// ── Category taxonomy review (seller proposes a new category → admin promotes) ──
+
+export interface CategoryReview {
+  proposedCategoryName: string | null;
+  resolved: boolean;
+}
+export interface ResolveCategoryBody {
+  action: 'add' | 'map';
+  name?: string;
+  mapCategoryId?: string;
+}
+
+const CAT_REVIEW_KEY = (id: string) => ['admin', 'submissions', 'cat-review', id] as const;
+
+export function useCategoryReview(id: string, enabled = true) {
+  return useQuery<CategoryReview>({
+    queryKey: CAT_REVIEW_KEY(id),
+    queryFn: () => adminFetch<CategoryReview>(`/admin/seller-submissions/${id}/category-review`),
+    enabled: !!id && enabled,
+  });
+}
+
+export function useResolveCategory(id: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: ResolveCategoryBody) =>
+      adminFetch<CategoryReview>(`/admin/seller-submissions/${id}/resolve-category`, { method: 'POST', body }),
+    onSuccess: (data) => {
+      qc.setQueryData(CAT_REVIEW_KEY(id), data);
+      qc.invalidateQueries({ queryKey: ['admin', 'categories'] });
       qc.invalidateQueries({ queryKey: SUBMISSION_KEY(id) });
     },
   });

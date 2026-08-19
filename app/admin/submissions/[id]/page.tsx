@@ -10,11 +10,13 @@ import {
   useRejectSubmission,
   useAttributeReview,
   useResolveAttribute,
+  useCategoryReview,
+  useResolveCategory,
   type AdminSubmission,
   type DraftVariant,
   type AttributeReviewItem,
 } from '@/lib/admin/submissions';
-import { useAttributes, type AdminAttribute } from '@/lib/admin/taxonomy';
+import { useAttributes, useCategories, type AdminAttribute } from '@/lib/admin/taxonomy';
 import { inr, fmtDate, fmtDateTime } from '@/lib/admin/format';
 import { useConfirm } from '@/components/ConfirmDialog';
 
@@ -195,6 +197,54 @@ function AttributeReviewPanel({ id }: { id: string }) {
   );
 }
 
+// ── Category taxonomy review (seller proposes a new category → admin promotes) ─
+
+function CategoryReviewPanel({ id }: { id: string }) {
+  const { data, isLoading } = useCategoryReview(id);
+  const { data: categories } = useCategories();
+  const resolve = useResolveCategory(id);
+  const [catId, setCatId] = useState('');
+
+  if (isLoading || !data?.proposedCategoryName) return null; // nothing proposed → no panel
+
+  return (
+    <section className={sectionCls}>
+      <div className="mb-3 flex items-center justify-between">
+        <h2 className="text-base font-semibold text-ink">Category review</h2>
+        <span className="rounded-full bg-[rgba(224,163,59,.16)] px-2.5 py-0.5 text-[11px] font-semibold text-[#b5801e]">Needs review</span>
+      </div>
+      <p className="mb-3 text-xs text-slate">
+        This submission proposes a category not yet in the catalog. <strong>Add to catalog</strong> creates it; <strong>Map</strong> points it at an existing category (fixes typos/synonyms). Required before approval.
+      </p>
+      <div className="flex flex-wrap items-center gap-2 rounded-xl border border-line bg-white/60 px-3 py-2.5 text-sm">
+        <span className="font-semibold text-ink">{data.proposedCategoryName}</span>
+        <span className="text-xs font-semibold text-[#b5801e]">⚠ Not in catalog</span>
+        <span className="ml-auto flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => resolve.mutate({ action: 'add', name: data.proposedCategoryName ?? undefined })}
+            disabled={resolve.isPending}
+            className="rounded-[9px] bg-[rgba(42,43,106,.07)] px-3 py-1.5 text-[11px] font-semibold text-indigo hover:bg-[rgba(42,43,106,.12)] disabled:opacity-50"
+          >
+            + Add to catalog
+          </button>
+          <span className="text-[11px] text-muted">or map to</span>
+          <select value={catId} onChange={(e) => setCatId(e.target.value)} className={selectCls}>
+            <option value="">Category…</option>
+            {(categories ?? []).map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
+          </select>
+          <button
+            disabled={!catId || resolve.isPending}
+            onClick={() => resolve.mutate({ action: 'map', mapCategoryId: catId })}
+            className="rounded-[9px] bg-accent px-3 py-1.5 text-[11px] font-semibold text-white disabled:opacity-50"
+          >
+            Map
+          </button>
+        </span>
+      </div>
+    </section>
+  );
+}
+
 // ── ModeratePanel ─────────────────────────────────────────────────────────────
 
 function ModeratePanel({ submission }: { submission: AdminSubmission }) {
@@ -202,7 +252,10 @@ function ModeratePanel({ submission }: { submission: AdminSubmission }) {
   const approve = useApproveSubmission(submission._id);
   const reject = useRejectSubmission(submission._id);
   const review = useAttributeReview(submission._id, submission.status === 'submitted');
+  const catReview = useCategoryReview(submission._id, submission.status === 'submitted');
   const attrsBlocked = submission.status === 'submitted' && review.data ? !review.data.allResolved : false;
+  const catBlocked = submission.status === 'submitted' && catReview.data ? !catReview.data.resolved : false;
+  const blocked = attrsBlocked || catBlocked;
 
   const [reason, setReason] = useState('');
   const [reasonError, setReasonError] = useState('');
@@ -284,14 +337,16 @@ function ModeratePanel({ submission }: { submission: AdminSubmission }) {
         </p>
         <button
           onClick={handleApprove}
-          disabled={isPending || attrsBlocked}
-          title={attrsBlocked ? 'Resolve all attributes in the taxonomy review above first' : undefined}
+          disabled={isPending || blocked}
+          title={blocked ? 'Resolve the category and every attribute in the reviews above first' : undefined}
           className="rounded bg-green-700 px-4 py-2 text-sm font-medium text-white disabled:opacity-60 hover:bg-green-800 transition-colors"
         >
           {approve.isPending ? 'Approving…' : 'Approve submission'}
         </button>
-        {attrsBlocked && (
-          <p className="mt-2 text-sm text-[#b5801e]">Resolve every attribute in the taxonomy review above before approving.</p>
+        {blocked && (
+          <p className="mt-2 text-sm text-[#b5801e]">
+            Resolve the {catBlocked ? 'category' : ''}{catBlocked && attrsBlocked ? ' and every ' : ''}{attrsBlocked ? 'attribute' : ''} in the review{catBlocked && attrsBlocked ? 's' : ''} above before approving.
+          </p>
         )}
 
         {approve.isSuccess && (
@@ -417,7 +472,8 @@ function SubmissionDetailInner({ id }: { id: string }) {
         </div>
       </div>
 
-      {/* Attribute taxonomy review (only while awaiting moderation) */}
+      {/* Taxonomy review (only while awaiting moderation) */}
+      {submission.status === 'submitted' && <CategoryReviewPanel id={submission._id} />}
       {submission.status === 'submitted' && <AttributeReviewPanel id={submission._id} />}
 
       {/* Moderation panel */}
@@ -430,7 +486,11 @@ function SubmissionDetailInner({ id }: { id: string }) {
           <div>
             <dt className="text-xs font-medium text-slate uppercase tracking-wider">Category</dt>
             <dd className="mt-0.5 text-sm text-ink">
-              {submission.categoryName ?? submission.categoryId ?? '—'}
+              {submission.categoryName ?? submission.categoryId ?? (
+                submission.proposedCategoryName
+                  ? <span>{submission.proposedCategoryName} <span className="text-xs text-[#b5801e]">(proposed — needs review)</span></span>
+                  : '—'
+              )}
             </dd>
           </div>
           <div>
