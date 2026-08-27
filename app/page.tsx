@@ -162,7 +162,7 @@ export default async function HomePage() {
         {/* STATS + TESTIMONIAL */}
         <div className={`grid grid-cols-1 gap-[18px] pb-2 pt-10 sm:pt-14 lg:grid-cols-[1.1fr_1fr] ${sectionWrap}`}>
           <div className="grid grid-cols-2 gap-3 sm:gap-3.5">
-            {([['18', ' yrs', 'Of corporate gifting'], ['500', '+', 'Enterprise clients'], ['12k', '+', 'Products in catalogue'], ['40', '%', 'Less quotation effort']] as const).map(([n, u, l]) => (
+            {([['30', ' yrs', 'Of corporate gifting'], ['550', '+', 'Enterprise clients served'], ['12k', '+', 'Products in catalogue'], ['15M', '+', 'Gifts delivered nationwide']] as const).map(([n, u, l]) => (
               <div key={l} className="rounded-[20px] border border-white/[.82] bg-white/55 p-4 shadow-[0_12px_34px_rgba(34,36,90,.08)] backdrop-blur-[14px] sm:p-6">
                 <div className="text-[28px] font-extrabold tracking-[-.03em] text-ink sm:text-[38px]">{n}<span className="text-[18px] text-accent sm:text-[22px]">{u}</span></div>
                 <div className="mt-1 text-[13px] text-slate">{l}</div>

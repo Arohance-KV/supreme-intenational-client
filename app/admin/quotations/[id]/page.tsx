@@ -226,6 +226,14 @@ export default function AdminQuotationDetailPage({
           </dl>
         </section>
 
+        {/* Notes & branding requirements (customer-submitted) */}
+        {quotation.customerNotes && (
+          <section className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
+            <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate">Notes &amp; branding requirements</h2>
+            <p className="whitespace-pre-wrap text-sm text-ink">{quotation.customerNotes}</p>
+          </section>
+        )}
+
         {/* Summary */}
         <section className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5">
           <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate">

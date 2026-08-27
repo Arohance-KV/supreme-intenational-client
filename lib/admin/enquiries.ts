@@ -48,6 +48,7 @@ export interface Quotation {
   companyId?: string | null;
   filtersApplied: unknown;
   terms?: string;
+  customerNotes?: string;
   approvedAt?: string | null;
   submittedForApprovalAt?: string | null;
   submittedForApprovalBy?: string | null;

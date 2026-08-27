@@ -52,7 +52,7 @@ export default function QuotationCartView({ cart, mutations }: Props) {
   const submit = async () => {
     setGenError(null);
     try {
-      await generate.mutateAsync({ source: 'cart' });
+      await generate.mutateAsync({ source: 'cart', notes: notes.trim() || undefined });
       setSubmitted(true);
     } catch (err) {
       if (err instanceof ApiError && err.code && B2B_LOCK_CODES.has(err.code)) {
@@ -146,8 +146,7 @@ export default function QuotationCartView({ cart, mutations }: Props) {
             </div>
           )}
 
-          {/* Notes & branding — display-only draft. ponytail: not persisted; wire to
-              the quotation payload when the backend accepts a notes field. */}
+          {/* Notes & branding — sent with the quotation and shown to the approver. */}
           <div className={`mt-3.5 ${glass} rounded-[20px] p-4 sm:p-5`}>
             <div className="mb-2.5 text-[13px] font-bold text-ink">Notes &amp; branding requirements</div>
             <textarea

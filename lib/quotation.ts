@@ -5,6 +5,7 @@ import { apiFetch } from './api';
 export interface GenerateQuotationBody {
   source?: 'cart' | 'filters';
   filters?: Record<string, unknown>;
+  notes?: string;
 }
 
 export interface GenerateQuotationResult {
