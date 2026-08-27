@@ -40,7 +40,7 @@ export default async function HomePage() {
             <h1 className={`mb-4 text-[32px] font-extrabold leading-[1.07] tracking-[-.03em] sm:mb-5 sm:text-[44px] lg:text-[60px] lg:leading-[1.02] bg-[linear-gradient(120deg,#2a2b6a_0%,#4143b0_38%,#149b8e_100%)] ${gradClip}`}>Corporate gifting,<br />simplified.</h1>
             <p className="mb-7 max-w-[46ch] text-[16px] leading-[1.6] text-slate sm:mb-[30px] sm:text-[18px]">Browse a curated catalogue, shortlist in a click, and generate branded quotations &amp; catalogues yourself, no back-and-forth, no waiting on sales.</p>
             <div className="mb-8 flex gap-2.5 sm:mb-[34px] sm:gap-3">
-              <Link href="/products" className="flex-1 rounded-[14px] bg-[linear-gradient(120deg,#2a2b6a_0%,#5644d2_50%,#13b89f_100%)] px-4 py-[15px] text-center text-[14px] font-semibold text-white no-underline shadow-[0_12px_30px_rgba(86,68,210,.34)] sm:flex-none sm:px-[26px] sm:text-[15px]">Browse Products</Link>
+              <Link href="/products" className="flex-1 rounded-[14px] bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)] px-4 py-[15px] text-center text-[14px] font-semibold text-white no-underline shadow-[0_12px_30px_rgba(42,43,106,.34)] sm:flex-none sm:px-[26px] sm:text-[15px]">Browse Products</Link>
               <Link href="/quotation" className="flex-1 rounded-[14px] border border-white/[.78] bg-white/60 px-4 py-[15px] text-center text-[14px] font-semibold text-indigo no-underline backdrop-blur-[8px] sm:flex-none sm:px-[26px] sm:text-[15px]">Request Quotation</Link>
             </div>
             <div className="flex flex-wrap gap-x-8 gap-y-4 sm:gap-x-[30px]">
@@ -136,7 +136,7 @@ export default async function HomePage() {
 
         {/* PROCESS */}
         <div className={`pb-2 pt-10 sm:pt-14 ${sectionWrap}`}>
-          <div className="relative overflow-hidden rounded-[26px] bg-[linear-gradient(135deg,rgba(42,43,106,.95),rgba(58,60,152,.92))] p-6 sm:p-[38px] shadow-[0_24px_60px_rgba(42,43,106,.3)]">
+          <div className="relative overflow-hidden rounded-[26px] bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)] p-6 sm:p-[38px] shadow-[0_24px_60px_rgba(42,43,106,.3)]">
             <div className="absolute -right-10 -top-[60px] h-[280px] w-[280px] rounded-full bg-[radial-gradient(circle,rgba(20,155,142,.5),transparent_70%)] blur-[10px]" />
             <div className="relative">
               <div className="font-jbmono mb-2 text-[11px] uppercase tracking-[.14em] text-[#9fe7dc]">How it works</div>
