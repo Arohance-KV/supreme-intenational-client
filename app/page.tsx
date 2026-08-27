@@ -137,7 +137,6 @@ export default async function HomePage() {
         {/* PROCESS */}
         <div className={`pb-2 pt-10 sm:pt-14 ${sectionWrap}`}>
           <div className="relative overflow-hidden rounded-[26px] bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)] p-6 sm:p-[38px] shadow-[0_24px_60px_rgba(42,43,106,.3)]">
-            <div className="absolute -right-10 -top-[60px] h-[280px] w-[280px] rounded-full bg-[radial-gradient(circle,rgba(20,155,142,.5),transparent_70%)] blur-[10px]" />
             <div className="relative">
               <div className="font-jbmono mb-2 text-[11px] uppercase tracking-[.14em] text-[#9fe7dc]">How it works</div>
               <h3 className="mb-6 text-[22px] font-extrabold tracking-[-.02em] text-white sm:mb-7 sm:text-[28px]">From browse to lead in four steps</h3>
