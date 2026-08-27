@@ -4,8 +4,9 @@
 // mapping so the human only has to confirm/correct via dropdown rather than map every column
 // from scratch. Canonical keys for reserved targets MUST match the server's lowercase
 // `RESERVED` set in product-import.service.ts (handle, name, category, description, material,
-// sku, price, originalprice, stock, moq, imageurl, images, visibility, ownercompanyid) --
-// getting one wrong means the server silently treats that column as an attribute (or drops it).
+// sku, price, originalprice, stock, moq, imageurl, images, visibility, ownercompanyid, hsn,
+// gst) -- getting one wrong means the server silently treats that column as an attribute (or
+// drops it), and OMITTING one (as hsn/gst were) means the wizard can't map it at all.
 
 export interface MapTarget {
   key: string; // canonical row key ('' = ignore this column)
@@ -41,6 +42,8 @@ export const RESERVED_TARGETS: MapTarget[] = [
     label: 'OwnerCompanyId',
     synonyms: ['ownercompanyid', 'owner company id', 'company id', 'companyid', 'owner company'],
   },
+  { key: 'hsn', label: 'HSN', synonyms: ['hsn', 'hsn code', 'hsncode', 'tariff', 'tariff code'] },
+  { key: 'gst', label: 'GST', synonyms: ['gst', 'gst rate', 'gst%', 'gst percent', 'tax rate', 'gst slab'] },
 ];
 
 // Extra synonyms for common taxonomy attribute names. Attribute names themselves come from the
