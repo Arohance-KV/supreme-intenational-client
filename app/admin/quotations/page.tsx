@@ -99,12 +99,14 @@ function QuotationsTable() {
         >
           All
         </button>
-        {/* Pending approval: quotes the backroom submitted, awaiting approve & send. */}
+        {/* Awaiting my approval: quotes the backroom submitted, awaiting approve & send.
+            Named distinctly from the 'pending_approval' status chip below (different filter:
+            the `submitted` flag vs the status enum). */}
         <button
           onClick={() => setFilter('submitted', submittedParam ? null : 'true')}
           className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${submittedParam ? 'bg-amber-500 text-white' : 'bg-amber-50 border border-amber-200 text-amber-700 hover:bg-amber-100'}`}
         >
-          Pending approval
+          Awaiting my approval
         </button>
         {QUOTATION_STATUSES.map((s) => (
           <button
@@ -112,7 +114,7 @@ function QuotationsTable() {
             onClick={() => setFilter('status', s)}
             className={`rounded-full px-3 py-1 text-xs font-medium capitalize transition-colors ${statusParam === s ? 'bg-indigo text-white' : 'bg-white/70 border border-line text-slate hover:bg-white'}`}
           >
-            {s}
+            {s.replace(/_/g, ' ')}
           </button>
         ))}
       </div>

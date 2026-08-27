@@ -15,22 +15,23 @@ export const metadata: Metadata = {
 const stats = [
   ['1996', 'Established'],
   ['25+', 'Strong team'],
-  ['9', 'Product categories'],
-  ['South India', '& expanding'],
+  ['25+', 'Associated partners'],
+  ['Nationwide', 'Reach · Personalised service'],
 ];
 
 const directors = [
-  { initials: 'SJ', grad: 'bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)]', name: 'Mr. Surendra B Jain', role: 'Founder & Managing Director', bio: 'Founded the company in 1996 and built it from SV Enterprises into a trusted corporate gifting house across South India.' },
-  { initials: 'SI', grad: 'bg-[linear-gradient(135deg,#149b8e,#13b89f)]', name: 'Director Name', role: 'Director', bio: "Placeholder, share the second director's name, title and bio and I'll drop it in. Photo replaces the slot at left." },
+  { initials: 'SJ', grad: 'bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)]', name: 'Mr. Surendra B Jain', role: 'Founder', bio: 'Founded the company in 1996 and built it from SV Enterprises into a trusted corporate gifting house across South India.' },
+  { initials: 'AK', grad: 'bg-[linear-gradient(135deg,#149b8e,#13b89f)]', name: 'Mr. Amit Kanstiya', role: 'Director', bio: 'Bio coming soon.' },
+  { initials: 'GM', grad: 'bg-[linear-gradient(135deg,#3a3c98,#149b8e)]', name: 'Mr. Gourav Mehta', role: 'Director of Operations', bio: 'Bio coming soon.' },
 ];
 
 const advantages = [
-  { n: '01', t: 'Wide Distribution', d: 'A wide distribution network across India.' },
-  { n: '02', t: 'Premium Quality', d: 'We manufacture and supply premium-quality products.' },
-  { n: '03', t: 'Ethical Business', d: 'We adhere to ethical business practices.' },
-  { n: '04', t: 'Delivery Punctuality', d: 'Punctual delivery, you can rest assured.' },
-  { n: '05', t: 'One-Stop Shop', d: 'A single source for all your gifting needs.' },
-  { n: '06', t: 'Decades of Experience', d: 'More than two decades of experience.' },
+  { n: '01', t: 'Pan-India Reach', d: 'Seamless corporate gifting solutions, delivered across India.' },
+  { n: '02', t: 'Curated Quality', d: 'Premium products selected to reflect your brand and occasion.' },
+  { n: '03', t: 'Trusted & Ethical', d: 'Transparent practices built on long-term relationships and trust.' },
+  { n: '04', t: 'Reliable Execution', d: 'From order to delivery, every detail is managed with precision.' },
+  { n: '05', t: 'End-to-End Solutions', d: 'One partner for sourcing, customisation, packaging, and fulfilment.' },
+  { n: '06', t: '30 Years of Expertise', d: 'Three decades of experience delivering corporate gifting excellence.' },
 ];
 
 const advTags = ['Competitiveness', 'Service & Coordination', 'Commitment', 'Honesty & Politeness', 'Expert Team', 'Customisation', 'Wide Range of Products'];
@@ -80,7 +81,7 @@ export default function AboutPage() {
         <section className="pb-7 pt-2">
           <div className={eyebrow}>Leadership</div>
           <h2 className="mb-[22px] text-[26px] font-extrabold tracking-[-.02em] sm:text-[34px]">Our Directors</h2>
-          <div className="grid grid-cols-1 gap-[18px] md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-[18px] md:grid-cols-3">
             {directors.map((d) => (
               <div key={d.name} className="flex gap-[18px] rounded-[20px] border border-white/80 bg-white/55 p-5 sm:p-[22px] shadow-[0_12px_34px_rgba(34,36,90,.08)] backdrop-blur-[14px]">
                 <div className={`flex h-16 w-16 flex-none items-center justify-center rounded-2xl text-[22px] sm:h-24 sm:w-24 sm:text-[30px] font-extrabold tracking-[-.02em] text-white ${d.grad}`}>{d.initials}</div>

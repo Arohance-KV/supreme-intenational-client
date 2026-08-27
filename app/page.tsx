@@ -44,7 +44,7 @@ export default async function HomePage() {
               <Link href="/quotation" className="flex-1 rounded-[14px] border border-white/[.78] bg-white/60 px-4 py-[15px] text-center text-[14px] font-semibold text-indigo no-underline backdrop-blur-[8px] sm:flex-none sm:px-[26px] sm:text-[15px]">Request Quotation</Link>
             </div>
             <div className="flex flex-wrap gap-x-8 gap-y-4 sm:gap-x-[30px]">
-              {([['500+', 'Enterprise clients', 'bg-[linear-gradient(125deg,#3a3c98,#5644d2)]'], ['12,000+', 'Products', 'bg-[linear-gradient(125deg,#4a3cc0,#13b89f)]'], ['24/7', 'Self-serve', 'bg-[linear-gradient(125deg,#149b8e,#13b89f)]']] as const).map(([n, l, g]) => (
+              {([['30 Years', 'Corporate gifting excellence', 'bg-[linear-gradient(125deg,#3a3c98,#5644d2)]'], ['550+', 'Enterprise clients served', 'bg-[linear-gradient(125deg,#4a3cc0,#13b89f)]'], ['12,000+', 'Products in catalogue', 'bg-[linear-gradient(125deg,#149b8e,#13b89f)]'], ['15M+', 'Gifts delivered nationwide', 'bg-[linear-gradient(125deg,#5644d2,#13b89f)]']] as const).map(([n, l, g]) => (
                 <div key={l}>
                   <div className={`text-[22px] font-extrabold tracking-[-.02em] sm:text-[26px] ${g} ${gradClip}`}>{n}</div>
                   <div className="font-jbmono text-xs uppercase tracking-[.08em] text-muted">{l}</div>
