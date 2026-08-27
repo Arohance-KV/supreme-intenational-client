@@ -158,9 +158,15 @@ function QuotationsTable() {
               </div>
               <span><SourceChip t={q.sourceType} /></span>
               <div className="flex flex-wrap items-center gap-1">
-                <StatusChip status={q.status} />
-                {q.submittedForApprovalAt && (
-                  <span className="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">Pending approval</span>
+                {/* Backroom-submitted quotes awaiting approve & send get one distinct pill
+                    (not stacked on the identical 'pending_approval' status chip). Once acted
+                    on, status moves off pending_approval and the real StatusChip shows. */}
+                {q.submittedForApprovalAt && q.status === 'pending_approval' ? (
+                  <span className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-700">
+                    Awaiting my approval
+                  </span>
+                ) : (
+                  <StatusChip status={q.status} />
                 )}
               </div>
               <span className="text-sm font-bold text-ink">{inr(q.total)}</span>
