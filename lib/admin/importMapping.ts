@@ -16,7 +16,9 @@ export interface MapTarget {
 
 // Reserved product/variant fields the server import pipeline understands directly.
 export const RESERVED_TARGETS: MapTarget[] = [
-  { key: 'handle', label: 'Handle', synonyms: ['handle', 'slug', 'url handle', 'product handle'] },
+  // Displayed as "Product Group" (the shared code that groups a product's variant rows into one
+  // product); 'handle' & 'slug' kept as synonyms so previously-made sheets still auto-map.
+  { key: 'handle', label: 'Product Group', synonyms: ['product group', 'productgroup', 'product code', 'product id', 'group', 'handle', 'slug', 'url handle', 'product handle'] },
   { key: 'name', label: 'Name', synonyms: ['name', 'title', 'product name', 'product title', 'item', 'item name'] },
   { key: 'category', label: 'Category', synonyms: ['category', 'cat', 'type', 'product category'] },
   { key: 'description', label: 'Description', synonyms: ['description', 'desc', 'details', 'product description'] },

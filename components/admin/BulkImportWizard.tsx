@@ -402,15 +402,17 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
               <details className="rounded-xl border border-line bg-white/60 px-4 py-3 text-sm text-slate">
                 <summary className="cursor-pointer font-semibold text-ink">How bulk import works</summary>
                 <ol className="mt-2 list-decimal space-y-1 pl-5">
-                  <li><strong>Download template</strong> (below) — fill the <em>Products</em> sheet, one row per variant. Rows sharing the same <strong>Handle</strong> become one product; put product-level fields (Name, Category, Description) only on that product&rsquo;s first row.</li>
-                  <li><strong>Required for a new product:</strong> <strong>Name</strong>, <strong>Category</strong>, <strong>Price</strong>, <strong>HSN</strong>, and <strong>GST</strong> (one of 0, 5, 12, 18, 28). You map Name/Category/Price in the next step; HSN &amp; GST are checked in the preview. A <strong>Handle</strong> is recommended; if omitted it&rsquo;s derived from the Name. <strong>SKU</strong> is recommended so photos and re-imports match the right variant.</li>
+                  <li><strong>Download template</strong> (below) — fill the <em>Products</em> sheet, <strong>one row per variant</strong>.</li>
+                  <li><strong>Name</strong> = the product&rsquo;s name (e.g. <em>Ceramic Coffee Mug</em>). <strong>Product Group</strong> = a short shared code (e.g. <code>ceramic-coffee-mug</code>) that you repeat on <em>every</em> row of the same product — that&rsquo;s how rows are joined into one product with several variants. Put the product-level fields (Name, Category, Description) only on that product&rsquo;s <strong>first</strong> row; the variant details (SKU, Price, Color/Size) go on <em>each</em> row.</li>
+                  <li className="text-muted"><em>Example: three mug colours = three rows, all with Product Group <code>ceramic-coffee-mug</code>, differing only by SKU and Color. Giving each row a different Product Group would split them into three separate products.</em></li>
+                  <li><strong>Required for a new product:</strong> <strong>Name</strong>, <strong>Category</strong>, <strong>Price</strong>, <strong>HSN</strong>, and <strong>GST</strong> (one of 0, 5, 12, 18, 28). You map Name/Category/Price in the next step; HSN &amp; GST are checked in the preview. A <strong>Product Group</strong> is recommended; if omitted it&rsquo;s derived from the Name. <strong>SKU</strong> is recommended so photos and re-imports match the right variant.</li>
                   <li className="text-muted"><em>Updating existing products (re-import)? Only the cells you fill change — blanks are left as they are, so a prices-only sheet can skip HSN/GST.</em></li>
-                  <li><strong>Images (optional):</strong> upload a folder — name a file after the <strong>Handle</strong> for a gallery photo (<code>handle.jpg</code>, <code>handle-2.jpg</code>) or after a <strong>SKU</strong> for that variant&rsquo;s photo. Anything unmatched you can drag onto the right product in the preview.</li>
+                  <li><strong>Images (optional):</strong> upload a folder — name a file after the <strong>Product Group</strong> for a gallery photo (<code>ceramic-coffee-mug.jpg</code>, <code>ceramic-coffee-mug-2.jpg</code>) or after a <strong>SKU</strong> for that variant&rsquo;s photo. Anything unmatched you can drag onto the right product in the preview.</li>
                   <li><strong>Map &amp; preview:</strong> confirm the column mapping, then review what will be created/updated. {mode === 'admin'
                     ? 'New categories/attribute values can be auto-created on confirm.'
                     : 'Use only categories that already exist (see the Valid values sheet); a new attribute rides along and is finalised when an admin approves.'}</li>
                   <li><strong>Nothing is saved until you confirm.</strong> {mode === 'admin'
-                    ? 'On confirm, products go live (re-importing the same Handle/SKU updates in place).'
+                    ? 'On confirm, products go live (re-importing the same Product Group/SKU updates in place).'
                     : 'On confirm, your products are submitted as drafts for admin approval.'}</li>
                 </ol>
               </details>
