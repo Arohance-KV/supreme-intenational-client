@@ -56,6 +56,10 @@ function getImportApi(mode: Mode): ImportApi {
   };
 }
 
+// Only Name/Category/Price must be MAPPED to proceed. HSN + GST are required for NEW products
+// too, but that's enforced server-side (surfaced as row errors in the preview) rather than as a
+// hard map-step gate — so a prices-only re-import (which legitimately omits HSN/GST columns and
+// only updates existing products) isn't blocked here.
 const REQUIRED_TARGETS: { key: string; label: string }[] = [
   { key: 'name', label: 'Name' },
   { key: 'category', label: 'Category' },
@@ -393,6 +397,24 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
         <div className="max-h-[65vh] overflow-y-auto px-6 py-6">
           {step === 'upload' && (
             <div className="space-y-5">
+              {/* Step-by-step guidance lives here (not inside the downloaded template, which stays
+                  a clean Products + Valid values file). Collapsible so it never blocks a repeat user. */}
+              <details className="rounded-xl border border-line bg-white/60 px-4 py-3 text-sm text-slate">
+                <summary className="cursor-pointer font-semibold text-ink">How bulk import works</summary>
+                <ol className="mt-2 list-decimal space-y-1 pl-5">
+                  <li><strong>Download template</strong> (below) — fill the <em>Products</em> sheet, one row per variant. Rows sharing the same <strong>Handle</strong> become one product; put product-level fields (Name, Category, Description) only on that product&rsquo;s first row.</li>
+                  <li><strong>Required for a new product:</strong> <strong>Name</strong>, <strong>Category</strong>, <strong>Price</strong>, <strong>HSN</strong>, and <strong>GST</strong> (one of 0, 5, 12, 18, 28). You map Name/Category/Price in the next step; HSN &amp; GST are checked in the preview. A <strong>Handle</strong> is recommended; if omitted it&rsquo;s derived from the Name. <strong>SKU</strong> is recommended so photos and re-imports match the right variant.</li>
+                  <li className="text-muted"><em>Updating existing products (re-import)? Only the cells you fill change — blanks are left as they are, so a prices-only sheet can skip HSN/GST.</em></li>
+                  <li><strong>Images (optional):</strong> upload a folder — name a file after the <strong>Handle</strong> for a gallery photo (<code>handle.jpg</code>, <code>handle-2.jpg</code>) or after a <strong>SKU</strong> for that variant&rsquo;s photo. Anything unmatched you can drag onto the right product in the preview.</li>
+                  <li><strong>Map &amp; preview:</strong> confirm the column mapping, then review what will be created/updated. {mode === 'admin'
+                    ? 'New categories/attribute values can be auto-created on confirm.'
+                    : 'Use only categories that already exist (see the Valid values sheet); a new attribute rides along and is finalised when an admin approves.'}</li>
+                  <li><strong>Nothing is saved until you confirm.</strong> {mode === 'admin'
+                    ? 'On confirm, products go live (re-importing the same Handle/SKU updates in place).'
+                    : 'On confirm, your products are submitted as drafts for admin approval.'}</li>
+                </ol>
+              </details>
+
               <div>
                 <label className={labelCls}>Product sheet (.xlsx or .csv)</label>
                 <input type="file" accept=".xlsx,.csv" onChange={handleSheetFile} disabled={parsing} className={fileInputCls} />

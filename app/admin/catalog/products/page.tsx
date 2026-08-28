@@ -8,14 +8,15 @@ import { ApiError } from '@/lib/api';
 import {
   useAdminProductsInfinite,
   useDeleteProduct,
-  useImportProducts,
-  CSV_TEMPLATE,
+  // useImportProducts, CSV_TEMPLATE — old single-file Excel/CSV upload, superseded by Bulk import.
+  // useImportProducts,
+  // CSV_TEMPLATE,
   type AdminProduct,
 } from '@/lib/admin/products';
 import { StatusChip } from '@/components/admin/StatusChip';
 import CreateProductModal from '@/components/admin/CreateProductModal';
 import BulkImportWizard from '@/components/admin/BulkImportWizard';
-import CsvImportButton from '@/components/CsvImportButton';
+// import CsvImportButton from '@/components/CsvImportButton'; // retired in favour of Bulk import
 import { useConfirm } from '@/components/ConfirmDialog';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -124,7 +125,7 @@ function ProductsTable() {
   const queryClient = useQueryClient();
   const [showCreate, setShowCreate] = useState(false);
   const [showBulkImport, setShowBulkImport] = useState(false);
-  const importProducts = useImportProducts();
+  // const importProducts = useImportProducts(); // old Excel/CSV upload — see Bulk import below
 
   // BulkImportWizard isn't a react-query mutation itself (it batches its own commit calls), so
   // its completion doesn't flow through useImportProducts' onSuccess — invalidate the same list
@@ -189,11 +190,14 @@ function ProductsTable() {
           <p className="text-sm text-slate">
             {typeof total === 'number' ? `${total.toLocaleString('en-IN')} products` : ''}
           </p>
+          {/* Old single-file Excel/CSV upload — retired in favour of Bulk import (below),
+              which maps columns, matches an image folder, and previews before committing.
+              Kept commented for quick rollback.
           <CsvImportButton
             importFn={(f) => importProducts.mutateAsync(f)}
             templateCsv={CSV_TEMPLATE}
             templateName="products-template.csv"
-          />
+          /> */}
           <button
             onClick={() => setShowBulkImport(true)}
             className="rounded-full border border-line bg-white/70 px-4 py-2 text-sm font-medium text-slate hover:bg-white"
