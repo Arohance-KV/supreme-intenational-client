@@ -157,18 +157,16 @@ export default function CreateProductModal({
               <label htmlFor="cp-gstRate" className={labelCls}>
                 GST rate
               </label>
-              <select
+              <input
                 id="cp-gstRate"
+                type="number"
+                min={0}
+                max={100}
+                step="any"
                 value={form.gstRate ?? 5}
                 onChange={(e) => setForm({ ...form, gstRate: Number(e.target.value) })}
                 className={fieldCls}
-              >
-                {[0, 5, 12, 18, 28].map((rate) => (
-                  <option key={rate} value={rate}>
-                    {rate}%
-                  </option>
-                ))}
-              </select>
+              />
             </div>
           </div>
 

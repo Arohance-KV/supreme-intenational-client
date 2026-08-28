@@ -980,18 +980,16 @@ function ProductEditForm({
           <label htmlFor="p-gstRate" className="mb-1 block text-sm font-medium text-slate">
             GST rate
           </label>
-          <select
+          <input
             id="p-gstRate"
+            type="number"
+            min={0}
+            max={100}
+            step="any"
             value={fields.gstRate ?? 5}
             onChange={(e) => setFields({ ...fields, gstRate: Number(e.target.value) })}
             className="w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
-          >
-            {[0, 5, 12, 18, 28].map((rate) => (
-              <option key={rate} value={rate}>
-                {rate}%
-              </option>
-            ))}
-          </select>
+          />
         </div>
       </div>
 

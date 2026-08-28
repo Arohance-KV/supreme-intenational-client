@@ -473,18 +473,16 @@ export default function ProductDetailPage({
                 <label htmlFor="product-gstRate" className={labelCls}>
                   GST rate
                 </label>
-                <select
+                <input
                   id="product-gstRate"
+                  type="number"
+                  min={0}
+                  max={100}
+                  step="any"
                   value={fields.gstRate}
                   onChange={(e) => setFields({ ...fields, gstRate: Number(e.target.value) })}
                   className={inputCls}
-                >
-                  {[0, 5, 12, 18, 28].map((rate) => (
-                    <option key={rate} value={rate}>
-                      {rate}%
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
             </div>
 
