@@ -398,7 +398,7 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
           {step === 'upload' && (
             <div className="space-y-5">
               {/* Step-by-step guidance lives here (not inside the downloaded template, which stays
-                  a clean Products + Valid values file). Collapsible so it never blocks a repeat user. */}
+                  a clean Products + Reference values file). Collapsible so it never blocks a repeat user. */}
               <details className="rounded-xl border border-line bg-white/60 px-4 py-3 text-sm text-slate">
                 <summary className="cursor-pointer font-semibold text-ink">How bulk import works</summary>
                 <ol className="mt-2 list-decimal space-y-1 pl-5">
@@ -410,7 +410,7 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
                   <li><strong>Images (optional):</strong> upload a folder — name a file after the <strong>Product Group</strong> for a gallery photo (<code>ceramic-coffee-mug.jpg</code>, <code>ceramic-coffee-mug-2.jpg</code>) or after a <strong>SKU</strong> for that variant&rsquo;s photo. Anything unmatched you can drag onto the right product in the preview.</li>
                   <li><strong>Map &amp; preview:</strong> confirm the column mapping, then review what will be created/updated. {mode === 'admin'
                     ? 'New categories/attribute values can be auto-created on confirm.'
-                    : 'Use only categories that already exist (see the Valid values sheet); a new attribute rides along and is finalised when an admin approves.'}</li>
+                    : 'Use only categories that already exist (see the Reference values sheet); a new attribute rides along and is finalised when an admin approves.'}</li>
                   <li><strong>Nothing is saved until you confirm.</strong> {mode === 'admin'
                     ? 'On confirm, products go live (re-importing the same Product Group/SKU updates in place).'
                     : 'On confirm, your products are submitted as drafts for admin approval.'}</li>
