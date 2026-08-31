@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import { PageHeader } from '@/components/company/PageHeader';
 import { Card } from '@/components/company/Card';
 import { StatCard } from '@/components/company/StatCard';
-import { StatusPill } from '@/components/company/StatusPill';
+import { StatusChip } from '@/components/StatusChip';
 import { useCompanyDashboard, type Range, type DashboardSeriesPoint } from '@/lib/company/dashboard';
 import { useCompanyProfile, useUploadCompanyLogo } from '@/lib/company/profile';
 import { formatLakh, formatIN, initials } from '@/lib/company/format';
@@ -335,7 +335,7 @@ export default function CompanyOverviewPage() {
                           {o.employeeName} · {formatIN(o.points)} pts
                         </p>
                       </div>
-                      <StatusPill status={o.status} />
+                      <StatusChip tone="company" status={o.status} />
                     </li>
                   ))}
                 </ul>

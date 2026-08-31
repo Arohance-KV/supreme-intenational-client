@@ -9,7 +9,7 @@ import {
   useUpdateSubmission,
   type SubmissionInput,
 } from '@/lib/seller/submissions';
-import { SubmissionStatusChip } from '@/components/seller/SubmissionStatusChip';
+import { StatusChip } from '@/components/StatusChip';
 import { SubmissionForm } from '@/components/seller/SubmissionForm';
 
 const card =
@@ -50,7 +50,7 @@ export default function SubmissionDetailPage({ params }: { params: Promise<{ id:
         </Link>
         <div className="flex items-center justify-between gap-4">
           <h1 className="text-[26px] font-extrabold tracking-[-.02em] text-ink">{s.name}</h1>
-          <SubmissionStatusChip status={s.status} />
+          <StatusChip tone="seller" status={s.status} />
         </div>
       </div>
 

@@ -10,7 +10,7 @@ import {
   type AdminSeller,
   type SellerStatus,
 } from '@/lib/admin/sellers';
-import { StatusChip } from '@/components/admin/StatusChip';
+import { StatusChip } from '@/components/StatusChip';
 
 const GLASS = 'border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)]';
 const COLS = 'grid-cols-[1.5fr_90px_90px_140px_120px_1.4fr]';

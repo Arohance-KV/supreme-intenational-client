@@ -9,7 +9,7 @@ import {
   type LeadType,
   type LeadFollowUpStatus,
 } from '@/lib/admin/enquiries';
-import { StatusChip } from '@/components/admin/StatusChip';
+import { StatusChip } from '@/components/StatusChip';
 import { ApiError } from '@/lib/api';
 import { useConfirm } from '@/components/ConfirmDialog';
 

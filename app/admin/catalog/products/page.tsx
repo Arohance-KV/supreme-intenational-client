@@ -13,7 +13,7 @@ import {
   // CSV_TEMPLATE,
   type AdminProduct,
 } from '@/lib/admin/products';
-import { StatusChip } from '@/components/admin/StatusChip';
+import { StatusChip } from '@/components/StatusChip';
 import CreateProductModal from '@/components/admin/CreateProductModal';
 import BulkImportWizard from '@/components/admin/BulkImportWizard';
 // import CsvImportButton from '@/components/CsvImportButton'; // retired in favour of Bulk import

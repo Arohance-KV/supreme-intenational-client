@@ -12,7 +12,7 @@ import {
   type QuotationStatus,
 } from '@/lib/admin/enquiries';
 import { useAdminProfile } from '@/lib/admin/userAuth';
-import { StatusChip } from '@/components/admin/StatusChip';
+import { StatusChip } from '@/components/StatusChip';
 import { inr, fmtDateTime } from '@/lib/admin/format';
 import { useConfirm } from '@/components/ConfirmDialog';
 

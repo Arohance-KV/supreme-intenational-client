@@ -11,7 +11,7 @@ import {
   type CreateCouponBody,
   type UpdateCouponBody,
 } from '@/lib/admin/coupons';
-import { StatusChip } from '@/components/admin/StatusChip';
+import { StatusChip } from '@/components/StatusChip';
 import { inr, fmtDate } from '@/lib/admin/format';
 import { useConfirm } from '@/components/ConfirmDialog';
 

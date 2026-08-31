@@ -4,12 +4,13 @@ import { use, useState, useEffect, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { ApiError } from '@/lib/api';
-import { StatusChip } from '@/components/admin/StatusChip';
+import { StatusChip } from '@/components/StatusChip';
 import { useAdminProducts } from '@/lib/admin/products';
 import { useCategories } from '@/lib/admin/taxonomy';
 import CreateProductModal from '@/components/admin/CreateProductModal';
 import ImageUploadField from '@/components/admin/ImageUploadField';
 import PortalBrandingSection from '@/components/admin/PortalBrandingSection';
+import { useDebounced } from '@/hooks/useDebounced';
 import { useConfirm } from '@/components/ConfirmDialog';
 import {
   useCompany,
@@ -1287,15 +1288,6 @@ function EmployeesSection({
 }
 
 // ── Searchable add picker ─────────────────────────────────────────────────────
-
-function useDebounced<T>(value: T, ms = 300): T {
-  const [v, setV] = useState(value);
-  useEffect(() => {
-    const t = setTimeout(() => setV(value), ms);
-    return () => clearTimeout(t);
-  }, [value, ms]);
-  return v;
-}
 
 interface PickerOption {
   id: string;

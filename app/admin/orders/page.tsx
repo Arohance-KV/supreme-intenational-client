@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAdminOrders, useOrderCompanies, type OrderStatus } from '@/lib/admin/orders';
-import { StatusChip } from '@/components/admin/StatusChip';
+import { StatusChip } from '@/components/StatusChip';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 

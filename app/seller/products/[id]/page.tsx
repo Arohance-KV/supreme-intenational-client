@@ -12,6 +12,7 @@ import {
 } from '@/lib/seller/products';
 import type { ProductVariant } from '@/lib/catalog';
 import { useConfirm } from '@/components/ConfirmDialog';
+import { GstRateInput } from '@/components/GstRateInput';
 
 // Shared field styling — matches the admin catalogue edit page.
 const inputCls =
@@ -473,14 +474,10 @@ export default function ProductDetailPage({
                 <label htmlFor="product-gstRate" className={labelCls}>
                   GST rate
                 </label>
-                <input
+                <GstRateInput
                   id="product-gstRate"
-                  type="number"
-                  min={0}
-                  max={100}
-                  step="any"
                   value={fields.gstRate}
-                  onChange={(e) => setFields({ ...fields, gstRate: Number(e.target.value) })}
+                  onChange={(gstRate) => setFields({ ...fields, gstRate })}
                   className={inputCls}
                 />
               </div>

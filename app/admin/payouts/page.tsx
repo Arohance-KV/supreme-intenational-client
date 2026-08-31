@@ -9,7 +9,7 @@ import {
   type AdminPayout,
   type SellerPayoutStatus,
 } from '@/lib/admin/payouts';
-import { StatusChip } from '@/components/admin/StatusChip';
+import { StatusChip } from '@/components/StatusChip';
 import { inr, fmtDate, fmtDateTime } from '@/lib/admin/format';
 import { useConfirm } from '@/components/ConfirmDialog';
 

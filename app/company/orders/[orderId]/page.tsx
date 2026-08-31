@@ -3,7 +3,7 @@
 import { use } from 'react';
 import Link from 'next/link';
 import { Card } from '@/components/company/Card';
-import { StatusPill } from '@/components/company/StatusPill';
+import { StatusChip } from '@/components/StatusChip';
 import { useCompanyOrder } from '@/lib/company/orders';
 import { formatIN, formatDate } from '@/lib/company/format';
 
@@ -40,7 +40,7 @@ export default function CompanyOrderDetailPage({ params }: { params: Promise<{ o
                 <p className="text-[11px] uppercase tracking-[.05em] text-muted">Order #</p>
                 <p className="mt-1 font-jbmono text-[18px] font-bold text-ink">{order.orderId}</p>
               </div>
-              <StatusPill status={order.status} />
+              <StatusChip tone="company" status={order.status} />
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">

@@ -5,28 +5,13 @@ import { useSellerMe } from '@/lib/seller/me';
 // import { useEarningsSummary } from '@/lib/seller/payouts';
 import { useSellerDashboard } from '@/lib/seller/dashboard';
 import SellerBulkImportButton from '@/components/seller/SellerBulkImportButton';
+import { StatusChip } from '@/components/StatusChip';
+import { StatCard } from '@/components/StatCard';
 
 // ponytail: only used by the hidden payout KPIs — restore with them
 // function inr(n: number): string {
 //   return '₹' + n.toLocaleString('en-IN');
 // }
-
-const STATUS_CHIP: Record<string, string> = {
-  pending: 'text-[#b5801e] bg-[rgba(224,163,59,.16)]',
-  active: 'text-[#1a8f5a] bg-[rgba(31,170,107,.12)]',
-  rejected: 'text-[#d8524d] bg-[rgba(224,82,77,.12)]',
-  suspended: 'text-slate bg-[rgba(91,93,122,.12)]',
-};
-
-function Kpi({ label, value, sub, tone }: { label: string; value: string; sub: string; tone?: string }) {
-  return (
-    <div className="rounded-[18px] border border-white/80 bg-white/[.62] p-5 shadow-[0_10px_30px_rgba(34,36,90,.07)] backdrop-blur-[16px]">
-      <div className="font-jbmono mb-3 text-[10px] uppercase tracking-[.08em] text-muted">{label}</div>
-      <div className={`text-[30px] font-extrabold tracking-[-.02em] ${tone ?? 'text-ink'}`}>{value}</div>
-      <div className="mt-1.5 text-[11px] text-muted">{sub}</div>
-    </div>
-  );
-}
 
 const STATUS_LABEL: Record<string, string> = {
   submitted: 'In review',
@@ -67,27 +52,25 @@ export default function SellerDashboardPage() {
       {me && (
         <div className="mb-5 flex flex-wrap items-center gap-3 rounded-[18px] border border-white/80 bg-white/[.62] px-5 py-3.5 backdrop-blur-[16px]">
           <span className="text-sm font-bold text-ink">Account status</span>
-          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-bold capitalize ${STATUS_CHIP[me.status] ?? STATUS_CHIP.suspended}`}>
-            {me.status}
-          </span>
+          <StatusChip tone="sellerAccount" status={me.status} />
           <span className="text-[13px] text-slate">Platform margin: {me.marginPercent}%</span>
         </div>
       )}
 
       {/* Performance KPIs */}
       <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Kpi label="Live products" value={dash ? String(dash.liveProducts) : '—'} sub={dash ? `${dash.inReview} in review` : ''} />
-        <Kpi label="In quotations" value={dash ? String(dash.inQuotations) : '—'} sub="times added to quotes" />
-        <Kpi label="Catalogue views" value={dash ? dash.catalogueViews.toLocaleString('en-IN') : '—'} sub="this month" />
+        <StatCard label="Live products" value={dash ? String(dash.liveProducts) : '—'} sub={dash ? `${dash.inReview} in review` : ''} />
+        <StatCard label="In quotations" value={dash ? String(dash.inQuotations) : '—'} sub="times added to quotes" />
+        <StatCard label="Catalogue views" value={dash ? dash.catalogueViews.toLocaleString('en-IN') : '—'} sub="this month" />
         {/* ponytail: payout figures hidden — uncomment to restore
-        <Kpi label="Est. payout" value={dash ? inr(dash.outstanding) : (summary ? inr(summary.outstanding) : '—')} sub="after platform margin" tone="text-[#b5801e]" />
+        <StatCard label="Est. payout" value={dash ? inr(dash.outstanding) : (summary ? inr(summary.outstanding) : '—')} sub="after platform margin" tone="text-[#b5801e]" />
         */}
       </div>
 
       {/* Earnings (settled / lifetime) — ponytail: hidden, uncomment to restore
       <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Kpi label="Settled" value={summary ? inr(summary.settled) : '—'} sub="paid out to you" tone="text-[#1a8f5a]" />
-        <Kpi label="Lifetime earnings" value={summary ? inr(summary.lifetime) : '—'} sub="since you joined" />
+        <StatCard label="Settled" value={summary ? inr(summary.settled) : '—'} sub="paid out to you" tone="text-[#1a8f5a]" />
+        <StatCard label="Lifetime earnings" value={summary ? inr(summary.lifetime) : '—'} sub="since you joined" />
       </div>
       */}
 

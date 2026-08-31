@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ApiError } from '@/lib/api';
 import ImageUploadField from '@/components/admin/ImageUploadField';
 import { readableTextColor } from '@/lib/color';
@@ -10,23 +10,13 @@ import {
   useCompanyProducts, useUpdateCompany, useStagePortalBranding,
   type AdminCompany, type PortalAnnouncement, type PortalContentBlock, type PortalAbout, type PortalStat,
 } from '@/lib/admin/companies';
+import { useDebounced } from '@/hooks/useDebounced';
 
 const inputCls = 'w-full rounded-lg border border-line bg-white/70 px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20';
 const labelCls = 'mb-1 block text-xs font-medium text-slate';
 const sectionCls = 'rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] p-5 sm:p-6';
 const primaryBtn = 'rounded-lg bg-gradient-to-br from-indigo to-indigo2 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90 disabled:opacity-60';
 const subBtn = 'rounded-lg border border-line px-3 py-1.5 text-xs font-medium text-slate hover:bg-white/70';
-
-// Local debounce hook — mirrors the one defined in app/admin/companies/[id]/page.tsx
-// (not exported from there, so re-declared here for the featured-products search).
-function useDebounced<T>(value: T, ms = 300): T {
-  const [v, setV] = useState(value);
-  useEffect(() => {
-    const t = setTimeout(() => setV(value), ms);
-    return () => clearTimeout(t);
-  }, [value, ms]);
-  return v;
-}
 
 export default function PortalBrandingSection({ company }: { company: AdminCompany }) {
   const { data: me } = useAdminProfile();

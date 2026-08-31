@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { useQueryClient } from '@tanstack/react-query';
 import { useOrder, useRetryPayment, useVerifyPayment } from '@/lib/employee/orders';
 import { loadRazorpay, openRazorpay } from '@/lib/employee/razorpay';
-import { glass, eyebrow, pageWrap, statusPill, primaryBtn } from '@/components/employee/ui';
+import { glass, eyebrow, pageWrap, primaryBtn } from '@/components/employee/ui';
+import { StatusChip } from '@/components/StatusChip';
 import { useConfirm } from '@/components/ConfirmDialog';
 
 function fmt(n: number | undefined | null) {
@@ -159,7 +160,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ orderId:
                   {order.createdAt && <p className="mt-1 text-xs text-muted">{fmtDate(order.createdAt)}</p>}
                 </div>
                 <div className="text-right">
-                  <span className={statusPill(order.status)}>{order.status}</span>
+                  <StatusChip tone="employee" status={order.status} />
                   <p className="mt-2 text-2xl font-extrabold tracking-[-.02em] text-ink">{fmt(order.billing?.total)}</p>
                   {saved > 0 && <p className="text-xs font-semibold text-[#1a8f5a]">You saved {fmt(saved)}</p>}
                 </div>

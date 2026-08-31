@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import GenerateCatalogueModal from '@/components/GenerateCatalogueModal';
 import Filters from '@/components/Filters';
+import { useDebounced } from '@/hooks/useDebounced';
 
 const selectCls =
   'rounded-xl border border-line bg-white/80 px-3 py-2.5 text-sm text-ink outline-none transition-colors focus:border-accent focus:bg-white';
@@ -47,18 +48,16 @@ export default function ProductsToolbar() {
 
   // Local input mirrors the URL; debounce writes back so we don't navigate per keystroke.
   const [term, setTerm] = useState(search);
+  const debouncedTerm = useDebounced(term, 350);
   useEffect(() => {
-    const id = setTimeout(() => {
-      if (term.trim() === search) return;
-      const p = new URLSearchParams(searchParams.toString());
-      p.delete('page');
-      if (term.trim()) p.set('search', term.trim()); else p.delete('search');
-      const qs = p.toString();
-      router.push(qs ? '/products?' + qs : '/products');
-    }, 350);
-    return () => clearTimeout(id);
+    if (debouncedTerm.trim() === search) return;
+    const p = new URLSearchParams(searchParams.toString());
+    p.delete('page');
+    if (debouncedTerm.trim()) p.set('search', debouncedTerm.trim()); else p.delete('search');
+    const qs = p.toString();
+    router.push(qs ? '/products?' + qs : '/products');
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [term]);
+  }, [debouncedTerm]);
 
   const onSort = (v: string) => {
     const p = new URLSearchParams(searchParams.toString());

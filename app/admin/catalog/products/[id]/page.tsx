@@ -22,7 +22,8 @@ import {
 } from '@/lib/admin/products';
 import { useAttributes } from '@/lib/admin/taxonomy';
 import { useAdminProfile } from '@/lib/admin/userAuth';
-import { StatusChip } from '@/components/admin/StatusChip';
+import { StatusChip } from '@/components/StatusChip';
+import { GstRateInput } from '@/components/GstRateInput';
 import { useConfirm } from '@/components/ConfirmDialog';
 import type { ProductVariant } from '@/lib/catalog';
 
@@ -980,14 +981,10 @@ function ProductEditForm({
           <label htmlFor="p-gstRate" className="mb-1 block text-sm font-medium text-slate">
             GST rate
           </label>
-          <input
+          <GstRateInput
             id="p-gstRate"
-            type="number"
-            min={0}
-            max={100}
-            step="any"
             value={fields.gstRate ?? 5}
-            onChange={(e) => setFields({ ...fields, gstRate: Number(e.target.value) })}
+            onChange={(gstRate) => setFields({ ...fields, gstRate })}
             className="w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
         </div>

@@ -9,7 +9,7 @@ import {
   type AdminCompany,
   type CreateCompanyBody,
 } from '@/lib/admin/companies';
-import { StatusChip } from '@/components/admin/StatusChip';
+import { StatusChip } from '@/components/StatusChip';
 
 // ── Create company modal ──────────────────────────────────────────────────────
 

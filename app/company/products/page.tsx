@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { PageHeader } from '@/components/company/PageHeader';
 import { Card } from '@/components/company/Card';
-import { StatusPill } from '@/components/company/StatusPill';
+import { StatusChip } from '@/components/StatusChip';
 import {
   useCompanyProducts,
   usePatchProduct,
@@ -162,7 +162,7 @@ function ProductRow({ product }: { product: CompanyProduct }) {
       </span>
 
       <span>
-        <StatusPill status={product.status} />
+        <StatusChip tone="company" status={product.status} />
       </span>
 
       <span className="flex flex-col gap-1">

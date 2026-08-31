@@ -8,6 +8,7 @@ import { useCreateProduct, type CreateProductBody } from '@/lib/admin/products';
 import { useCategories } from '@/lib/admin/taxonomy';
 import { useCompanies } from '@/lib/admin/companies';
 import { useAdminProfile } from '@/lib/admin/userAuth';
+import { GstRateInput } from '@/components/GstRateInput';
 
 const fieldCls =
   'w-full rounded-xl border border-line bg-white/70 px-3.5 py-2.5 text-sm text-ink transition-colors placeholder:text-muted focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20';
@@ -157,14 +158,10 @@ export default function CreateProductModal({
               <label htmlFor="cp-gstRate" className={labelCls}>
                 GST rate
               </label>
-              <input
+              <GstRateInput
                 id="cp-gstRate"
-                type="number"
-                min={0}
-                max={100}
-                step="any"
                 value={form.gstRate ?? 5}
-                onChange={(e) => setForm({ ...form, gstRate: Number(e.target.value) })}
+                onChange={(gstRate) => setForm({ ...form, gstRate })}
                 className={fieldCls}
               />
             </div>

@@ -3,7 +3,7 @@
 import { use, useState, Suspense, useEffect } from 'react';
 import Link from 'next/link';
 import { ApiError } from '@/lib/api';
-import { StatusChip } from '@/components/admin/StatusChip';
+import { StatusChip } from '@/components/StatusChip';
 import {
   useSeller,
   useUpdateSellerStatus,

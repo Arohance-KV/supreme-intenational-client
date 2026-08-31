@@ -9,7 +9,7 @@ import {
   useRefundOrder,
   type OrderStatus,
 } from '@/lib/admin/orders';
-import { StatusChip } from '@/components/admin/StatusChip';
+import { StatusChip } from '@/components/StatusChip';
 import { useConfirm } from '@/components/ConfirmDialog';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

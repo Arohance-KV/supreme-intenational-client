@@ -8,7 +8,7 @@ import {
   useQuotationAnalytics,
   type QuotationStatus,
 } from '@/lib/admin/enquiries';
-import { StatusChip } from '@/components/admin/StatusChip';
+import { StatusChip } from '@/components/StatusChip';
 import { inr, fmtDateTime } from '@/lib/admin/format';
 
 const GLASS = 'border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)]';

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { PageHeader } from '@/components/company/PageHeader';
 import { Card } from '@/components/company/Card';
-import { StatusPill } from '@/components/company/StatusPill';
+import { StatusChip } from '@/components/StatusChip';
 import { useCompanyOrders, exportCompanyOrdersCsv, type OrderStatus } from '@/lib/company/orders';
 import { formatIN } from '@/lib/company/format';
 
@@ -171,7 +171,7 @@ export default function CompanyOrdersPage() {
                   <span className="text-ink">{order.qty}</span>
                   <span className="font-bold text-ink">{formatIN(order.points)}</span>
                   <span>
-                    <StatusPill status={order.status} />
+                    <StatusChip tone="company" status={order.status} />
                   </span>
                 </Link>
               ))}

@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { ApiError } from '@/lib/api';
 import { useAdminTickets, useAdminTicket, useAdminReply, useAdminClose, type TicketStatus } from '@/lib/admin/support';
-import { StatusChip } from '@/components/admin/StatusChip';
+import { StatusChip } from '@/components/StatusChip';
 
 const CARD = 'rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)]';
 const FILTERS: (TicketStatus | 'all')[] = ['all', 'open', 'answered', 'closed'];

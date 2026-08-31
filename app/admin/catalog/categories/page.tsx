@@ -10,7 +10,7 @@ import {
   type CreateCategoryBody,
   type UpdateCategoryBody,
 } from '@/lib/admin/taxonomy';
-import { StatusChip } from '@/components/admin/StatusChip';
+import { StatusChip } from '@/components/StatusChip';
 import ImageUploadField from '@/components/admin/ImageUploadField';
 
 // ── Create form ───────────────────────────────────────────────────────────────

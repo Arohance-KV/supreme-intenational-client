@@ -8,7 +8,7 @@ import {
   useDeleteBlog,
   type AdminBlog,
 } from '@/lib/admin/blogs';
-import { StatusChip } from '@/components/admin/StatusChip';
+import { StatusChip } from '@/components/StatusChip';
 import { fmtDate } from '@/lib/admin/format';
 import { useConfirm } from '@/components/ConfirmDialog';
 

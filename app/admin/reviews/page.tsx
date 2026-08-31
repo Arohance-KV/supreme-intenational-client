@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useState } from 'react';
 import { ApiError } from '@/lib/api';
 import {
   useReviews,
@@ -16,16 +16,7 @@ import { useCustomers } from '@/lib/admin/customers';
 import { fmtDate } from '@/lib/admin/format';
 import { useConfirm } from '@/components/ConfirmDialog';
 import SearchSelect, { type SearchOption } from '@/components/admin/SearchSelect';
-
-// Debounce a fast-changing value (search box) so we don't fire a query per keystroke.
-function useDebounced<T>(value: T, ms = 300): T {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const id = setTimeout(() => setDebounced(value), ms);
-    return () => clearTimeout(id);
-  }, [value, ms]);
-  return debounced;
-}
+import { useDebounced } from '@/hooks/useDebounced';
 
 /** Safely extract product name from populated or raw productId */
 function getProductName(productId: AdminReview['productId']): string {

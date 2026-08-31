@@ -4,7 +4,7 @@ import { Suspense, useState } from 'react';
 import Link from 'next/link';
 import { ApiError } from '@/lib/api';
 import { useSubmissions, type AdminSubmission, type SubmissionStatus } from '@/lib/admin/submissions';
-import { StatusChip } from '@/components/admin/StatusChip';
+import { StatusChip } from '@/components/StatusChip';
 import { fmtDate } from '@/lib/admin/format';
 
 // ── Submission row ────────────────────────────────────────────────────────────

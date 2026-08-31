@@ -25,10 +25,15 @@ export async function apiFetch<T>(
   path: string,
   opts?: ApiFetchOptions,
 ): Promise<T> {
+  // FormData bodies (file uploads) must NOT be JSON-encoded and must not carry an
+  // explicit Content-Type — the browser sets the multipart boundary itself.
+  const isFormData =
+    typeof FormData !== 'undefined' && opts?.body instanceof FormData;
+
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
     'x-session-id': getSessionId(),
   };
+  if (!isFormData) headers['Content-Type'] = 'application/json';
 
   if (typeof window !== 'undefined') {
     const token = localStorage.getItem(opts?.tokenKey ?? 'token');
@@ -41,7 +46,11 @@ export async function apiFetch<T>(
     headers,
     // H6: send the HttpOnly auth cookie on cross-origin (same-site subdomain) requests
     credentials: 'include',
-    body: opts?.body ? JSON.stringify(opts.body) : undefined,
+    body: isFormData
+      ? (opts!.body as FormData)
+      : opts?.body
+        ? JSON.stringify(opts.body)
+        : undefined,
   });
 
   const json = await res.json();

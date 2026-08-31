@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useOrders, type OrderSummary, type OrderStatus } from '@/lib/employee/orders';
-import { glass, primaryBtn, secondaryBtn, eyebrow, pageWrap, statusPill } from '@/components/employee/ui';
+import { glass, primaryBtn, secondaryBtn, eyebrow, pageWrap } from '@/components/employee/ui';
+import { StatusChip } from '@/components/StatusChip';
 
 function fmt(n: number | undefined | null) {
   if (n === undefined || n === null) return '—';
@@ -45,7 +46,7 @@ function OrderCard({ order }: { order: OrderSummary }) {
       className={`group block rounded-[20px] p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_50px_rgba(34,36,90,.14)] sm:p-5 ${glass}`}
     >
       <div className="mb-3 flex items-center gap-2.5">
-        <span className={statusPill(order.status)}>{order.status}</span>
+        <StatusChip tone="employee" status={order.status} />
         <span className="h-1 w-1 rounded-full bg-muted/60" aria-hidden />
         <span className="text-xs text-muted">{fmtDate(order.createdAt)}</span>
       </div>

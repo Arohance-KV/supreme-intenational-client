@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { PageHeader } from '@/components/company/PageHeader';
 import { Card } from '@/components/company/Card';
-import { StatusPill } from '@/components/company/StatusPill';
+import { StatusChip } from '@/components/StatusChip';
 import {
   useCompanyEnquiries,
   useRaiseEnquiry,
@@ -46,7 +46,7 @@ function EnquiryRow({ enquiry }: { enquiry: Enquiry }) {
         <p className="mt-0.5 truncate text-[11px] capitalize text-muted">{enquiry.type}</p>
       </div>
       <div className="flex flex-none flex-col items-end gap-1">
-        <StatusPill status={enquiry.status} />
+        <StatusChip tone="company" status={enquiry.status} />
         <span className="text-[11px] text-muted">{formatDate(enquiry.createdAt)}</span>
       </div>
     </div>

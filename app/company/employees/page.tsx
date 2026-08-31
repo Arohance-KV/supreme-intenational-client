@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { PageHeader } from '@/components/company/PageHeader';
 import { Card } from '@/components/company/Card';
-import { StatusPill } from '@/components/company/StatusPill';
+import { StatusChip } from '@/components/StatusChip';
 import {
   useCompanyEmployees,
   useAddEmployee,
@@ -128,7 +128,7 @@ function EmployeeRow({ employee }: { employee: Employee }) {
       <span className="font-normal text-slate">{formatIN(employee.wallet.used)}</span>
 
       <span className="flex items-center gap-2">
-        <StatusPill status={employee.employeeStatus} />
+        <StatusChip tone="company" status={employee.employeeStatus} />
         <button
           type="button"
           onClick={handleToggle}
@@ -576,7 +576,7 @@ function RequestPointsModal({
                         </span>
                       )}
                     </span>
-                    <StatusPill status={p.status} />
+                    <StatusChip tone="company" status={p.status} />
                   </li>
                 ))}
               </ul>

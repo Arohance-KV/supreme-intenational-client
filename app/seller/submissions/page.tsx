@@ -1,19 +1,10 @@
 'use client';
 import Link from 'next/link';
 import { useMySubmissions } from '@/lib/seller/submissions';
-import { SubmissionStatusChip } from '@/components/seller/SubmissionStatusChip';
+import { StatusChip } from '@/components/StatusChip';
 import DcPhoto from '@/components/DcPhoto';
 import SellerBulkImportButton from '@/components/seller/SellerBulkImportButton';
-
-function Kpi({ label, value, sub }: { label: string; value: number; sub: string }) {
-  return (
-    <div className="rounded-[18px] border border-white/80 bg-white/[.62] p-5 shadow-[0_10px_30px_rgba(34,36,90,.07)] backdrop-blur-[16px]">
-      <div className="font-jbmono mb-3 text-[10px] uppercase tracking-[.08em] text-muted">{label}</div>
-      <div className="text-[30px] font-extrabold tracking-[-.02em] text-ink">{value}</div>
-      <div className="mt-1.5 text-[11px] text-muted">{sub}</div>
-    </div>
-  );
-}
+import { StatCard } from '@/components/StatCard';
 
 export default function SubmissionsPage() {
   const { data, isLoading } = useMySubmissions();
@@ -41,9 +32,9 @@ export default function SubmissionsPage() {
 
       {/* KPIs from real submission counts */}
       <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Kpi label="In review" value={count('submitted')} sub="awaiting Supreme approval" />
-        <Kpi label="Approved" value={count('approved')} sub="now live" />
-        <Kpi label="Rejected" value={count('rejected')} sub="action needed from you" />
+        <StatCard label="In review" value={count('submitted')} sub="awaiting Supreme approval" />
+        <StatCard label="Approved" value={count('approved')} sub="now live" />
+        <StatCard label="Rejected" value={count('rejected')} sub="action needed from you" />
       </div>
 
       {/* How approval works */}
@@ -106,7 +97,7 @@ export default function SubmissionsPage() {
               {item.status === 'rejected' && (
                 <span className="rounded-[9px] bg-[rgba(42,43,106,.07)] px-3 py-1.5 text-[11px] font-semibold text-indigo">View notes</span>
               )}
-              <SubmissionStatusChip status={item.status} />
+              <StatusChip tone="seller" status={item.status} />
             </Link>
           ))}
       </div>
