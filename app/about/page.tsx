@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
 import DcFooter from '@/components/DcFooter';
-import DcPhoto from '@/components/DcPhoto';
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'], variable: '--font-jakarta' });
 const mono = JetBrains_Mono({ subsets: ['latin'], weight: ['400', '500', '700'], variable: '--font-mono-jb' });
@@ -64,7 +64,9 @@ export default function AboutPage() {
               <span className="h-1.5 w-1.5 rounded-full bg-accent" />Launching soon in Ahmedabad, Chennai, Hyderabad, Mumbai &amp; Pune
             </div>
           </div>
-          <DcPhoto seed="about-facility" className="min-h-[220px] sm:min-h-[340px] rounded-[22px] border border-white/70 shadow-[0_14px_40px_rgba(34,36,90,.1)]" />
+          <div className="relative min-h-[220px] overflow-hidden rounded-[22px] border border-white/70 shadow-[0_14px_40px_rgba(34,36,90,.1)] sm:min-h-[340px]">
+            <Image src="/about.jpeg" alt="Supreme International directors" fill sizes="(max-width: 768px) 100vw, 45vw" className="object-cover object-top" />
+          </div>
         </section>
 
         {/* STATS */}
@@ -83,13 +85,13 @@ export default function AboutPage() {
           <h2 className="mb-[22px] text-[26px] font-extrabold tracking-[-.02em] sm:text-[34px]">Our Directors</h2>
           <div className="grid grid-cols-1 gap-[18px] md:grid-cols-3">
             {directors.map((d) => (
-              <div key={d.name} className="flex gap-[18px] rounded-[20px] border border-white/80 bg-white/55 p-5 sm:p-[22px] shadow-[0_12px_34px_rgba(34,36,90,.08)] backdrop-blur-[14px]">
+              <div key={d.name} className="flex flex-col overflow-hidden rounded-[20px] border border-white/80 bg-white/55 shadow-[0_12px_34px_rgba(34,36,90,.08)] backdrop-blur-[14px]">
                 {d.img ? (
-                  <img src={d.img} alt={d.name} className="h-16 w-16 flex-none rounded-2xl object-cover sm:h-24 sm:w-24" />
+                  <Image src={d.img} alt={d.name} width={640} height={640} className="aspect-square w-full object-cover" />
                 ) : (
-                  <div className={`flex h-16 w-16 flex-none items-center justify-center rounded-2xl text-[22px] sm:h-24 sm:w-24 sm:text-[30px] font-extrabold tracking-[-.02em] text-white ${d.grad}`}>{d.initials}</div>
+                  <div className={`flex aspect-square w-full items-center justify-center text-[64px] font-extrabold tracking-[-.02em] text-white ${d.grad}`}>{d.initials}</div>
                 )}
-                <div>
+                <div className="p-5 sm:p-[22px]">
                   <div className="text-[18px] font-extrabold tracking-[-.01em]">{d.name}</div>
                   <div className="font-jbmono my-[5px] mb-2.5 text-[11px] uppercase tracking-[.06em] text-accent">{d.role}</div>
                   <div className="text-[13px] leading-[1.55] text-slate">{d.bio}</div>
