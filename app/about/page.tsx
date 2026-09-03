@@ -20,9 +20,9 @@ const stats = [
 ];
 
 const directors = [
-  { initials: 'SJ', grad: 'bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)]', name: 'Mr. Surendra B Jain', role: 'Founder', bio: 'Founded the company in 1996 and built it from SV Enterprises into a trusted corporate gifting house across South India.' },
-  { initials: 'AK', grad: 'bg-[linear-gradient(135deg,#149b8e,#13b89f)]', name: 'Mr. Amit Kanstiya', role: 'Director', bio: 'Bio coming soon.' },
-  { initials: 'GM', grad: 'bg-[linear-gradient(135deg,#3a3c98,#149b8e)]', name: 'Mr. Gourav Mehta', role: 'Director of Operations', bio: 'Bio coming soon.' },
+  { initials: 'SJ', img: '/directors/surendra.webp', grad: 'bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)]', name: 'Mr. Surendra B Jain', role: 'Founder', bio: 'Visionary leadership backed by 30 years of industry experience—building trust, relationships, and driving strategic growth and innovation.' },
+  { initials: 'AK', img: '/directors/amit.webp', grad: 'bg-[linear-gradient(135deg,#149b8e,#13b89f)]', name: 'Mr. Amit Kanstiya', role: 'Director', bio: 'A calm and approachable leader who maintains strong client relationships across the corporate gifting landscape.' },
+  { initials: 'GM', img: '/directors/gourav.jpeg', grad: 'bg-[linear-gradient(135deg,#3a3c98,#149b8e)]', name: 'Mr. Gourav Mehta', role: 'Director of Operations', bio: 'Driving operational excellence through precision, efficiency, and seamless execution—from sourcing to timely delivery.' },
 ];
 
 const advantages = [
@@ -84,7 +84,11 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 gap-[18px] md:grid-cols-3">
             {directors.map((d) => (
               <div key={d.name} className="flex gap-[18px] rounded-[20px] border border-white/80 bg-white/55 p-5 sm:p-[22px] shadow-[0_12px_34px_rgba(34,36,90,.08)] backdrop-blur-[14px]">
-                <div className={`flex h-16 w-16 flex-none items-center justify-center rounded-2xl text-[22px] sm:h-24 sm:w-24 sm:text-[30px] font-extrabold tracking-[-.02em] text-white ${d.grad}`}>{d.initials}</div>
+                {d.img ? (
+                  <img src={d.img} alt={d.name} className="h-16 w-16 flex-none rounded-2xl object-cover sm:h-24 sm:w-24" />
+                ) : (
+                  <div className={`flex h-16 w-16 flex-none items-center justify-center rounded-2xl text-[22px] sm:h-24 sm:w-24 sm:text-[30px] font-extrabold tracking-[-.02em] text-white ${d.grad}`}>{d.initials}</div>
+                )}
                 <div>
                   <div className="text-[18px] font-extrabold tracking-[-.01em]">{d.name}</div>
                   <div className="font-jbmono my-[5px] mb-2.5 text-[11px] uppercase tracking-[.06em] text-accent">{d.role}</div>
