@@ -1,9 +1,9 @@
-// Bulk product + image import — seller mirror of ./lib/admin/bulkImport.ts (C1). Mirrors the
+// Bulk product + image import: seller mirror of ./lib/admin/bulkImport.ts (C1). Mirrors the
 // raw-multipart-fetch pattern already used by uploadSubmissionImage/importSubmissionsCsv in
 // ./submissions.ts (seller token + x-session-id headers + credentials:'include', no `apiFetch`
 // for multipart since the browser must set its own boundary). Types are the SAME
 // ImportPreview/ImportResult shapes as admin's bulkImport.ts (server returns the identical
-// productImportService.plan()/commit() payload for both modes) — re-exported from there rather
+// productImportService.plan()/commit() payload for both modes): re-exported from there rather
 // than redeclared, so both portals can never drift out of sync.
 import { ApiError } from '@/lib/api';
 import { getSessionId } from '@/lib/session';
@@ -24,7 +24,7 @@ function authHeaders(): Record<string, string> {
   };
 }
 
-// ── parseSheet — multipart upload -> { headers, rows } ────────────────────────
+// ── parseSheet: multipart upload -> { headers, rows } ────────────────────────
 
 export async function parseSheet(file: File): Promise<{ headers: string[]; rows: Record<string, string>[] }> {
   const fd = new FormData();
@@ -44,7 +44,7 @@ export async function parseSheet(file: File): Promise<{ headers: string[]; rows:
   return json.data as { headers: string[]; rows: Record<string, string>[] };
 }
 
-// ── preview / commit — plain JSON fetch (no `adminFetch` equivalent for sellers) ──────────
+// ── preview / commit: plain JSON fetch (no `adminFetch` equivalent for sellers) ──────────
 
 async function postJson<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(`${apiBase()}${path}`, {
@@ -67,7 +67,7 @@ export function previewImport(
   return postJson<ImportPreview>('/seller/submissions/import/preview', { rows, images });
 }
 
-// Sellers have no autoCreateTaxonomy flag (reject-and-report always) — unlike admin's
+// Sellers have no autoCreateTaxonomy flag (reject-and-report always), unlike admin's
 // commitImportBatch, this never sends that field at all.
 export function commitImportBatch(
   rows: Record<string, string>[],
@@ -76,7 +76,7 @@ export function commitImportBatch(
   return postJson<ImportResult>('/seller/submissions/import/commit', { rows, images });
 }
 
-// ── uploadFolder — same bounded-concurrency core as admin, seller image-upload endpoint ───
+// ── uploadFolder: same bounded-concurrency core as admin, seller image-upload endpoint ───
 
 const IMAGE_EXTENSIONS = /\.(png|jpe?g|gif|webp|svg|avif|bmp)$/i;
 

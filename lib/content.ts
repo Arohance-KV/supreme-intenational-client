@@ -10,7 +10,7 @@ async function contentFetch<T>(path: string): Promise<T> {
   return json.data as T;
 }
 
-// Never let a missing/booting API blank the whole page — fall back to empty.
+// Never let a missing/booting API blank the whole page: fall back to empty.
 async function safe<T>(p: Promise<T>, fallback: T): Promise<T> {
   try { return await p; } catch { return fallback; }
 }

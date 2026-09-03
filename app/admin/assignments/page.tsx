@@ -114,7 +114,7 @@ function useB2BAssignment(user: B2BUser, salesUsers: AdminUser[], salesUsersLoad
   const prunedStaleIds = useRef(false);
 
   // Drop any assignedAdminIds id that isn't in the active sales list (e.g. that admin
-  // was later deactivated) — otherwise the stale id survives every Approve resubmit and
+  // was later deactivated), otherwise the stale id survives every Approve resubmit and
   // the server 400s ("One or more selected users are not sales people") forever, with no
   // checkbox to ever clear it. Only prune once, and only once the sales list has
   // genuinely loaded: pruning against an empty in-flight list would wipe a valid
@@ -433,7 +433,7 @@ export default function AdminAssignmentsPage() {
           </EmptyCard>
         ) : (
           <>
-            {/* Desktop table — unchanged at md+ */}
+            {/* Desktop table: unchanged at md+ */}
             <div className="hidden md:block">
               <TableCard>
                 <thead>
@@ -503,7 +503,7 @@ export default function AdminAssignmentsPage() {
           <EmptyCard>No companies yet.</EmptyCard>
         ) : (
           <>
-            {/* Desktop table — unchanged at md+ */}
+            {/* Desktop table: unchanged at md+ */}
             <div className="hidden md:block">
               <TableCard>
                 <thead>

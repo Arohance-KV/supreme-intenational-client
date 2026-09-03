@@ -81,7 +81,7 @@ function QuotationsTable() {
     const params = new URLSearchParams(searchParams.toString());
     if (value === null || value === '') params.delete(key);
     else params.set(key, value);
-    // status and submitted are mutually exclusive views — picking one clears the other.
+    // status and submitted are mutually exclusive views, picking one clears the other.
     if (key === 'status') params.delete('submitted');
     if (key === 'submitted') params.delete('status');
     if (key !== 'page') params.delete('page');

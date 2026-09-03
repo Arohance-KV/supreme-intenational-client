@@ -278,7 +278,7 @@ function LeadsTable() {
                 {lead.type}
               </span>
 
-              {/* Contact + products — contact links to the customer's profile */}
+              {/* Contact + products, contact links to the customer's profile */}
               <div className="min-w-0">
                 {lead.userId ? (
                   <Link

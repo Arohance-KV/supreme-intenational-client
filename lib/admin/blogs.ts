@@ -24,7 +24,7 @@ export interface AdminBlogsResponse {
   pagination: { total: number; page: number; limit: number; pages: number };
 }
 
-// Create — matches createBlogValidator + controller (slug auto-generated server-side)
+// Create: matches createBlogValidator + controller (slug auto-generated server-side)
 export interface CreateBlogBody {
   title: string;
   excerpt?: string;
@@ -34,7 +34,7 @@ export interface CreateBlogBody {
   isPublished?: boolean;
 }
 
-// Update — matches updateBlogValidator + controller
+// Update: matches updateBlogValidator + controller
 export type UpdateBlogBody = Partial<Omit<CreateBlogBody, 'title'>> & { title?: string };
 
 // ── Query key helpers ─────────────────────────────────────────────────────────

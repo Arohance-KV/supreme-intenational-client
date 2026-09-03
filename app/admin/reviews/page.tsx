@@ -74,7 +74,7 @@ function CreateReviewModal({ onClose }: CreateReviewModalProps) {
   const [form, setForm] = useState<CreateReviewBody>(blankCreateForm());
   const createReview = useCreateReview();
 
-  // Product picker (required) — search products by name, store the picked _id.
+  // Product picker (required), search products by name, store the picked _id.
   const [product, setProduct] = useState<SearchOption | null>(null);
   const [productQuery, setProductQuery] = useState('');
   const productSearch = useDebounced(productQuery);
@@ -86,7 +86,7 @@ function CreateReviewModal({ onClose }: CreateReviewModalProps) {
     image: p.images?.[0] ?? null,
   }));
 
-  // Customer picker (optional) — link the review to a real account by name/email.
+  // Customer picker (optional), link the review to a real account by name/email.
   const [customer, setCustomer] = useState<SearchOption | null>(null);
   const [customerQuery, setCustomerQuery] = useState('');
   const customerSearch = useDebounced(customerQuery);
@@ -140,7 +140,7 @@ function CreateReviewModal({ onClose }: CreateReviewModalProps) {
         <p className="mb-5 text-[13px] text-muted">Publish an admin-authored review on a product.</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Product — searchable */}
+          {/* Product: searchable */}
           <div>
             <label className={labelCls}>
               Product <span className="text-red-500">*</span>
@@ -209,7 +209,7 @@ function CreateReviewModal({ onClose }: CreateReviewModalProps) {
             <p className="mt-1 text-xs text-muted">Shown as the review author on the storefront.</p>
           </div>
 
-          {/* Customer link — optional searchable */}
+          {/* Customer link: optional searchable */}
           <div>
             <label className={labelCls}>
               Link to a customer account

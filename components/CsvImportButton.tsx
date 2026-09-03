@@ -6,7 +6,7 @@ import type { ImportResult } from '@/lib/admin/products';
 
 // Shared "Excel upload" control for the admin + seller portals. Accepts a .csv, posts it via
 // `importFn`, and shows a result report (imported count + per-row failures). "Template"
-// downloads the header CSV client-side. ponytail: CSV only — Excel opens/saves it natively.
+// downloads the header CSV client-side. ponytail: CSV only, Excel opens/saves it natively.
 export default function CsvImportButton({
   importFn,
   templateCsv,

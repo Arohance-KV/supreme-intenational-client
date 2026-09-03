@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { PortalHero as Hero } from '@/lib/admin/companies';
 
-// Portal landing header. Always renders — a company can set an image + copy, otherwise
+// Portal landing header. Always renders: a company can set an image + copy, otherwise
 // a branded gradient fallback carries the personalized greeting and default CTA.
 export default function PortalHero({ hero, greeting }: { hero?: Hero | null; greeting: string }) {
   const hasImage = !!hero?.image;

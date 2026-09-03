@@ -55,7 +55,7 @@ export default function CreateProductModal({
     createProduct.mutate(payload, {
       onSuccess: (product) => {
         // Backend role: the response is a queued change request (no slug on it),
-        // so there is nothing to navigate to — just confirm and close.
+        // so there is nothing to navigate to, just confirm and close.
         if (isBackend) {
           setSubmitted(true);
           window.setTimeout(onClose, 1200);

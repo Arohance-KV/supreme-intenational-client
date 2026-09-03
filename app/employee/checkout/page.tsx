@@ -33,9 +33,9 @@ export default function EmployeeCheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
   // When the company runs on coupons, an order below the coupon value forfeits the
-  // remainder — hold that amount to confirm before placing the order.
+  // remainder: hold that amount to confirm before placing the order.
   const [couponForfeit, setCouponForfeit] = useState<number | null>(null);
-  // Set once the order is genuinely placed (wallet-paid or payment verified) — drives
+  // Set once the order is genuinely placed (wallet-paid or payment verified), drives
   // the success confirmation dialog. Not set on a dismissed/incomplete payment.
   const [successOrderId, setSuccessOrderId] = useState<string | null>(null);
 
@@ -116,7 +116,7 @@ export default function EmployeeCheckoutPage() {
           try {
             await verifyPayment.mutateAsync({ orderId: result.orderId, payment: r });
           } catch {
-            // ignore — the order page polls and the webhook will confirm
+            // ignore: the order page polls and the webhook will confirm
           }
           setSuccessOrderId(result.orderId);
         },

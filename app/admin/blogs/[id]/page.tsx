@@ -106,7 +106,7 @@ function CreateBlogForm() {
         />
       </div>
 
-      {/* Content — plain textarea (rich-text editor deferred: YAGNI) */}
+      {/* Content: plain textarea (rich-text editor deferred: YAGNI) */}
       <div>
         <label htmlFor="b-content" className={labelCls}>
           Content
@@ -202,7 +202,7 @@ function EditBlogForm({ blogId }: { blogId: string }) {
   const { data: me } = useAdminProfile();
   const isBackend = me?.role === 'backend';
 
-  // Local form state — initialised once blog loads
+  // Local form state, initialised once blog loads
   const [initialised, setInitialised] = useState(false);
   const [form, setForm] = useState<UpdateBlogBody>({});
   const [tagsRaw, setTagsRaw] = useState('');
@@ -274,7 +274,7 @@ function EditBlogForm({ blogId }: { blogId: string }) {
         />
       </div>
 
-      {/* Slug — read-only (server regenerates on title change) */}
+      {/* Slug: read-only (server regenerates on title change) */}
       <div>
         <label className={labelCls}>Slug (auto-updated on title change)</label>
         <input

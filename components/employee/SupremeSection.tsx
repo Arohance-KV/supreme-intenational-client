@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { eyebrow, glass } from '@/components/employee/ui';
 
-// Lucide-style stroke icons (24px, 1.75 stroke) — SVG, not emoji, so they stay crisp
+// Lucide-style stroke icons (24px, 1.75 stroke): SVG, not emoji, so they stay crisp
 // and theme-consistent.
 type IconProps = { className?: string };
 const Icon = ({ path, className }: { path: string; className?: string }) => (
@@ -37,7 +37,7 @@ const RESOURCES = [
 export default function SupremeSection() {
   return (
     <>
-      {/* Branded hero band — anchors the top of the portal above the company's dynamic design. */}
+      {/* Branded hero band: anchors the top of the portal above the company's dynamic design. */}
       <section className="relative overflow-hidden rounded-[28px] bg-[linear-gradient(120deg,#16173a_0%,#2a2b6a_58%,#1d3f57_120%)] p-8 shadow-[0_24px_64px_rgba(22,23,58,.28)] sm:p-12 lg:p-14">
         {/* animated accent glows */}
         <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 animate-pulse rounded-full bg-[rgba(19,184,159,.24)] blur-3xl" aria-hidden />

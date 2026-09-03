@@ -166,7 +166,7 @@ function CreateCompanyModal({ onClose }: CreateCompanyModalProps) {
 
 // ── Company row ───────────────────────────────────────────────────────────────
 
-// Gradient square avatar with initials — matches the Companies mockup.
+// Gradient square avatar with initials, matches the Companies mockup.
 function CompanyAvatar({ name }: { name: string }) {
   const initials =
     name.trim().split(/\s+/).slice(0, 2).map((w) => w[0]?.toUpperCase() ?? '').join('') || '?';

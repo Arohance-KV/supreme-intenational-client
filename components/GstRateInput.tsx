@@ -31,7 +31,7 @@ export function GstRateInput({
 
   // Re-sync the local text when the committed `value` changes from the outside
   // (async load, form reset) using React's render-phase "adjust state on prop
-  // change" pattern — never clobbers in-progress typing, since it only fires
+  // change" pattern, never clobbers in-progress typing, since it only fires
   // when `value` itself changes, not on every keystroke.
   const [lastValue, setLastValue] = useState(value);
   if (value !== lastValue) {

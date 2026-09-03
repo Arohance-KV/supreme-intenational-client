@@ -22,7 +22,7 @@ const ORDER_STATUSES: OrderStatus[] = [
   'refunded',
 ];
 
-// ── Inner component (needs useSearchParams — must be inside <Suspense>) ───────
+// ── Inner component (needs useSearchParams, must be inside <Suspense>) ───────
 
 function OrdersTable() {
   const searchParams = useSearchParams();

@@ -263,7 +263,7 @@ function CategoryRow({ category }: { category: AdminCategory }) {
   );
 }
 
-// ── Inner list (no useSearchParams — no Suspense wrapper needed, but kept for consistency) ──
+// ── Inner list (no useSearchParams, no Suspense wrapper needed, but kept for consistency) ──
 
 function CategoriesTable() {
   const [showCreate, setShowCreate] = useState(false);

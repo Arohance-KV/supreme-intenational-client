@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react';
 
-// Type-to-search combobox for admin forms — pick an entity by name instead of
+// Type-to-search combobox for admin forms: pick an entity by name instead of
 // pasting a MongoDB ObjectId. Fully controlled: the parent owns the query string
 // (usually debounced into a search hook) and the list of options.
 

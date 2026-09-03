@@ -56,7 +56,7 @@ export interface AdminProductDetailResponse {
   variants: ProductVariant[];
 }
 
-// Create product body — matches createProductValidator + controller
+// Create product body: matches createProductValidator + controller
 export interface CreateProductBody {
   name: string;
   categoryId: string;
@@ -74,7 +74,7 @@ export interface CreateProductBody {
   gstRate?: number;
 }
 
-// Update product body — matches updateProductValidator + controller
+// Update product body: matches updateProductValidator + controller
 export interface UpdateProductBody {
   name?: string;
   description?: string;
@@ -92,7 +92,7 @@ export interface UpdateProductBody {
   gstRate?: number;
 }
 
-// Create variant — matches createVariantValidator + controller
+// Create variant: matches createVariantValidator + controller
 export interface CreateVariantBody {
   price: number;
   originalPrice: number;
@@ -103,7 +103,7 @@ export interface CreateVariantBody {
   attributes: { attributeId: string; valueId: string }[];
 }
 
-// Bulk create variants — matches bulkCreateVariantsValidator + controller.
+// Bulk create variants: matches bulkCreateVariantsValidator + controller.
 // Server generates every combination of the selected values across attributes.
 export interface BulkCreateVariantsBody {
   attributes: { attributeId: string; valueIds: string[] }[];
@@ -113,7 +113,7 @@ export interface BulkCreateVariantsBody {
   defaultMoq?: number;
 }
 
-// Update variant — matches updateVariantValidator + controller
+// Update variant: matches updateVariantValidator + controller
 export interface UpdateVariantBody {
   price?: number;
   originalPrice?: number;
@@ -124,7 +124,7 @@ export interface UpdateVariantBody {
   isActive?: boolean;
 }
 
-// Flash sale — matches flashSaleValidator + controller (null clears the sale)
+// Flash sale: matches flashSaleValidator + controller (null clears the sale)
 export interface FlashSaleBody {
   flashSalePrice: number | null;
   flashSaleEndsAt: string | null; // ISO 8601
@@ -286,7 +286,7 @@ export function useSetFlashSale(productId: string, slug: string) {
   });
 }
 
-// ── Image upload (multipart — raw fetch, mirrors uploadSubmissionImage) ────────
+// ── Image upload (multipart: raw fetch, mirrors uploadSubmissionImage) ────────
 
 export async function uploadAdminImage(
   file: File,
@@ -325,7 +325,7 @@ export interface ImportResult {
   failed: { row: number; reason: string }[];
 }
 
-// Multipart upload — mirrors uploadAdminImage (raw fetch, admin token + session).
+// Multipart upload: mirrors uploadAdminImage (raw fetch, admin token + session).
 export async function importProductsCsv(file: File): Promise<ImportResult> {
   const fd = new FormData();
   fd.append('file', file);

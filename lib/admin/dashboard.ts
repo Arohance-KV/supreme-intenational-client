@@ -63,7 +63,7 @@ export function useOrdersByStatus() {
 
 // ── Low Stock Variants ────────────────────────────────────────────────────────
 // GET /admin/inventory/low-stock
-// Returns: IProductVariant[] — Mongoose documents, key fields listed below
+// Returns: IProductVariant[], Mongoose documents, key fields listed below
 export interface LowStockVariant {
   _id: string;
   product: string;

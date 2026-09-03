@@ -11,7 +11,7 @@ import type { Profile as AuthProfile } from '@/lib/userAuth';
 import DcFooter from '@/components/DcFooter';
 import ProductCard from '@/components/ProductCard';
 
-// Extends the shared Profile (lib/userAuth.ts) instead of redeclaring it — a local
+// Extends the shared Profile (lib/userAuth.ts) instead of redeclaring it, a local
 // copy is the one that drifts and silently loses fields like b2bStatus.
 interface Profile extends AuthProfile {
   verified?: boolean;

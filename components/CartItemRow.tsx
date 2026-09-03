@@ -9,7 +9,7 @@ function formatPrice(value: number): string {
   return `₹${value.toFixed(2)}`;
 }
 
-// Structural mutation shapes — satisfied by both useCartMutations and
+// Structural mutation shapes, satisfied by both useCartMutations and
 // useEmployeeCartMutations, so this row is shared without coupling to either lib.
 interface CartItemRowProps {
   item: CartItem;

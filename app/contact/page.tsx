@@ -14,7 +14,7 @@ const cities = ['Ahmedabad', 'Chennai', 'Hyderabad', 'Mumbai', 'Pune'];
 export default function ContactPage() {
   const [sent, setSent] = useState(false);
 
-  // ponytail: visual stub — mirrors the mockup's local feedback. Wire to a real
+  // ponytail: visual stub, mirrors the mockup's local feedback. Wire to a real
   // contact endpoint when one exists; no backend is defined for this form yet.
   const submit = () => {
     setSent(true);

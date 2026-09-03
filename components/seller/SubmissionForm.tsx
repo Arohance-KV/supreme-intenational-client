@@ -47,7 +47,7 @@ function toLocalVariants(initial?: Partial<SubmissionInput>): LocalVariant[] {
 const trimmed = (s: string): string | undefined => (s.trim() === '' ? undefined : s);
 const norm = (s: string) => s.trim().toLowerCase();
 
-// Global attribute taxonomy (public) — lets sellers pick existing attributes/values.
+// Global attribute taxonomy (public): lets sellers pick existing attributes/values.
 interface CatAttr { _id: string; name: string; values: { _id: string; label: string }[] }
 
 // ── Variant attributes: chip picker for known taxonomy + custom escape hatch ───
@@ -99,7 +99,7 @@ function VariantAttributes({
         );
       })}
 
-      {/* Custom attributes not in the taxonomy — admin reviews these */}
+      {/* Custom attributes not in the taxonomy: admin reviews these */}
       {custom.length > 0 && (
         <div className="space-y-2 rounded-[10px] border border-dashed border-line bg-white/40 p-3">
           <p className="text-[11px] font-semibold uppercase tracking-[.04em] text-[#b5801e]">
@@ -149,7 +149,7 @@ function VariantAttributes({
 // Mirrors the admin's bulk mode, but expands combinations client-side into the
 // draft's variant list (there's no server bulk endpoint for submissions). Each
 // generated variant stays individually editable afterwards. Taxonomy attributes
-// only — custom attributes are a single-variant concern.
+// only, custom attributes are a single-variant concern.
 function BulkVariantPanel({
   catalog, onGenerate, onCancel,
 }: {
@@ -257,7 +257,7 @@ function BulkVariantPanel({
         </div>
       )}
 
-      {/* Custom attributes with multiple values — admin reviews each before go-live */}
+      {/* Custom attributes with multiple values: admin reviews each before go-live */}
       <div className="space-y-3 rounded-[10px] border border-dashed border-line bg-white/40 p-3">
         <p className="text-[11px] font-semibold uppercase tracking-[.04em] text-[#b5801e]">
           Custom attributes, admin will review

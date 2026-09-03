@@ -1,8 +1,8 @@
 // Shared className constants for the employee portal (design-system utilities).
-// ponytail: plain strings, not components — upgrade to components only if
+// ponytail: plain strings, not components, upgrade to components only if
 // logic (not just classes) starts repeating.
 
-// input/label/errorBanner are byte-identical to the shared auth styles — reused
+// input/label/errorBanner are byte-identical to the shared auth styles, reused
 // from lib/authStyles.ts rather than kept as a divergent copy.
 export { input, label, errorBanner } from '@/lib/authStyles';
 

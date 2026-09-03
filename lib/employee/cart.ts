@@ -15,7 +15,7 @@ const KEY = ['employee', 'cart'] as const;
 export function useEmployeeCartMutations() {
   const queryClient = useQueryClient();
 
-  // Write the server's authoritative cart straight into the cache — instant and
+  // Write the server's authoritative cart straight into the cache: instant and
   // independent of a GET refetch. See useCartMutations for the rationale.
   const write = (data: Cart) => queryClient.setQueryData(KEY, data);
 

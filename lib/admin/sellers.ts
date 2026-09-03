@@ -46,7 +46,7 @@ export interface UpdateSellerBody {
   contact?: SellerContact;
 }
 
-// Seller products — reuse the minimal product shape from the list endpoint
+// Seller products: reuse the minimal product shape from the list endpoint
 export interface SellerProduct {
   _id: string;
   name: string;
@@ -61,7 +61,7 @@ export interface SellerProductsResponse {
   pagination?: { total: number; page: number; limit: number; pages: number };
 }
 
-// Performance — from sellerPayout.repository.ts#performance()
+// Performance: from sellerPayout.repository.ts#performance()
 export interface SellerTopProduct {
   productId: string;
   productName: string;

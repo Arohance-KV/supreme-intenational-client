@@ -32,7 +32,7 @@ export interface AdminCategory {
   slug: string;
   description: string;
   image: string;
-  /** Each entry is { attributeId: string; displayOrder: number } — no _id (schema has _id:false) */
+  /** Each entry is { attributeId: string; displayOrder: number }, no _id (schema has _id:false) */
   attributes: { attributeId: string; displayOrder: number }[];
   isActive: boolean;
   displayOrder: number;

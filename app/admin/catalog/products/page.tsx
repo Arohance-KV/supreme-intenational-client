@@ -8,7 +8,7 @@ import { ApiError } from '@/lib/api';
 import {
   useAdminProductsInfinite,
   useDeleteProduct,
-  // useImportProducts, CSV_TEMPLATE — old single-file Excel/CSV upload, superseded by Bulk import.
+  // useImportProducts, CSV_TEMPLATE: old single-file Excel/CSV upload, superseded by Bulk import.
   // useImportProducts,
   // CSV_TEMPLATE,
   type AdminProduct,
@@ -39,7 +39,7 @@ function ProductRow({ product }: { product: AdminProduct }) {
   };
 
   return (
-    // content-visibility:auto — infinite scroll keeps every row in the DOM; this lets the
+    // content-visibility:auto, infinite scroll keeps every row in the DOM; this lets the
     // browser skip layout/paint for off-screen rows (rapid scroll was repainting the whole list).
     // contain-intrinsic-size reserves each row's height so the scrollbar doesn't jump.
     <div className={`${ROW} border-b border-line px-5 py-3 hover:bg-white/50 transition-colors [content-visibility:auto] [contain-intrinsic-size:0_72px]`}>
@@ -117,7 +117,7 @@ function ProductRow({ product }: { product: AdminProduct }) {
   );
 }
 
-// ── Inner table (needs useSearchParams — must be inside Suspense) ─────────────
+// ── Inner table (needs useSearchParams, must be inside Suspense) ─────────────
 
 function ProductsTable() {
   const searchParams = useSearchParams();
@@ -125,10 +125,10 @@ function ProductsTable() {
   const queryClient = useQueryClient();
   const [showCreate, setShowCreate] = useState(false);
   const [showBulkImport, setShowBulkImport] = useState(false);
-  // const importProducts = useImportProducts(); // old Excel/CSV upload — see Bulk import below
+  // const importProducts = useImportProducts(); // old Excel/CSV upload, see Bulk import below
 
   // BulkImportWizard isn't a react-query mutation itself (it batches its own commit calls), so
-  // its completion doesn't flow through useImportProducts' onSuccess — invalidate the same list
+  // its completion doesn't flow through useImportProducts' onSuccess, invalidate the same list
   // key by hand whenever the wizard closes (early exit or after a commit report is acknowledged),
   // matching what CsvImportButton's importFn already triggers on success.
   function handleBulkImportDone() {
@@ -190,7 +190,7 @@ function ProductsTable() {
           <p className="text-sm text-slate">
             {typeof total === 'number' ? `${total.toLocaleString('en-IN')} products` : ''}
           </p>
-          {/* Old single-file Excel/CSV upload — retired in favour of Bulk import (below),
+          {/* Old single-file Excel/CSV upload, retired in favour of Bulk import (below),
               which maps columns, matches an image folder, and previews before committing.
               Kept commented for quick rollback.
           <CsvImportButton
@@ -262,7 +262,7 @@ function ProductsTable() {
         </div>
       )}
 
-      {/* Lazy-load sentinel — scrolling near it fetches the next page */}
+      {/* Lazy-load sentinel: scrolling near it fetches the next page */}
       {hasNextPage && (
         <div ref={sentinelRef} className="flex justify-center py-4 text-xs text-slate">
           {isFetchingNextPage ? 'Loading more…' : ''}

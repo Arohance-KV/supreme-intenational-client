@@ -4,7 +4,7 @@ import type { PortalContentBlock } from '@/lib/admin/companies';
 function Block({ block }: { block: PortalContentBlock }) {
   // A block with an image becomes a balanced two-column split (image fills its half,
   // full height); text vertically centred. Without an image it reads as a centred
-  // editorial statement constrained to a comfortable measure — never a near-empty card.
+  // editorial statement constrained to a comfortable measure, never a near-empty card.
   const hasImage = !!block.image;
   const imageRight = block.layout === 'text-right';
 

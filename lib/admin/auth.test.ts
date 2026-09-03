@@ -17,7 +17,7 @@ test("removeQueries(['admin']) clears the cached admin profile/role but spares o
   // Same call useAdminAuth makes on login and logout.
   qc.removeQueries({ queryKey: ['admin'] });
 
-  // Stale superAdmin identity is gone — next session must refetch its own role.
+  // Stale superAdmin identity is gone: next session must refetch its own role.
   expect(qc.getQueryData(['admin', 'profile'])).toBeUndefined();
   expect(qc.getQueryData(['admin', 'analytics', 'summary'])).toBeUndefined();
   // Non-admin caches are untouched.

@@ -49,7 +49,7 @@ export default function AdminQuotationDetailPage({
   const approve = useApproveQuotation(id);
   const saveDraft = useSaveQuotationDraft(id);
   const submitApproval = useSubmitQuotationForApproval(id);
-  // Backend team can edit + save the T&C/prices but never approve — that's sales-only.
+  // Backend team can edit + save the T&C/prices but never approve, that's sales-only.
   // Instead they submit for approval, routing the quote to the Approvals tab / queue.
   const canApprove = me?.role !== 'backend';
 

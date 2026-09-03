@@ -26,11 +26,11 @@ interface Attribute {
   values: AttributeValue[];
 }
 
-// Keys we manage explicitly — everything else in the URL is an attribute filter.
+// Keys we manage explicitly, everything else in the URL is an attribute filter.
 const KNOWN_KEYS = new Set(['category', 'sort', 'page', 'limit', 'minPrice', 'maxPrice']);
 
 // basePath lets the same filter sidebar drive a different route (e.g. the admin
-// Generate Docs page) — it only changes where the querystring is pushed, not the
+// Generate Docs page), it only changes where the querystring is pushed, not the
 // public /catalog metadata the options are built from.
 export default function Filters({ basePath = '/products' }: { basePath?: string }) {
   const router = useRouter();
@@ -62,7 +62,7 @@ export default function Filters({ basePath = '/products' }: { basePath?: string 
   const [minPrice, setMinPrice] = useState(searchParams.get('minPrice') ?? '');
   const [maxPrice, setMaxPrice] = useState(searchParams.get('maxPrice') ?? '');
 
-  // Price bounds anchor the dual sliders — global, cached (doesn't jump as filters change).
+  // Price bounds anchor the dual sliders: global, cached (doesn't jump as filters change).
   const { data: bounds } = useQuery({
     queryKey: ['price-range'],
     queryFn: () => apiFetch<{ min: number; max: number }>('/catalog/price-range'),
@@ -107,7 +107,7 @@ export default function Filters({ basePath = '/products' }: { basePath?: string 
   function onMaxSlide(v: number) {
     setMaxPrice(String(Math.max(v, lo)));
   }
-  // Commit on thumb release — a value at the bound means "no filter", so drop it.
+  // Commit on thumb release, a value at the bound means "no filter", so drop it.
   function commitPrice() {
     pushParams((p) => {
       lo > loBound ? p.set('minPrice', String(lo)) : p.delete('minPrice');
@@ -170,7 +170,7 @@ export default function Filters({ basePath = '/products' }: { basePath?: string 
               aria-label="Maximum price"
             />
           </div>
-          {/* Optional exact min/max — commit on blur or Enter, same rules as the slider. */}
+          {/* Optional exact min/max, commit on blur or Enter, same rules as the slider. */}
           <div className="mt-3 flex items-center gap-2">
             <input
               type="number"

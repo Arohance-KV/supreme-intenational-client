@@ -99,7 +99,7 @@ export interface AdminOrdersResponse {
 
 export interface AdminOrderFilters {
   status?: OrderStatus | '';
-  company?: string; // companyId — filters to one company's (employee) orders
+  company?: string; // companyId: filters to one company's (employee) orders
   page?: number;
 }
 
@@ -125,7 +125,7 @@ export interface OrderCompany {
   name: string;
 }
 
-// Companies that appear on orders — powers the Orders company filter (scoped for sales).
+// Companies that appear on orders: powers the Orders company filter (scoped for sales).
 export function useOrderCompanies() {
   return useQuery<OrderCompany[]>({
     queryKey: ['admin', 'orders', 'companies'],

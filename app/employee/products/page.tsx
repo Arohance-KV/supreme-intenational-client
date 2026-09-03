@@ -18,7 +18,7 @@ const SORT_OPTIONS = [
 
 const LIMIT = 12;
 
-// Bottom sheet — mobile only, sits above the portal tab bar.
+// Bottom sheet: mobile only, sits above the portal tab bar.
 function Sheet({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
   return (
     <div className="fixed inset-0 z-[60] md:hidden">
@@ -352,7 +352,7 @@ export default function EmployeeProductsPage() {
         </div>
       </div>
 
-      {/* Myntra-style Sort / Filter bar — mobile only, stacked above the tab bar. */}
+      {/* Myntra-style Sort / Filter bar: mobile only, stacked above the tab bar. */}
       {!isSearching && (
         <div className="fixed inset-x-0 bottom-14 z-40 grid grid-cols-2 border-t border-line bg-white/95 backdrop-blur-[14px] md:hidden">
           <button onClick={() => setSheet('sort')} className="cursor-pointer border-0 border-r border-line bg-transparent py-3 text-sm font-semibold text-ink">

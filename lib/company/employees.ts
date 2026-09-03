@@ -85,7 +85,7 @@ export function buildWalletAdjustment(
 
 // Bulk top-up: credit the same amount to each selected employee. ponytail: fans out over
 // the existing per-employee credit endpoint (no new server route) via allSettled, so one
-// failure doesn't sink the batch — the caller reports ok/failed counts.
+// failure doesn't sink the batch: the caller reports ok/failed counts.
 export function useBulkCreditPoints() {
   const qc = useQueryClient();
   return useMutation({
@@ -141,7 +141,7 @@ export interface PointsPoolView {
 
 export const POINTS_POOL_KEY = ['company', 'points-pool'] as const;
 
-// Pure, testable request-body builder — keeps validation out of the hook.
+// Pure, testable request-body builder: keeps validation out of the hook.
 export function buildProposalBody(requestedAmount: number, note?: string): { requestedAmount: number; note?: string } {
   if (!Number.isFinite(requestedAmount) || requestedAmount <= 0) {
     throw new Error('requestedAmount must be greater than 0');

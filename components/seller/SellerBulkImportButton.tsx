@@ -12,7 +12,7 @@ export default function SellerBulkImportButton({ className }: { className?: stri
 
   function done() {
     setOpen(false);
-    // The wizard batches its own commits, so nothing auto-invalidates — refresh
+    // The wizard batches its own commits, so nothing auto-invalidates, refresh
     // the whole seller namespace (products, submissions, dashboard) in one call.
     queryClient.invalidateQueries({ queryKey: ['seller'] });
   }

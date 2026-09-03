@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-// Fallback brand marks via Google's favicon service — used only when the admin
+// Fallback brand marks via Google's favicon service, used only when the admin
 // Clients/Logos CMS has no active logos yet (keeps the home strip from looking empty).
 const fallbackBrands = [
   { name: 'Tata', logoUrl: 'https://www.google.com/s2/favicons?domain=tata.com&sz=128' },

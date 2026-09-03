@@ -30,7 +30,7 @@ export interface SetB2BApprovalBody {
 
 // `page`/`limit` default to the previous hardcoded page-1/limit-100 behavior so
 // existing callers (pending, rejected) are unaffected. The approved list uses a
-// smaller limit + real pagination controls (see app/admin/assignments/page.tsx) —
+// smaller limit + real pagination controls (see app/admin/assignments/page.tsx):
 // with more than 100 grandfathered-approved users, limit=100/no-pagination made a
 // chunk of them permanently unreachable in the admin UI.
 export function useB2BUsers(status: B2BStatus, page = 1, limit = 100) {

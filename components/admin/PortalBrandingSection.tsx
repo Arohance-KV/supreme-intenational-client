@@ -23,7 +23,7 @@ export default function PortalBrandingSection({ company }: { company: AdminCompa
   const isBackend = me?.role === 'backend';
 
   // Backend team can't PATCH /admin/companies/:id (server 403s general company
-  // fields for that role) — their branding edits are staged for superadmin
+  // fields for that role): their branding edits are staged for superadmin
   // approval via a separate endpoint instead of writing the live fields.
   const liveUpdate = useUpdateCompany(company._id);
   const stagedUpdate = useStagePortalBranding(company._id);
@@ -46,7 +46,7 @@ export default function PortalBrandingSection({ company }: { company: AdminCompa
   const [searchOpen, setSearchOpen] = useState(false);
   const debouncedProductQuery = useDebounced(productQuery);
   const { data: productSearch, isFetching: productsFetching } = useAdminProducts(1, debouncedProductQuery.trim() || undefined);
-  // Company's own catalog — the common source for pre-existing featuredProductIds,
+  // Company's own catalog, the common source for pre-existing featuredProductIds,
   // since search results alone rarely include ids seeded from a prior save.
   const { data: companyProductsData } = useCompanyProducts(company._id);
 

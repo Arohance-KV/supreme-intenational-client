@@ -1,9 +1,9 @@
 /**
- * Tests for lib/admin/api.ts — 401 handler and basic pass-through.
+ * Tests for lib/admin/api.ts: 401 handler and basic pass-through.
  *
  * jsdom 26 freezes window.location, so we cannot spy on location.assign.
  * adminFetch calls its navigation helpers through the exported _nav object,
- * which we replace before each test — no jsdom tricks required.
+ * which we replace before each test: no jsdom tricks required.
  *
  * Note: @testing-library/react is NOT installed; these are logic-only tests.
  */

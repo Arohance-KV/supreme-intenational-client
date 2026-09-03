@@ -6,7 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useSellerAuth } from '@/lib/seller/auth';
 import { useSellerMe } from '@/lib/seller/me';
 
-// Kept in sync with SellerGuard — auth pages don't get the dashboard chrome.
+// Kept in sync with SellerGuard: auth pages don't get the dashboard chrome.
 const PUBLIC = ['/seller/apply', '/seller/login', '/seller/forgot-password', '/seller/reset-password'];
 
 const NAV = [
@@ -14,7 +14,7 @@ const NAV = [
   { href: '/seller/products', label: 'My Products', icon: '▤' },
   { href: '/seller/submissions', label: 'Approval Status', icon: '◷' },
   { href: '/seller/performance', label: 'Performance', icon: '◭' },
-  // ponytail: payouts hidden — uncomment to restore
+  // ponytail: payouts hidden, uncomment to restore
   // { href: '/seller/payouts', label: 'Payouts', icon: '₹' },
   { href: '/seller/support', label: 'Support', icon: '☏' },
 ];

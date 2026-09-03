@@ -1,6 +1,6 @@
 import { getSessionId } from './session';
 
-// L9: the guest session id underpins the guest cart — verify it's generated, persisted,
+// L9: the guest session id underpins the guest cart: verify it's generated, persisted,
 // stable across calls, and regenerated when a stored value is too short to be valid.
 describe('getSessionId', () => {
   beforeEach(() => localStorage.clear());

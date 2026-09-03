@@ -9,7 +9,7 @@ import NavProductsMenu from './NavProductsMenu';
 import { useAuth } from '@/lib/auth';
 import { useCart } from '@/lib/cart';
 
-// Single unified public-site nav — rendered once from the layout, so it looks
+// Single unified public-site nav, rendered once from the layout, so it looks
 // identical on the home page, /products, and every other public page.
 // 'Products' is rendered separately as a category mega-menu (NavProductsMenu).
 const items = [
@@ -20,7 +20,7 @@ const items = [
   { label: 'Contact', href: '/contact', key: 'contact' },
 ];
 
-// Merchandise portal logins. Seller login lives in the footer — it's a partner
+// Merchandise portal logins. Seller login lives in the footer, it's a partner
 // flow, not something buyers need in the nav.
 const portals = [
   {

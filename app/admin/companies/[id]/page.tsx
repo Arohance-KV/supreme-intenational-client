@@ -95,7 +95,7 @@ function CardHeader({
   );
 }
 
-// Gradient square with initials — matches the Merch Portal Builder mockup's
+// Gradient square with initials, matches the Merch Portal Builder mockup's
 // company/employee avatars (indigo→teal, rounded-[10px]).
 function Avatar({ name, size = 36 }: { name: string; size?: number }) {
   const initials =
@@ -203,7 +203,7 @@ function CompanyEditForm({ company }: { company: AdminCompany }) {
         <p className="mt-1 text-xs text-muted">Shown in this company&apos;s employee portal header.</p>
       </div>
 
-      {/* Wallet model — segmented toggle (Merch Portal Builder mockup) */}
+      {/* Wallet model: segmented toggle (Merch Portal Builder mockup) */}
       <div>
         <label className={labelCls}>Wallet model</label>
         <div className="grid grid-cols-2 gap-1.5 rounded-xl border border-line bg-white/50 p-1.5">
@@ -236,7 +236,7 @@ function CompanyEditForm({ company }: { company: AdminCompany }) {
         )}
       </div>
 
-      {/* Razorpay difference-payment — segmented toggle (mirrors Wallet model) */}
+      {/* Razorpay difference-payment: segmented toggle (mirrors Wallet model) */}
       <div>
         <label className={labelCls}>Razorpay difference payment</label>
         <div className="grid grid-cols-2 gap-1.5 rounded-xl border border-line bg-white/50 p-1.5">

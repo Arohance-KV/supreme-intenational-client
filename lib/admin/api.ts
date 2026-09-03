@@ -1,7 +1,7 @@
 import { apiFetch, ApiError } from '@/lib/api';
 
 /**
- * Navigation and storage helpers — kept as module-level references so
+ * Navigation and storage helpers: kept as module-level references so
  * unit tests can replace them without fighting jsdom's frozen Location object.
  */
 export const _nav = {
@@ -24,7 +24,7 @@ export async function adminFetch<T>(path: string, opts?: { method?: string; body
 /**
  * Multipart file upload (bulk imports). apiFetch now handles FormData bodies
  * (skips Content-Type/JSON.stringify) while keeping the shared auth header/cookie
- * and { success, data, message } envelope unwrap — so this is just a thin wrapper.
+ * and { success, data, message } envelope unwrap, so this is just a thin wrapper.
  */
 export async function adminUpload<T>(path: string, file: File): Promise<T> {
   const form = new FormData();

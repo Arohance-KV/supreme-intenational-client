@@ -28,7 +28,7 @@ export default function ProductGallery({
     if (!el) return;
     el.scrollTo({ left: ((i + count) % count) * el.clientWidth, behavior: 'smooth' });
   };
-  // The track is the source of truth — swiping and the buttons both land here.
+  // The track is the source of truth, swiping and the buttons both land here.
   const onScroll = () => {
     const el = track.current;
     if (el?.clientWidth) setActive(Math.round(el.scrollLeft / el.clientWidth)); // width 0 → NaN counter

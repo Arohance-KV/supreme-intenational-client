@@ -1,14 +1,14 @@
 'use client';
 import Link from 'next/link';
 import { useSellerMe } from '@/lib/seller/me';
-// ponytail: payout figures hidden — restore alongside the KPIs below
+// ponytail: payout figures hidden: restore alongside the KPIs below
 // import { useEarningsSummary } from '@/lib/seller/payouts';
 import { useSellerDashboard } from '@/lib/seller/dashboard';
 import SellerBulkImportButton from '@/components/seller/SellerBulkImportButton';
 import { StatusChip } from '@/components/StatusChip';
 import { StatCard } from '@/components/StatCard';
 
-// ponytail: only used by the hidden payout KPIs — restore with them
+// ponytail: only used by the hidden payout KPIs: restore with them
 // function inr(n: number): string {
 //   return '₹' + n.toLocaleString('en-IN');
 // }
@@ -22,7 +22,7 @@ const STATUS_LABEL: Record<string, string> = {
 
 export default function SellerDashboardPage() {
   const { data: me } = useSellerMe(true);
-  // ponytail: payout summary hidden — restore with the KPIs below
+  // ponytail: payout summary hidden: restore with the KPIs below
   // const { data: summary } = useEarningsSummary();
   const { data: dash } = useSellerDashboard();
   const maxViews = Math.max(1, ...(dash?.viewsThisWeek ?? []).map((d) => d.count));
@@ -62,12 +62,12 @@ export default function SellerDashboardPage() {
         <StatCard label="Live products" value={dash ? String(dash.liveProducts) : '—'} sub={dash ? `${dash.inReview} in review` : ''} />
         <StatCard label="In quotations" value={dash ? String(dash.inQuotations) : '—'} sub="times added to quotes" />
         <StatCard label="Catalogue views" value={dash ? dash.catalogueViews.toLocaleString('en-IN') : '—'} sub="this month" />
-        {/* ponytail: payout figures hidden — uncomment to restore
+        {/* ponytail: payout figures hidden: uncomment to restore
         <StatCard label="Est. payout" value={dash ? inr(dash.outstanding) : (summary ? inr(summary.outstanding) : '—')} sub="after platform margin" tone="text-[#b5801e]" />
         */}
       </div>
 
-      {/* Earnings (settled / lifetime) — ponytail: hidden, uncomment to restore
+      {/* Earnings (settled / lifetime), ponytail: hidden, uncomment to restore
       <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <StatCard label="Settled" value={summary ? inr(summary.settled) : '—'} sub="paid out to you" tone="text-[#1a8f5a]" />
         <StatCard label="Lifetime earnings" value={summary ? inr(summary.lifetime) : '—'} sub="since you joined" />
@@ -81,7 +81,7 @@ export default function SellerDashboardPage() {
           <div className="mb-4 text-[11px] text-muted">Product page impressions</div>
           {/* Bars must be DIRECT children of the fixed-height row: a percentage height
               resolves against the parent's height, and `items-end` leaves a wrapper at
-              auto height — which silently collapses every bar to minHeight. Labels sit
+              auto height, which silently collapses every bar to minHeight. Labels sit
               in a sibling row with the same flex-1 + gap so they stay aligned. */}
           <div className="flex h-40 items-end gap-3">
             {(dash?.viewsThisWeek ?? []).map((d) => (

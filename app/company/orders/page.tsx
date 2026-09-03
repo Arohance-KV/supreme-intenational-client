@@ -13,7 +13,7 @@ const GRID = 'grid grid-cols-[1fr_1.4fr_1.8fr_.6fr_.8fr_1fr] items-center gap-4'
 // Real OrderStatus enum (server/src/models/order.model.ts), labelled to match the
 // mockup where a friendlier phrase exists (e.g. "pending" -> "Pending approval").
 // Chip row shows the mockup's five filters; the other enum values remain reachable
-// via search/pagination — the underlying useCompanyOrders({status}) wiring is unchanged.
+// via search/pagination: the underlying useCompanyOrders({status}) wiring is unchanged.
 const TABS: { label: string; value?: OrderStatus }[] = [
   { label: 'All' },
   { label: 'Pending approval', value: 'pending' },

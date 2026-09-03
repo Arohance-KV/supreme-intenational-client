@@ -30,7 +30,7 @@ export interface CompanyQuotationContact {
 }
 
 // Mirrors the full Quotation document returned by
-// quotationService.listByCompany (server/src/services/quotation.service.ts) —
+// quotationService.listByCompany (server/src/services/quotation.service.ts):
 // findByCompany returns whole docs, no field projection, so pdfUrl is always
 // present and can be used directly as the "View" link.
 export interface CompanyQuotation {

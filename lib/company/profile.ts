@@ -20,7 +20,7 @@ export function useCompanyProfile() {
   });
 }
 
-// Logo upload is multipart — apiFetch is JSON-only, so use fetch directly here.
+// Logo upload is multipart: apiFetch is JSON-only, so use fetch directly here.
 // The server uploads to R2 and persists company.logo in one call.
 async function uploadCompanyLogo(file: File): Promise<{ logo: string | null }> {
   const fd = new FormData();

@@ -20,7 +20,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
     if (Array.isArray(value)) value.forEach((v) => params.append(key, v));
     else if (typeof value === 'string') params.append(key, value);
   }
-  // Default to 20 per page (API default is 12) — overridable via the URL.
+  // Default to 20 per page (API default is 12), overridable via the URL.
   if (!params.has('limit')) params.set('limit', '20');
 
   const qs = params.toString();
@@ -56,7 +56,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
         </div>
 
         <div className="flex flex-col gap-6 lg:flex-row">
-          {/* Sidebar Filters — below lg these live in the toolbar's filter sheet. */}
+          {/* Sidebar Filters: below lg these live in the toolbar's filter sheet. */}
           <aside className="hidden w-full shrink-0 lg:block lg:w-72">
             <Suspense fallback={<div className="h-64 animate-pulse rounded-[20px] bg-white/50" />}>
               <Filters />
@@ -78,7 +78,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
                   {products.map((product) => (
                     <ProductCard key={product._id} product={product} />
                   ))}
-                  {/* Infinite scroll takes over from page 2 — key resets it when filters change. */}
+                  {/* Infinite scroll takes over from page 2, key resets it when filters change. */}
                   {pagination.pages > 1 && <MoreProducts key={qs} qs={qs} page={pagination.page} pages={pagination.pages} />}
                 </div>
               </>

@@ -2,7 +2,7 @@
 import { usePathname } from 'next/navigation';
 import DcNav from '@/components/DcNav';
 
-// Dashboards ship their own headers — no public nav there.
+// Dashboards ship their own headers, no public nav there.
 const HIDE = ['/admin', '/seller', '/employee', '/company'];
 
 // Highlight the matching top-level section for the current path.

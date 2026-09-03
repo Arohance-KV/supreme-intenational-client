@@ -20,9 +20,9 @@ const stats = [
 ];
 
 const directors = [
-  { initials: 'SJ', img: '/directors/surendra.webp', grad: 'bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)]', name: 'Mr. Surendra B Jain', role: 'Founder', bio: 'Visionary leadership backed by 30 years of industry experience—building trust, relationships, and driving strategic growth and innovation.' },
+  { initials: 'SJ', img: '/directors/surendra.webp', grad: 'bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)]', name: 'Mr. Surendra B Jain', role: 'Founder', bio: 'Visionary leadership backed by 30 years of industry experience, building trust, relationships, and driving strategic growth and innovation.' },
   { initials: 'AK', img: '/directors/amit.webp', grad: 'bg-[linear-gradient(135deg,#149b8e,#13b89f)]', name: 'Mr. Amit Kanstiya', role: 'Director', bio: 'A calm and approachable leader who maintains strong client relationships across the corporate gifting landscape.' },
-  { initials: 'GM', img: '/directors/gourav.jpeg', grad: 'bg-[linear-gradient(135deg,#3a3c98,#149b8e)]', name: 'Mr. Gourav Mehta', role: 'Director of Operations', bio: 'Driving operational excellence through precision, efficiency, and seamless execution—from sourcing to timely delivery.' },
+  { initials: 'GM', img: '/directors/gourav.jpeg', grad: 'bg-[linear-gradient(135deg,#3a3c98,#149b8e)]', name: 'Mr. Gourav Mehta', role: 'Director of Operations', bio: 'Driving operational excellence through precision, efficiency, and seamless execution, from sourcing to timely delivery.' },
 ];
 
 const advantages = [

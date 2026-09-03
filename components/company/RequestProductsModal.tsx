@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRequestProducts } from '@/lib/company/products';
 import { ApiError } from '@/lib/api';
 
-// Shared "Request more products" dialog — used from the Store Products page and the
+// Shared "Request more products" dialog, used from the Store Products page and the
 // Quotations & Enquiries page.
 export function RequestProductsModal({
   onClose,

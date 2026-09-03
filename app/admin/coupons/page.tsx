@@ -89,7 +89,7 @@ function CouponFormModal({ mode, initial, couponId, onClose }: CouponFormModalPr
       startsAt: new Date(form.startsAt).toISOString(),
       companyId: form.companyId || undefined,
       description: form.description || undefined,
-      // 0 means "unlimited" — still valid per validator (isInt min: 0)
+      // 0 means "unlimited", still valid per validator (isInt min: 0)
     };
   }
 
@@ -419,7 +419,7 @@ function CouponRow({ coupon }: { coupon: AdminCoupon }) {
   );
 }
 
-// ── Inner table (contains useSearchParams — must be inside Suspense) ──────────
+// ── Inner table (contains useSearchParams, must be inside Suspense) ──────────
 
 function CouponsTable() {
   const [showCreate, setShowCreate] = useState(false);

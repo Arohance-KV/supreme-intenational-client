@@ -43,7 +43,7 @@ const NAV: NavEntry[] = [
     items: [
       { label: 'Submissions', href: '/admin/submissions' },
       { label: 'Sellers', href: '/admin/sellers' },
-      // ponytail: payouts hidden — uncomment to restore
+      // ponytail: payouts hidden, uncomment to restore
       // { label: 'Payouts', href: '/admin/payouts' },
       { label: 'Support', href: '/admin/support' },
     ],
@@ -122,7 +122,7 @@ function isNavItem(entry: NavEntry): entry is NavItem {
   return 'href' in entry;
 }
 
-// `collapsed` styles the DESKTOP rail only — on mobile the drawer is always full-width
+// `collapsed` styles the DESKTOP rail only: on mobile the drawer is always full-width
 // and expanded, so every collapsed style is gated behind md:.
 function NavLink({ href, label, collapsed, onNavigate }: NavItem & { collapsed: boolean; onNavigate?: () => void }) {
   const pathname = usePathname();
@@ -189,7 +189,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
 
   return (
     <div className="flex min-h-screen bg-[#eef0f8] text-ink font-display">
-      {/* Backdrop — mobile drawer only */}
+      {/* Backdrop: mobile drawer only */}
       {mobileOpen && (
         <div
           onClick={() => setMobileOpen(false)}
@@ -198,13 +198,13 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         />
       )}
 
-      {/* Sidebar — off-canvas drawer on mobile, restored to the exact in-flow rail at md+ */}
+      {/* Sidebar: off-canvas drawer on mobile, restored to the exact in-flow rail at md+ */}
       <aside
         className={`fixed inset-y-0 left-0 z-50 w-[248px] flex flex-col bg-gradient-to-b from-[#1c1d44] to-[#23254f] shadow-[inset_-1px_0_0_rgba(255,255,255,.05)] transition-transform duration-300 ease-in-out md:sticky md:top-0 md:z-20 md:h-screen md:shrink-0 md:translate-x-0 md:transition-[width] ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         } ${collapsed ? 'md:w-[76px]' : 'md:w-[248px]'}`}
       >
-        {/* Edge toggle — desktop-only open/close control */}
+        {/* Edge toggle: desktop-only open/close control */}
         <button
           onClick={toggle}
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
@@ -215,7 +215,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           </svg>
         </button>
 
-        {/* Close button — mobile drawer only */}
+        {/* Close button: mobile drawer only */}
         <button
           onClick={() => setMobileOpen(false)}
           aria-label="Close menu"
@@ -227,11 +227,11 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         </button>
 
         <div className={`flex items-center gap-2.5 px-4 pt-5 pb-4 mb-3 border-b border-white/[.08] ${collapsed ? 'md:justify-center md:gap-0 md:px-2' : ''}`}>
-          {/* Compact mark — desktop collapsed rail only (the wordmark can't fit 76px) */}
+          {/* Compact mark: desktop collapsed rail only (the wordmark can't fit 76px) */}
           <div className={`h-8 w-8 shrink-0 items-center justify-center rounded-[9px] bg-gradient-to-br from-[#179b8e] to-[#13b89f] font-extrabold text-white shadow-[0_6px_16px_rgba(23,155,142,.4)] hidden ${collapsed ? 'md:flex' : ''}`}>
             S
           </div>
-          {/* Full logo — expanded (mobile always; desktop when not collapsed). brightness-0 invert paints the navy mark white for the dark rail. */}
+          {/* Full logo: expanded (mobile always; desktop when not collapsed). brightness-0 invert paints the navy mark white for the dark rail. */}
           <div className={`flex items-center gap-2 overflow-hidden ${collapsed ? 'md:hidden' : ''}`}>
             <Image src="/supreme-logo.png" alt="Supreme International" width={300} height={87} priority className="h-6 w-auto brightness-0 invert" />
             <span className="font-jbmono text-[9px] tracking-[.1em] text-[#9fe7dc] border border-[#9fe7dc]/40 px-1.5 py-0.5 rounded-[5px] whitespace-nowrap">
@@ -247,11 +247,11 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
             }
             return (
               <div key={i}>
-                {/* Group label — shown on mobile always; on desktop only when expanded */}
+                {/* Group label: shown on mobile always; on desktop only when expanded */}
                 <p className={`px-3 pt-3.5 pb-1.5 font-jbmono text-[8.5px] tracking-[.13em] uppercase text-[#9fb0e7]/55 whitespace-nowrap ${collapsed ? 'md:hidden' : ''}`}>
                   {entry.group}
                 </p>
-                {/* Collapsed divider — desktop-only stand-in for the group label */}
+                {/* Collapsed divider: desktop-only stand-in for the group label */}
                 {i > 0 && <div className={`mx-auto my-2 h-px w-6 bg-white/10 hidden ${collapsed ? 'md:block' : ''}`} />}
                 <div className="space-y-0.5">
                   {entry.items.map((item) => (
@@ -286,7 +286,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
 
       {/* Main content */}
       <main className="relative flex-1 overflow-auto">
-        {/* Mobile top bar — the only way to reach the drawer on small screens */}
+        {/* Mobile top bar: the only way to reach the drawer on small screens */}
         <div className="md:hidden sticky top-0 z-30 flex items-center gap-3 border-b border-black/5 bg-white/90 px-4 py-3 backdrop-blur">
           <button
             onClick={() => setMobileOpen(true)}

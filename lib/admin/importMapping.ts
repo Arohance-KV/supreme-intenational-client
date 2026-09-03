@@ -151,7 +151,7 @@ const MIN_FUZZY_TOKEN_LENGTH = 4;
 // (ignore) -- the human confirms/corrects the whole table via dropdown downstream, so this only
 // needs to save clicks, not be perfect.
 export function suggestMapping(headers: string[], targets: MapTarget[]): Record<string, string> {
-  // Exclude the "new attribute" sentinel — it must be a deliberate manual pick, never auto-suggested.
+  // Exclude the "new attribute" sentinel: it must be a deliberate manual pick, never auto-suggested.
   const candidates = targets.filter((t) => t.key !== NEW_ATTRIBUTE_KEY).map((target) => {
     const normalizedSynonyms = new Set<string>([normalize(target.label), normalize(target.key), ...target.synonyms.map(normalize)]);
     normalizedSynonyms.delete(''); // don't let an empty key/label/synonym match blank headers

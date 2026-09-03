@@ -6,7 +6,7 @@ import { getProducts, type Product } from '@/lib/catalog';
 
 // Infinite scroll for /products: page 1 is server-rendered, this appends the rest
 // as a sentinel below the grid scrolls into view.
-// ponytail: native IntersectionObserver, no virtualization — the DOM only grows
+// ponytail: native IntersectionObserver, no virtualization, the DOM only grows
 // by `limit` per scroll; add windowing if someone scrolls past a few thousand.
 export default function MoreProducts({ qs, page: startPage, pages }: { qs: string; page: number; pages: number }) {
   const [items, setItems] = useState<Product[]>([]);

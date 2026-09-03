@@ -22,7 +22,7 @@ import { ApiError } from '@/lib/api';
 
 const GRID = 'grid grid-cols-[minmax(220px,2.2fr)_.8fr_.8fr_1fr_1.7fr] items-center gap-4';
 // Top-up interaction: a compact stepper next to the ALLOCATED figure. Each click
-// immediately credits/debits a fixed 100-point step via useAdjustPoints — no separate
+// immediately credits/debits a fixed 100-point step via useAdjustPoints: no separate
 // "apply" step, so the table always reflects the live allocated/used/left totals.
 const STEP = 100;
 
@@ -38,7 +38,7 @@ function TopUpStepper({ employee }: { employee: Employee }) {
   const { data: poolView } = useCompanyPointsPool();
   const available = poolView?.pool.available ?? 0;
   const disableMinus = employee.wallet.balance < STEP || adjust.isPending;
-  // Only the "+" (credit) direction draws from the company's shared points pool —
+  // Only the "+" (credit) direction draws from the company's shared points pool:
   // deductions never need gating against `available`.
   const overAvailable = STEP > available;
   const disablePlus = overAvailable || adjust.isPending;

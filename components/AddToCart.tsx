@@ -27,7 +27,7 @@ export default function AddToCart({
 
   const minQty = (v: ProductVariant | undefined) => (enforceMoq ? v?.moq ?? 1 : 1);
 
-  // Distinct attributes (first-seen order), each with its distinct values — drives the chips.
+  // Distinct attributes (first-seen order), each with its distinct values, drives the chips.
   const groups: { slug: string; name: string; values: { slug: string; label: string }[] }[] = [];
   for (const v of variants) {
     for (const a of v.attributes) {
@@ -56,7 +56,7 @@ export default function AddToCart({
   const [qty, setQty] = useState<number>(minQty(firstActive));
   const queryClient = useQueryClient();
 
-  // Reset qty to the min when the resolved variant changes — derived during render
+  // Reset qty to the min when the resolved variant changes, derived during render
   // (the React-recommended alternative to a setState-in-effect).
   const [prevId, setPrevId] = useState(selected?._id ?? '');
   if ((selected?._id ?? '') !== prevId) {
@@ -76,7 +76,7 @@ export default function AddToCart({
     );
 
   // Pick a value, then snap the whole selection to the active variant that best preserves
-  // the other picks — guarantees the combo always resolves to a real, active variant.
+  // the other picks, guarantees the combo always resolves to a real, active variant.
   const selectValue = (groupSlug: string, valueSlug: string) => {
     const candidates = variants.filter(
       (v) => v.isActive && v.attributes.some((a) => a.attributeSlug === groupSlug && a.valueSlug === valueSlug),
@@ -126,7 +126,7 @@ export default function AddToCart({
 
   return (
     <div className={`font-display grid gap-6 ${showChips ? 'md:grid-cols-[minmax(0,1fr)_300px]' : ''}`}>
-      {/* Variant Selector — one compact chip group per attribute */}
+      {/* Variant Selector: one compact chip group per attribute */}
       {showChips && (
         <div className="flex flex-col gap-4">
           {groups.map((g) => (
@@ -161,7 +161,7 @@ export default function AddToCart({
         </div>
       )}
 
-      {/* Buy box — price, stock, qty and CTA kept together and always visible */}
+      {/* Buy box: price, stock, qty and CTA kept together and always visible */}
       <div className="flex h-fit flex-col gap-4 sm:rounded-[18px] sm:border sm:border-line sm:bg-white/70 sm:p-5 sm:shadow-[0_8px_26px_rgba(34,36,90,.06)]">
         {/* Price */}
         <div className="flex flex-wrap items-baseline gap-2">
@@ -228,7 +228,7 @@ export default function AddToCart({
           </div>
         </div>
 
-        {/* Order total — the real amount for the chosen bulk quantity */}
+        {/* Order total: the real amount for the chosen bulk quantity */}
         {!outOfStock && (
           <div className="flex items-baseline justify-between rounded-[14px] bg-[rgba(42,43,106,.05)] px-4 py-3">
             <span className="text-sm text-slate">

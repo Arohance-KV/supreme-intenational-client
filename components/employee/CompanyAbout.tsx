@@ -1,7 +1,7 @@
 import { eyebrow, glass } from '@/components/employee/ui';
 import type { PortalAbout } from '@/lib/admin/companies';
 
-// "About the company" — a profile of the employer company: intro copy, an optional
+// "About the company", a profile of the employer company: intro copy, an optional
 // image, and a stats strip (founded / employees / presence …). Hidden when empty.
 export default function CompanyAbout({ about, companyName }: { about?: PortalAbout | null; companyName?: string }) {
   const hasContent = !!(about && (about.heading || about.body || about.image || about.stats?.length));

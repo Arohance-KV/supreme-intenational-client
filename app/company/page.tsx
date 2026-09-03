@@ -93,7 +93,7 @@ function RedeemedChart({ series }: { series: DashboardSeriesPoint[] }) {
 
   return (
     <div>
-      {/* summary strip — gives the chart a headline instead of bare bars */}
+      {/* summary strip: gives the chart a headline instead of bare bars */}
       <div className="mb-4 flex items-end gap-6">
         <div>
           <p className="text-[22px] font-extrabold leading-none text-ink">{formatIN(total)}</p>

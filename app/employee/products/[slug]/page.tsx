@@ -171,7 +171,7 @@ export default function EmployeeProductPage({ params }: PageProps) {
               </span>
             </div>
 
-            {/* Add to Cart — employee-isolated */}
+            {/* Add to Cart: employee-isolated */}
             <AddToCart
               variants={variants}
               tokenKey="employeeToken"

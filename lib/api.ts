@@ -3,7 +3,7 @@ import { getSessionId } from './session';
 export class ApiError extends Error {
   status: number;
   // Optional machine-readable error code from the response body (e.g.
-  // 'B2B_PENDING_APPROVAL'). Undefined when the server didn't send one —
+  // 'B2B_PENDING_APPROVAL'). Undefined when the server didn't send one:
   // callers must not assume it's present.
   code?: string;
 
@@ -26,7 +26,7 @@ export async function apiFetch<T>(
   opts?: ApiFetchOptions,
 ): Promise<T> {
   // FormData bodies (file uploads) must NOT be JSON-encoded and must not carry an
-  // explicit Content-Type — the browser sets the multipart boundary itself.
+  // explicit Content-Type: the browser sets the multipart boundary itself.
   const isFormData =
     typeof FormData !== 'undefined' && opts?.body instanceof FormData;
 

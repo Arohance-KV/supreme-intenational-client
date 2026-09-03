@@ -28,7 +28,7 @@ export default function EmployeeDashboard() {
       if (payload.name) greeting = `Welcome back, ${payload.name}`;
       else if (payload.email) greeting = `Welcome back, ${payload.email.split('@')[0]}`;
     } catch {
-      // ignore — fallback greeting is fine
+      // ignore: fallback greeting is fine
     }
   }
 

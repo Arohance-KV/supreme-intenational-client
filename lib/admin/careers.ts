@@ -95,7 +95,7 @@ export function useUpdateApplicationStatus() {
   });
 }
 
-// Create is multipart (resume PDF) — raw fetch, mirrors uploadAdminImage.
+// Create is multipart (resume PDF): raw fetch, mirrors uploadAdminImage.
 export interface CreateApplicationInput {
   fullName: string;
   email: string;

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 // Fixed bottom navigation for the portal on phones. Desktop keeps the pill header.
-// Cart and the wallet balance stay in the header — they're glanceable, not destinations.
+// Cart and the wallet balance stay in the header, they're glanceable, not destinations.
 const TABS = [
   { href: '/employee', label: 'Home', exact: true, icon: 'M3 11l9-8 9 8v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1v-9z' },
   { href: '/employee/products', label: 'Catalog', icon: 'M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 0h7v7h-7v-7z' },

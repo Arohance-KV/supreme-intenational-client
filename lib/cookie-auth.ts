@@ -33,7 +33,7 @@ export function useCookieAuth(flagCookie: string, logoutPath: string) {
   return {
     token: null as string | null, // kept for back-compat; the real token is HttpOnly now
     isLoggedIn,
-    // The API already set the auth cookie on the login response — just re-read state.
+    // The API already set the auth cookie on the login response: just re-read state.
     login: (_t?: string) => { qc.clear(); emit(); },
     logout: () => {
       clearCookie(flagCookie); // instant UI logout

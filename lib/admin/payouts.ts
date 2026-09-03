@@ -25,13 +25,13 @@ export interface AdminPayout {
   quotationId: string;
   quotationNumber: string;
   contactCompany: string;
-  /** Rupees — total order value for this seller's lines */
+  /** Rupees: total order value for this seller's lines */
   grossAmount: number;
-  /** 0–100 — the admin margin percentage */
+  /** 0–100: the admin margin percentage */
   marginPercent: number;
-  /** Rupees — admin's commission cut */
+  /** Rupees: admin's commission cut */
   commissionAmount: number;
-  /** Rupees — seller's net earning (grossAmount - commissionAmount) */
+  /** Rupees: seller's net earning (grossAmount - commissionAmount) */
   earningAmount: number;
   currency: string;
   lineItems: PayoutLineItem[];
@@ -92,7 +92,7 @@ export function useAdminPayout(id: string) {
 }
 
 /**
- * Settle payout — POST /admin/seller-payouts/:id/settle
+ * Settle payout: POST /admin/seller-payouts/:id/settle
  * No request body. Precondition: status === 'pending'. Transitions to 'settled'.
  */
 export function useSettlePayout(id: string) {

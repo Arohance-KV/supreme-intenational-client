@@ -42,7 +42,7 @@ export default function QuotationCartView({ cart, mutations }: Props) {
 
   const totalUnits = useMemo(() => cart.items.reduce((s, i) => s + i.qty, 0), [cart.items]);
 
-  // Dynamic "buyers often add" — live bestsellers minus whatever's already in the cart.
+  // Dynamic "buyers often add", live bestsellers minus whatever's already in the cart.
   const { data: bestsellers } = useQuery({ queryKey: ['bestsellers'], queryFn: getBestsellers, staleTime: 5 * 60_000 });
   const recommendations = useMemo(() => {
     const inCart = new Set(cart.items.map((i) => i.productId));
@@ -146,7 +146,7 @@ export default function QuotationCartView({ cart, mutations }: Props) {
             </div>
           )}
 
-          {/* Notes & branding — sent with the quotation and shown to the approver. */}
+          {/* Notes & branding: sent with the quotation and shown to the approver. */}
           <div className={`mt-3.5 ${glass} rounded-[20px] p-4 sm:p-5`}>
             <div className="mb-2.5 text-[13px] font-bold text-ink">Notes &amp; branding requirements</div>
             <textarea

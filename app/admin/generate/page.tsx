@@ -14,7 +14,7 @@ import {
 
 // No backdrop-blur: this wraps the tall products panel; a 40px (blur-2xl) backdrop-filter
 // over the shell gradient re-blurs the whole panel every scroll frame (rapid FPS drop).
-// Opaque bg — frost was barely visible over the light shell.
+// Opaque bg: frost was barely visible over the light shell.
 const GLASS = 'border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)]';
 const MAX_SELECT = 300;
 const PAGE_SIZE = 48; // bigger than the B2B default (12) so selecting many products needs less paging

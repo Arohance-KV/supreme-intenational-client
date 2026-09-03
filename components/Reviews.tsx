@@ -160,7 +160,7 @@ export default function Reviews({ slug }: ReviewsProps) {
         {data?.pagination.total ? ` (${data.pagination.total})` : ''}
       </h2>
 
-      {/* Create review form — only for logged-in users */}
+      {/* Create review form, only for logged-in users */}
       {isLoggedIn && <ReviewForm slug={slug} onSuccess={invalidate} />}
       {!isLoggedIn && (
         <p className="text-sm text-slate">

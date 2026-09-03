@@ -15,7 +15,7 @@ function normaliseLedger(raw: unknown): LedgerEntry[] {
   if (Array.isArray(raw)) return raw as LedgerEntry[];
   if (raw && typeof raw === 'object') {
     const obj = raw as Record<string, unknown>;
-    // The wallet ledger endpoint returns { items, pagination } — `items` first.
+    // The wallet ledger endpoint returns { items, pagination }: `items` first.
     for (const key of ['items', 'entries', 'ledger', 'data']) {
       if (Array.isArray(obj[key])) return obj[key] as LedgerEntry[];
     }

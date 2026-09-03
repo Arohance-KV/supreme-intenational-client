@@ -31,7 +31,7 @@ export function useJob(id: string) {
   });
 }
 
-// Public: submit an application (multipart — resume PDF). Raw fetch, no auth.
+// Public: submit an application (multipart: resume PDF). Raw fetch, no auth.
 export interface ApplyInput {
   fullName: string;
   email: string;

@@ -10,7 +10,7 @@ export default function DcFooter() {
           <div className="col-span-2 md:col-span-1">
             <div className="mb-4"><DcWordmark dark /></div>
             <div className="max-w-[32ch] text-[13px] leading-[1.6] text-white/55">Corporate gifting &amp; promotional merchandise, engineered for enterprise procurement teams.</div>
-            {/* Seller login lives here rather than the nav — partner flow, not a buyer one. */}
+            {/* Seller login lives here rather than the nav: partner flow, not a buyer one. */}
             <Link href="/seller/login" className="mt-4 inline-block text-[13px] font-semibold text-[#9fe7dc] no-underline hover:text-white">
               Seller Login →
             </Link>

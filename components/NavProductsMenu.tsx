@@ -6,7 +6,7 @@ import Image from 'next/image';
 import DcPhoto from '@/components/DcPhoto';
 import { getCategories, getProducts, type Category, type Product } from '@/lib/catalog';
 
-// Module-level caches — survive re-mounts across client-side navigation.
+// Module-level caches, survive re-mounts across client-side navigation.
 let _catsCache: Category[] | null = null;
 const _productsCache: Record<string, Product[]> = {};
 

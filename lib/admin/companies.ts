@@ -154,7 +154,7 @@ export interface UpdateCatalogBody {
   removeCategoryIds?: string[];
 }
 
-// Company products list — uses the same AdminProduct shape as products.ts
+// Company products list: uses the same AdminProduct shape as products.ts
 export interface CompanyProduct {
   _id: string;
   name: string;

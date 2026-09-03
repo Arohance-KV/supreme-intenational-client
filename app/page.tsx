@@ -12,12 +12,12 @@ import { getClientLogos } from '@/lib/content';
 // Shared class fragments
 const gradClip = 'bg-clip-text text-transparent';
 const sectionWrap = 'mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-10';
-// Section heading — fluid so it never overflows a 320px screen.
+// Section heading, fluid so it never overflows a 320px screen.
 const h3 = 'm-0 text-[24px] font-extrabold tracking-[-.02em] text-ink sm:text-[30px]';
 const eyebrow = 'font-jbmono text-[11px] uppercase tracking-[.14em] text-accent mb-2';
 
 export default async function HomePage() {
-  // Dynamic catalogue data — degrade gracefully if the API is unreachable.
+  // Dynamic catalogue data: degrade gracefully if the API is unreachable.
   let categories: Category[] = [];
   let featured: Product[] = [];
   try { [categories, featured] = await Promise.all([getCategories(), getFeatured()]); }
@@ -56,7 +56,7 @@ export default async function HomePage() {
           <HomeHeroFloats />
         </div>
 
-        {/* trusted-by — live logos, infinite marquee, part of the hero */}
+        {/* trusted-by: live logos, infinite marquee, part of the hero */}
         <div className="mt-10"><TrustedBy logos={logos.map((l) => ({ name: l.name, logoUrl: l.logoUrl }))} /></div>
         </section>
 

@@ -20,7 +20,7 @@ const BATCH_SIZE = 50;
 
 // Mode-aware API set (B2/C1): admin and seller each get their own parse/preview/commit/upload
 // endpoints (different auth, different base paths), but share the exact same ImportPreview /
-// ImportResult shapes and the same wizard UI. `downloadTemplate` is admin-only — sellers have no
+// ImportResult shapes and the same wizard UI. `downloadTemplate` is admin-only: sellers have no
 // template route, so it's `null` here and the "Download template" button hides itself on that.
 // Kept as a plain function (not a hook) since it holds no state; called once per `mode` via
 // `useMemo` below so identity stays stable across re-renders.
@@ -49,7 +49,7 @@ function getImportApi(mode: Mode): ImportApi {
   return {
     parseSheet: sellerBulkImport.parseSheet,
     previewImport: sellerBulkImport.previewImport,
-    // Sellers have no autoCreateTaxonomy — the flag is simply dropped here.
+    // Sellers have no autoCreateTaxonomy, the flag is simply dropped here.
     commitImportBatch: (rows, images) => sellerBulkImport.commitImportBatch(rows, images),
     uploadFolder: sellerBulkImport.uploadFolder,
     downloadTemplate: null,
@@ -58,7 +58,7 @@ function getImportApi(mode: Mode): ImportApi {
 
 // Only Name/Category/Price must be MAPPED to proceed. HSN + GST are required for NEW products
 // too, but that's enforced server-side (surfaced as row errors in the preview) rather than as a
-// hard map-step gate — so a prices-only re-import (which legitimately omits HSN/GST columns and
+// hard map-step gate, so a prices-only re-import (which legitimately omits HSN/GST columns and
 // only updates existing products) isn't blocked here.
 const REQUIRED_TARGETS: { key: string; label: string }[] = [
   { key: 'name', label: 'Name' },
@@ -90,14 +90,14 @@ const progressFillCls = 'h-full rounded-full bg-gradient-to-r from-indigo to-ind
 // Mirrors server/src/utils/slug.util.ts's `slugify` exactly (lowercase, trim, collapse
 // whitespace runs to '-', strip anything left that isn't a-z/0-9/-). The server has no
 // client-importable equivalent (it's a server-only util), so it's inlined here rather than
-// pulled in — used ONLY for the commit-batching group key below, never sent to the server.
+// pulled in, used ONLY for the commit-batching group key below, never sent to the server.
 function slugifyForGrouping(text: string): string {
   return text.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 }
 
 // Group mapped rows by their Handle (falling back to Name, then a per-row unique key so two
 // blank-handle/blank-name rows never accidentally merge), keyed by the SAME `slugify(handle ||
-// name)` the server's groupRows uses (product-import.service.ts) — not just a lowercase/trim,
+// name)` the server's groupRows uses (product-import.service.ts), not just a lowercase/trim,
 // since e.g. "Metal Pen" and "metal-pen" collapse to the same slug server-side but would NOT
 // match under plain `.trim().toLowerCase()`. Getting this wrong lets a product's own variant
 // rows land in two different commit batches; admin self-heals via upsert, but seller mode (no
@@ -131,12 +131,12 @@ function chunkByHandle(rows: Record<string, string>[]): Record<string, string>[]
 }
 
 // Shared 4-step bulk product/image import wizard for the admin catalogue and seller submission
-// portals. `onDone` is the wizard's only exit signal — fired when the user closes it early
+// portals. `onDone` is the wizard's only exit signal, fired when the user closes it early
 // (header ✕, before commit starts) and again when they acknowledge the final commit report;
 // the caller is expected to hide/unmount the wizard and refresh its product list in response.
 export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone: () => void }) {
   const api = useMemo(() => getImportApi(mode), [mode]);
-  // Seller portal has no admin profile to fetch — only ask for admin mode.
+  // Seller portal has no admin profile to fetch, only ask for admin mode.
   const { data: me } = useAdminProfile({ enabled: mode === 'admin' });
   const isBackend = mode === 'admin' && me?.role === 'backend';
   const { data: attributes = [], isLoading: attributesLoading } = useAttributes();
@@ -177,7 +177,7 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
     setParseError(null);
     try {
       const parsed = await api.parseSheet(file);
-      // A new sheet means new headers — let the map-step effect re-suggest/restore mapping
+      // A new sheet means new headers: let the map-step effect re-suggest/restore mapping
       // for them instead of leaving every header on '' (Ignore) forever after the first load.
       mappingInitRef.current = false;
       setSheet(parsed);
@@ -232,7 +232,7 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
       const raw = localStorage.getItem(mappingStorageKey);
       if (raw) stored = JSON.parse(raw);
     } catch {
-      // malformed/blocked storage — fall back to fresh suggestions
+      // malformed/blocked storage, fall back to fresh suggestions
     }
     const initial: Record<string, string> = {};
     for (const h of sheet.headers) initial[h] = h in stored ? stored[h] : (suggested[h] ?? '');
@@ -279,7 +279,7 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
   }
 
   // Dragging an unmatched thumbnail onto a photo-less product adds a synthetic
-  // {filename: handle, url} entry to the image map used at commit — no re-upload, no file
+  // {filename: handle, url} entry to the image map used at commit, no re-upload, no file
   // renaming. The server's fuzzy matcher normalizes both a filename and a Handle the same way,
   // so a "filename" that already equals the target Handle matches it directly.
   function handleDropOnProduct(e: React.DragEvent<HTMLDivElement>, handle: string) {
@@ -308,7 +308,7 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
   const [commitProgress, setCommitProgress] = useState<{ done: number; total: number } | null>(null);
   const [commitResult, setCommitResult] = useState<ImportResult | null>(null);
   // Backend role: every batch comes back as a queued change request
-  // ({ queued, requestId, summary }), not an ImportResult — so its numeric
+  // ({ queued, requestId, summary }), not an ImportResult, so its numeric
   // create/update/variant counts are meaningless here. Track submission
   // outcome separately and skip the numeric report for that role.
   const [backendSubmitted, setBackendSubmitted] = useState(false);
@@ -402,12 +402,12 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
               <details className="rounded-xl border border-line bg-white/60 px-4 py-3 text-sm text-slate">
                 <summary className="cursor-pointer font-semibold text-ink">How bulk import works</summary>
                 <ol className="mt-2 list-decimal space-y-1 pl-5">
-                  <li><strong>Download template</strong> (below) — fill the <em>Products</em> sheet, <strong>one row per variant</strong>.</li>
-                  <li><strong>Name</strong> = the product&rsquo;s name (e.g. <em>Ceramic Coffee Mug</em>). <strong>Product Group</strong> = a short shared code (e.g. <code>ceramic-coffee-mug</code>) that you repeat on <em>every</em> row of the same product — that&rsquo;s how rows are joined into one product with several variants. Put the product-level fields (Name, Category, Description) only on that product&rsquo;s <strong>first</strong> row; the variant details (SKU, Price, Color/Size) go on <em>each</em> row.</li>
+                  <li><strong>Download template</strong> (below): fill the <em>Products</em> sheet, <strong>one row per variant</strong>.</li>
+                  <li><strong>Name</strong> = the product&rsquo;s name (e.g. <em>Ceramic Coffee Mug</em>). <strong>Product Group</strong> = a short shared code (e.g. <code>ceramic-coffee-mug</code>) that you repeat on <em>every</em> row of the same product: that&rsquo;s how rows are joined into one product with several variants. Put the product-level fields (Name, Category, Description) only on that product&rsquo;s <strong>first</strong> row; the variant details (SKU, Price, Color/Size) go on <em>each</em> row.</li>
                   <li className="text-muted"><em>Example: three mug colours = three rows, all with Product Group <code>ceramic-coffee-mug</code>, differing only by SKU and Color. Giving each row a different Product Group would split them into three separate products.</em></li>
                   <li><strong>Required for a new product:</strong> <strong>Name</strong>, <strong>Category</strong>, <strong>Price</strong>, <strong>HSN</strong>, and <strong>GST</strong> (any % from 0 to 100). You map Name/Category/Price in the next step; HSN &amp; GST are checked in the preview. A <strong>Product Group</strong> is recommended; if omitted it&rsquo;s derived from the Name. <strong>SKU</strong> is recommended so photos and re-imports match the right variant.</li>
-                  <li className="text-muted"><em>Updating existing products (re-import)? Only the cells you fill change — blanks are left as they are, so a prices-only sheet can skip HSN/GST.</em></li>
-                  <li><strong>Images (optional):</strong> upload a folder — name a file after the <strong>Product Group</strong> for a gallery photo (<code>ceramic-coffee-mug.jpg</code>, <code>ceramic-coffee-mug-2.jpg</code>) or after a <strong>SKU</strong> for that variant&rsquo;s photo. Anything unmatched you can drag onto the right product in the preview.</li>
+                  <li className="text-muted"><em>Updating existing products (re-import)? Only the cells you fill change, blanks are left as they are, so a prices-only sheet can skip HSN/GST.</em></li>
+                  <li><strong>Images (optional):</strong> upload a folder: name a file after the <strong>Product Group</strong> for a gallery photo (<code>ceramic-coffee-mug.jpg</code>, <code>ceramic-coffee-mug-2.jpg</code>) or after a <strong>SKU</strong> for that variant&rsquo;s photo. Anything unmatched you can drag onto the right product in the preview.</li>
                   <li><strong>Map &amp; preview:</strong> confirm the column mapping, then review what will be created/updated. {mode === 'admin'
                     ? 'New categories/attribute values can be auto-created on confirm.'
                     : 'Use only categories that already exist (see the Reference values sheet); a new attribute rides along and is finalised when an admin approves.'}</li>

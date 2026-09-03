@@ -7,7 +7,7 @@ import { inputCls } from './AdminModal';
 
 // Shared admin image field: R2 file upload (same endpoint as products) with a
 // live preview and an optional "paste URL" fallback. `folder` picks the R2
-// destination — must be in the server upload allowlist (admin.catalog.controller).
+// destination: must be in the server upload allowlist (admin.catalog.controller).
 export default function ImageUploadField({
   value,
   onChange,

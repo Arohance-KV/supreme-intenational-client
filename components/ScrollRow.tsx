@@ -2,7 +2,7 @@
 
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 
-// ponytail: native overflow-x scroller + two scrollBy buttons — no carousel lib.
+// ponytail: native overflow-x scroller + two scrollBy buttons, no carousel lib.
 // Arrows are desktop-only (touch users swipe); each hides at its edge.
 export default function ScrollRow({ children, className = '' }: { children: ReactNode; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);

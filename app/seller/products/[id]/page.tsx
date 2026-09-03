@@ -14,7 +14,7 @@ import type { ProductVariant } from '@/lib/catalog';
 import { useConfirm } from '@/components/ConfirmDialog';
 import { GstRateInput } from '@/components/GstRateInput';
 
-// Shared field styling — matches the admin catalogue edit page.
+// Shared field styling: matches the admin catalogue edit page.
 const inputCls =
   'w-full rounded border border-line px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20';
 const inputSm =

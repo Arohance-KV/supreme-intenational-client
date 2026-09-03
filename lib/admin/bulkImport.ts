@@ -1,9 +1,9 @@
-// Bulk product + image import — client API + bounded-concurrency folder uploader (B2).
+// Bulk product + image import: client API + bounded-concurrency folder uploader (B2).
 // Mirrors the raw-multipart-fetch pattern already used by uploadAdminImage/importProductsCsv
 // in ./products.ts (admin token + x-session-id headers, no `adminFetch` for multipart since
 // the browser must set its own boundary), and `adminFetch` for the plain-JSON preview/commit
 // calls. Types below mirror server/src/services/catalog/product-import.service.ts EXACTLY
-// (ImportPreview / ImportResult) — keep both in sync if the server shape changes.
+// (ImportPreview / ImportResult): keep both in sync if the server shape changes.
 import { adminFetch } from './api';
 import { ApiError } from '@/lib/api';
 import { getSessionId } from '@/lib/session';
@@ -41,7 +41,7 @@ function authHeaders(): Record<string, string> {
   };
 }
 
-// ── parseSheet — multipart upload, mirrors importProductsCsv exactly ──────────
+// ── parseSheet: multipart upload, mirrors importProductsCsv exactly ──────────
 
 export async function parseSheet(file: File): Promise<{ headers: string[]; rows: Record<string, string>[] }> {
   const fd = new FormData();
@@ -60,7 +60,7 @@ export async function parseSheet(file: File): Promise<{ headers: string[]; rows:
   return json.data as { headers: string[]; rows: Record<string, string>[] };
 }
 
-// ── preview / commit — plain JSON via adminFetch ──────────────────────────────
+// ── preview / commit: plain JSON via adminFetch ──────────────────────────────
 
 export function previewImport(
   rows: Record<string, string>[],
@@ -83,13 +83,13 @@ export function commitImportBatch(
   });
 }
 
-// ── uploadFolderWith — the testable bounded-concurrency core ─────────────────
+// ── uploadFolderWith: the testable bounded-concurrency core ─────────────────
 
 const IMAGE_EXTENSIONS = /\.(png|jpe?g|gif|webp|svg|avif|bmp)$/i;
 
 // Bounded worker pool: at most `concurrency` uploads run at once, regardless of how many
 // files are queued. A naive `files.map(uploader)` + `Promise.all` starts every upload
-// simultaneously (no bound at all) — this instead keeps `concurrency` workers alive, each
+// simultaneously (no bound at all): this instead keeps `concurrency` workers alive, each
 // pulling the next file off a shared cursor as soon as it finishes its current one, so a
 // slot is reused the instant it frees up rather than waiting for the whole batch.
 export async function uploadFolderWith(
@@ -139,12 +139,12 @@ export function uploadFolder(
   return uploadFolderWith(imageFiles, (f) => uploadAdminImage(f, 'products'), onProgress, concurrency);
 }
 
-// ── downloadTemplate — GET /admin/products/import/template requires admin auth ────────────
+// ── downloadTemplate: GET /admin/products/import/template requires admin auth ────────────
 //
 // GOTCHA: this route sits behind adminRouter.use(isAdmin) like every other admin route (Bearer
 // token + x-session-id), and it responds with a raw xlsx binary, NOT the { success, data }
 // JSON envelope every other admin endpoint uses. A bare `<a href={...}>` navigation sends
-// neither auth header, so it would 401 — this instead does an authenticated fetch, reads the
+// neither auth header, so it would 401: this instead does an authenticated fetch, reads the
 // body as a Blob, and clicks a throwaway object-URL anchor to trigger the browser download.
 export async function downloadTemplate(): Promise<void> {
   const res = await fetch(`${apiBase()}/admin/products/import/template`, {

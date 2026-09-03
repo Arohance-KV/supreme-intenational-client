@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { apiFetch } from '@/lib/api';
 
-// Dashboards manage their own chrome — no marketing pop-ups there.
+// Dashboards manage their own chrome, no marketing pop-ups there.
 const HIDE = ['/admin', '/seller', '/employee', '/company'];
 
 interface Popup {
@@ -40,7 +40,7 @@ export default function SitePopupHost() {
     return () => { cancelled = true; };
   }, [hidden, pathname]);
 
-  // Delay / exit-intent triggers — both fire from async callbacks, never synchronously.
+  // Delay / exit-intent triggers, both fire from async callbacks, never synchronously.
   useEffect(() => {
     if (!popup) return;
     if (popup.trigger === 'after_delay') {

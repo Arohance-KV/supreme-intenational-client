@@ -7,7 +7,7 @@ import { canAccess, homeFor } from '@/lib/admin/roles';
 
 const PUBLIC = ['/admin/login'];
 
-// false during SSR/prerender, true once mounted on the client — without a setState-in-effect.
+// false during SSR/prerender, true once mounted on the client, without a setState-in-effect.
 const noopSubscribe = () => () => {};
 
 export default function AdminGuard({ children }: { children: React.ReactNode }) {
@@ -19,7 +19,7 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
 
   // The token lives in localStorage, which is unreadable during SSR/prerender, so
   // the first client render always sees isLoggedIn=false. Wait until the client has
-  // hydrated (and useSyncExternalStore has read the real token) before redirecting —
+  // hydrated (and useSyncExternalStore has read the real token) before redirecting,
   // otherwise a hard load / refresh of a protected page bounces a logged-in user to login.
   const hydrated = useSyncExternalStore(noopSubscribe, () => true, () => false);
 

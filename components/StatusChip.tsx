@@ -8,11 +8,11 @@
  * than flatten them (which would silently change colors) each is preserved
  * verbatim behind a `tone` prop. Output is byte-identical to the originals.
  *
- *  tone="admin"        — admin dashboard (Tailwind palette, label = status.replace(/_/g,' '))
- *  tone="company"      — company portal (bespoke rgba variants, case-insensitive key)
- *  tone="seller"       — seller submission chip (draft/submitted/approved/rejected + custom labels)
- *  tone="employee"     — employee order/wallet status pill (jbmono, uppercase)
- *  tone="sellerAccount"— seller dashboard account-status chip
+ *  tone="admin"        : admin dashboard (Tailwind palette, label = status.replace(/_/g,' '))
+ *  tone="company"      : company portal (bespoke rgba variants, case-insensitive key)
+ *  tone="seller"       : seller submission chip (draft/submitted/approved/rejected + custom labels)
+ *  tone="employee"     : employee order/wallet status pill (jbmono, uppercase)
+ *  tone="sellerAccount": seller dashboard account-status chip
  */
 
 export type StatusTone = 'admin' | 'company' | 'seller' | 'employee' | 'sellerAccount';

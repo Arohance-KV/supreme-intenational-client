@@ -21,7 +21,7 @@ export interface EmployeeCompany {
   featuredProducts?: Product[];
 }
 
-// The company the signed-in employee belongs to — drives the portal header branding.
+// The company the signed-in employee belongs to: drives the portal header branding.
 export function useEmployeeCompany() {
   return useQuery<EmployeeCompany>({
     queryKey: ['employee', 'company'],
@@ -131,7 +131,7 @@ export function useRecentlyViewed() {
         tokenKey: 'employeeToken',
       }),
     // A view is recorded server-side when a product page opens; the dashboard must
-    // reflect it on return. Default 60s staleTime made the list lag reality — always
+    // reflect it on return. Default 60s staleTime made the list lag reality: always
     // refetch on mount so it's current the moment you come back.
     staleTime: 0,
     refetchOnMount: 'always',

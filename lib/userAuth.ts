@@ -25,14 +25,14 @@ interface AuthResponse {
 
 // The signed-in customer's own profile. `b2bStatus` is optional because legacy
 // cached profiles / users created before the approval backfill migration ran
-// won't carry it — treat a missing value as approved, not locked out.
+// won't carry it: treat a missing value as approved, not locked out.
 export interface Profile {
   firstName: string;
   lastName?: string;
   email: string;
   b2bStatus?: 'pending' | 'approved' | 'rejected';
   // Server-derived: false when a self-signup individual has no assigned sales rep yet.
-  // Missing on legacy cached profiles — treat absence as allowed.
+  // Missing on legacy cached profiles: treat absence as allowed.
   canRequestQuotation?: boolean;
 }
 

@@ -45,7 +45,7 @@ export interface AdminSubmission {
   rejectionReason?: string;
   reviewedBy?: string;
   reviewedAt?: string;
-  /** Present on approved submissions — the MongoDB ObjectId of the created product */
+  /** Present on approved submissions: the MongoDB ObjectId of the created product */
   createdProductId?: string;
   createdAt: string;
   updatedAt: string;

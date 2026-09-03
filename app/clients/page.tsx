@@ -26,7 +26,7 @@ export default async function ClientsPage() {
           <p className="m-0 max-w-[60ch] text-[15px] text-slate sm:text-[17px]">From IT and manufacturing to banking and retail, 500+ teams run their corporate gifting on Supreme.</p>
         </section>
 
-        {/* Logo wall — infinite marquee. The track holds two copies of the list and
+        {/* Logo wall: infinite marquee. The track holds two copies of the list and
             shifts by -50%, so the loop is seamless (same dc-marquee keyframe as TrustedBy). */}
         {logos.length > 0 && (
           <div className="mb-9 overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_6%,#000_94%,transparent)]">

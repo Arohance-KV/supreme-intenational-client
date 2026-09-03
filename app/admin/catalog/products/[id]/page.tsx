@@ -1169,7 +1169,7 @@ function VariantsSection({
             </thead>
             <tbody>
               {variants.map((v) => (
-                // Use v._id as stable key — never use array index
+                // Use v._id as stable key, never use array index
                 <VariantRow key={v._id} variant={v} productId={productId} slug={slug} isBackend={isBackend} notifySubmitted={notifySubmitted} />
               ))}
             </tbody>
@@ -1203,7 +1203,7 @@ export default function AdminProductDetailPage({
   const deleteProduct = useDeleteProduct();
 
   // Page-level "queued for review" notice shared by every write action below the header
-  // (product save/delete, variant create/bulk/update/stock/delete/flash-sale) — the backend
+  // (product save/delete, variant create/bulk/update/stock/delete/flash-sale), the backend
   // role's mutations never touch live data, they only ever produce a change request.
   const [flash, setFlash] = useState<string | null>(null);
   const notifySubmitted = () => {

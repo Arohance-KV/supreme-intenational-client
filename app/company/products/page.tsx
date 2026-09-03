@@ -59,8 +59,8 @@ function ProductThumbnail({ src, alt }: { src: string | null; alt: string }) {
 }
 
 function ProductRow({ product }: { product: CompanyProduct }) {
-  // Two independent usePatchProduct() instances — one for the points edit, one for the
-  // hide/show toggle — so their isPending/isError state never cross-contaminate. Both
+  // Two independent usePatchProduct() instances: one for the points edit, one for the
+  // hide/show toggle, so their isPending/isError state never cross-contaminate. Both
   // the hook, its args, and the parsePointsInput guard are unchanged from before; only
   // the points-edit state has moved up from a standalone PointsCell so the mockup's
   // Actions-column pencil can trigger the same edit affordance.

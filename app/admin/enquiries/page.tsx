@@ -121,7 +121,7 @@ function EnquiryList({ type }: { type: Exclude<Tab, 'contact'> }) {
   );
 }
 
-// ── Contact-form leads (website "Contact Us") — read-only inbox ──────────────────
+// ── Contact-form leads (website "Contact Us"), read-only inbox ──────────────────
 function ContactLeadsList() {
   const [page, setPage] = useState(1);
   const { data, isPending, isError } = useContactLeads(page);

@@ -1,4 +1,4 @@
-// Instant fallback for employee tab-to-tab navigation — see app/admin/loading.tsx.
+// Instant fallback for employee tab-to-tab navigation (see app/admin/loading.tsx).
 // ponytail: shared spinner, no per-page skeletons.
 export default function Loading() {
   return (

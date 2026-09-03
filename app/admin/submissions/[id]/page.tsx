@@ -488,7 +488,7 @@ function SubmissionDetailInner({ id }: { id: string }) {
             <dd className="mt-0.5 text-sm text-ink">
               {submission.categoryName ?? submission.categoryId ?? (
                 submission.proposedCategoryName
-                  ? <span>{submission.proposedCategoryName} <span className="text-xs text-[#b5801e]">(proposed — needs review)</span></span>
+                  ? <span>{submission.proposedCategoryName} <span className="text-xs text-[#b5801e]">(proposed, needs review)</span></span>
                   : '—'
               )}
             </dd>

@@ -62,7 +62,7 @@ export function usePatchProduct() {
   });
 }
 
-// Multipart (an optional reference image rides along) — apiFetch is JSON-only, so this
+// Multipart (an optional reference image rides along): apiFetch is JSON-only, so this
 // posts directly, mirroring uploadCompanyLogo in lib/company/profile.ts.
 async function postProductRequest(body: ProductRequestBody): Promise<unknown> {
   const fd = new FormData();

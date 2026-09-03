@@ -134,7 +134,7 @@ function ChangePasswordSection() {
       { currentPassword: form.currentPassword, newPassword: form.newPassword },
       {
         onSuccess: () => {
-          // Token is invalidated server-side on password change — log out and redirect
+          // Token is invalidated server-side on password change, log out and redirect
           logout();
           router.replace('/admin/login');
         },

@@ -8,8 +8,8 @@ import { useCompanyOrder } from '@/lib/company/orders';
 import { formatIN, formatDate } from '@/lib/company/format';
 
 // Note: the company-scoped order endpoint returns the same flat DTO for both the
-// list and the detail view (server/src/services/order.service.ts _toCompanyOrderDTO)
-// — items are already joined into a single string and qty/points already summed,
+// list and the detail view (server/src/services/order.service.ts _toCompanyOrderDTO):
+// items are already joined into a single string and qty/points already summed,
 // so there is no per-line-item breakdown to render here.
 export default function CompanyOrderDetailPage({ params }: { params: Promise<{ orderId: string }> }) {
   const { orderId } = use(params);

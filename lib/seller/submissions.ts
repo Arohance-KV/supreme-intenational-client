@@ -109,7 +109,7 @@ export function useImportSubmissions() {
   });
 }
 
-// Image upload is multipart — apiFetch is JSON-only, so use fetch directly here.
+// Image upload is multipart: apiFetch is JSON-only, so use fetch directly here.
 export async function uploadSubmissionImage(file: File): Promise<string> {
   const fd = new FormData();
   fd.append('file', file);

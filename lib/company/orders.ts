@@ -14,7 +14,7 @@ export type OrderStatus =
   | 'cancelled'
   | 'refunded';
 
-// Mirrors OrderService._toCompanyOrderDTO (server/src/services/order.service.ts) —
+// Mirrors OrderService._toCompanyOrderDTO (server/src/services/order.service.ts):
 // the SAME flat shape is returned by both listByCompany (list) and getForCompany
 // (detail): item/qty/points are already joined/summed server-side, there is no
 // separate per-line-item breakdown exposed to the company.
@@ -74,7 +74,7 @@ export function useCompanyOrder(orderId: string) {
 
 /**
  * Downloads the company's order CSV export. Hits the endpoint directly (not
- * apiFetch, which parses JSON) since the response is a text/csv attachment —
+ * apiFetch, which parses JSON) since the response is a text/csv attachment:
  * auth is via the HttpOnly cookie (credentials: 'include'), same as apiFetch.
  */
 export async function exportCompanyOrdersCsv(filter: { status?: OrderStatus; search?: string } = {}): Promise<void> {

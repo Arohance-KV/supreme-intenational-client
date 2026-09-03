@@ -1,6 +1,6 @@
 // Shared formatting helpers (single source of truth). Previously split between
 // lib/admin/format.ts and lib/company/format.ts; those now re-export from here.
-// Keep this file free of React imports — pure TS utilities only.
+// Keep this file free of React imports: pure TS utilities only.
 
 /** Format a number as an INR amount with the ₹ prefix, or return '—' */
 export function inr(n: unknown): string {

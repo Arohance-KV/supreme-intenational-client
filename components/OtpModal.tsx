@@ -21,7 +21,7 @@ export default function OtpModal({ open, onClose, onVerified, email }: OtpModalP
   const verifyMutation = useVerifyOtp();
   const dialogRef = useRef<HTMLDivElement>(null);
 
-  // L3: dialog a11y — Esc to close, autofocus, and a Tab focus trap so keyboard/AT users
+  // L3: dialog a11y, Esc to close, autofocus, and a Tab focus trap so keyboard/AT users
   // can't escape the modal into the page behind it (WCAG 2.4.3 / 4.1.2).
   useEffect(() => {
     if (!open) return;

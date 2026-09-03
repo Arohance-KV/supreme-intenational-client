@@ -11,7 +11,7 @@ type ImageEntry = { filename: string; url: string };
 // Step-3 (Preview) body for BulkImportWizard: create/update counts, the admin-only
 // taxonomy-auto-create confirm, the image match summary, the drag-assign grid, and the row
 // error list. Pulled out of BulkImportWizard.tsx purely to keep that file under the wizard's
-// ~300-line ponytail budget — this has no state of its own, it's a straight render of props.
+// ~300-line ponytail budget: this has no state of its own, it's a straight render of props.
 export default function BulkImportPreviewReport({
   mode,
   preview,
@@ -38,7 +38,7 @@ export default function BulkImportPreviewReport({
   if (!preview) return null;
 
   // A `row: 0` entry is the MAX_SELLER_ROWS over-cap condition (every real per-row error has
-  // row >= 2) — it means nothing in this upload can be committed at all, so it gets its own
+  // row >= 2), it means nothing in this upload can be committed at all, so it gets its own
   // blocking banner instead of being buried in the "N row errors" list below (BulkImportWizard
   // also disables "Start import" while this is present).
   const capError = preview.errors.find((e) => e.row === 0);

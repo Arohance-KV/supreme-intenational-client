@@ -97,7 +97,7 @@ export default function GenerateCatalogueModal({ open, onClose }: { open: boolea
         setEmailSent(true);
       } else if (res.pdfUrl) {
         // The PDF is served with Content-Disposition: attachment, so a plain anchor
-        // click downloads it in place — no new tab, no inline viewer.
+        // click downloads it in place, no new tab, no inline viewer.
         const a = document.createElement('a');
         a.href = res.pdfUrl;
         a.download = '';

@@ -9,7 +9,7 @@ import type { ProductDetail } from '@/lib/catalog';
 // bound by MOQ, so the portal passes its own config.
 export interface CartTarget {
   path: string;
-  // Where to resolve the product's variants — employees are scoped to their
+  // Where to resolve the product's variants, employees are scoped to their
   // company's catalogue, so they must not read the public detail endpoint.
   detailPath: string;
   tokenKey: string;
@@ -34,7 +34,7 @@ export const EMPLOYEE_CART: CartTarget = {
 
 // Card-level add to cart: resolves the product's default (first active) variant on
 // click and adds it at its MOQ. Multi-variant products can be fine-tuned on the
-// detail page. ponytail: one fetch on click — no variant data on the listing DTO.
+// detail page. ponytail: one fetch on click, no variant data on the listing DTO.
 export default function AddToCartMini({ slug, target = PUBLIC_CART }: { slug: string; target?: CartTarget }) {
   const queryClient = useQueryClient();
   const [state, setState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');

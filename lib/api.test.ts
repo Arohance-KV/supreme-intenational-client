@@ -1,6 +1,6 @@
 /**
  * Tests for api.ts and session.ts
- * Written FIRST (TDD) — these fail until the implementation exists.
+ * Written FIRST (TDD): these fail until the implementation exists.
  */
 
 // NEXT_PUBLIC_API_URL is set in jest.setup.js

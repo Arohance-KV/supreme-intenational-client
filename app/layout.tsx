@@ -45,7 +45,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${jakarta.variable} ${jbMono.variable} h-full antialiased`}
     >
       {/* react-scan: dev-only re-render highlighter. Must load before React, so a raw
-          <script> in <head> — not next/script (loads too late). Stripped in prod builds. */}
+          <script> in <head>, not next/script (loads too late). Stripped in prod builds. */}
       {process.env.NODE_ENV === "development" && (
         <head>
           {/* eslint-disable-next-line @next/next/no-sync-scripts */}

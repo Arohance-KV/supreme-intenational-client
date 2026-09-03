@@ -1,9 +1,9 @@
 'use client';
 
-// A polished two-series bar chart for the admin dashboards — stacked or grouped — with a
+// A polished two-series bar chart for the admin dashboards (stacked or grouped) with a
 // y-axis + recessive gridlines, a legend, a per-bucket hover tooltip, and (stacked only) a
 // selective total label. Single reusable component; the pages just map their data to
-// { label, a, b } and pick a mode. No charting dependency — pure CSS, design-system tokens.
+// { label, a, b } and pick a mode. No charting dependency: pure CSS, design-system tokens.
 
 export interface SeriesPoint {
   label: string;
@@ -19,7 +19,7 @@ export interface SeriesDef {
 
 const fmt = (n: number) => n.toLocaleString('en-IN');
 
-// A "nice" gridline step (~4 intervals) for integer count data — floored at 1 so ticks are
+// A "nice" gridline step (~4 intervals) for integer count data, floored at 1 so ticks are
 // always whole numbers (avoids fractional labels that round to duplicates like 0,1,1,2).
 function niceStep(range: number): number {
   const rough = Math.max(range, 1) / 4;
@@ -177,7 +177,7 @@ export default function SeriesBarChart({
   );
 }
 
-// Shared 3M / 6M / 12M period toggle — drives the existing `months` query param.
+// Shared 3M / 6M / 12M period toggle: drives the existing `months` query param.
 const MONTH_OPTS = [3, 6, 12] as const;
 export function MonthsFilter({ months, onChange }: { months: number; onChange: (m: number) => void }) {
   return (
