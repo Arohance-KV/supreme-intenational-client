@@ -121,6 +121,7 @@ export default function DcNav({ active }: { active?: string }) {
               {it.label}
             </Link>
           ))}
+          <a href="https://supremeintl.in/collections/ltts" target="_blank" rel="noopener noreferrer" className="rounded-[10px] px-3 py-2 text-sm font-medium text-slate no-underline">Client Login</a>
         </div>
         <div className="ml-auto flex items-center gap-2">
           <div className="hidden items-center gap-1 lg:flex">
@@ -170,6 +171,7 @@ export default function DcNav({ active }: { active?: string }) {
                   {it.label}
                 </Link>
               ))}
+              <a href="https://supremeintl.in/collections/ltts" target="_blank" rel="noopener noreferrer" onClick={close} className="rounded-[10px] px-3 py-2.5 text-[15px] font-medium text-slate no-underline">Client Login</a>
             </div>
             <div className="mt-3 border-t border-line/70 pt-3">
               <div className="font-jbmono px-3 pb-1 text-[11px] uppercase tracking-[.12em] text-muted">Merchandise Portal</div>
