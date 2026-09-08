@@ -85,13 +85,13 @@ export default function AboutPage() {
           <h2 className="mb-[22px] text-[26px] font-extrabold tracking-[-.02em] sm:text-[34px]">Our Directors</h2>
           <div className="grid grid-cols-1 gap-[18px] md:grid-cols-3">
             {directors.map((d) => (
-              <div key={d.name} className="flex flex-col overflow-hidden rounded-[20px] border border-white/80 bg-white/55 shadow-[0_12px_34px_rgba(34,36,90,.08)] backdrop-blur-[14px]">
+              <div key={d.name} className="flex flex-col items-center rounded-[20px] border border-white/80 bg-white/55 p-5 text-center shadow-[0_12px_34px_rgba(34,36,90,.08)] backdrop-blur-[14px] sm:p-[22px]">
                 {d.img ? (
-                  <Image src={d.img} alt={d.name} width={640} height={640} className="aspect-square w-full object-cover" />
+                  <Image src={d.img} alt={d.name} width={400} height={400} className="mb-4 h-40 w-40 rounded-2xl object-cover" />
                 ) : (
-                  <div className={`flex aspect-square w-full items-center justify-center text-[64px] font-extrabold tracking-[-.02em] text-white ${d.grad}`}>{d.initials}</div>
+                  <div className={`mb-4 flex h-40 w-40 items-center justify-center rounded-2xl text-[48px] font-extrabold tracking-[-.02em] text-white ${d.grad}`}>{d.initials}</div>
                 )}
-                <div className="p-5 sm:p-[22px]">
+                <div>
                   <div className="text-[18px] font-extrabold tracking-[-.01em]">{d.name}</div>
                   <div className="font-jbmono my-[5px] mb-2.5 text-[11px] uppercase tracking-[.06em] text-accent">{d.role}</div>
                   <div className="text-[13px] leading-[1.55] text-slate">{d.bio}</div>
