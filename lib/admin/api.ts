@@ -15,7 +15,11 @@ export async function adminFetch<T>(path: string, opts?: { method?: string; body
   } catch (e) {
     if (e instanceof ApiError && e.status === 401 && typeof window !== 'undefined') {
       localStorage.removeItem('adminToken');
-      if (!_nav.getPathname().startsWith('/admin/login')) _nav.assign('/admin/login');
+      // Only the admin portal may bounce to the admin login. A 401 raised while the user sits
+      // in another portal (seller, employee) means an admin endpoint leaked into that portal:
+      // surface the error there instead of throwing the user out to /admin/login.
+      const path = _nav.getPathname();
+      if (path.startsWith('/admin') && !path.startsWith('/admin/login')) _nav.assign('/admin/login');
     }
     throw e;
   }

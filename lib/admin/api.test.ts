@@ -80,3 +80,16 @@ describe('adminFetch', () => {
     expect(_nav.assign).not.toHaveBeenCalled();
   });
 });
+
+describe('adminFetch 401 outside the admin portal', () => {
+  test('does not redirect when the user is in another portal (seller)', async () => {
+    localStorage.setItem('adminToken', 'stale-jwt');
+    _nav.getPathname = () => '/seller/products';
+
+    mockApiFetch.mockRejectedValueOnce(new ApiError('Unauthorized', 401));
+
+    await expect(adminFetch('/admin/attributes')).rejects.toMatchObject({ status: 401 });
+
+    expect(_nav.assign).not.toHaveBeenCalled();
+  });
+});

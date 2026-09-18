@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminFetch } from './api';
+import { apiFetch } from '@/lib/api';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -119,10 +120,20 @@ export function useUpdateCategory() {
 
 // ── Attribute hooks ───────────────────────────────────────────────────────────
 
-export function useAttributes() {
+// The seller portal reuses BulkImportWizard but has no adminToken: adminFetch's 401 handler
+// clears the token and hard-redirects to /admin/login, which kicked sellers out of their own
+// portal. Non-admin callers read the same active attributes from the public catalog endpoint.
+// ponytail: one flag, not a second hook, GET /catalog/attributes returns the same docs.
+export function fetchAttributes(opts?: { public?: boolean }) {
+  return opts?.public
+    ? apiFetch<AdminAttribute[]>('/catalog/attributes')
+    : adminFetch<AdminAttribute[]>('/admin/attributes');
+}
+
+export function useAttributes(opts?: { public?: boolean }) {
   return useQuery<AdminAttribute[]>({
-    queryKey: ATTRIBUTES_KEY,
-    queryFn: () => adminFetch<AdminAttribute[]>('/admin/attributes'),
+    queryKey: opts?.public ? [...ATTRIBUTES_KEY, 'public'] : ATTRIBUTES_KEY,
+    queryFn: () => fetchAttributes(opts),
   });
 }
 

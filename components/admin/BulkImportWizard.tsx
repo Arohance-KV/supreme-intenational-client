@@ -139,7 +139,7 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
   // Seller portal has no admin profile to fetch, only ask for admin mode.
   const { data: me } = useAdminProfile({ enabled: mode === 'admin' });
   const isBackend = mode === 'admin' && me?.role === 'backend';
-  const { data: attributes = [], isLoading: attributesLoading } = useAttributes();
+  const { data: attributes = [], isLoading: attributesLoading } = useAttributes({ public: mode !== 'admin' });
   const attributeNames = useMemo(() => attributes.map((a) => a.name), [attributes]);
   const targets = useMemo(() => buildTargets(attributeNames), [attributeNames]);
   const mappingStorageKey = `bulk-import-map:${mode}`;
