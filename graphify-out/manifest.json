@@ -445,8 +445,8 @@
     "semantic_hash": ""
   },
   "components/DcNav.tsx": {
-    "mtime": 1788857119.7517638,
-    "ast_hash": "d8172a85fb10fe61fecebb40c0276a44",
+    "mtime": 1790243414.7608109,
+    "ast_hash": "e28b049434d26ba79be561ea780fd4a3",
     "semantic_hash": ""
   },
   "components/DcPhoto.tsx": {
@@ -470,8 +470,8 @@
     "semantic_hash": ""
   },
   "components/ProductCard.tsx": {
-    "mtime": 1784620101.4489822,
-    "ast_hash": "df6f0ac9040a2eaa77446cd6f1a969ff",
+    "mtime": 1790243446.1923141,
+    "ast_hash": "17f1494b24370b6893b5ce26cfa293ec",
     "semantic_hash": ""
   },
   "components/Reviews.tsx": {
@@ -1085,8 +1085,8 @@
     "semantic_hash": ""
   },
   "components/TrustedBy.tsx": {
-    "mtime": 1788427797.158306,
-    "ast_hash": "fa8809ca6da95c0e7c75a58b80d0c735",
+    "mtime": 1790243784.3313923,
+    "ast_hash": "32593c1a05686378c423860f4d9597f0",
     "semantic_hash": ""
   },
   "components/admin/BulkImportPreviewReport.tsx": {

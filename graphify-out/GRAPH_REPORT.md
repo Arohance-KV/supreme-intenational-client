@@ -1,16 +1,16 @@
 # Graph Report - client  (2026-09-24)
 
 ## Corpus Check
-- 261 files · ~185,953 words
+- 261 files · ~186,109 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1655 nodes · 3380 edges · 100 communities (93 shown, 7 thin omitted)
+- 1655 nodes · 3380 edges · 101 communities (94 shown, 7 thin omitted)
 - Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 157 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `35aa6c35`
+- Built from commit: `5d479cb8`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -105,6 +105,7 @@
 - [[_COMMUNITY_Community 93|Community 93]]
 - [[_COMMUNITY_Community 94|Community 94]]
 - [[_COMMUNITY_Community 95|Community 95]]
+- [[_COMMUNITY_Community 97|Community 97]]
 - [[_COMMUNITY_Community 108|Community 108]]
 
 ## God Nodes (most connected - your core abstractions)
@@ -134,11 +135,11 @@
 ## Import Cycles
 - None detected.
 
-## Communities (100 total, 7 thin omitted)
+## Communities (101 total, 7 thin omitted)
 
 ### Community 0 - "Community 0"
-Cohesion: 0.17
-Nodes (14): FlashSaleBody, PRODUCT_DETAIL_KEY(), UpdateProductBody, UpdateVariantBody, uploadAdminImage(), useAdminProduct(), useDeleteProduct(), useSetFlashSale() (+6 more)
+Cohesion: 0.18
+Nodes (13): FlashSaleBody, PRODUCT_DETAIL_KEY(), UpdateProductBody, UpdateVariantBody, uploadAdminImage(), useAdminProduct(), useSetFlashSale(), VariantRow() (+5 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.11
@@ -169,8 +170,8 @@ Cohesion: 0.15
 Nodes (16): AdminProduct, AdminProductDetail, AdminProductsResponse, BulkCreateVariantsBody, CreateVariantBody, importProductsCsv(), ImportResult, useAdjustStock() (+8 more)
 
 ### Community 8 - "Community 8"
-Cohesion: 0.12
-Nodes (13): LoginForm(), SellerApplyPage(), DcWordmark(), cities, jakarta, mono, AuthResponse, LoginBody (+5 more)
+Cohesion: 0.16
+Nodes (10): LoginForm(), SellerApplyPage(), DcWordmark(), AuthResponse, LoginBody, SignupBody, useLogin(), useSignup() (+2 more)
 
 ### Community 9 - "Community 9"
 Cohesion: 0.07
@@ -181,8 +182,8 @@ Cohesion: 0.08
 Nodes (25): Ambient background, Badges / chips (pill, JetBrains Mono, 11px, weight 500), Brand, Buttons, Cards, Colors, Components, CSS custom properties (root `--` tokens) (+17 more)
 
 ### Community 11 - "Community 11"
-Cohesion: 0.11
-Nodes (20): PageHeader(), CompanyQuotation, CompanyQuotationContact, CompanyQuotationItem, CompanyQuotationsResult, ENQUIRIES_KEY, EnquiriesResult, Enquiry (+12 more)
+Cohesion: 0.12
+Nodes (19): CompanyQuotation, CompanyQuotationContact, CompanyQuotationItem, CompanyQuotationsResult, ENQUIRIES_KEY, EnquiriesResult, Enquiry, EnquiryItem (+11 more)
 
 ### Community 12 - "Community 12"
 Cohesion: 0.12
@@ -233,12 +234,12 @@ Cohesion: 0.16
 Nodes (13): ProductRow(), CompanyProduct, PatchProductBody, PatchProductResult, postProductRequest(), ProductRequestBody, PRODUCTS_KEY, ProductsResponse (+5 more)
 
 ### Community 24 - "Community 24"
-Cohesion: 0.12
-Nodes (17): Dashboard, DashboardPool, DashboardRecentOrder, DashboardSeriesPoint, DashboardStats, Range, RecentOrderStatus, useCompanyDashboard() (+9 more)
+Cohesion: 0.11
+Nodes (19): Card(), Dashboard, DashboardPool, DashboardRecentOrder, DashboardSeriesPoint, DashboardStats, Range, RecentOrderStatus (+11 more)
 
 ### Community 25 - "Community 25"
-Cohesion: 0.15
-Nodes (17): B2B_LOCK_CODES, inr0(), QuotationCartView(), QuotationHistoryPage(), emailQuotation(), GenerateQuotationBody, GenerateQuotationResult, getQuotationPdfUrl() (+9 more)
+Cohesion: 0.21
+Nodes (9): QuotationHistoryPage(), emailQuotation(), GenerateQuotationBody, getQuotationPdfUrl(), MyQuotationsResult, Quotation, QuotationItem, QuotationPdfResult (+1 more)
 
 ### Community 26 - "Community 26"
 Cohesion: 0.11
@@ -253,8 +254,8 @@ Cohesion: 0.10
 Nodes (23): AdminOrderFilters, AdminOrdersResponse, Billing, Order, OrderCompany, OrderItem, OrderStatus, Payment (+15 more)
 
 ### Community 29 - "Community 29"
-Cohesion: 0.15
-Nodes (14): TABS, Card(), CompanyOrdersFilter, CompanyOrderSummary, exportCompanyOrdersCsv(), OrdersPage, OrdersPagination, OrderStatus (+6 more)
+Cohesion: 0.18
+Nodes (11): TABS, CompanyOrdersFilter, CompanyOrderSummary, exportCompanyOrdersCsv(), OrdersPage, OrdersPagination, OrderStatus, T (+3 more)
 
 ### Community 30 - "Community 30"
 Cohesion: 0.07
@@ -337,8 +338,8 @@ Cohesion: 0.06
 Nodes (33): ActivateForm(), ForgotPasswordForm(), LoginForm(), ResetPasswordForm(), useEmployeeAuth(), useEmployeeCompany(), EmployeeFooter(), EmployeeHeader() (+25 more)
 
 ### Community 50 - "Community 50"
-Cohesion: 0.19
-Nodes (12): CreateProductModal(), CreateProductBody, PRODUCT_LIST_KEY(), useAdminProducts(), useAdminProductsInfinite(), useCreateProduct(), useImportProducts(), useCategories() (+4 more)
+Cohesion: 0.18
+Nodes (13): CreateProductModal(), CreateProductBody, PRODUCT_LIST_KEY(), useAdminProducts(), useAdminProductsInfinite(), useCreateProduct(), useDeleteProduct(), useImportProducts() (+5 more)
 
 ### Community 51 - "Community 51"
 Cohesion: 0.22
@@ -357,8 +358,8 @@ Cohesion: 0.23
 Nodes (9): AdditionalCharge, CatalogueResult, GenerateBody, ProductVariant, QuotationResult, useAdminGenerateCatalogue(), useAdminGenerateQuotation(), ChargeRow (+1 more)
 
 ### Community 55 - "Community 55"
-Cohesion: 0.12
-Nodes (12): advantages, advTags, directors, jakarta, metadata, mono, stats, CartBadge() (+4 more)
+Cohesion: 0.10
+Nodes (15): advantages, advTags, directors, jakarta, metadata, mono, stats, CartBadge() (+7 more)
 
 ### Community 56 - "Community 56"
 Cohesion: 0.28
@@ -373,8 +374,8 @@ Cohesion: 0.33
 Nodes (7): CareerDetailPage(), jakarta, mono, ApplyInput, JobOpening, useApplyToJob(), useJob()
 
 ### Community 59 - "Community 59"
-Cohesion: 0.62
-Nodes (4): formatDate(), formatLakh(), initials(), parsePointsInput()
+Cohesion: 0.40
+Nodes (6): useCompanyOrder(), formatDate(), formatLakh(), initials(), parsePointsInput(), CompanyOrderDetailPage()
 
 ### Community 60 - "Community 60"
 Cohesion: 0.29
@@ -472,6 +473,10 @@ Nodes (7): PageProps, DcPhoto(), GRADS, pick(), TrackView(), TrackViewProps, gen
 Cohesion: 0.50
 Nodes (3): Deploy on Vercel, Getting Started, Learn More
 
+### Community 97 - "Community 97"
+Cohesion: 0.38
+Nodes (8): B2B_LOCK_CODES, inr0(), QuotationCartView(), GenerateQuotationResult, useGenerateQuotation(), useProfile(), formatPrice(), QuotationPage()
+
 ## Knowledge Gaps
 - **491 isolated node(s):** `jakarta`, `mono`, `metadata`, `stats`, `directors` (+486 more)
   These have ≤1 connection - possible missing edges or undocumented components.
@@ -480,9 +485,9 @@ Nodes (3): Deploy on Vercel, Getting Started, Learn More
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `ApiError` connect `Community 19` to `Community 0`, `Community 1`, `Community 2`, `Community 5`, `Community 7`, `Community 8`, `Community 11`, `Community 12`, `Community 14`, `Community 16`, `Community 17`, `Community 18`, `Community 21`, `Community 23`, `Community 24`, `Community 25`, `Community 28`, `Community 30`, `Community 32`, `Community 35`, `Community 37`, `Community 38`, `Community 40`, `Community 41`, `Community 44`, `Community 46`, `Community 47`, `Community 49`, `Community 50`, `Community 51`, `Community 52`, `Community 53`, `Community 58`, `Community 60`, `Community 62`, `Community 63`, `Community 64`, `Community 66`, `Community 69`, `Community 71`, `Community 72`, `Community 74`, `Community 77`, `Community 78`, `Community 79`, `Community 81`?**
+- **Why does `ApiError` connect `Community 19` to `Community 0`, `Community 1`, `Community 2`, `Community 5`, `Community 7`, `Community 8`, `Community 11`, `Community 12`, `Community 14`, `Community 16`, `Community 17`, `Community 18`, `Community 21`, `Community 23`, `Community 24`, `Community 25`, `Community 28`, `Community 30`, `Community 32`, `Community 35`, `Community 37`, `Community 38`, `Community 40`, `Community 41`, `Community 44`, `Community 46`, `Community 47`, `Community 49`, `Community 50`, `Community 51`, `Community 52`, `Community 53`, `Community 58`, `Community 60`, `Community 62`, `Community 63`, `Community 64`, `Community 66`, `Community 69`, `Community 71`, `Community 72`, `Community 74`, `Community 77`, `Community 78`, `Community 79`, `Community 81`, `Community 97`?**
   _High betweenness centrality (0.094) - this node is a cross-community bridge._
-- **Why does `apiFetch()` connect `Community 19` to `Community 5`, `Community 8`, `Community 11`, `Community 14`, `Community 21`, `Community 23`, `Community 24`, `Community 25`, `Community 29`, `Community 30`, `Community 31`, `Community 32`, `Community 35`, `Community 36`, `Community 37`, `Community 39`, `Community 41`, `Community 42`, `Community 49`, `Community 52`, `Community 53`, `Community 58`, `Community 64`, `Community 71`, `Community 74`, `Community 75`, `Community 76`, `Community 77`, `Community 78`, `Community 87`?**
+- **Why does `apiFetch()` connect `Community 19` to `Community 5`, `Community 8`, `Community 11`, `Community 14`, `Community 21`, `Community 23`, `Community 24`, `Community 25`, `Community 29`, `Community 30`, `Community 31`, `Community 32`, `Community 35`, `Community 36`, `Community 37`, `Community 39`, `Community 41`, `Community 42`, `Community 49`, `Community 52`, `Community 53`, `Community 58`, `Community 64`, `Community 71`, `Community 74`, `Community 75`, `Community 76`, `Community 77`, `Community 78`, `Community 87`, `Community 97`?**
   _High betweenness centrality (0.072) - this node is a cross-community bridge._
 - **Why does `adminFetch()` connect `Community 62` to `Community 1`, `Community 2`, `Community 6`, `Community 7`, `Community 12`, `Community 17`, `Community 18`, `Community 19`, `Community 20`, `Community 27`, `Community 28`, `Community 35`, `Community 38`, `Community 40`, `Community 43`, `Community 51`, `Community 54`, `Community 60`, `Community 61`, `Community 66`, `Community 71`, `Community 82`?**
   _High betweenness centrality (0.038) - this node is a cross-community bridge._

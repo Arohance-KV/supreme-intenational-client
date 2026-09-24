@@ -12,12 +12,14 @@ import { useCart } from '@/lib/cart';
 // Single unified public-site nav, rendered once from the layout, so it looks
 // identical on the home page, /products, and every other public page.
 // 'Products' is rendered separately as a category mega-menu (NavProductsMenu).
+// The full desktop row only fits from 1600px; below that, links join the bar as
+// width allows (`bar`) and the rest stay in the ☰ menu (`menu` hides the duplicate).
 const items = [
-  { label: 'Clients', href: '/clients', key: 'clients' },
-  { label: 'Blog', href: '/blog', key: 'blog' },
-  { label: 'About', href: '/about', key: 'about' },
-  { label: 'Careers', href: '/careers', key: 'careers' },
-  { label: 'Contact', href: '/contact', key: 'contact' },
+  { label: 'Clients', href: '/clients', key: 'clients', bar: 'lg:block', menu: 'lg:hidden' },
+  { label: 'Blog', href: '/blog', key: 'blog', bar: 'xl:block', menu: 'xl:hidden' },
+  { label: 'About', href: '/about', key: 'about', bar: 'lg:block', menu: 'lg:hidden' },
+  { label: 'Careers', href: '/careers', key: 'careers', bar: 'xl:block', menu: 'xl:hidden' },
+  { label: 'Contact', href: '/contact', key: 'contact', bar: 'xl:block', menu: 'xl:hidden' },
 ];
 
 // Merchandise portal logins. Seller login lives in the footer, it's a partner
@@ -106,6 +108,9 @@ export default function DcNav({ active }: { active?: string }) {
 
   return (
     <header className="font-display sticky top-0 z-50 px-3 pt-3 sm:px-6 lg:px-8">
+      {/* Desktop: the menu is a dropdown, so a click outside closes it. Lives here, not in
+          the bar: the bar's backdrop-blur would trap a fixed child inside itself. */}
+      {menuOpen && <div aria-hidden onClick={close} className="fixed inset-0 z-[-1] hidden lg:block min-[1600px]:hidden" />}
       {/* Sticky bar: backdrop-blur re-runs over the full width every scroll/anim frame.
           20px was paint-bound; 8px + a more opaque bg keeps the frost at a fraction of the cost. */}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2.5 rounded-[18px] border border-white/80 bg-white/[.78] px-3.5 py-2.5 shadow-[0_8px_30px_rgba(34,36,90,.1)] backdrop-blur-[8px] backdrop-saturate-[1.6] sm:px-[18px] sm:py-3">
@@ -116,57 +121,58 @@ export default function DcNav({ active }: { active?: string }) {
             <Link
               key={it.key}
               href={it.href}
-              className={`rounded-[10px] px-3 py-2 text-sm no-underline ${active === it.key ? 'bg-[rgba(42,43,106,.07)] font-semibold text-ink' : 'font-medium text-slate'}`}
+              className={`hidden rounded-[10px] px-3 py-2 text-sm no-underline ${it.bar} ${active === it.key ? 'bg-[rgba(42,43,106,.07)] font-semibold text-ink' : 'font-medium text-slate'}`}
             >
               {it.label}
             </Link>
           ))}
-          <a href="https://supremeintl.in/collections/ltts" target="_blank" rel="noopener noreferrer" className="rounded-[10px] px-3 py-2 text-sm font-medium text-slate no-underline">Client Login</a>
+          <a href="https://supremeintl.in/collections/ltts" target="_blank" rel="noopener noreferrer" className="hidden rounded-[10px] px-3 py-2 text-sm font-medium text-slate no-underline min-[1600px]:block">Client Login</a>
         </div>
         <div className="ml-auto flex items-center gap-2">
-          <div className="hidden items-center gap-1 lg:flex">
+          <div className="hidden items-center gap-1 min-[1600px]:flex">
             <MerchandisePortalMenu />
           </div>
           <CartBadge count={cartData?.items.length ?? 0} href="/cart" />
-
-          {/* Mobile / tablet: everything else collapses behind one button. */}
-          <button
-            type="button"
-            aria-label="Menu"
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen((o) => !o)}
-            className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl border border-line bg-transparent text-indigo lg:hidden"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
-              {menuOpen ? <><path d="M18 6 6 18" /><path d="m6 6 12 12" /></> : <><path d="M3 6h18" /><path d="M3 12h18" /><path d="M3 18h18" /></>}
-            </svg>
-          </button>
 
           <div className="hidden items-center gap-2 lg:flex">
           {isLoggedIn ? (
             <>
               <Link href="/account" className="rounded-xl border border-line bg-transparent px-4 py-[11px] text-[13px] font-semibold text-indigo no-underline">My Account</Link>
-              <button onClick={handleLogout} className="cursor-pointer rounded-xl border border-line bg-transparent px-4 py-[11px] text-[13px] font-semibold text-indigo transition-colors hover:bg-[rgba(42,43,106,.07)]">Logout</button>
+              <button onClick={handleLogout} className="hidden cursor-pointer rounded-xl border border-line bg-transparent px-4 py-[11px] text-[13px] font-semibold text-indigo transition-colors hover:bg-[rgba(42,43,106,.07)] min-[1600px]:block">Logout</button>
             </>
           ) : (
             <>
               <Link href="/login" className="rounded-xl border border-line bg-transparent px-4 py-[11px] text-[13px] font-semibold text-indigo no-underline">Login</Link>
-              <Link href="/signup" className="hidden rounded-xl border border-line bg-transparent px-4 py-[11px] text-[13px] font-semibold text-indigo no-underline sm:inline-flex">Sign up</Link>
+              <Link href="/signup" className="hidden rounded-xl border border-line bg-transparent px-4 py-[11px] text-[13px] font-semibold text-indigo no-underline min-[1600px]:inline-flex">Sign up</Link>
             </>
           )}
           <Link href="/quotation" className="rounded-xl bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)] px-[18px] py-[11px] text-[13px] font-semibold text-white no-underline shadow-[0_8px_22px_rgba(42,43,106,.3)]">Request Quotation</Link>
           </div>
+
+          {/* Mobile / tablet: everything else collapses behind one button. Desktop under
+              1600px keeps it for the links that don't fit the bar. */}
+          <button
+            type="button"
+            aria-label="Menu"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((o) => !o)}
+            className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl border border-line bg-transparent text-indigo min-[1600px]:hidden"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+              {menuOpen ? <><path d="M18 6 6 18" /><path d="m6 6 12 12" /></> : <><path d="M3 6h18" /><path d="M3 12h18" /><path d="M3 18h18" /></>}
+            </svg>
+          </button>
         </div>
 
         {menuOpen && (
-          <nav className="w-full border-t border-line/70 pb-2 pt-3 lg:hidden">
+          <nav className="w-full border-t border-line/70 pb-2 pt-3 lg:absolute lg:right-0 lg:top-full lg:mt-2 lg:w-[340px] lg:rounded-[18px] lg:border lg:border-white/80 lg:bg-white/[.95] lg:p-2 lg:shadow-[0_20px_60px_rgba(34,36,90,.22)] lg:backdrop-blur-[20px] min-[1600px]:hidden">
             <div className="flex flex-col">
-              {[{ label: 'Products', href: '/products', key: 'products' }, ...items].map((it) => (
+              {[{ label: 'Products', href: '/products', key: 'products', menu: 'lg:hidden' }, ...items].map((it) => (
                 <Link
                   key={it.key}
                   href={it.href}
                   onClick={close}
-                  className={`rounded-[10px] px-3 py-2.5 text-[15px] no-underline ${active === it.key ? 'bg-[rgba(42,43,106,.07)] font-semibold text-ink' : 'font-medium text-slate'}`}
+                  className={`rounded-[10px] px-3 py-2.5 text-[15px] no-underline ${it.menu} ${active === it.key ? 'bg-[rgba(42,43,106,.07)] font-semibold text-ink' : 'font-medium text-slate'}`}
                 >
                   {it.label}
                 </Link>
@@ -182,19 +188,19 @@ export default function DcNav({ active }: { active?: string }) {
                 </Link>
               ))}
             </div>
-            <div className="mt-3 grid grid-cols-2 gap-2 border-t border-line/70 pt-3">
+            <div className="mt-3 grid grid-cols-2 gap-2 border-t border-line/70 pt-3 lg:grid-cols-1">
               {isLoggedIn ? (
                 <>
-                  <Link href="/account" onClick={close} className="rounded-xl border border-line px-4 py-3 text-center text-[14px] font-semibold text-indigo no-underline">My Account</Link>
+                  <Link href="/account" onClick={close} className="rounded-xl lg:hidden border border-line px-4 py-3 text-center text-[14px] font-semibold text-indigo no-underline">My Account</Link>
                   <button onClick={() => { handleLogout(); close(); }} className="cursor-pointer rounded-xl border border-line bg-transparent px-4 py-3 text-[14px] font-semibold text-indigo">Logout</button>
                 </>
               ) : (
                 <>
-                  <Link href="/login" onClick={close} className="rounded-xl border border-line px-4 py-3 text-center text-[14px] font-semibold text-indigo no-underline">Login</Link>
+                  <Link href="/login" onClick={close} className="rounded-xl lg:hidden border border-line px-4 py-3 text-center text-[14px] font-semibold text-indigo no-underline">Login</Link>
                   <Link href="/signup" onClick={close} className="rounded-xl border border-line px-4 py-3 text-center text-[14px] font-semibold text-indigo no-underline">Sign up</Link>
                 </>
               )}
-              <Link href="/quotation" onClick={close} className="col-span-2 rounded-xl bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)] px-4 py-3 text-center text-[14px] font-semibold text-white no-underline">Request Quotation</Link>
+              <Link href="/quotation" onClick={close} className="col-span-2 rounded-xl lg:hidden bg-[linear-gradient(135deg,#2a2b6a,#3a3c98)] px-4 py-3 text-center text-[14px] font-semibold text-white no-underline">Request Quotation</Link>
             </div>
           </nav>
         )}

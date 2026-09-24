@@ -18,7 +18,7 @@ export default function ProductCard({ product, hrefBase = '/products', showAddTo
   const hasDiscount = product.originalMinPrice > product.minPrice && product.minPrice > 0;
 
   return (
-    <div className="group font-display relative flex flex-col rounded-[16px] border border-white/85 bg-white/60 p-2.5 sm:rounded-[20px] sm:p-3.5 shadow-[0_12px_34px_rgba(34,36,90,.1)] backdrop-blur-[14px] transition-shadow hover:shadow-[0_16px_44px_rgba(34,36,90,.18)]">
+    <div className="group font-display relative flex flex-col md:h-full rounded-[16px] border border-white/85 bg-white/60 p-2.5 sm:rounded-[20px] sm:p-3.5 shadow-[0_12px_34px_rgba(34,36,90,.1)] backdrop-blur-[14px] transition-shadow hover:shadow-[0_16px_44px_rgba(34,36,90,.18)]">
       <Link href={`${hrefBase}/${product.slug}`} className="block no-underline">
         <div className="relative mb-2.5 aspect-square overflow-hidden rounded-[12px] bg-[#eef0f8] sm:mb-3.5 sm:rounded-[14px]">
           {imageSrc ? (
@@ -42,7 +42,7 @@ export default function ProductCard({ product, hrefBase = '/products', showAddTo
         {product.category && (
           <div className="font-jbmono mb-[5px] truncate text-[10px] uppercase tracking-[.08em] text-accent">{product.category}</div>
         )}
-        <h3 className="mb-2 line-clamp-2 text-[13px] font-bold leading-[1.25] text-ink group-hover:text-indigo sm:text-[15px]">
+        <h3 className="mb-2 line-clamp-2 md:min-h-[2.5em] text-[13px] font-bold leading-[1.25] text-ink group-hover:text-indigo sm:text-[15px]">
           {product.name}
         </h3>
 

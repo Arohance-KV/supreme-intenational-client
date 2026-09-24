@@ -19,7 +19,10 @@ function Brand({ name, logoUrl }: { name: string; logoUrl: string }) {
   const [noLogo, setNoLogo] = useState(!logoUrl);
   return (
     <div className="flex shrink-0 items-center gap-2.5 opacity-70 grayscale transition hover:opacity-100 hover:grayscale-0">
-      {!noLogo && (
+      {/* Logo only; the name is its alt text, shown as text only if the logo is missing/broken. */}
+      {noLogo ? (
+        <span className="whitespace-nowrap text-base font-bold text-indigo">{name}</span>
+      ) : (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={logoUrl}
@@ -29,7 +32,6 @@ function Brand({ name, logoUrl }: { name: string; logoUrl: string }) {
           className="h-7 w-auto max-w-[120px] rounded-[6px] object-contain"
         />
       )}
-      <span className="whitespace-nowrap text-base font-bold text-indigo">{name}</span>
     </div>
   );
 }
