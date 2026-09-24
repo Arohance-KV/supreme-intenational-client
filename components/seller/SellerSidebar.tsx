@@ -40,7 +40,7 @@ export default function SellerSidebar() {
   return (
     <aside
       data-app-side
-      className="font-display z-10 flex w-full flex-none flex-col gap-3 bg-[linear-gradient(180deg,#13483f,#176054)] p-4 text-white md:sticky md:top-0 md:h-screen md:w-[236px]"
+      className="font-display z-10 flex w-full flex-none flex-col gap-3 bg-[linear-gradient(180deg,#13483f,#176054)] p-4 text-white md:sticky md:top-0 md:h-screen md:w-[236px] md:max-lg:w-[200px]"
     >
       <div className="flex items-center gap-2.5 px-2 pb-4 pt-1.5">
         <Image src="/supreme-logo.png" alt="Supreme International" width={300} height={87} className="h-6 w-auto brightness-0 invert" priority />

@@ -20,7 +20,7 @@ function SubmissionRow({ submission }: { submission: AdminSubmission }) {
     : null;
 
   return (
-    <div className="grid grid-cols-[1fr_140px_80px_120px_100px_72px] items-center gap-3 border-b border-line px-5 py-3 hover:bg-white/50 transition-colors">
+    <div className="grid grid-cols-[1fr_140px_80px_120px_100px_72px] md:max-lg:grid-cols-[minmax(0,1fr)_110px_64px_76px_90px_80px] md:max-lg:min-w-[620px] items-center gap-3 border-b border-line px-5 py-3 hover:bg-white/50 transition-colors">
       <div className="min-w-0">
         <Link
           href={`/admin/submissions/${submission._id}`}
@@ -111,8 +111,8 @@ function SubmissionsTable() {
 
       {/* Table */}
       {!isLoading && !isError && items.length > 0 && (
-        <div className="rounded-2xl border border-white/70 bg-white/90 shadow-[0_12px_34px_rgba(34,36,90,.08)] overflow-hidden">
-          <div className="grid grid-cols-[1fr_140px_80px_120px_100px_72px] gap-3 bg-white/50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-slate">
+        <div className="rounded-2xl border border-white/70 bg-white/90 shadow-[0_12px_34px_rgba(34,36,90,.08)] overflow-hidden md:max-lg:overflow-x-auto">
+          <div className="grid grid-cols-[1fr_140px_80px_120px_100px_72px] md:max-lg:grid-cols-[minmax(0,1fr)_110px_64px_76px_90px_80px] md:max-lg:min-w-[620px] gap-3 bg-white/50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-slate">
             <span>Submission</span>
             <span>Seller</span>
             <span>Variants</span>

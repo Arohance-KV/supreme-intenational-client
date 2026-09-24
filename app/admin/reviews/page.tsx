@@ -304,7 +304,7 @@ function ReviewRow({ review }: { review: AdminReview }) {
   const productName = getProductName(review.productId);
 
   return (
-    <div className="grid grid-cols-[1fr_160px_120px_80px_100px_130px] items-start gap-3 border-b border-line px-5 py-3 hover:bg-white/50 transition-colors">
+    <div className="grid grid-cols-[1fr_160px_120px_80px_100px_130px] md:max-lg:grid-cols-[minmax(0,1fr)_110px_84px_70px_80px_70px] md:max-lg:min-w-[620px] items-start gap-3 border-b border-line px-5 py-3 hover:bg-white/50 transition-colors">
       {/* Product + title */}
       <div className="min-w-0">
         <p className="truncate text-sm font-medium text-ink">{review.title || '—'}</p>
@@ -469,9 +469,9 @@ function ReviewsTable() {
 
       {/* Table */}
       {!isLoading && !isError && list.length > 0 && (
-        <div className="rounded-2xl border border-white/70 bg-white/90 shadow-[0_12px_34px_rgba(34,36,90,.08)] overflow-hidden">
+        <div className="rounded-2xl border border-white/70 bg-white/90 shadow-[0_12px_34px_rgba(34,36,90,.08)] overflow-hidden md:max-lg:overflow-x-auto">
           {/* Header */}
-          <div className="grid grid-cols-[1fr_160px_120px_80px_100px_130px] gap-3 bg-white/50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-slate">
+          <div className="grid grid-cols-[1fr_160px_120px_80px_100px_130px] md:max-lg:grid-cols-[minmax(0,1fr)_110px_84px_70px_80px_70px] md:max-lg:min-w-[620px] gap-3 bg-white/50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-slate">
             <span>Review / Product</span>
             <span>Author</span>
             <span>Rating</span>

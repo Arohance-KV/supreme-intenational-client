@@ -127,9 +127,9 @@ function OrdersTable() {
       )}
 
       {!isLoading && !isError && orders.length > 0 && (
-        <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] divide-y divide-line overflow-hidden">
+        <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] divide-y divide-line overflow-hidden md:max-lg:overflow-x-auto">
           {/* Header */}
-          <div className="grid grid-cols-[160px_1fr_120px_120px_160px] gap-4 px-5 py-2 bg-white/50 text-xs font-semibold text-slate uppercase tracking-wider">
+          <div className="grid grid-cols-[160px_1fr_120px_120px_160px] gap-4 px-5 md:max-lg:grid-cols-[112px_minmax(0,1fr)_100px_80px_112px] md:max-lg:gap-3 md:max-lg:px-4 md:max-lg:min-w-[620px] py-2 bg-white/50 text-xs font-semibold text-slate uppercase tracking-wider">
             <span>Order ID</span>
             <span>Customer</span>
             <span>Status</span>
@@ -141,7 +141,7 @@ function OrdersTable() {
             <Link
               key={order._id}
               href={`/admin/orders/${order.orderId}`}
-              className="grid grid-cols-[160px_1fr_120px_120px_160px] gap-4 items-center px-5 py-3 hover:bg-white/50 transition-colors"
+              className="grid grid-cols-[160px_1fr_120px_120px_160px] gap-4 items-center px-5 md:max-lg:grid-cols-[112px_minmax(0,1fr)_100px_80px_112px] md:max-lg:gap-3 md:max-lg:px-4 md:max-lg:min-w-[620px] py-3 hover:bg-white/50 transition-colors"
             >
               <span className="font-jbmono text-xs text-slate truncate">
                 {order.orderId}

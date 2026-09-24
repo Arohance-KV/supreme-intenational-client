@@ -5,7 +5,7 @@ import DcPhoto from '@/components/DcPhoto';
 import { useMyProducts, useSetProductActive } from '@/lib/seller/products';
 import SellerBulkImportButton from '@/components/seller/SellerBulkImportButton';
 
-const GRID = 'grid grid-cols-[minmax(150px,1.8fr)_.8fr_1.1fr_auto] items-center gap-4';
+const GRID = 'grid grid-cols-[minmax(150px,1.8fr)_.8fr_1.1fr_auto] items-center gap-4 md:max-lg:grid-cols-[minmax(120px,1.8fr)_.8fr_1.1fr_auto] md:max-lg:gap-3';
 
 function ProductRow({ product }: { product: import('@/lib/seller/products').SellerProduct }) {
   const toggle = useSetProductActive(product._id);
@@ -79,7 +79,7 @@ export default function SellerProductsPage() {
           <h1 className="mb-0.5 text-[26px] font-extrabold tracking-[-.02em] text-ink">My Products</h1>
           <div className="text-[13px] text-slate">Manage and toggle your live catalogue listings.</div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 md:max-lg:shrink-0 md:max-lg:whitespace-nowrap">
           <SellerBulkImportButton />
           <Link
             href="/seller/submissions/new"
@@ -108,7 +108,7 @@ export default function SellerProductsPage() {
         </div>
       ) : (
         <div className="overflow-x-auto rounded-[20px] border border-white/80 bg-white/[.62] p-2 shadow-[0_10px_30px_rgba(34,36,90,.07)] backdrop-blur-[16px]">
-          <div className="min-w-[560px]">
+          <div className="min-w-[560px] md:max-lg:min-w-0">
             <div className={`${GRID} font-jbmono border-b border-line px-4 pb-3 pt-2 text-[10px] uppercase tracking-[.05em] text-muted`}>
               <span>Product</span>
               <span>Price</span>

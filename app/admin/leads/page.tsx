@@ -251,9 +251,9 @@ function LeadsTable() {
       )}
 
       {!isLoading && !isError && leads.length > 0 && (
-        <div className="rounded-2xl border border-white/70 bg-white/90 shadow-[0_12px_34px_rgba(34,36,90,.08)] divide-y divide-line overflow-hidden">
+        <div className="rounded-2xl border border-white/70 bg-white/90 shadow-[0_12px_34px_rgba(34,36,90,.08)] divide-y divide-line overflow-hidden md:max-lg:overflow-x-auto">
           {/* Header */}
-          <div className="grid grid-cols-[80px_1fr_180px_140px_160px_160px] gap-4 px-5 py-2 bg-white/50 text-xs font-semibold text-slate uppercase tracking-wider">
+          <div className="grid grid-cols-[80px_1fr_180px_140px_160px_160px] gap-4 md:max-lg:grid-cols-[76px_minmax(0,1fr)_140px_64px_80px_100px] md:max-lg:gap-3 md:max-lg:min-w-[720px] px-5 py-2 bg-white/50 text-xs font-semibold text-slate uppercase tracking-wider">
             <span>Type</span>
             <span>Contact / Products</span>
             <span>Follow-up Status</span>
@@ -265,7 +265,7 @@ function LeadsTable() {
           {leads.map((lead) => (
             <div
               key={`${lead.type}-${lead.refId}`}
-              className="grid grid-cols-[80px_1fr_180px_140px_160px_160px] gap-4 items-center px-5 py-3"
+              className="grid grid-cols-[80px_1fr_180px_140px_160px_160px] gap-4 md:max-lg:grid-cols-[76px_minmax(0,1fr)_140px_64px_80px_100px] md:max-lg:gap-3 md:max-lg:min-w-[720px] items-center px-5 py-3"
             >
               {/* Type badge */}
               <span

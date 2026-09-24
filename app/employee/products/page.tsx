@@ -245,7 +245,7 @@ export default function EmployeeProductsPage() {
   const [sheet, setSheet] = useState<'sort' | 'filter' | null>(null);
 
   const grid = (
-    <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:gap-6 md:grid-cols-3 xl:grid-cols-4">
       {products.map((product) => (
         <ProductCard key={product._id} product={product} hrefBase="/employee/products" cartTarget={EMPLOYEE_CART} />
       ))}
@@ -319,7 +319,7 @@ export default function EmployeeProductsPage() {
           {/* Results */}
           <div className="flex-1">
             {activeQuery.isLoading ? (
-              <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-6 md:grid-cols-3 xl:grid-cols-4">
                 {Array.from({ length: 8 }).map((_, i) => (
                   <div key={i} className={`h-72 animate-pulse rounded-[20px] ${glass}`} />
                 ))}

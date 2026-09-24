@@ -77,12 +77,12 @@ function OpeningsTab() {
       )}
 
       {!isPending && openings.length > 0 && (
-        <div className={`rounded-2xl ${GLASS} divide-y divide-line overflow-hidden`}>
-          <div className="grid grid-cols-[1fr_160px_180px_100px_120px] gap-4 px-5 py-2 bg-white/50 text-xs font-semibold text-slate uppercase tracking-wider">
+        <div className={`rounded-2xl ${GLASS} divide-y divide-line overflow-hidden md:max-lg:overflow-x-auto`}>
+          <div className="grid grid-cols-[1fr_160px_180px_100px_120px] gap-4 md:max-lg:grid-cols-[minmax(0,1fr)_120px_130px_70px_100px] md:max-lg:gap-3 md:max-lg:min-w-[620px] px-5 py-2 bg-white/50 text-xs font-semibold text-slate uppercase tracking-wider">
             <span>Title</span><span>Department</span><span>Location</span><span>Status</span><span>Actions</span>
           </div>
           {openings.map((o) => (
-            <div key={o._id} className="grid grid-cols-[1fr_160px_180px_100px_120px] gap-4 items-center px-5 py-3">
+            <div key={o._id} className="grid grid-cols-[1fr_160px_180px_100px_120px] gap-4 md:max-lg:grid-cols-[minmax(0,1fr)_120px_130px_70px_100px] md:max-lg:gap-3 md:max-lg:min-w-[620px] items-center px-5 py-3">
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-ink truncate">{o.title}</p>
                 <p className="text-xs text-muted truncate">{o.employmentType}</p>
@@ -199,12 +199,12 @@ function ApplicationsTab() {
       )}
 
       {!isPending && apps.length > 0 && (
-        <div className={`rounded-2xl ${GLASS} divide-y divide-line overflow-hidden`}>
-          <div className="grid grid-cols-[1fr_180px_140px_100px_120px] gap-4 px-5 py-2 bg-white/50 text-xs font-semibold text-slate uppercase tracking-wider">
+        <div className={`rounded-2xl ${GLASS} divide-y divide-line overflow-hidden md:max-lg:overflow-x-auto`}>
+          <div className="grid grid-cols-[1fr_180px_140px_100px_120px] gap-4 md:max-lg:grid-cols-[minmax(0,1fr)_130px_130px_80px_90px] md:max-lg:gap-3 md:max-lg:min-w-[620px] px-5 py-2 bg-white/50 text-xs font-semibold text-slate uppercase tracking-wider">
             <span>Candidate</span><span>Position</span><span>Status</span><span>Resume</span><span>Applied</span>
           </div>
           {apps.map((a: JobApplication) => (
-            <div key={a._id} className="grid grid-cols-[1fr_180px_140px_100px_120px] gap-4 items-center px-5 py-3">
+            <div key={a._id} className="grid grid-cols-[1fr_180px_140px_100px_120px] gap-4 md:max-lg:grid-cols-[minmax(0,1fr)_130px_130px_80px_90px] md:max-lg:gap-3 md:max-lg:min-w-[620px] items-center px-5 py-3">
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-ink truncate">{a.fullName}</p>
                 <p className="text-xs text-muted truncate">{a.email}{a.phoneNumber ? ` · ${a.isdCode ?? ''} ${a.phoneNumber}` : ''}</p>

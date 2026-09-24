@@ -37,7 +37,7 @@ export default function SellerDashboardPage() {
           </h1>
           <div className="text-[13px] text-slate">Here&apos;s how your catalogue is performing on Supreme.</div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 md:max-lg:shrink-0 md:max-lg:whitespace-nowrap">
           <SellerBulkImportButton />
           <Link
             href="/seller/submissions/new"

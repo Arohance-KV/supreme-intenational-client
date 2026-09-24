@@ -12,7 +12,7 @@ import { StatusChip } from '@/components/StatusChip';
 import { inr, fmtDateTime } from '@/lib/admin/format';
 
 const GLASS = 'border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)]';
-const COLS = 'grid-cols-[140px_1fr_100px_120px_110px_90px_150px]';
+const COLS = 'grid-cols-[140px_1fr_100px_120px_110px_90px_150px] md:max-lg:grid-cols-[104px_minmax(0,1fr)_84px_110px_80px_64px_100px] md:max-lg:gap-3 md:max-lg:min-w-[800px]';
 
 const QUOTATION_STATUSES: QuotationStatus[] = ['pending_approval', 'generated', 'sent', 'viewed', 'converted', 'archived', 'approved'];
 
@@ -139,7 +139,7 @@ function QuotationsTable() {
       )}
 
       {!isLoading && !isError && quotations.length > 0 && (
-        <div className={`rounded-[20px] divide-y divide-line overflow-hidden ${GLASS}`}>
+        <div className={`rounded-[20px] divide-y divide-line overflow-hidden md:max-lg:overflow-x-auto ${GLASS}`}>
           <div className={`grid ${COLS} gap-4 px-5 py-2.5 bg-white/50 font-jbmono text-[10px] font-semibold text-muted uppercase tracking-wider`}>
             <span>Quotation #</span><span>Contact</span><span>Source</span><span>Status</span><span>Total</span><span>Downloads</span><span>Date</span>
           </div>

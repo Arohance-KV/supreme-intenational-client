@@ -110,8 +110,8 @@ export default function AdminUsersPage() {
       ) : !users.length ? (
         <div className={`rounded-2xl p-10 text-center ${GLASS}`}><p className="text-sm text-muted">No users yet. Add your first team member.</p></div>
       ) : (
-        <div className={`overflow-hidden rounded-2xl ${GLASS}`}>
-          <table className="w-full text-sm">
+        <div className={`overflow-hidden md:max-lg:overflow-x-auto rounded-2xl ${GLASS}`}>
+          <table className="w-full text-sm md:max-lg:[&_td]:px-3 md:max-lg:[&_th]:px-3">
             <thead>
               <tr className="border-b border-line text-left text-xs font-semibold uppercase tracking-wide text-slate">
                 <th className="px-5 py-3">Name</th>

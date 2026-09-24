@@ -1,16 +1,16 @@
-# Graph Report - client  (2026-08-18)
+# Graph Report - client  (2026-09-24)
 
 ## Corpus Check
-- 254 files · ~157,771 words
+- 261 files · ~185,953 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1632 nodes · 3288 edges · 99 communities (92 shown, 7 thin omitted)
-- Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 149 edges (avg confidence: 0.8)
+- 1655 nodes · 3380 edges · 100 communities (93 shown, 7 thin omitted)
+- Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 157 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `1f6324ea`
+- Built from commit: `35aa6c35`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -98,8 +98,6 @@
 - [[_COMMUNITY_Community 80|Community 80]]
 - [[_COMMUNITY_Community 81|Community 81]]
 - [[_COMMUNITY_Community 82|Community 82]]
-- [[_COMMUNITY_Community 83|Community 83]]
-- [[_COMMUNITY_Community 84|Community 84]]
 - [[_COMMUNITY_Community 87|Community 87]]
 - [[_COMMUNITY_Community 88|Community 88]]
 - [[_COMMUNITY_Community 89|Community 89]]
@@ -111,19 +109,19 @@
 
 ## God Nodes (most connected - your core abstractions)
 1. `ApiError` - 70 edges
-2. `apiFetch()` - 48 edges
-3. `useConfirm()` - 43 edges
-4. `adminFetch()` - 27 edges
-5. `useAuth()` - 25 edges
-6. `getSessionId()` - 23 edges
-7. `useAdminProfile()` - 22 edges
-8. `StatusChip()` - 20 edges
-9. `fmtDateTime()` - 16 edges
-10. `formatIN()` - 16 edges
+2. `apiFetch()` - 52 edges
+3. `useConfirm()` - 44 edges
+4. `StatusChip()` - 31 edges
+5. `adminFetch()` - 29 edges
+6. `useAdminProfile()` - 28 edges
+7. `useAuth()` - 25 edges
+8. `getSessionId()` - 23 edges
+9. `fmtDateTime()` - 17 edges
+10. `fmtDate()` - 16 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `VariantRow()` --calls--> `useConfirm()`  [INFERRED]
-  app/seller/products/[id]/page.tsx → components/ConfirmDialog.tsx
+- `generateMetadata()` --calls--> `getProductBySlug()`  [INFERRED]
+  app/products/[slug]/page.tsx → lib/catalog.ts
 - `CreateBlogForm()` --calls--> `useAdminProfile()`  [INFERRED]
   app/admin/blogs/[id]/page.tsx → lib/admin/userAuth.ts
 - `EditBlogForm()` --calls--> `useAdminProfile()`  [INFERRED]
@@ -136,11 +134,11 @@
 ## Import Cycles
 - None detected.
 
-## Communities (99 total, 7 thin omitted)
+## Communities (100 total, 7 thin omitted)
 
 ### Community 0 - "Community 0"
-Cohesion: 0.25
-Nodes (8): EMPLOYEE_LEDGER_KEY(), EMPLOYEE_WALLET_KEY(), useCreditWallet(), useDebitWallet(), useEmployeeLedger(), useEmployeeWallet(), useIssueCoupon(), EmployeeWalletPanel()
+Cohesion: 0.17
+Nodes (14): FlashSaleBody, PRODUCT_DETAIL_KEY(), UpdateProductBody, UpdateVariantBody, uploadAdminImage(), useAdminProduct(), useDeleteProduct(), useSetFlashSale() (+6 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.11
@@ -148,31 +146,31 @@ Nodes (28): AdminModal(), Field(), CaseStudy, CaseStudyInput, ClientLogo, Client
 
 ### Community 2 - "Community 2"
 Cohesion: 0.08
-Nodes (31): AdminCustomer, CustomerAccountType, CustomerCatalogue, CustomerDetail, CustomersResponse, useCustomers(), Quotation, AdminReview (+23 more)
+Nodes (30): AdminCustomer, CustomerAccountType, CustomerCatalogue, CustomerDetail, CustomersResponse, useCustomers(), Quotation, AdminReview (+22 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.12
 Nodes (16): AdminGuard(), PUBLIC, AdminShell(), ICON, NAV, NavEntry, navFor(), NavGroup (+8 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.24
-Nodes (8): useDeleteBlog(), useCustomer(), fmtDate(), STATUS_CLASS_MAP, StatusChip(), StatusChipProps, BlogRow(), AdminCustomerDetailPage()
+Cohesion: 0.15
+Nodes (13): useCustomer(), ADMIN_MAP, COMPANY_STATUS_VARIANT, COMPANY_VARIANT_CLASS, CompanyVariant, EMPLOYEE_MAP, SELLER_ACCOUNT_MAP, SELLER_COLOR_MAP (+5 more)
 
 ### Community 5 - "Community 5"
 Cohesion: 0.20
-Nodes (14): SubmissionDetailPage(), NewSubmissionPage(), DraftVariant, Paginated, Submission, SubmissionInput, T, useCreateSubmission() (+6 more)
+Nodes (14): SubmissionDetailPage(), NewSubmissionPage(), DraftVariant, importSubmissionsCsv(), Paginated, Submission, SubmissionInput, T (+6 more)
 
 ### Community 6 - "Community 6"
 Cohesion: 0.06
 Nodes (31): ActivityItem, DashboardSummary, EnquiriesSummary, EnqVsQuotePoint, GeneratedPoint, LowStockVariant, OrderStatusCount, RevenueData (+23 more)
 
 ### Community 7 - "Community 7"
-Cohesion: 0.12
-Nodes (25): AdminProduct, AdminProductDetail, AdminProductsResponse, BulkCreateVariantsBody, CreateVariantBody, FlashSaleBody, PRODUCT_DETAIL_KEY(), PRODUCT_LIST_KEY() (+17 more)
+Cohesion: 0.15
+Nodes (16): AdminProduct, AdminProductDetail, AdminProductsResponse, BulkCreateVariantsBody, CreateVariantBody, importProductsCsv(), ImportResult, useAdjustStock() (+8 more)
 
 ### Community 8 - "Community 8"
-Cohesion: 0.18
-Nodes (9): LoginForm(), DcWordmark(), EmployeeFooter(), AuthResponse, LoginBody, SignupBody, useLogin(), useSignup() (+1 more)
+Cohesion: 0.12
+Nodes (13): LoginForm(), SellerApplyPage(), DcWordmark(), cities, jakarta, mono, AuthResponse, LoginBody (+5 more)
 
 ### Community 9 - "Community 9"
 Cohesion: 0.07
@@ -184,27 +182,27 @@ Nodes (25): Ambient background, Badges / chips (pill, JetBrains Mono, 11px, weig
 
 ### Community 11 - "Community 11"
 Cohesion: 0.11
-Nodes (20): formatDate(), CompanyQuotation, CompanyQuotationContact, CompanyQuotationItem, CompanyQuotationsResult, ENQUIRIES_KEY, EnquiriesResult, Enquiry (+12 more)
+Nodes (20): PageHeader(), CompanyQuotation, CompanyQuotationContact, CompanyQuotationItem, CompanyQuotationsResult, ENQUIRIES_KEY, EnquiriesResult, Enquiry (+12 more)
 
 ### Community 12 - "Community 12"
-Cohesion: 0.11
-Nodes (25): fmtDateTime(), AdminSubmission, ATTR_REVIEW_KEY(), AttributeReview, AttributeReviewItem, DraftVariant, DraftVariantAttribute, RejectSubmissionBody (+17 more)
+Cohesion: 0.12
+Nodes (26): ATTR_REVIEW_KEY(), AttributeReview, AttributeReviewItem, CAT_REVIEW_KEY(), CategoryReview, DraftVariant, DraftVariantAttribute, RejectSubmissionBody (+18 more)
 
 ### Community 13 - "Community 13"
-Cohesion: 0.17
-Nodes (12): HomePage(), _productsCache, catalogFetch(), Category, CategoryAttribute, getBestsellers(), getCategories(), getFeatured() (+4 more)
+Cohesion: 0.15
+Nodes (15): HomePage(), _productsCache, catalogFetch(), Category, CategoryAttribute, getBestsellers(), getCategories(), getFeatured() (+7 more)
 
 ### Community 14 - "Community 14"
-Cohesion: 0.13
-Nodes (16): Attribute, AttributeValue, CategoryItem, Filters(), KNOWN_KEYS, ProductsToolbar(), SORTS, Review (+8 more)
+Cohesion: 0.16
+Nodes (14): Attribute, AttributeValue, CategoryItem, Filters(), KNOWN_KEYS, Review, Reviews(), ReviewsProps (+6 more)
 
 ### Community 15 - "Community 15"
-Cohesion: 0.15
-Nodes (12): ActivateForm(), ForgotPasswordForm(), LoginForm(), ResetPasswordForm(), STATUS_PILL, statusPill(), AuthResponse, useActivate() (+4 more)
+Cohesion: 0.13
+Nodes (6): PortalAbout, PortalAnnouncement, PortalContentBlock, PortalHero, PortalTheme, EmployeeCompany
 
 ### Community 16 - "Community 16"
 Cohesion: 0.09
-Nodes (21): AdminEmployee, COMPANY_CATALOG_KEY(), CreateCompanyLoginBody, InviteEmployeeBody, LedgerEntry, UpdateCompanyBody, useBulkAllocateSelected(), useBulkInvite() (+13 more)
+Nodes (22): AdminEmployee, COMPANY_KEY(), COMPANY_LOGINS_KEY(), CreateCompanyLoginBody, InviteEmployeeBody, LedgerEntry, UpdateCompanyBody, useBulkAllocateSelected() (+14 more)
 
 ### Community 17 - "Community 17"
 Cohesion: 0.18
@@ -215,16 +213,16 @@ Cohesion: 0.10
 Nodes (28): AdminSeller, SELLER_KEY(), SELLER_PERFORMANCE_KEY(), SELLER_PRODUCTS_KEY(), SellerContact, SellerPerformance, SellerProduct, SellerProductsResponse (+20 more)
 
 ### Community 19 - "Community 19"
-Cohesion: 0.22
-Nodes (8): adminUpload(), _nav, mockApiFetch, importProductsCsv(), generateId(), getSessionId(), importSubmissionsCsv(), uploadSubmissionImage()
+Cohesion: 0.16
+Nodes (11): adminUpload(), _nav, mockApiFetch, fetchAttributes(), mockAdminFetch, mockApiFetch, HIDE, Popup (+3 more)
 
 ### Community 20 - "Community 20"
 Cohesion: 0.11
 Nodes (19): B2BStatus, B2BUser, B2BUserPage, SetB2BApprovalBody, useB2BUsers(), useSetB2BApproval(), useUpdateCompany(), ACTION_COPY (+11 more)
 
 ### Community 21 - "Community 21"
-Cohesion: 0.33
-Nodes (4): AdminProductDetailResponse, AddToCartProps, ApiError, ProductVariant
+Cohesion: 0.50
+Nodes (3): AdminProductDetailResponse, AddToCartProps, ProductVariant
 
 ### Community 22 - "Community 22"
 Cohesion: 0.10
@@ -235,12 +233,12 @@ Cohesion: 0.16
 Nodes (13): ProductRow(), CompanyProduct, PatchProductBody, PatchProductResult, postProductRequest(), ProductRequestBody, PRODUCTS_KEY, ProductsResponse (+5 more)
 
 ### Community 24 - "Community 24"
-Cohesion: 0.09
-Nodes (23): Card(), Dashboard, DashboardPool, DashboardRecentOrder, DashboardSeriesPoint, DashboardStats, Range, RecentOrderStatus (+15 more)
+Cohesion: 0.12
+Nodes (17): Dashboard, DashboardPool, DashboardRecentOrder, DashboardSeriesPoint, DashboardStats, Range, RecentOrderStatus, useCompanyDashboard() (+9 more)
 
 ### Community 25 - "Community 25"
-Cohesion: 0.12
-Nodes (15): HIDE, Popup, QuotationHistoryPage(), apiFetch(), ApiFetchOptions, emailQuotation(), GenerateQuotationBody, GenerateQuotationResult (+7 more)
+Cohesion: 0.15
+Nodes (17): B2B_LOCK_CODES, inr0(), QuotationCartView(), QuotationHistoryPage(), emailQuotation(), GenerateQuotationBody, GenerateQuotationResult, getQuotationPdfUrl() (+9 more)
 
 ### Community 26 - "Community 26"
 Cohesion: 0.11
@@ -255,20 +253,20 @@ Cohesion: 0.10
 Nodes (23): AdminOrderFilters, AdminOrdersResponse, Billing, Order, OrderCompany, OrderItem, OrderStatus, Payment (+15 more)
 
 ### Community 29 - "Community 29"
-Cohesion: 0.18
-Nodes (11): TABS, CompanyOrdersFilter, CompanyOrderSummary, exportCompanyOrdersCsv(), OrdersPage, OrdersPagination, OrderStatus, T (+3 more)
+Cohesion: 0.15
+Nodes (14): TABS, Card(), CompanyOrdersFilter, CompanyOrderSummary, exportCompanyOrdersCsv(), OrdersPage, OrdersPagination, OrderStatus (+6 more)
 
 ### Community 30 - "Community 30"
-Cohesion: 0.15
-Nodes (16): TABS, OrderBilling, OrderDetail, OrderItem, OrderPayment, OrdersPage, OrderStatus, OrderSummary (+8 more)
+Cohesion: 0.07
+Nodes (38): TABS, EmployeeCheckoutPage(), FieldProps, INITIAL_ADDRESS, CheckoutPayload, CheckoutRazorpayResponse, CheckoutResponse, CheckoutWalletOnlyResponse (+30 more)
 
 ### Community 31 - "Community 31"
-Cohesion: 0.16
-Nodes (13): EmployeeAttribute, EmployeeAttributeValue, EmployeeCatalogFilters, EmployeeProductsParams, fetchEmployeeProducts(), ProductPage, useEmployeeFilters(), useEmployeeProductsInfinite() (+5 more)
+Cohesion: 0.14
+Nodes (16): PageProps, EmployeeAttribute, EmployeeAttributeValue, EmployeeCatalogFilters, EmployeeProductsParams, fetchEmployeeProducts(), ProductPage, useEmployeeFilters() (+8 more)
 
 ### Community 32 - "Community 32"
 Cohesion: 0.14
-Nodes (24): AddEmployeeBody, buildProposalBody(), buildWalletAdjustment(), Employee, EMPLOYEES_KEY, EmployeeWallet, POINTS_POOL_KEY, PointsPoolView (+16 more)
+Nodes (25): AddEmployeeBody, buildProposalBody(), buildWalletAdjustment(), Employee, EMPLOYEES_KEY, EmployeeWallet, POINTS_POOL_KEY, PointsPoolView (+17 more)
 
 ### Community 33 - "Community 33"
 Cohesion: 0.15
@@ -288,39 +286,39 @@ Nodes (9): AccountPage(), CAT_HEADS, Catalogue, initials(), Profile, QUOTE_HEADS
 
 ### Community 37 - "Community 37"
 Cohesion: 0.16
-Nodes (19): CartPage(), CartItemRow(), CartItemRowProps, formatPrice(), CartView(), CartViewProps, formatPrice(), B2B_LOCK_CODES (+11 more)
+Nodes (16): CartPage(), EmployeeCartPage(), CartItemRow(), CartItemRowProps, formatPrice(), CartView(), CartViewProps, formatPrice() (+8 more)
 
 ### Community 38 - "Community 38"
-Cohesion: 0.13
-Nodes (20): ApplicationsResponse, ApplicationStatus, CreateApplicationInput, JobApplication, JobOpening, JobOpeningInput, useApplications(), useCreateApplication() (+12 more)
+Cohesion: 0.06
+Nodes (36): ApplicationsResponse, ApplicationStatus, CreateApplicationInput, JobApplication, JobOpening, JobOpeningInput, useApplications(), useCreateApplication() (+28 more)
 
 ### Community 39 - "Community 39"
-Cohesion: 0.17
-Nodes (13): EmployeeCartPage(), EmployeeCheckoutPage(), FieldProps, INITIAL_ADDRESS, KEY, useEmployeeCart(), useEmployeeCartMutations(), CheckoutPayload (+5 more)
+Cohesion: 0.31
+Nodes (6): StatCard(), SellerDashboard, T, useSellerDashboard(), SellerDashboardPage(), STATUS_LABEL
 
 ### Community 40 - "Community 40"
-Cohesion: 0.14
-Nodes (15): AdminBlog, AdminBlogsResponse, BLOG_DETAIL_KEY(), BLOGS_LIST_KEY(), CreateBlogBody, UpdateBlogBody, useBlog(), useBlogs() (+7 more)
+Cohesion: 0.17
+Nodes (14): AdminBlog, AdminBlogsResponse, BLOG_DETAIL_KEY(), BLOGS_LIST_KEY(), CreateBlogBody, UpdateBlogBody, useBlog(), useBlogs() (+6 more)
 
 ### Community 41 - "Community 41"
 Cohesion: 0.06
-Nodes (28): LoginForm(), ForgotPasswordForm(), ResetPasswordForm(), SellerApplyPage(), useCompanyAuth(), CompanySidebar(), NAV, CompanyGuard() (+20 more)
+Nodes (27): LoginForm(), ForgotPasswordForm(), ResetPasswordForm(), useCompanyAuth(), CompanySidebar(), NAV, CompanyGuard(), PUBLIC (+19 more)
 
 ### Community 42 - "Community 42"
-Cohesion: 0.16
-Nodes (14): inr(), PayoutsPage(), STATUS_CHIP, SellerDashboard, T, useSellerDashboard(), SellerDashboardPage(), STATUS_CHIP (+6 more)
+Cohesion: 0.31
+Nodes (8): inr(), PayoutsPage(), STATUS_CHIP, Paginated, Payout, T, useEarningsSummary(), usePayouts()
 
 ### Community 43 - "Community 43"
-Cohesion: 0.07
-Nodes (25): CompaniesListResponse, COMPANY_LOGINS_KEY(), CompanyCatalog, CompanyCatalogProduct, CompanyLogin, CompanyPrimaryContact, CompanyProduct, CompanyProductsResponse (+17 more)
+Cohesion: 0.11
+Nodes (23): CompaniesListResponse, CompanyCatalog, CompanyCatalogProduct, CompanyLogin, CompanyPrimaryContact, CompanyProduct, CompanyProductsResponse, CreateCompanyLoginResponse (+15 more)
 
 ### Community 44 - "Community 44"
-Cohesion: 0.18
-Nodes (10): geistMono, geistSans, jakarta, jbMono, metadata, Providers(), activeKey(), ConditionalSiteHeader() (+2 more)
+Cohesion: 0.29
+Nodes (5): AdminSubmission, SUBMISSIONS_LIST_KEY(), SubmissionStatus, useSubmissions(), SubmissionsTable()
 
 ### Community 45 - "Community 45"
-Cohesion: 0.23
-Nodes (10): useEmployeeAuth(), useEmployeeCompany(), useRecentlyViewed(), EmployeeHeader(), EmployeeTabBar(), TABS, EmployeeGuard(), PUBLIC (+2 more)
+Cohesion: 0.29
+Nodes (7): benefits, CareersPage(), heroPills, jakarta, mono, steps, useJobs()
 
 ### Community 46 - "Community 46"
 Cohesion: 0.20
@@ -331,20 +329,20 @@ Cohesion: 0.15
 Nodes (10): ImportPreview, ImportResult, ImageEntry, ImageEntry, ImportApi, Mode, REQUIRED_TARGETS, SheetData (+2 more)
 
 ### Community 48 - "Community 48"
-Cohesion: 0.20
-Nodes (13): useOrder(), useRetryPayment(), useVerifyPayment(), loadRazorpay(), openRazorpay(), Window, fmt(), fmtDate() (+5 more)
+Cohesion: 0.50
+Nodes (4): COMPANY_CATALOG_KEY(), useCompanyCatalog(), useUpdateCompanyCatalog(), CompanyCatalogSection()
 
 ### Community 49 - "Community 49"
-Cohesion: 0.14
-Nodes (14): EmployeeProfile, useEmployeeProfile(), LedgerEntry, useWallet(), useWalletLedger(), WalletBalance, initials(), memberSince() (+6 more)
+Cohesion: 0.06
+Nodes (33): ActivateForm(), ForgotPasswordForm(), LoginForm(), ResetPasswordForm(), useEmployeeAuth(), useEmployeeCompany(), EmployeeFooter(), EmployeeHeader() (+25 more)
 
 ### Community 50 - "Community 50"
-Cohesion: 0.24
-Nodes (12): COMPANIES_LIST_KEY(), useCompanies(), CreateProductModal(), CreateProductBody, useAdminProductsInfinite(), useCreateProduct(), useDeleteProduct(), useImportProducts() (+4 more)
+Cohesion: 0.19
+Nodes (12): CreateProductModal(), CreateProductBody, PRODUCT_LIST_KEY(), useAdminProducts(), useAdminProductsInfinite(), useCreateProduct(), useImportProducts(), useCategories() (+4 more)
 
 ### Community 51 - "Community 51"
-Cohesion: 0.24
-Nodes (11): COMPANY_KEY(), useCompany(), AdminPointsProposal, DecideProposalBody, PROPOSALS_KEY, useDecideProposal(), usePendingProposals(), useConfirm() (+3 more)
+Cohesion: 0.22
+Nodes (11): useDeleteBlog(), AdminPointsProposal, DecideProposalBody, PROPOSALS_KEY, useDecideProposal(), usePendingProposals(), VariantRow(), BlogRow() (+3 more)
 
 ### Community 52 - "Community 52"
 Cohesion: 0.24
@@ -359,8 +357,8 @@ Cohesion: 0.23
 Nodes (9): AdditionalCharge, CatalogueResult, GenerateBody, ProductVariant, QuotationResult, useAdminGenerateCatalogue(), useAdminGenerateQuotation(), ChargeRow (+1 more)
 
 ### Community 55 - "Community 55"
-Cohesion: 0.10
-Nodes (15): advantages, advTags, directors, jakarta, metadata, mono, stats, CartBadge() (+7 more)
+Cohesion: 0.12
+Nodes (12): advantages, advTags, directors, jakarta, metadata, mono, stats, CartBadge() (+4 more)
 
 ### Community 56 - "Community 56"
 Cohesion: 0.28
@@ -371,12 +369,12 @@ Cohesion: 0.23
 Nodes (12): applyMapping(), ATTRIBUTE_SYNONYMS, buildTargets(), IGNORE_TARGET, levenshtein(), MapTarget, matchOne(), NEW_ATTRIBUTE_TARGET (+4 more)
 
 ### Community 58 - "Community 58"
-Cohesion: 0.16
-Nodes (14): benefits, CareersPage(), heroPills, jakarta, mono, steps, CareerDetailPage(), jakarta (+6 more)
+Cohesion: 0.33
+Nodes (7): CareerDetailPage(), jakarta, mono, ApplyInput, JobOpening, useApplyToJob(), useJob()
 
 ### Community 59 - "Community 59"
-Cohesion: 0.42
-Nodes (6): formatIN(), formatLakh(), initials(), parsePointsInput(), useCompanyOrder(), CompanyOrderDetailPage()
+Cohesion: 0.62
+Nodes (4): formatDate(), formatLakh(), initials(), parsePointsInput()
 
 ### Community 60 - "Community 60"
 Cohesion: 0.29
@@ -391,12 +389,12 @@ Cohesion: 0.29
 Nodes (10): adminFetch(), apiBase(), authHeaders(), commitImportBatch(), downloadTemplate(), parseSheet(), previewImport(), uploadFolder() (+2 more)
 
 ### Community 63 - "Community 63"
-Cohesion: 0.31
-Nodes (8): COMPANY_PRODUCTS_KEY(), PortalStat, useCompanyProducts(), useStagePortalBranding(), PortalBrandingSection(), useDebounced(), useAdminProducts(), readableTextColor()
+Cohesion: 0.23
+Nodes (9): AdminCompany, COMPANY_PRODUCTS_KEY(), PortalStat, useCompanyProducts(), useStagePortalBranding(), PortalBrandingSection(), ProductsToolbar(), SORTS (+1 more)
 
 ### Community 64 - "Community 64"
-Cohesion: 0.23
-Nodes (10): PageProps, AddToCartMini(), CartTarget, EMPLOYEE_CART, PUBLIC_CART, ProductCardProps, useEmployeeProduct(), useEmployeeRelated() (+2 more)
+Cohesion: 0.29
+Nodes (7): AddToCartMini(), CartTarget, EMPLOYEE_CART, PUBLIC_CART, ProductCardProps, Product, ProductDetail
 
 ### Community 65 - "Community 65"
 Cohesion: 0.17
@@ -407,12 +405,12 @@ Cohesion: 0.23
 Nodes (14): Role, AdminUser, CreateUserInput, useAdminUsers(), useCreateUser(), useDeleteUser(), useSetUserActive(), useUpdateUser() (+6 more)
 
 ### Community 68 - "Community 68"
-Cohesion: 0.20
-Nodes (4): IconProps, RESOURCES, STATS, WHY
+Cohesion: 0.14
+Nodes (9): PortalPromotion, useRecentlyViewed(), EmployeeDashboard(), PromotionBanner(), IconProps, RESOURCES, STATS, SupremeSection() (+1 more)
 
 ### Community 69 - "Community 69"
-Cohesion: 0.20
-Nodes (7): AdminCompany, CreateCompanyBody, useCreateCompany(), blankForm(), CompaniesTable(), CreateCompanyModal(), CreateCompanyModalProps
+Cohesion: 0.19
+Nodes (8): COMPANIES_LIST_KEY(), CreateCompanyBody, useCompanies(), useCreateCompany(), blankForm(), CompaniesTable(), CreateCompanyModal(), CreateCompanyModalProps
 
 ### Community 70 - "Community 70"
 Cohesion: 0.20
@@ -423,16 +421,16 @@ Cohesion: 0.23
 Nodes (10): listeners, useAdminAuth(), AdminProfile, useAdminChangePassword(), useAdminLogin(), useAdminProfile(), AdminLoginPage(), ChangePasswordSection() (+2 more)
 
 ### Community 72 - "Community 72"
-Cohesion: 0.20
-Nodes (10): ImportResult, ProductRow(), SellerProductsPage(), useMyProducts(), useSetProductActive(), SellerBulkImportButton(), useImportSubmissions(), useMySubmissions() (+2 more)
+Cohesion: 0.33
+Nodes (8): ProductRow(), SellerProductsPage(), useMyProducts(), useSetProductActive(), SellerBulkImportButton(), useImportSubmissions(), useMySubmissions(), SubmissionsPage()
 
 ### Community 73 - "Community 73"
 Cohesion: 0.17
 Nodes (15): BlogListPage(), metadata, ClientsPage(), Blog, BlogList, CaseStudy, ClientLogo, contentFetch() (+7 more)
 
 ### Community 74 - "Community 74"
-Cohesion: 0.23
-Nodes (14): AddVariantForm(), VariantRow(), ProductDetailPage(), Paginated, SellerProduct, SellerProductDetail, T, useAddVariant() (+6 more)
+Cohesion: 0.26
+Nodes (13): AddVariantForm(), ProductDetailPage(), Paginated, SellerProduct, SellerProductDetail, T, useAddVariant(), useAdjustStock() (+5 more)
 
 ### Community 75 - "Community 75"
 Cohesion: 0.32
@@ -443,8 +441,8 @@ Cohesion: 0.29
 Nodes (4): CatalogueOptions, GenerateResult, KNOWN_KEYS, OPTION_LABELS
 
 ### Community 77 - "Community 77"
-Cohesion: 0.57
-Nodes (6): apiBase(), authHeaders(), commitImportBatch(), parseSheet(), postJson(), previewImport()
+Cohesion: 0.23
+Nodes (12): CompanyProfile, PROFILE_KEY, T, uploadCompanyLogo(), generateId(), getSessionId(), apiBase(), authHeaders() (+4 more)
 
 ### Community 78 - "Community 78"
 Cohesion: 0.18
@@ -463,44 +461,36 @@ Cohesion: 0.22
 Nodes (8): AdminCategory, CreateCategoryBody, UpdateCategoryBody, useCreateCategory(), useUpdateCategory(), CategoriesTable(), CreateCategoryForm(), EditCategoryRow()
 
 ### Community 82 - "Community 82"
-Cohesion: 0.36
-Nodes (8): ApprovalItem, ApprovalType, useApprovals(), useDecideApproval(), AdminApprovalsPage(), ApprovalRow(), groupByType(), TYPE_LABEL
-
-### Community 83 - "Community 83"
-Cohesion: 0.33
-Nodes (6): AlertOptions, ConfirmContext, ConfirmContextValue, ConfirmOptions, DialogState, Tone
-
-### Community 84 - "Community 84"
-Cohesion: 0.40
-Nodes (4): STATUS_VARIANT, StatusPill(), Variant, VARIANT_CLASS
+Cohesion: 0.22
+Nodes (13): ApprovalChangeDetail, ApprovalChangeField, ApprovalItem, ApprovalType, useApprovalDetail(), useApprovals(), useDecideApproval(), actionChipLabel() (+5 more)
 
 ### Community 87 - "Community 87"
-Cohesion: 0.19
-Nodes (10): PageProps, DcPhoto(), GRADS, pick(), TrackView(), TrackViewProps, getProductBySlug(), getRelated() (+2 more)
+Cohesion: 0.21
+Nodes (7): PageProps, DcPhoto(), GRADS, pick(), TrackView(), TrackViewProps, generateMetadata()
 
 ### Community 88 - "Community 88"
 Cohesion: 0.50
 Nodes (3): Deploy on Vercel, Getting Started, Learn More
 
 ## Knowledge Gaps
-- **484 isolated node(s):** `jakarta`, `mono`, `metadata`, `stats`, `directors` (+479 more)
+- **491 isolated node(s):** `jakarta`, `mono`, `metadata`, `stats`, `directors` (+486 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **7 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `ApiError` connect `Community 21` to `Community 2`, `Community 4`, `Community 5`, `Community 7`, `Community 8`, `Community 11`, `Community 12`, `Community 14`, `Community 15`, `Community 16`, `Community 17`, `Community 18`, `Community 19`, `Community 23`, `Community 24`, `Community 25`, `Community 28`, `Community 32`, `Community 35`, `Community 37`, `Community 38`, `Community 39`, `Community 40`, `Community 41`, `Community 46`, `Community 47`, `Community 50`, `Community 51`, `Community 52`, `Community 53`, `Community 58`, `Community 60`, `Community 62`, `Community 63`, `Community 64`, `Community 66`, `Community 69`, `Community 71`, `Community 72`, `Community 74`, `Community 77`, `Community 78`, `Community 79`, `Community 81`?**
-  _High betweenness centrality (0.123) - this node is a cross-community bridge._
-- **Why does `apiFetch()` connect `Community 25` to `Community 5`, `Community 8`, `Community 11`, `Community 14`, `Community 15`, `Community 19`, `Community 21`, `Community 23`, `Community 24`, `Community 29`, `Community 30`, `Community 31`, `Community 32`, `Community 36`, `Community 37`, `Community 39`, `Community 41`, `Community 42`, `Community 49`, `Community 52`, `Community 53`, `Community 58`, `Community 64`, `Community 71`, `Community 74`, `Community 75`, `Community 76`, `Community 78`, `Community 87`?**
-  _High betweenness centrality (0.062) - this node is a cross-community bridge._
+- **Why does `ApiError` connect `Community 19` to `Community 0`, `Community 1`, `Community 2`, `Community 5`, `Community 7`, `Community 8`, `Community 11`, `Community 12`, `Community 14`, `Community 16`, `Community 17`, `Community 18`, `Community 21`, `Community 23`, `Community 24`, `Community 25`, `Community 28`, `Community 30`, `Community 32`, `Community 35`, `Community 37`, `Community 38`, `Community 40`, `Community 41`, `Community 44`, `Community 46`, `Community 47`, `Community 49`, `Community 50`, `Community 51`, `Community 52`, `Community 53`, `Community 58`, `Community 60`, `Community 62`, `Community 63`, `Community 64`, `Community 66`, `Community 69`, `Community 71`, `Community 72`, `Community 74`, `Community 77`, `Community 78`, `Community 79`, `Community 81`?**
+  _High betweenness centrality (0.094) - this node is a cross-community bridge._
+- **Why does `apiFetch()` connect `Community 19` to `Community 5`, `Community 8`, `Community 11`, `Community 14`, `Community 21`, `Community 23`, `Community 24`, `Community 25`, `Community 29`, `Community 30`, `Community 31`, `Community 32`, `Community 35`, `Community 36`, `Community 37`, `Community 39`, `Community 41`, `Community 42`, `Community 49`, `Community 52`, `Community 53`, `Community 58`, `Community 64`, `Community 71`, `Community 74`, `Community 75`, `Community 76`, `Community 77`, `Community 78`, `Community 87`?**
+  _High betweenness centrality (0.072) - this node is a cross-community bridge._
 - **Why does `adminFetch()` connect `Community 62` to `Community 1`, `Community 2`, `Community 6`, `Community 7`, `Community 12`, `Community 17`, `Community 18`, `Community 19`, `Community 20`, `Community 27`, `Community 28`, `Community 35`, `Community 38`, `Community 40`, `Community 43`, `Community 51`, `Community 54`, `Community 60`, `Community 61`, `Community 66`, `Community 71`, `Community 82`?**
   _High betweenness centrality (0.038) - this node is a cross-community bridge._
-- **Are the 14 inferred relationships involving `useConfirm()` (e.g. with `VariantRow()` and `ProductRow()`) actually correct?**
-  _`useConfirm()` has 14 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 15 inferred relationships involving `useConfirm()` (e.g. with `VariantRow()` and `ProductRow()`) actually correct?**
+  _`useConfirm()` has 15 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `jakarta`, `mono`, `metadata` to the rest of the system?**
-  _484 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _491 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 1` be split into smaller, more focused modules?**
-  _Cohesion score 0.11229946524064172 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.10793650793650794 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**
-  _Cohesion score 0.07560975609756097 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07692307692307693 - nodes in this community are weakly interconnected._

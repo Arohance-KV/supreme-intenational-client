@@ -27,7 +27,7 @@ function inr(n: unknown): string {
 
 // ── Product row ───────────────────────────────────────────────────────────────
 
-const ROW = 'grid grid-cols-[1fr_140px_120px_100px_100px_120px] items-center gap-4';
+const ROW = 'grid grid-cols-[1fr_140px_120px_100px_100px_120px] items-center gap-4 md:max-lg:grid-cols-[minmax(0,1fr)_100px_80px_76px_76px_112px] md:max-lg:gap-3 md:max-lg:min-w-[720px]';
 
 function ProductRow({ product }: { product: AdminProduct }) {
   const deleteProduct = useDeleteProduct();
@@ -246,7 +246,7 @@ function ProductsTable() {
 
       {/* Table */}
       {!isLoading && !isError && products.length > 0 && (
-        <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] overflow-hidden">
+        <div className="rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)] overflow-hidden md:max-lg:overflow-x-auto">
           {/* Header */}
           <div className={`${ROW} bg-white/50 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-slate`}>
             <span>Product</span>

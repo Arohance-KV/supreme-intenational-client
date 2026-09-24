@@ -35,7 +35,7 @@ export default function ProductGallery({
   };
 
   return (
-    <div className="w-full shrink-0 lg:sticky lg:top-24 lg:w-[42%] lg:self-start">
+    <div className="w-full shrink-0 md:max-lg:mx-auto md:max-lg:max-w-[520px] lg:sticky lg:top-24 lg:w-[42%] lg:self-start">
       <div className="relative">
         {images.length > 0 ? (
           <div className="group relative aspect-square w-full overflow-hidden rounded-[18px] border border-white/70 bg-white/55 shadow-[0_14px_44px_rgba(34,36,90,.12)] sm:rounded-[22px]">

@@ -165,7 +165,10 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   // to the saved choice after mount (a brief expand→collapse is fine, it animates).
   const [collapsed, setCollapsed] = useState(false);
   useEffect(() => {
-    setCollapsed(localStorage.getItem(SIDEBAR_KEY) === '1');
+    const saved = localStorage.getItem(SIDEBAR_KEY);
+    // Tablet (md–lg) defaults to the icon rail so tables get the width; a saved choice still wins.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCollapsed(saved ? saved === '1' : matchMedia('(min-width: 768px) and (max-width: 1023.98px)').matches);
   }, []);
   const toggle = () => {
     setCollapsed((c) => {
