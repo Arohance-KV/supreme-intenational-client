@@ -7,7 +7,7 @@ import { StatusChip } from '@/components/StatusChip';
 const CARD = 'rounded-[20px] border border-white/80 bg-white/90 shadow-[0_10px_30px_rgba(34,36,90,.07)]';
 const FILTERS: (TicketStatus | 'all')[] = ['all', 'open', 'answered', 'closed'];
 
-function Thread({ id, onBack }: { id: string; onBack: () => void }) {
+function Thread({ id, sellerName, onBack }: { id: string; sellerName?: string | null; onBack: () => void }) {
   const { data: t } = useAdminTicket(id);
   const reply = useAdminReply(id);
   const close = useAdminClose(id);
@@ -41,7 +41,9 @@ function Thread({ id, onBack }: { id: string; onBack: () => void }) {
               )}
             </div>
           </div>
-          <p className="font-jbmono mb-4 text-[11px] text-muted">{t.ticketNumber}</p>
+          <p className="mb-4 text-xs text-slate">
+            {sellerName ?? 'Unknown seller'} · <span className="font-jbmono text-[11px] text-muted">{t.ticketNumber}</span>
+          </p>
 
           <div className="mb-4 space-y-3">
             {t.messages.map((m, i) => (
@@ -85,7 +87,7 @@ export default function AdminSupportPage() {
     return (
       <div className="space-y-6">
         <h1 className="text-2xl font-extrabold tracking-tight text-ink">Support</h1>
-        <Thread id={openId} onBack={() => setOpenId(null)} />
+        <Thread id={openId} sellerName={data?.items.find((t) => t._id === openId)?.sellerName} onBack={() => setOpenId(null)} />
       </div>
     );
   }
@@ -123,7 +125,9 @@ export default function AdminSupportPage() {
             >
               <span className="min-w-0">
                 <span className="block truncate text-sm font-medium text-ink">{t.subject}</span>
-                <span className="font-jbmono text-xs text-muted">{t.ticketNumber}</span>
+                <span className="block text-xs text-slate">
+                  {t.sellerName ?? 'Unknown seller'} · <span className="font-jbmono text-muted">{t.ticketNumber}</span>
+                </span>
               </span>
               <StatusChip status={t.status} />
             </button>

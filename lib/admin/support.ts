@@ -7,6 +7,7 @@ export interface AdminTicket {
   _id: string;
   ticketNumber: string;
   sellerId: string;
+  sellerName?: string | null; // list endpoint only
   subject: string;
   status: TicketStatus;
   messages: { author: 'seller' | 'admin'; body: string; createdAt: string }[];
