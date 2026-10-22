@@ -14,7 +14,7 @@ import { formatIN, parsePointsInput } from '@/lib/company/format';
 import { ApiError } from '@/lib/api';
 import { RequestProductsModal } from '@/components/company/RequestProductsModal';
 
-const GRID = 'grid grid-cols-[minmax(220px,2.2fr)_1fr_.8fr_.7fr_.9fr_.9fr] items-center gap-4';
+const GRID = 'grid grid-cols-[minmax(220px,2.2fr)_1fr_.8fr_.9fr_.9fr] items-center gap-4';
 
 function PencilIcon() {
   return (
@@ -104,8 +104,6 @@ function ProductRow({ product }: { product: CompanyProduct }) {
     toggleHidden.mutate({ id: product.productId, body: { hidden: !product.hidden } });
   };
 
-  const lowStock = product.stock < 100;
-
   return (
     <div className={`${GRID} border-b border-line px-5 py-4 text-[13px] last:border-0`}>
       <span className="flex min-w-0 items-center gap-3">
@@ -155,10 +153,6 @@ function ProductRow({ product }: { product: CompanyProduct }) {
             {editPoints.error instanceof ApiError ? editPoints.error.message : 'Could not update.'}
           </span>
         )}
-      </span>
-
-      <span className="font-semibold" style={{ color: lowStock ? '#c0413c' : 'var(--color-ink)' }}>
-        {formatIN(product.stock)}
       </span>
 
       <span>
@@ -310,7 +304,6 @@ export default function CompanyProductsPage() {
                   <span>Product</span>
                   <span>Category</span>
                   <span>Points</span>
-                  <span>Stock</span>
                   <span>Status</span>
                   <span>Actions</span>
                 </div>

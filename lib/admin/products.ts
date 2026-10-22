@@ -96,7 +96,6 @@ export interface UpdateProductBody {
 export interface CreateVariantBody {
   price: number;
   originalPrice: number;
-  stock: number;
   sku?: string;
   moq?: number;
   images?: string[];
@@ -109,7 +108,6 @@ export interface BulkCreateVariantsBody {
   attributes: { attributeId: string; valueIds: string[] }[];
   defaultPrice: number;
   defaultOriginalPrice: number;
-  defaultStock: number;
   defaultMoq?: number;
 }
 
@@ -117,7 +115,6 @@ export interface BulkCreateVariantsBody {
 export interface UpdateVariantBody {
   price?: number;
   originalPrice?: number;
-  stock?: number;
   moq?: number;
   images?: string[];
   sku?: string;
@@ -253,18 +250,6 @@ export function useUpdateVariant(productId: string, slug: string) {
   });
 }
 
-export function useAdjustStock(productId: string, slug: string) {
-  const inv = useInvalidate(slug);
-  return useMutation({
-    mutationFn: (args: { variantId: string; delta: number }) =>
-      adminFetch<ProductVariant>(`/admin/variants/${args.variantId}/stock`, {
-        method: 'PATCH',
-        body: { delta: args.delta },
-      }),
-    onSuccess: inv,
-  });
-}
-
 export function useDeleteVariant(productId: string, slug: string) {
   const inv = useInvalidate(slug);
   return useMutation({
@@ -360,9 +345,9 @@ export function useImportProducts() {
 
 // Header row + one example, downloaded client-side (no backend needed).
 export const CSV_TEMPLATE =
-  'Handle,Name,Category,Description,Material,Color,Size,Capacity,SKU,Price,OriginalPrice,Stock,MOQ,ImageUrl\n' +
-  'metal-pen,Classic Metal Pen,Pens,Branded metal pen,Stainless Steel,Black,,,PEN-BLK,89,119,5000,100,\n' +
-  'metal-pen,,Pens,,Stainless Steel,Blue,,,PEN-BLU,89,119,4000,100,\n';
+  'Handle,Name,Category,Description,Material,Color,Size,Capacity,SKU,Price,OriginalPrice,MOQ,ImageUrl\n' +
+  'metal-pen,Classic Metal Pen,Pens,Branded metal pen,Stainless Steel,Black,,,PEN-BLK,89,119,100,\n' +
+  'metal-pen,,Pens,,Stainless Steel,Blue,,,PEN-BLU,89,119,100,\n';
 
 // Hook wrapper for useUploadImage (integrates with React state but keeps upload async)
 export function useUploadImage() {

@@ -61,38 +61,6 @@ export function useOrdersByStatus() {
   });
 }
 
-// ── Low Stock Variants ────────────────────────────────────────────────────────
-// GET /admin/inventory/low-stock
-// Returns: IProductVariant[], Mongoose documents, key fields listed below
-export interface LowStockVariant {
-  _id: string;
-  product: string;
-  sku: string;
-  price: number;
-  originalPrice: number;
-  stock: number;
-  moq: number;
-  images: string[];
-  attributes: {
-    attributeId: string;
-    attributeName: string;
-    attributeSlug: string;
-    valueId: string;
-    valueLabel: string;
-    valueSlug: string;
-  }[];
-  variantKey: string;
-  isActive: boolean;
-}
-
-export function useLowStock() {
-  return useQuery<LowStockVariant[]>({
-    queryKey: ['admin', 'low-stock'],
-    queryFn: () =>
-      adminFetch<LowStockVariant[]>('/admin/inventory/low-stock'),
-  });
-}
-
 // ── Dashboard summary (quotations / catalogues / enquiries counts) ─────────────
 // GET /admin/analytics/dashboard-summary
 export interface DashboardSummary {

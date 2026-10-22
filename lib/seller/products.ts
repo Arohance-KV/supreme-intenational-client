@@ -91,19 +91,6 @@ export function useUpdateVariant(productId: string) {
   });
 }
 
-export function useAdjustStock(productId: string) {
-  const inv = useInvalidate(productId);
-  return useMutation({
-    mutationFn: (args: { variantId: string; delta: number }) =>
-      apiFetch(`/seller/variants/${args.variantId}/stock`, {
-        method: 'PATCH',
-        body: { delta: args.delta },
-        ...T,
-      }),
-    onSuccess: inv,
-  });
-}
-
 export function useDeleteVariant(productId: string) {
   const inv = useInvalidate(productId);
   return useMutation({

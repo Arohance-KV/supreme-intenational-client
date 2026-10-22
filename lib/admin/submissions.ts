@@ -14,7 +14,6 @@ export interface DraftVariant {
   sku: string;
   price: number;
   originalPrice: number;
-  stock: number;
   moq: number;
   images: string[];
   attributes: DraftVariantAttribute[];

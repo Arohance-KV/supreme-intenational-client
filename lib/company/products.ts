@@ -14,7 +14,6 @@ export interface CompanyProduct {
   image: string | null;
   category: string | null;
   points: number;
-  stock: number;
   hidden: boolean;
   status: 'Active' | 'Hidden';
 }

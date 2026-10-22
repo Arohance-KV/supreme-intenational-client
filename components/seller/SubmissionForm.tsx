@@ -22,7 +22,7 @@ const sectionTitle = 'text-[15px] font-bold text-ink';
 interface LocalAttr { _key: string; name: string; value: string; }
 interface LocalVariant {
   _key: string;
-  sku: string; price: number; originalPrice: number; stock: number; moq: number;
+  sku: string; price: number; originalPrice: number; moq: number;
   attributes: LocalAttr[];
 }
 
@@ -30,14 +30,14 @@ const uid = () =>
   (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).slice(2);
 
 const emptyVariant = (): LocalVariant => ({
-  _key: uid(), sku: '', price: 0, originalPrice: 0, stock: 0, moq: 1, attributes: [],
+  _key: uid(), sku: '', price: 0, originalPrice: 0, moq: 1, attributes: [],
 });
 
 function toLocalVariants(initial?: Partial<SubmissionInput>): LocalVariant[] {
   if (initial?.variants && initial.variants.length > 0) {
     return initial.variants.map((v) => ({
       _key: uid(),
-      sku: v.sku, price: v.price, originalPrice: v.originalPrice, stock: v.stock, moq: v.moq,
+      sku: v.sku, price: v.price, originalPrice: v.originalPrice, moq: v.moq,
       attributes: (v.attributes ?? []).map((a) => ({ _key: uid(), name: a.name, value: a.value })),
     }));
   }
@@ -160,7 +160,7 @@ function BulkVariantPanel({
   const [selected, setSelected] = useState<Record<string, Set<string>>>({});
   const [customAttrs, setCustomAttrs] = useState<{ _key: string; name: string; values: string[] }[]>([]);
   const [valueDraft, setValueDraft] = useState<Record<string, string>>({});
-  const [defaults, setDefaults] = useState({ price: 0, originalPrice: 0, stock: 0, moq: 1 });
+  const [defaults, setDefaults] = useState({ price: 0, originalPrice: 0, moq: 1 });
 
   const taxonomyGroups = catalog
     .map((a) => ({ name: a.name, values: [...(selected[a.name] ?? [])] }))
@@ -210,7 +210,6 @@ function BulkVariantPanel({
         sku: combo.map((c) => c.value).join('-').toUpperCase().replace(/\s+/g, '-'),
         price: defaults.price,
         originalPrice: defaults.originalPrice,
-        stock: defaults.stock,
         moq: defaults.moq,
         attributes: combo.map((c) => ({ _key: uid(), name: c.name, value: c.value })),
       })),
@@ -334,7 +333,7 @@ function BulkVariantPanel({
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-x-3 gap-y-2.5 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-x-3 gap-y-2.5 sm:grid-cols-3">
         <div>
           <label htmlFor="bulk-price" className={fieldLabel}>Default price</label>
           <input id="bulk-price" type="number" min={0} value={defaults.price}
@@ -344,11 +343,6 @@ function BulkVariantPanel({
           <label htmlFor="bulk-orig" className={fieldLabel}>Default orig. price</label>
           <input id="bulk-orig" type="number" min={0} value={defaults.originalPrice}
             onChange={(e) => setDefaults({ ...defaults, originalPrice: Number(e.target.value) })} className={field} />
-        </div>
-        <div>
-          <label htmlFor="bulk-stock" className={fieldLabel}>Default stock</label>
-          <input id="bulk-stock" type="number" min={0} value={defaults.stock}
-            onChange={(e) => setDefaults({ ...defaults, stock: Number(e.target.value) })} className={field} />
         </div>
         <div>
           <label htmlFor="bulk-moq" className={fieldLabel}>Default MOQ</label>
@@ -418,7 +412,7 @@ export function SubmissionForm({ initial, submitting, submitLabel, onSubmit }: P
   const addBulk = (generated: LocalVariant[]) => {
     setVariants((prev) => {
       const kept = prev.filter(
-        (v) => !(v.sku.trim() === '' && v.price === 0 && v.originalPrice === 0 && v.stock === 0 && v.attributes.length === 0),
+        (v) => !(v.sku.trim() === '' && v.price === 0 && v.originalPrice === 0 && v.attributes.length === 0),
       );
       return [...kept, ...generated];
     });
@@ -481,7 +475,7 @@ export function SubmissionForm({ initial, submitting, submitLabel, onSubmit }: P
       materials: trimmed(materials),
       shipping: trimmed(shipping),
       variants: variants.map((v) => ({
-        sku: v.sku, price: v.price, originalPrice: v.originalPrice, stock: v.stock, moq: v.moq,
+        sku: v.sku, price: v.price, originalPrice: v.originalPrice, moq: v.moq,
         // Drop half-filled custom rows so we never submit blank attribute pairs.
         attributes: v.attributes
           .filter((a) => a.name.trim() && a.value.trim())
@@ -628,7 +622,7 @@ export function SubmissionForm({ initial, submitting, submitLabel, onSubmit }: P
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>
             <h2 className={sectionTitle}>Variants</h2>
-            <p className="text-[12px] text-muted">Pricing, stock and attributes per SKU.</p>
+            <p className="text-[12px] text-muted">Pricing and attributes per SKU.</p>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -680,8 +674,8 @@ export function SubmissionForm({ initial, submitting, submitLabel, onSubmit }: P
                 )}
               </div>
 
-              {/* Labeled pricing/stock fields */}
-              <div className="grid grid-cols-2 gap-x-3 gap-y-2.5 sm:grid-cols-3 lg:grid-cols-5">
+              {/* Labeled pricing fields */}
+              <div className="grid grid-cols-2 gap-x-3 gap-y-2.5 sm:grid-cols-4">
                 <div>
                   <label htmlFor={`v-sku-${v._key}`} className={fieldLabel}>SKU</label>
                   <input
@@ -716,17 +710,6 @@ export function SubmissionForm({ initial, submitting, submitLabel, onSubmit }: P
                     min={0}
                     value={v.originalPrice}
                     onChange={(e) => updateVariant(v._key, { originalPrice: Number(e.target.value) })}
-                    className={field}
-                  />
-                </div>
-                <div>
-                  <label htmlFor={`v-stock-${v._key}`} className={fieldLabel}>Stock</label>
-                  <input
-                    id={`v-stock-${v._key}`}
-                    type="number"
-                    min={0}
-                    value={v.stock}
-                    onChange={(e) => updateVariant(v._key, { stock: Number(e.target.value) })}
                     className={field}
                   />
                 </div>

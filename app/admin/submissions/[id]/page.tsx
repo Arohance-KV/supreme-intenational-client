@@ -40,7 +40,6 @@ function VariantsTable({ variants }: { variants: DraftVariant[] }) {
             <th className="px-3 py-2 font-medium">SKU</th>
             <th className="px-3 py-2 font-medium text-right">Price</th>
             <th className="px-3 py-2 font-medium text-right">Orig. price</th>
-            <th className="px-3 py-2 font-medium text-right">Stock</th>
             <th className="px-3 py-2 font-medium text-right">MOQ</th>
             <th className="px-3 py-2 font-medium">Attributes</th>
             <th className="px-3 py-2 font-medium">Images</th>
@@ -52,9 +51,6 @@ function VariantsTable({ variants }: { variants: DraftVariant[] }) {
               <td className="px-3 py-2 font-mono text-xs text-slate">{v.sku ?? '—'}</td>
               <td className="px-3 py-2 text-right">{inr(v.price)}</td>
               <td className="px-3 py-2 text-right text-slate">{inr(v.originalPrice)}</td>
-              <td className="px-3 py-2 text-right">
-                {typeof v.stock === 'number' ? v.stock.toLocaleString('en-IN') : '—'}
-              </td>
               <td className="px-3 py-2 text-right">
                 {typeof v.moq === 'number' ? v.moq.toLocaleString('en-IN') : '—'}
               </td>

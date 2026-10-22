@@ -7,7 +7,6 @@ import {
   useUpdateProduct,
   useAddVariant,
   useUpdateVariant,
-  useAdjustStock,
   useDeleteVariant,
 } from '@/lib/seller/products';
 import type { ProductVariant } from '@/lib/catalog';
@@ -44,7 +43,6 @@ function VariantRow({
   });
 
   const updateVariant = useUpdateVariant(productId);
-  const adjustStock = useAdjustStock(productId);
   const deleteVariant = useDeleteVariant(productId);
 
   const handleSave = () => {
@@ -54,10 +52,6 @@ function VariantRow({
     );
   };
 
-  const handleAdjust = (delta: number) => {
-    adjustStock.mutate({ variantId: variant._id, delta });
-  };
-
   const handleDelete = async () => {
     if (await confirm({ title: 'Delete variant', message: 'Delete this variant?', confirmLabel: 'Delete', tone: 'danger' })) {
       deleteVariant.mutate(variant._id);
@@ -65,7 +59,7 @@ function VariantRow({
   };
 
   const mutError =
-    updateVariant.error ?? adjustStock.error ?? deleteVariant.error;
+    updateVariant.error ?? deleteVariant.error;
 
   return (
     <tr className="border-b border-line text-sm last:border-0">
@@ -111,27 +105,6 @@ function VariantRow({
         ) : (
           `₹${variant.originalPrice.toLocaleString('en-IN')}`
         )}
-      </td>
-      <td className="px-3 py-2.5 text-slate">
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => handleAdjust(-1)}
-            disabled={adjustStock.isPending}
-            aria-label="Decrease stock by 1"
-            className="rounded border border-line px-1.5 py-0.5 text-xs hover:bg-white/60 disabled:opacity-60"
-          >
-            −
-          </button>
-          <span className="w-10 text-center">{variant.stock}</span>
-          <button
-            onClick={() => handleAdjust(1)}
-            disabled={adjustStock.isPending}
-            aria-label="Increase stock by 1"
-            className="rounded border border-line px-1.5 py-0.5 text-xs hover:bg-white/60 disabled:opacity-60"
-          >
-            +
-          </button>
-        </div>
       </td>
       <td className="px-3 py-2.5 text-slate">
         {editing ? (
@@ -200,7 +173,6 @@ function AddVariantForm({ productId }: { productId: string }) {
     sku: '',
     price: 0,
     originalPrice: 0,
-    stock: 0,
     moq: 1,
   });
 
@@ -208,14 +180,14 @@ function AddVariantForm({ productId }: { productId: string }) {
     e.preventDefault();
     addVariant.mutate(form as Record<string, unknown>, {
       onSuccess: () =>
-        setForm({ sku: '', price: 0, originalPrice: 0, stock: 0, moq: 1 }),
+        setForm({ sku: '', price: 0, originalPrice: 0, moq: 1 }),
     });
   };
 
   return (
     <form onSubmit={handleSubmit} className="mt-4 rounded-[16px] border border-dashed border-line p-5">
       <p className="mb-3 text-sm font-semibold text-ink">Add variant</p>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div>
           <label htmlFor="new-sku" className="mb-1 block text-xs text-slate">
             SKU
@@ -252,19 +224,6 @@ function AddVariantForm({ productId }: { productId: string }) {
             min={0}
             value={form.originalPrice}
             onChange={(e) => setForm({ ...form, originalPrice: Number(e.target.value) })}
-            className={inputSm}
-          />
-        </div>
-        <div>
-          <label htmlFor="new-stock" className="mb-1 block text-xs text-slate">
-            Stock
-          </label>
-          <input
-            id="new-stock"
-            type="number"
-            min={0}
-            value={form.stock}
-            onChange={(e) => setForm({ ...form, stock: Number(e.target.value) })}
             className={inputSm}
           />
         </div>
@@ -515,7 +474,6 @@ export default function ProductDetailPage({
                   <th className="px-3 py-2 font-medium">SKU</th>
                   <th className="px-3 py-2 font-medium">Price</th>
                   <th className="px-3 py-2 font-medium">Original Price</th>
-                  <th className="px-3 py-2 font-medium">Stock</th>
                   <th className="px-3 py-2 font-medium">MOQ</th>
                   <th className="px-3 py-2 font-medium">Actions</th>
                 </tr>

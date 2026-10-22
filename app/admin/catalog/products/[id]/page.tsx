@@ -11,7 +11,6 @@ import {
   useCreateVariant,
   useBulkCreateVariants,
   useUpdateVariant,
-  useAdjustStock,
   useDeleteVariant,
   useSetFlashSale,
   uploadAdminImage,
@@ -182,7 +181,6 @@ function VariantRow({
   });
 
   const updateVariant = useUpdateVariant(productId, slug);
-  const adjustStock = useAdjustStock(productId, slug);
   const deleteVariant = useDeleteVariant(productId, slug);
   const { confirm } = useConfirm();
 
@@ -208,19 +206,12 @@ function VariantRow({
     deleteVariant.mutate(variant._id, { onSuccess: () => { if (isBackend) notifySubmitted(); } });
   };
 
-  const handleAdjustStock = (delta: number) => {
-    adjustStock.mutate(
-      { variantId: variant._id, delta },
-      { onSuccess: () => { if (isBackend) notifySubmitted(); } },
-    );
-  };
-
   const attrLabel = Array.isArray(variant.attributes) && variant.attributes.length
     ? variant.attributes.map((a) => `${a.attributeName}: ${a.valueLabel}`).join(', ')
     : '—';
 
   const mutError =
-    updateVariant.error ?? adjustStock.error ?? deleteVariant.error;
+    updateVariant.error ?? deleteVariant.error;
 
   return (
     <>
@@ -280,31 +271,6 @@ function VariantRow({
         ) : (
           inr(variant.originalPrice)
         )}
-      </td>
-
-      {/* Stock */}
-      <td className="px-3 py-2 text-slate">
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => handleAdjustStock(-1)}
-            disabled={adjustStock.isPending}
-            aria-label={isBackend ? 'Submit stock decrease for approval' : 'Decrease stock by 1'}
-            title={isBackend ? 'Submit for approval' : undefined}
-            className="rounded border border-line px-1.5 py-0.5 text-xs hover:bg-white/60 disabled:opacity-60"
-          >
-            −
-          </button>
-          <span className="w-10 text-center">{typeof variant.stock === 'number' ? variant.stock : '—'}</span>
-          <button
-            onClick={() => handleAdjustStock(1)}
-            disabled={adjustStock.isPending}
-            aria-label={isBackend ? 'Submit stock increase for approval' : 'Increase stock by 1'}
-            title={isBackend ? 'Submit for approval' : undefined}
-            className="rounded border border-line px-1.5 py-0.5 text-xs hover:bg-white/60 disabled:opacity-60"
-          >
-            +
-          </button>
-        </div>
       </td>
 
       {/* MOQ */}
@@ -393,7 +359,7 @@ function VariantRow({
     </tr>
     {editing && (
       <tr className="border-b border-line">
-        <td colSpan={9} className="px-3 pb-3">
+        <td colSpan={8} className="px-3 pb-3">
           <p className="mb-2 text-xs font-medium text-slate">Variant images</p>
           <ImageManager
             images={fields.images ?? []}
@@ -481,20 +447,20 @@ function AddVariantForm({
 
   // Single mode: one value per attribute, plus pricing.
   const [singleValues, setSingleValues] = useState<Record<string, string>>({});
-  const [single, setSingle] = useState({ sku: '', price: 0, originalPrice: 0, stock: 0, moq: 1 });
+  const [single, setSingle] = useState({ sku: '', price: 0, originalPrice: 0, moq: 1 });
   const [singleImages, setSingleImages] = useState<string[]>([]);
 
   // Bulk mode: a set of values per attribute → server creates all combinations.
   const [bulkValues, setBulkValues] = useState<Record<string, Set<string>>>({});
-  const [bulk, setBulk] = useState({ defaultPrice: 0, defaultOriginalPrice: 0, defaultStock: 0, defaultMoq: 1 });
+  const [bulk, setBulk] = useState({ defaultPrice: 0, defaultOriginalPrice: 0, defaultMoq: 1 });
 
   const reset = () => {
     setMode(null);
     setSingleValues({});
-    setSingle({ sku: '', price: 0, originalPrice: 0, stock: 0, moq: 1 });
+    setSingle({ sku: '', price: 0, originalPrice: 0, moq: 1 });
     setSingleImages([]);
     setBulkValues({});
-    setBulk({ defaultPrice: 0, defaultOriginalPrice: 0, defaultStock: 0, defaultMoq: 1 });
+    setBulk({ defaultPrice: 0, defaultOriginalPrice: 0, defaultMoq: 1 });
   };
 
   // Number of variants bulk mode will create = product of selected counts per attribute.
@@ -612,7 +578,7 @@ function AddVariantForm({
       />
 
       {mode === 'single' ? (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <div>
             <label htmlFor="nv-sku" className="mb-1 block text-xs text-slate">SKU</label>
             <input
@@ -651,17 +617,6 @@ function AddVariantForm({
             />
           </div>
           <div>
-            <label htmlFor="nv-stock" className="mb-1 block text-xs text-slate">Stock</label>
-            <input
-              id="nv-stock"
-              type="number"
-              min={0}
-              value={single.stock}
-              onChange={(e) => setSingle({ ...single, stock: Number(e.target.value) })}
-              className={inputCls}
-            />
-          </div>
-          <div>
             <label htmlFor="nv-moq" className="mb-1 block text-xs text-slate">MOQ</label>
             <input
               id="nv-moq"
@@ -674,7 +629,7 @@ function AddVariantForm({
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           <div>
             <label htmlFor="bv-price" className="mb-1 block text-xs text-slate">
               Default price <span className="text-red-500">*</span>
@@ -700,17 +655,6 @@ function AddVariantForm({
               required
               value={bulk.defaultOriginalPrice}
               onChange={(e) => setBulk({ ...bulk, defaultOriginalPrice: Number(e.target.value) })}
-              className={inputCls}
-            />
-          </div>
-          <div>
-            <label htmlFor="bv-stock" className="mb-1 block text-xs text-slate">Default stock</label>
-            <input
-              id="bv-stock"
-              type="number"
-              min={0}
-              value={bulk.defaultStock}
-              onChange={(e) => setBulk({ ...bulk, defaultStock: Number(e.target.value) })}
               className={inputCls}
             />
           </div>
@@ -1160,7 +1104,6 @@ function VariantsSection({
                 <th className="px-3 py-2 font-medium">Attributes</th>
                 <th className="px-3 py-2 font-medium">Price</th>
                 <th className="px-3 py-2 font-medium">Orig Price</th>
-                <th className="px-3 py-2 font-medium">Stock</th>
                 <th className="px-3 py-2 font-medium">MOQ</th>
                 <th className="px-3 py-2 font-medium">Status</th>
                 <th className="px-3 py-2 font-medium">Flash</th>
@@ -1203,7 +1146,7 @@ export default function AdminProductDetailPage({
   const deleteProduct = useDeleteProduct();
 
   // Page-level "queued for review" notice shared by every write action below the header
-  // (product save/delete, variant create/bulk/update/stock/delete/flash-sale), the backend
+  // (product save/delete, variant create/bulk/update/delete/flash-sale), the backend
   // role's mutations never touch live data, they only ever produce a change request.
   const [flash, setFlash] = useState<string | null>(null);
   const notifySubmitted = () => {

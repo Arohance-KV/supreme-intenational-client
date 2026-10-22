@@ -125,7 +125,6 @@ export default function SubmissionDetailPage({ params }: { params: Promise<{ id:
             <div key={i} className="border-b border-line py-2 text-sm text-slate last:border-0">
               <span className="font-jbmono text-xs text-ink">{v.sku}</span>
               {' · '}₹{v.price}
-              {' · '}stock {v.stock}
               {' · '}MOQ {v.moq}
               {v.attributes.length > 0 &&
                 ' · ' + v.attributes.map((a) => `${a.name}: ${a.value}`).join(', ')}

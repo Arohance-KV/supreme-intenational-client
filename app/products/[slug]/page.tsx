@@ -37,6 +37,8 @@ export default async function ProductPage({ params }: PageProps) {
   }
 
   const { product, variants } = detail;
+  // No product photos? Show the variants' photos instead (variants arrive cheapest first).
+  const images = product.images.length ? product.images : [...new Set(variants.flatMap((v) => v.images))];
 
   let related: Awaited<ReturnType<typeof getRelated>> = [];
   try {
@@ -66,7 +68,7 @@ export default async function ProductPage({ params }: PageProps) {
         {/* Product Hero */}
         <div className="flex flex-col gap-5 lg:flex-row lg:gap-8">
           {/* Image Gallery */}
-          <ProductGallery images={product.images} name={product.name} slug={product.slug}>
+          <ProductGallery images={images} name={product.name} slug={product.slug}>
             <WishlistButton productId={product._id} />
           </ProductGallery>
 

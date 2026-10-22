@@ -6,7 +6,7 @@ import { getSessionId } from '@/lib/session';
 const T = { tokenKey: 'sellerToken' as const };
 
 export interface DraftVariant {
-  sku: string; price: number; originalPrice: number; stock: number; moq: number;
+  sku: string; price: number; originalPrice: number; moq: number;
   images?: string[]; attributes: { name: string; value: string }[];
 }
 export interface Submission {
