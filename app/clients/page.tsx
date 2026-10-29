@@ -32,7 +32,7 @@ export default async function ClientsPage() {
           <div className="mb-9 overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_6%,#000_94%,transparent)]">
             <div className="flex w-max animate-marquee gap-3 transform-gpu will-change-transform hover:[animation-play-state:paused]">
               {logoRow.map((l, i) => (
-                <div key={`${l._id}-${i}`} className="flex h-16 w-[128px] shrink-0 items-center justify-center rounded-[14px] border border-line bg-white/60 px-3 sm:h-20 sm:w-[168px]">
+                <div key={`${l._id}-${i}`} className="flex h-16 w-[128px] shrink-0 items-center justify-center px-3 sm:h-20 sm:w-[168px]">
                   {l.logoUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={l.logoUrl} alt={l.name} className="max-h-10 max-w-full object-contain sm:max-h-12" />
