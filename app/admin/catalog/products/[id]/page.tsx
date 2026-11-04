@@ -754,20 +754,62 @@ function ImageManager({
     onUpdate(images.filter((i) => i !== url));
   };
 
+  // First image is the primary one shown on cards and the product page.
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const move = (from: number, to: number) => {
+    if (from === to) return;
+    const next = [...images];
+    next.splice(to, 0, next.splice(from, 1)[0]);
+    onUpdate(next);
+  };
+
   return (
     <div>
+      {images.length > 1 && (
+        <p className="mb-2 text-xs text-muted">Drag to reorder. The first image is the primary one.</p>
+      )}
       <div className="flex flex-wrap gap-3 mb-3">
-        {images.map((url) => (
-          <div key={url} className="relative group">
+        {images.map((url, i) => (
+          <div
+            key={url}
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData('text/plain', String(i)); // Firefox needs data to start a drag
+              setDragIdx(i);
+            }}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              if (dragIdx !== null) move(dragIdx, i);
+              setDragIdx(null);
+            }}
+            onDragEnd={() => setDragIdx(null)}
+            className={`relative group cursor-move ${dragIdx === i ? 'opacity-40' : ''}`}
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={url}
               alt="product"
-              className="h-20 w-20 rounded border border-line object-cover"
+              draggable={false}
+              className={`h-20 w-20 rounded border object-cover ${i === 0 ? 'border-2 border-black' : 'border-line'}`}
             />
+            {i === 0 ? (
+              <span className="absolute inset-x-0 bottom-0 rounded-b bg-black/70 py-0.5 text-center text-[10px] font-medium text-white">
+                Primary
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={() => move(i, 0)}
+                className="absolute inset-x-0 bottom-0 hidden rounded-b bg-black/60 py-0.5 text-[10px] text-white group-hover:block group-focus-within:block"
+              >
+                Make primary
+              </button>
+            )}
             <button
+              type="button"
               onClick={() => removeImage(url)}
-              className="absolute -right-1 -top-1 hidden h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white group-hover:flex"
+              className="absolute -right-1 -top-1 hidden h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white group-hover:flex group-focus-within:flex"
               aria-label="Remove image"
             >
               ✕
