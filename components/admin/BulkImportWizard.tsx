@@ -342,13 +342,16 @@ export default function BulkImportWizard({ mode, onDone }: { mode: Mode; onDone:
     }
 
     const totals: ImportResult = { imported: 0, updated: 0, variants: 0, failed: [] };
+    // The server numbers rows per batch (first row = 2); map them back to the sheet's row numbers,
+    // the same numbering the preview step uses. chunkByHandle keeps the row objects themselves.
+    const sheetRow = new Map(mappedRows.map((row, i) => [row, i + 2]));
     for (const batch of batches) {
       try {
         const res = await api.commitImportBatch(batch, finalImages, mode === 'admin' && autoCreateTaxonomy);
         totals.imported += res.imported;
         totals.updated += res.updated;
         totals.variants += res.variants;
-        totals.failed.push(...res.failed);
+        totals.failed.push(...res.failed.map((f) => ({ ...f, row: sheetRow.get(batch[f.row - 2]) ?? f.row })));
       } catch (err) {
         totals.failed.push({ row: 0, reason: err instanceof ApiError ? err.message : 'This batch failed to commit' });
       }
