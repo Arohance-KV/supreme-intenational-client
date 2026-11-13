@@ -50,7 +50,7 @@ export default function ProductGallery({
                     src={img}
                     alt={i === 0 ? name : `${name} image ${i + 1}`}
                     fill
-                    className="object-cover"
+                    className="object-contain"
                     sizes="(max-width: 1024px) 100vw, 45vw"
                     priority={i === 0}
                   />

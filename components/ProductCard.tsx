@@ -26,7 +26,7 @@ export default function ProductCard({ product, hrefBase = '/products', showAddTo
               src={imageSrc}
               alt={product.name}
               fill
-              className="object-cover"
+              className="object-contain"
               sizes="(max-width: 640px) 50vw, 25vw"
             />
           ) : (
